@@ -1,0 +1,107 @@
+# =============================================================================
+# Quant Trading System — Docker Compose
+# Usage: docker compose up -d
+# =============================================================================
+version: "3.9"
+
+services:
+  # ── Main application ───────────────────────────────────────────────────────
+  app:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+      target: production
+    image: quant-trading:${QUANT_VERSION:-latest}
+    container_name: quant-app
+    restart: unless-stopped
+    environment:
+      - QUANT_ENV=${QUANT_ENV:-dev}
+      - REDIS_URL=redis://redis:6379/0
+      - CLICKHOUSE_URL=http://clickhouse:8123
+    depends_on:
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../../config:/app/config:ro
+      - ../../data:/app/data
+      - ../../logs:/app/logs
+    networks:
+      - quant-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ── Redis (event bus + caching) ────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: quant-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ../../redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - quant-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── ClickHouse (time-series data) ──────────────────────────────────────────
+  clickhouse:
+    image: clickhouse/clickhouse-server:24-alpine
+    container_name: quant-clickhouse
+    restart: unless-stopped
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ../../clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      - CLICKHOUSE_DB=quant
+      - CLICKHOUSE_USER=quant
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    ulimits:
+      nofile: 262144
+    networks:
+      - quant-net
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Nginx (reverse proxy) ──────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: quant-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    networks:
+      - quant-net
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  quant-net:
+    driver: bridge

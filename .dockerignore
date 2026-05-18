@@ -1,0 +1,40 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+.venv-*/
+
+# IDE
+.vscode/
+.idea/
+
+# Data (mounted as volumes)
+data/
+logs/
+
+# Tests
+tests/
+htmlcov/
+.coverage
+
+# Docs
+docs/
+
+# CI
+.github/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
