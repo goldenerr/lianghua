@@ -748,7 +748,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "db-001",
@@ -796,7 +796,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-001",
@@ -844,7 +844,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-003",
@@ -868,7 +868,7 @@
         "执行策略/模型代码签名校验 + Kill Switch 功能验证（若适用）",
         "生成并验证系统版本清单（core-004）"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-001",
@@ -919,7 +919,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-003",
@@ -939,7 +939,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-004",
@@ -959,7 +959,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-005",
@@ -981,7 +981,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-006",
@@ -1001,7 +1001,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-007",
@@ -1022,7 +1022,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-008",
@@ -1067,7 +1067,7 @@
         "执行策略/模型代码签名校验 + Kill Switch 功能验证（若适用）",
         "生成并验证系统版本清单（core-004）"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-010",
@@ -1091,7 +1091,7 @@
         "执行策略/模型代码签名校验 + Kill Switch 功能验证（若适用）",
         "生成并验证系统版本清单（core-004）"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ops-001",
@@ -1112,7 +1112,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ops-002",
@@ -1138,7 +1138,7 @@
         "执行策略/模型代码签名校验 + Kill Switch 功能验证（若适用）",
         "生成并验证系统版本清单（core-004）"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "compliance-001",
@@ -1167,7 +1167,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "portfolio-001",
@@ -1223,7 +1223,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "portfolio-003",
@@ -1267,7 +1267,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ml-001",
@@ -1293,7 +1293,7 @@
         "执行策略/模型代码签名校验 + Kill Switch 功能验证（若适用）",
         "生成并验证系统版本清单（core-004）"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "ml-002",
@@ -1314,7 +1314,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "factor-001",
@@ -1334,7 +1334,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "replay-validation-001",
@@ -1374,7 +1374,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "docs-001",
@@ -1420,7 +1420,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "roadmap-001",
