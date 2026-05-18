@@ -76,8 +76,8 @@ class TestDataValidator:
         close = [100.0] * 10 + [150.0]  # 50% jump!
         df = _make_ohlcv_df(close)
         result = v.validate("TEST", df)
-        # Should have at least warnings
-        assert len(result.warnings) > 0
+        # Should have at least errors (jump_pct=10% > 1% threshold)
+        assert len(result.errors) > 0
 
     def test_duplicates_detected(self):
         v = DataValidator()

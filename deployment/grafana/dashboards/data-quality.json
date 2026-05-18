@@ -1,0 +1,35 @@
+{
+  "dashboard": {
+    "title": "Data Quality Monitor",
+    "uid": "quant-data-quality",
+    "timezone": "browser",
+    "tags": ["quant", "data-quality"],
+    "panels": [
+      {
+        "title": "Symbol Health Scores",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 6},
+        "targets": [{"expr": "quant_data_quality_score"}] 
+      },
+      {
+        "title": "Missing Data %",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 6, "w": 12, "h": 8},
+        "targets": [{"expr": "quant_data_quality_missing_pct"}],
+        "thresholds": [{"value": 0.005, "color": "green"}, {"value": 0.01, "color": "red"}]
+      },
+      {
+        "title": "Price Jump Events",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 6, "w": 12, "h": 8},
+        "targets": [{"expr": "quant_data_quality_price_jumps"}]
+      },
+      {
+        "title": "Recent Alerts",
+        "type": "table",
+        "gridPos": {"x": 0, "y": 14, "w": 24, "h": 8},
+        "targets": [{"expr": "quant_data_quality_alerts"}]
+      }
+    ]
+  }
+}
