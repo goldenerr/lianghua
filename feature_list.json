@@ -203,7 +203,7 @@
         "执行策略/模型代码签名校验 + Kill Switch 功能验证（若适用）",
         "生成并验证系统版本清单（core-004）"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "core-001",
