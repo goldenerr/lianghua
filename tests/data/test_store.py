@@ -1,0 +1,90 @@
+"""Tests for DataStore — Parquet persistence with version control."""
+
+import tempfile
+import pandas as pd
+from pathlib import Path
+import pytest
+
+from quant_trading.data.store import DataStore
+from quant_trading.data.provider import Frequency
+
+
+def _make_df(dates=None, values=None):
+    if dates is None:
+        dates = pd.bdate_range("2024-01-01", periods=5, freq="B")
+    if values is None:
+        values = list(range(100, 105))
+    return pd.DataFrame(
+        {"open": values, "high": [v + 1 for v in values],
+         "low": [v - 1 for v in values], "close": values,
+         "volume": [1000.0] * len(values)},
+        index=pd.DatetimeIndex(pd.to_datetime(dates)),
+    )
+
+
+class TestDataStore:
+    def test_write_and_read(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        df = _make_df()
+        store.write("TEST", df, append=False)
+        loaded = store.read("TEST")
+        assert len(loaded) == len(df)
+        assert loaded.iloc[-1]["close"] == df.iloc[-1]["close"]
+
+    def test_append_merge_dedup(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        df1 = _make_df()
+        store.write("TEST", df1, append=False)
+
+        # Append overlapping data (same dates, different values)
+        df2 = _make_df(values=list(range(200, 205)))
+        store.write("TEST", df2, append=True)
+
+        loaded = store.read("TEST")
+        assert len(loaded) == len(df1)  # Deduped to same count
+        # Should keep latest values (from df2)
+        assert loaded.iloc[-1]["close"] == 204
+
+    def test_missing_file_returns_empty(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        loaded = store.read("NONEXISTENT")
+        assert loaded.empty
+
+    def test_version_tracking(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        df = _make_df()
+        store.write("TEST", df, append=False)
+        versions = store.get_versions("TEST")
+        assert len(versions) >= 1
+        ver = store.get_latest_version("TEST", Frequency.DAILY)
+        assert ver is not None
+        assert ver["symbol"] == "TEST"
+        assert "hash" in ver
+
+    def test_version_filtered_by_symbol(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        store.write("A", _make_df(), append=False)
+        store.write("B", _make_df(), append=False)
+        a_versions = store.get_versions("A")
+        assert all(v["symbol"] == "A" for v in a_versions)
+
+    def test_freshness_check(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        df = _make_df()
+        store.write("OLD", df, append=False)
+        # Data ends at 2024-01-05 (~2 years ago), should fail a 24h threshold
+        is_fresh = store.check_freshness("OLD", max_age_hours=24)
+        assert is_fresh is False
+        # But passes a very large threshold
+        is_fresh_wide = store.check_freshness("OLD", max_age_hours=365*24*3)
+        assert is_fresh_wide is True
+
+    def test_write_batch(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        results = [
+            ("A", _make_df(), Frequency.DAILY),
+            ("B", _make_df(values=list(range(200, 205))), Frequency.DAILY),
+        ]
+        store.write_batch(results, append=False)
+        assert not store.read("A").empty
+        assert not store.read("B").empty
