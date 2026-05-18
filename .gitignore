@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+*.so
+.eggs/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Secrets & credentials
+*.key
+*.pem
+*.crt
+secrets/
+vault/
+
+# Logs
+logs/*.log
+*.log
+
+# Data (except tracked samples)
+data/raw/
+data/processed/
+data/interim/
+data/*.parquet
+!data/.gitkeep
+
+# Cache
+.cache/
+*.cache
+.pytest_cache/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# Docker
+.docker/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# MyPy
+.mypy_cache/
+dmypy.json
+
+# Ruff
+.ruff_cache/
+
+# Poetry
+poetry.lock
+
+# Deployment artifacts (generated)
+deployment/charts/*.tgz
+
+# ClickHouse data
+clickhouse-data/
+
+# Redis data
+redis-data/
+
+# macOS
+.DS_Store
