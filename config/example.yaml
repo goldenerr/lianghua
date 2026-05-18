@@ -1,0 +1,68 @@
+# Quant Trading System — Example Configuration (脱敏)
+# Copy this file to config/ and customize for your environment.
+# For production, use Vault / AWS Secrets Manager per AGENTS.md §2.
+
+# ── System ────────────────────────────────────────────────────────────────────
+env: dev                                    # dev | test | prod
+
+primary_markets:                            # 主要交易市场
+  - A股
+  # - 期货
+  # - 加密货币
+
+trading_sessions:
+  - market: A股
+    sessions:
+      - ["01:30", "03:30"]                  # 9:30-11:30 CST → UTC
+      - ["05:00", "07:00"]                  # 13:00-15:00 CST → UTC
+    timezone: Asia/Shanghai
+
+market_rules:
+  - market: A股
+    tick_size: 0.01
+    lot_size: 100
+    price_precision: 2
+    settlement_time: "08:00"
+
+close_positions_on_shutdown: false
+shutdown_timeout_seconds: 30
+warmup_bars: 20
+require_manual_approval: false
+auto_trade_enabled: false
+
+# ── Risk ──────────────────────────────────────────────────────────────────────
+max_position_pct: 0.20                      # 单品种 ≤ 总资金 20%
+max_total_leverage: 2.0                     # 总杠杆 ≤ 2x
+max_daily_loss_pct: 0.02                    # 日亏损 2% → 停止交易
+max_single_loss_pct: 0.005                  # 单笔 ≤ 0.5%
+
+var_method: historical                      # historical | monte_carlo | parametric
+var_confidence: 0.95
+max_var_pct: 0.05                           # VaR(95%) ≤ 5%
+
+mdd_reduce_to_50pct: 0.15                   # MDD 15% → 减仓 50%
+mdd_liquidate_all: 0.25                     # MDD 25% → 全部平仓
+
+circuit_breaker_daily_loss: 0.03            # 日亏 3% → 降仓 50%
+circuit_breaker_daily_loss_force: 0.05      # 日亏 5% → 强制平仓
+vix_spike_pct: 0.30                         # VIX +30% → 全局降仓
+
+max_volume_pct: 0.10                        # ≤ 日均成交量 10%
+max_consecutive_losses: 5                   # ≥5 连亏 → 风险减半
+max_weekly_loss_pct: 0.03
+max_fx_exposure_pct: 0.30
+
+# ── API ───────────────────────────────────────────────────────────────────────
+exchanges:
+  binance:
+    base_url: "https://api.binance.com"
+    ws_url: "wss://stream.binance.com:9443/ws"
+    timeout_seconds: 10
+    max_retries: 3
+    rate_limit_rps: 20
+    circuit_breaker_failures: 5
+    circuit_breaker_cooldown_seconds: 30
+
+# ── Accounts (separate files in config/accounts/) ─────────────────────────────
+# See config/accounts/prod_account.example.yaml for account config template.
+# API keys MUST use SecretStr — never store plaintext in prod.

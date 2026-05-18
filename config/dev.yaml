@@ -1,0 +1,7 @@
+# Dev environment override
+env: dev
+
+# Dev-specific overrides go here.
+# In dev, we use local/test credentials, real secrets come from Vault in prod.
+auto_trade_enabled: false
+require_manual_approval: false

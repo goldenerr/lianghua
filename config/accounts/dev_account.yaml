@@ -1,0 +1,14 @@
+# Development account — uses test credentials
+# AGENTS.md §2: 多租户/多账户独立配置
+account_id: dev-001
+name: "Development Account"
+exchange: binance
+enabled: true
+default_leverage: 1.0
+# Credentials in dev are placeholder/test values.
+# Production credentials come from Vault.
+credentials:
+  exchange: binance
+  api_key: "test_api_key_dev_only"
+  api_secret: "test_api_secret_dev_only"
+  subaccount: ""

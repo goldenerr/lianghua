@@ -1,28 +1,30 @@
 # Quant Trading System — Progress Log
 # Last updated: 2026-05-18
 
-## Current Session: setup-001
+## setup-001: COMPLETE
+- [x] All 8 tasks completed (6d7d13f)
+- [x] 34 tests passing, 84% coverage for config module
+
+## config-001: Multi-environment config management
 
 ### Completed
-- [x] Git repo initialized (main branch)
-- [x] .gitignore configured (Python, IDE, secrets, data, Docker)
-- [x] Production directory structure: src/, config/, data/, logs/, tests/, deployment/, scripts/, docs/
-- [x] Python packages: quant_trading (core, data, strategy, risk, execution, portfolio, monitor, ml, compliance, utils)
-- [x] pyproject.toml with Poetry 2.4.1, Pydantic v2, pandas, polars, numpy, backtrader, redis, clickhouse
-- [x] Pre-commit hooks: black, ruff, mypy (strict), bandit, gitleaks
-- [x] init.sh: dev/test/prod support, --force-rebuild, --clean
-- [x] Docker multi-stage build (builder → production)
-- [x] docker-compose: app + redis + clickhouse + nginx (with health checks)
-- [x] GitHub Actions CI/CD: lint → security → test → build → push (ghcr.io)
-- [x] CI matrix: Python 3.9, 3.10, 3.11
-- [x] Security: bandit + semgrep + gitleaks in CI
+- [x] Pydantic v2 Settings models: SystemSettings, RiskSettings, ApiSettings, ApiCredentials, AccountConfig (all frozen=True, SecretStr/SecretBytes for secrets)
+- [x] Field validators: empty key rejection, range checks, MDD/circuit-breaker ordering consistency
+- [x] Config YAML files: system.yaml, risk.yaml, api.yaml
+- [x] Environment separation: dev.yaml, test.yaml, prod.yaml
+- [x] Multi-tenant accounts: config/accounts/ with example template
+- [x] ConfigLoader: 7-layer loading (base → env → accounts → Vault → env vars)
+- [x] Hot-reload: SIGHUP handler + reload() API
+- [x] Startup validation: validate_config() with empty market & empty key checks
+- [x] Vault placeholder (prod-only, VAULT_ADDR detection)
+- [x] QUANT_ prefix env var overrides for secrets
+- [x] config/example.yaml with all documented parameters
 
 ### Remaining Risks
-- Smoke Test not executed (requires config-001 and data-001 to be complete)
-- Docker build not verified (no registry configured yet)
-- Poetry install not fully tested in this env (poetry install timed out)
-- No unit tests written yet (setup is infrastructure, not logic)
-- GitHub repo not created yet (need to push via git remote)
+- Vault integration is placeholder (needs hvac SDK + actual Vault instance)
+- Smoke Test not executed (requires data-001 to be complete)
+- Smoke Test + 回测一致性测试 需data-001 完成后执行
+- 资金影响评估 + 风控审批 待 core-001 模块完成后验证
 
 ### Next Feature
-- config-001: Multi-environment config management (Pydantic Settings, SecretStr, Vault)
+- config-002: Multi-market config & trading calendar

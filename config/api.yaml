@@ -1,0 +1,29 @@
+# Quant Trading System — Exchange API Endpoints
+# AGENTS.md §2: 网络健壮性 (timeout 10s, retries 3, circuit breaker)
+
+exchanges:
+  binance:
+    base_url: "https://api.binance.com"
+    ws_url: "wss://stream.binance.com:9443/ws"
+    timeout_seconds: 10
+    max_retries: 3
+    rate_limit_rps: 20
+    circuit_breaker_failures: 5
+    circuit_breaker_cooldown_seconds: 30
+
+  okx:
+    base_url: "https://www.okx.com"
+    ws_url: "wss://ws.okx.com:8443/ws/v5/public"
+    timeout_seconds: 10
+    max_retries: 3
+    rate_limit_rps: 10
+    circuit_breaker_failures: 5
+    circuit_breaker_cooldown_seconds: 30
+
+  tushare:
+    base_url: "https://api.tushare.pro"
+    timeout_seconds: 15
+    max_retries: 3
+    rate_limit_rps: 5
+    circuit_breaker_failures: 5
+    circuit_breaker_cooldown_seconds: 60

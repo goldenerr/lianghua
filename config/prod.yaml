@@ -1,0 +1,14 @@
+# Production environment override
+# AGENTS.md §2: prod 配置必须从 Vault / AWS Secrets Manager 读取
+env: prod
+
+# In production, these secrets come from Vault:
+#   - exchange API keys
+#   - database passwords
+#   - encryption keys
+# NEVER store real secrets in this file.
+# This file only contains non-sensitive prod overrides.
+
+auto_trade_enabled: false   # Must be manually enabled after approval
+require_manual_approval: true
+close_positions_on_shutdown: true

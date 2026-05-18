@@ -1,0 +1,54 @@
+# Quant Trading System — System Configuration
+# AGENTS.md §2: 配置外部化，禁止硬编码
+
+env: dev
+
+primary_markets:
+  - A股
+
+# Trading sessions (UTC)
+trading_sessions:
+  - market: A股
+    sessions:
+      - ["01:30", "03:30"]   # 9:30-11:30 CST
+      - ["05:00", "07:00"]   # 13:00-15:00 CST
+    timezone: Asia/Shanghai
+  - market: 期货
+    sessions:
+      - ["01:30", "03:30"]
+      - ["05:00", "07:00"]
+      - ["13:00", "18:30"]   # 夜盘 21:00-02:30 CST
+    timezone: Asia/Shanghai
+  - market: 加密货币
+    sessions:
+      - ["00:00", "24:00"]
+    timezone: UTC
+
+# Market rules
+market_rules:
+  - market: A股
+    tick_size: 0.01
+    lot_size: 100
+    price_precision: 2
+    settlement_time: "08:00"  # T+1 16:00 CST → 08:00 UTC
+  - market: 期货
+    tick_size: 1.0
+    lot_size: 1
+    price_precision: 0
+    settlement_time: "07:30"
+  - market: 加密货币
+    tick_size: 0.01
+    lot_size: 1
+    price_precision: 2
+    funding_rate: 0.0001
+
+# Graceful shutdown
+close_positions_on_shutdown: false
+shutdown_timeout_seconds: 30
+
+# Warm-up
+warmup_bars: 20
+
+# RBAC / safety
+require_manual_approval: false
+auto_trade_enabled: false

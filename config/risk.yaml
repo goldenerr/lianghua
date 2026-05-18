@@ -1,0 +1,37 @@
+# Quant Trading System — Risk Management Parameters
+# AGENTS.md §3: 所有参数统一在 config/risk.yaml 中配置
+# AGENTS.md §32: 任何修改必须记录 diff + 审批
+
+# Position limits (单品种名义仓位 ≤ 总资金 × 20%)
+max_position_pct: 0.20
+
+# Leverage (总杠杆 ≤ 3x, 默认 2x)
+max_total_leverage: 2.0
+
+# Daily loss limits
+max_daily_loss_pct: 0.02    # 触发后停止交易并告警
+max_single_loss_pct: 0.005  # 单笔
+
+# VaR (95%)
+var_method: historical
+var_confidence: 0.95
+max_var_pct: 0.05  # ≤ 总资金 × 5%
+
+# Drawdown cascade
+mdd_reduce_to_50pct: 0.15   # MDD 15% → 减仓至 50%
+mdd_liquidate_all: 0.25     # MDD 25% → 全部平仓
+
+# Circuit breaker
+circuit_breaker_daily_loss: 0.03       # 日亏损 3% → 降仓至 50%
+circuit_breaker_daily_loss_force: 0.05 # 日亏损 5% → 强制平仓
+vix_spike_pct: 0.30                   # VIX 单日 +30% → 全局降仓
+
+# Liquidity (单品种持仓 ≤ 30日均成交量 × 10%)
+max_volume_pct: 0.10
+
+# Equity curve protection
+max_consecutive_losses: 5    # 连续亏损 ≥5 笔 → 风险暴露降低 50%
+max_weekly_loss_pct: 0.03    # 单周亏损 >3% → 同上
+
+# FX exposure
+max_fx_exposure_pct: 0.30

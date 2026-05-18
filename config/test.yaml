@@ -1,0 +1,5 @@
+# Test environment override
+env: test
+
+auto_trade_enabled: false
+require_manual_approval: false
