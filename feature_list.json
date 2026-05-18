@@ -25,7 +25,7 @@
         "生成并验证系统版本清单（core-004）",
         "检查部署 artifacts 签名"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "config-001",
@@ -34,7 +34,9 @@
       "priority": 2,
       "risk_level": "high",
       "estimated_effort_days": 2,
-      "dependencies": ["setup-001"],
+      "dependencies": [
+        "setup-001"
+      ],
       "verification_steps": [
         "使用 Pydantic Settings 实现配置类，所有密钥字段强制使用 SecretStr/SecretBytes",
         "配置模型设为 frozen=True，防止运行时修改",
@@ -56,7 +58,9 @@
       "priority": 3,
       "risk_level": "low",
       "estimated_effort_days": 3,
-      "dependencies": ["config-001"],
+      "dependencies": [
+        "config-001"
+      ],
       "verification_steps": [
         "在 config/system.yaml 中定义 primary_markets 列表（如 [\"A股\", \"期货\", \"加密货币\"]）",
         "在 market_rules 中增加 tick_size, lot_size, price_precision, funding_rate 等字段",
@@ -79,7 +83,10 @@
       "priority": 4,
       "risk_level": "high",
       "estimated_effort_days": 6,
-      "dependencies": ["config-001", "config-002"],
+      "dependencies": [
+        "config-001",
+        "config-002"
+      ],
       "verification_steps": [
         "实现统一数据接口（支持 yfinance, akshare, ccxt, tushare-pro），根据 primary_markets 自动选择",
         "为每个市场配置数据源优先级列表（例如 A股：tushare-pro → akshare → yfinance）",
@@ -102,7 +109,9 @@
       "priority": 5,
       "risk_level": "high",
       "estimated_effort_days": 2,
-      "dependencies": ["data-001"],
+      "dependencies": [
+        "data-001"
+      ],
       "verification_steps": [
         "实现 DataQualityMonitor 类，检查：缺失率 ≤1%，价格跳动 ≤20%，延迟 ≤30s",
         "两个独立数据源交叉验证（例如 yfinance vs Alpha Vantage）价格差异 <0.5%",
@@ -121,7 +130,10 @@
       "priority": 6,
       "risk_level": "high",
       "estimated_effort_days": 5,
-      "dependencies": ["data-001", "config-002"],
+      "dependencies": [
+        "data-001",
+        "config-002"
+      ],
       "verification_steps": [
         "自动从数据源获取权益事件日历（分红、拆股、配股、并购、期货交割、期权行权等）",
         "实现权益调整因子计算：提供三种价格调整模式——前复权（Pre-adjusted）、后复权（Post-adjusted）、总回报（Total Return，默认）",
@@ -140,7 +152,10 @@
       "priority": 7,
       "risk_level": "high",
       "estimated_effort_days": 4,
-      "dependencies": ["data-001", "backtest-001"],
+      "dependencies": [
+        "data-001",
+        "backtest-001"
+      ],
       "verification_steps": [
         "定义数据 Schema 版本号格式（如 v2026.05），每个数据表在元数据中声明版本",
         "实现版本兼容性检查器：维护版本兼容性矩阵（当前版本支持哪些历史版本）",
@@ -160,7 +175,11 @@
       "priority": 8,
       "risk_level": "high",
       "estimated_effort_days": 10,
-      "dependencies": ["data-001", "config-001", "data-003"],
+      "dependencies": [
+        "data-001",
+        "config-001",
+        "data-003"
+      ],
       "verification_steps": [
         "定义统一的 BacktestEngine 抽象接口（run, get_indicators, get_trades 等方法）",
         "内置实现：vectorbt-pro 和 backtrader 作为插件",
@@ -193,7 +212,9 @@
       "priority": 9,
       "risk_level": "high",
       "estimated_effort_days": 4,
-      "dependencies": ["config-001"],
+      "dependencies": [
+        "config-001"
+      ],
       "verification_steps": [
         "实现异步事件总线（基于 Redis Pub/Sub 或 ZeroMQ）",
         "支持事件类型：TickEvent, OrderEvent, FillEvent, RiskEvent, TimerEvent",
@@ -212,7 +233,9 @@
       "priority": 10,
       "risk_level": "high",
       "estimated_effort_days": 6,
-      "dependencies": ["core-001"],
+      "dependencies": [
+        "core-001"
+      ],
       "verification_steps": [
         "实现有限状态机（FSM）管理所有核心实体（订单、持仓、权益）的状态转换",
         "每个关键操作后（下单、成交、撤单、风控触发）自动断言全部 Invariants（ internal_position + pending_orders == exchange_position； realized_pnl + unrealized_pnl + cash == equity； VaR 不超限；数据一致性）",
@@ -233,7 +256,9 @@
       "priority": 11,
       "risk_level": "high",
       "estimated_effort_days": 5,
-      "dependencies": ["core-002"],
+      "dependencies": [
+        "core-002"
+      ],
       "verification_steps": [
         "实现全局不可变事件总线（基于 Kafka / Pulsar / 或本地 WAL）",
         "定义标准事件模式：事件类型、时间戳、source、payload、签名",
@@ -255,7 +280,10 @@
       "priority": 12,
       "risk_level": "low",
       "estimated_effort_days": 2,
-      "dependencies": ["setup-001", "deploy-001"],
+      "dependencies": [
+        "setup-001",
+        "deploy-001"
+      ],
       "verification_steps": [
         "生成系统顶层版本清单，包含：所有组件版本（Python、数据库、中间件）、关键配置哈希、策略代码签名哈希、数据 schema 版本等",
         "每次部署时自动生成清单，并与运行时代码绑定",
@@ -273,7 +301,9 @@
       "priority": 13,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["backtest-001"],
+      "dependencies": [
+        "backtest-001"
+      ],
       "verification_steps": [
         "使用 Numba / Polars 实现核心指标计算的向量化加速",
         "设定性能基准：5年日线数据（5000根K线）回测时间 ≤ 5秒",
@@ -292,7 +322,9 @@
       "priority": 14,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["backtest-001"],
+      "dependencies": [
+        "backtest-001"
+      ],
       "verification_steps": [
         "实现反事实模拟：修改历史市场路径（如剔除特定数据点）评估策略鲁棒性",
         "整合现有压力测试场景（2020.3, 2015.8, 2022 熊市）并支持自定义场景",
@@ -310,8 +342,12 @@
       "priority": 15,
       "risk_level": "medium",
       "estimated_effort_days": 6,
-      "dependencies": ["backtest-001"],
-      "optional_dependencies": ["core-001"],
+      "dependencies": [
+        "backtest-001"
+      ],
+      "optional_dependencies": [
+        "core-001"
+      ],
       "verification_steps": [
         "定义 Strategy 抽象基类（含 init, on_data, on_order, on_risk 方法）",
         "实现插件化加载：自动扫描 strategies/ 目录下的策略类",
@@ -336,7 +372,10 @@
       "priority": 16,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["strategy-001", "backtest-001"],
+      "dependencies": [
+        "strategy-001",
+        "backtest-001"
+      ],
       "verification_steps": [
         "集成 Optuna 或 scikit-optimize 进行贝叶斯参数优化",
         "优化目标可配置：最大 Sharpe、最小 MDD、最大 Calmar 等",
@@ -355,7 +394,10 @@
       "priority": 17,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["strategy-001", "backtest-001"],
+      "dependencies": [
+        "strategy-001",
+        "backtest-001"
+      ],
       "verification_steps": [
         "在修改策略参数前，自动运行短期 Walk-Forward 回测（最近3个月）",
         "输出变更前后 Sharpe、MDD、胜率等关键指标的变化百分比",
@@ -374,7 +416,11 @@
       "priority": 18,
       "risk_level": "high",
       "estimated_effort_days": 9,
-      "dependencies": ["config-001", "data-001", "config-002"],
+      "dependencies": [
+        "config-001",
+        "data-001",
+        "config-002"
+      ],
       "verification_steps": [
         "所有风控参数必须从 config/risk.yaml 读取，禁止硬编码",
         "事前：仓位限制（单品种 ≤20%，总杠杆 ≤3x），VaR(95%) ≤5%（支持 Historical / Monte Carlo / Parametric 三种方法可配置）",
@@ -407,7 +453,10 @@
       "priority": 19,
       "risk_level": "high",
       "estimated_effort_days": 6,
-      "dependencies": ["risk-001", "data-001"],
+      "dependencies": [
+        "risk-001",
+        "data-001"
+      ],
       "verification_steps": [
         "实现期权 Greeks（Delta, Gamma, Vega, Theta）实时聚合计算",
         "设置 Greeks 限额（如 Delta ≤ 总资金 × 20%）",
@@ -425,7 +474,10 @@
       "priority": 20,
       "risk_level": "high",
       "estimated_effort_days": 5,
-      "dependencies": ["risk-001", "exec-001"],
+      "dependencies": [
+        "risk-001",
+        "exec-001"
+      ],
       "verification_steps": [
         "统一管理多个交易所账户的保证金、杠杆、购买力",
         "实时合并计算总风险敞口（总杠杆、总保证金占用、可用资金）",
@@ -446,7 +498,10 @@
       "priority": 21,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["risk-001", "data-001"],
+      "dependencies": [
+        "risk-001",
+        "data-001"
+      ],
       "verification_steps": [
         "基于当前市场 regime（波动率、相关性、流动性）自动生成压力场景",
         "场景包括：历史重现、统计合成、极端尾部事件",
@@ -463,7 +518,11 @@
       "priority": 22,
       "risk_level": "high",
       "estimated_effort_days": 6,
-      "dependencies": ["risk-001", "ml-001", "portfolio-002"],
+      "dependencies": [
+        "risk-001",
+        "ml-001",
+        "portfolio-002"
+      ],
       "verification_steps": [
         "模型漂移监控：实时监控模型预测分布、特征分布与训练时的差异（PSI、特征漂移），超过阈值告警",
         "概念漂移检测：使用统计检验（如 ADWIN）检测模型输入输出关系变化",
@@ -483,7 +542,10 @@
       "priority": 23,
       "risk_level": "high",
       "estimated_effort_days": 3,
-      "dependencies": ["exec-001", "monitor-001"],
+      "dependencies": [
+        "exec-001",
+        "monitor-001"
+      ],
       "verification_steps": [
         "实现最高级别紧急总闸：一键全部平仓 + 冻结所有新交易（包括所有策略、所有市场）",
         "支持人工触发（Web 控制台、移动端紧急按钮、API）",
@@ -508,7 +570,10 @@
       "priority": 24,
       "risk_level": "high",
       "estimated_effort_days": 12,
-      "dependencies": ["config-001", "risk-001"],
+      "dependencies": [
+        "config-001",
+        "risk-001"
+      ],
       "verification_steps": [
         "统一 OrderManager：支持限价、市价、止损、止盈、OCO 订单",
         "实现 PaperTrading 模拟器（真实行情 + 模拟成交，考虑滑点和手续费）",
@@ -548,7 +613,10 @@
       "priority": 25,
       "risk_level": "medium",
       "estimated_effort_days": 2,
-      "dependencies": ["exec-001", "data-001"],
+      "dependencies": [
+        "exec-001",
+        "data-001"
+      ],
       "verification_steps": [
         "基于订单簿深度数据（或历史成交量）估算冲击成本函数",
         "回测中使用动态滑点：fixed_spread + volatility_factor * (volume/total_volume)",
@@ -566,7 +634,10 @@
       "priority": 26,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["exec-001", "core-001"],
+      "dependencies": [
+        "exec-001",
+        "core-001"
+      ],
       "verification_steps": [
         "实现订单簿重建模块（基于 L2/Ticker 数据）",
         "本地 L2 快照持久化：每10秒或每次变化时保存至磁盘",
@@ -588,7 +659,9 @@
       "priority": 27,
       "risk_level": "low",
       "estimated_effort_days": 10,
-      "dependencies": ["exec-001"],
+      "dependencies": [
+        "exec-001"
+      ],
       "verification_steps": [
         "将订单生成、签名、限流等热路径用 C++ 或 Rust 重写，通过 FFI 调用",
         "性能基准：处理延迟相比纯 Python 降低 10 倍以上",
@@ -605,7 +678,10 @@
       "priority": 28,
       "risk_level": "high",
       "estimated_effort_days": 12,
-      "dependencies": ["config-001", "exec-001"],
+      "dependencies": [
+        "config-001",
+        "exec-001"
+      ],
       "verification_steps": [
         "系统指标监控：CPU、内存、网络延迟、数据库连接池（Prometheus + Grafana）",
         "策略绩效监控：实时 Sharpe、回撤、每日盈亏、持仓曝光",
@@ -636,7 +712,9 @@
       "priority": 29,
       "risk_level": "low",
       "estimated_effort_days": 6,
-      "dependencies": ["monitor-001"],
+      "dependencies": [
+        "monitor-001"
+      ],
       "verification_steps": [
         "使用 WebSocket 推送实时绩效数据到前端 Dashboard（可选 Streamlit/Grafana）",
         "展示：实时权益曲线、当前持仓、风险指标（VaR、杠杆）、订单列表",
@@ -658,7 +736,10 @@
       "priority": 30,
       "risk_level": "medium",
       "estimated_effort_days": 5,
-      "dependencies": ["monitor-001", "test-002"],
+      "dependencies": [
+        "monitor-001",
+        "test-002"
+      ],
       "verification_steps": [
         "自动定期（每周）注入网络故障、数据库延迟、时间跳跃等异常",
         "验证系统是否按设计进入 Safe Mode 或自动恢复",
@@ -676,7 +757,9 @@
       "priority": 31,
       "risk_level": "medium",
       "estimated_effort_days": 6,
-      "dependencies": ["setup-001"],
+      "dependencies": [
+        "setup-001"
+      ],
       "verification_steps": [
         "交易记录表：订单、成交、持仓变动、资金流水",
         "使用 ClickHouse 存储历史时间序列数据（tick, 1min），PostgreSQL 存储元数据",
@@ -697,7 +780,11 @@
       "priority": 32,
       "risk_level": "high",
       "estimated_effort_days": 8,
-      "dependencies": ["setup-001", "config-001", "monitor-001"],
+      "dependencies": [
+        "setup-001",
+        "config-001",
+        "monitor-001"
+      ],
       "verification_steps": [
         "Docker 镜像基于 python:3.10-slim，使用多阶段构建",
         "docker-compose 编排：app, redis, clickhouse, nginx, prometheus, grafana",
@@ -718,7 +805,9 @@
       "priority": 33,
       "risk_level": "high",
       "estimated_effort_days": 9,
-      "dependencies": ["config-001"],
+      "dependencies": [
+        "config-001"
+      ],
       "verification_steps": [
         "API Key 加密存储（使用 cryptography.fernet），运行时从环境变量解密；生产环境强制从 Vault / AWS Secrets Manager 读取",
         "最小权限原则：每个 API Key 只授予必要权限（如只读或只交易）",
@@ -743,7 +832,9 @@
       "priority": 34,
       "risk_level": "high",
       "estimated_effort_days": 3,
-      "dependencies": ["security-001"],
+      "dependencies": [
+        "security-001"
+      ],
       "verification_steps": [
         "实现日志脱敏过滤器：自动替换 API Key、密码、手机号",
         "审计日志独立存储（不可追加），保留 7 年；使用 Append-only 结构（如 Kafka 或 ClickHouse ReplacingMergeTree）实现不可变审计日志",
@@ -762,7 +853,10 @@
       "priority": 35,
       "risk_level": "high",
       "estimated_effort_days": 3,
-      "dependencies": ["security-001", "strategy-001"],
+      "dependencies": [
+        "security-001",
+        "strategy-001"
+      ],
       "verification_steps": [
         "实现策略代码签名工具，所有策略和模型文件在生产部署前必须使用私钥进行数字签名",
         "CI/CD 流水线在部署前强制验证签名，未通过签名验证的代码禁止上线",
@@ -783,7 +877,9 @@
       "priority": 36,
       "risk_level": "medium",
       "estimated_effort_days": 8,
-      "dependencies": ["setup-001"],
+      "dependencies": [
+        "setup-001"
+      ],
       "verification_steps": [
         "单元测试覆盖率 ≥ 80%（pytest + pytest-cov）",
         "集成测试：测试数据流、回测引擎与配置的交互",
@@ -808,7 +904,9 @@
       "priority": 37,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["deploy-001"],
+      "dependencies": [
+        "deploy-001"
+      ],
       "verification_steps": [
         "7x24 小时长稳测试：模拟连续运行一周，无内存泄漏或崩溃",
         "混沌工程：随机杀死组件（Redis、数据库）、网络延迟、丢包，验证系统自愈",
@@ -830,7 +928,9 @@
       "priority": 38,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["backtest-001"],
+      "dependencies": [
+        "backtest-001"
+      ],
       "verification_steps": [
         "CI/CD 流水线中增加每周压力测试步骤",
         "同时运行 Monte Carlo 模拟（1000次随机采样）和历史极端场景组合（2020.3, 2015.8, 2022 熊市等）",
@@ -848,7 +948,10 @@
       "priority": 39,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["backtest-001", "test-001"],
+      "dependencies": [
+        "backtest-001",
+        "test-001"
+      ],
       "verification_steps": [
         "每天对固定基准数据集运行回测，对比关键指标（Sharpe、MDD、收益率）",
         "确保相同配置下结果完全一致（容忍极小浮点误差）",
@@ -865,7 +968,11 @@
       "priority": 40,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["test-001", "data-003", "core-002"],
+      "dependencies": [
+        "test-001",
+        "data-003",
+        "core-002"
+      ],
       "verification_steps": [
         "构建包含分红、拆股等 Corporate Actions 的历史数据集",
         "运行完整交易链路，强制检查所有 Invariants 在每个阶段都不被打破",
@@ -883,7 +990,10 @@
       "priority": 41,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["test-002", "core-002"],
+      "dependencies": [
+        "test-002",
+        "core-002"
+      ],
       "verification_steps": [
         "故意注入违反 Invariants 的事件（模拟网络延迟导致仓位对账失败、资金篡改、状态机异常等）",
         "验证系统能否正确进入 Safe Mode，阻断交易，并记录事件到审计总线",
@@ -900,7 +1010,10 @@
       "priority": 42,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["test-001", "docs-002"],
+      "dependencies": [
+        "test-001",
+        "docs-002"
+      ],
       "verification_steps": [
         "在 CI/CD 中增加资金影响评估自动验证步骤",
         "对于每个重大变更（涉及 exec, risk, portfolio 模块），自动调用资金影响评估工具生成报告",
@@ -918,7 +1031,11 @@
       "priority": 43,
       "risk_level": "medium",
       "estimated_effort_days": 5,
-      "dependencies": ["test-001", "data-004", "compliance-001"],
+      "dependencies": [
+        "test-001",
+        "data-004",
+        "compliance-001"
+      ],
       "verification_steps": [
         "构建包含数据 Schema 变更、监管模式切换、Corporate Actions 等多种场景的回归测试集",
         "每次发布前自动运行该套件，验证系统在各类变更下仍保持正确性和稳定性",
@@ -935,7 +1052,11 @@
       "priority": 44,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["test-002", "risk-006", "ops-001"],
+      "dependencies": [
+        "test-002",
+        "risk-006",
+        "ops-001"
+      ],
       "verification_steps": [
         "每月模拟一次灾难场景（数据库崩溃 + Kill Switch 激活）",
         "验证系统在恢复流程和 Kill Switch 触发后的一致性",
@@ -955,7 +1076,10 @@
       "priority": 45,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["test-009", "risk-006"],
+      "dependencies": [
+        "test-009",
+        "risk-006"
+      ],
       "verification_steps": [
         "在压力环境下同时触发 Kill Switch 和灾难恢复流程",
         "验证 Kill Switch 在 Graceful Shutdown、State Machine、Event Bus、Portfolio Firewall 等所有关键路径上的触发与响应正确性",
@@ -976,7 +1100,9 @@
       "priority": 46,
       "risk_level": "high",
       "estimated_effort_days": 4,
-      "dependencies": ["db-001"],
+      "dependencies": [
+        "db-001"
+      ],
       "verification_steps": [
         "每日自动备份 ClickHouse 和 PostgreSQL 至 AWS S3（或本地 NFS）",
         "配置文件加密备份（使用 age 或 GPG）",
@@ -995,7 +1121,10 @@
       "priority": 60,
       "risk_level": "low",
       "estimated_effort_days": 15,
-      "dependencies": ["deploy-001", "ops-001"],
+      "dependencies": [
+        "deploy-001",
+        "ops-001"
+      ],
       "verification_steps": [
         "支持至少两个地理区域（如 us-east-1, eu-west-1）的主动-主动或主动-被动部署",
         "使用全局负载均衡器（如 AWS Global Accelerator、GCP Cloud Load Balancer）实现跨区域流量分发",
@@ -1018,7 +1147,9 @@
       "priority": 47,
       "risk_level": "high",
       "estimated_effort_days": 7,
-      "dependencies": ["db-001"],
+      "dependencies": [
+        "db-001"
+      ],
       "verification_steps": [
         "生成每日交易报告（所有订单、成交、持仓）",
         "生成大额交易上报文件（按监管要求）",
@@ -1045,7 +1176,10 @@
       "priority": 48,
       "risk_level": "high",
       "estimated_effort_days": 12,
-      "dependencies": ["risk-001", "exec-001"],
+      "dependencies": [
+        "risk-001",
+        "exec-001"
+      ],
       "verification_steps": [
         "支持多个策略同时运行，分配不同资金权重",
         "支持多个交易所账户，统一资金管理",
@@ -1077,7 +1211,10 @@
       "priority": 49,
       "risk_level": "medium",
       "estimated_effort_days": 5,
-      "dependencies": ["portfolio-001", "data-001"],
+      "dependencies": [
+        "portfolio-001",
+        "data-001"
+      ],
       "verification_steps": [
         "支持多个基准指数（HS300, SPX, BTC 等），自动下载基准数据",
         "每日计算组合相对于每个基准的 Information Ratio、Tracking Error、Active Share",
@@ -1095,7 +1232,10 @@
       "priority": 50,
       "risk_level": "high",
       "estimated_effort_days": 6,
-      "dependencies": ["portfolio-001", "risk-001"],
+      "dependencies": [
+        "portfolio-001",
+        "risk-001"
+      ],
       "verification_steps": [
         "维护全局可用资金池，实时扣减/释放（基于策略已用资金 + 挂单冻结）",
         "单策略/单账户最大占用比例动态调整（基于策略健康度 + VaR 贡献，高风险自动降低上限）",
@@ -1115,7 +1255,9 @@
       "priority": 51,
       "risk_level": "high",
       "estimated_effort_days": 5,
-      "dependencies": ["portfolio-001"],
+      "dependencies": [
+        "portfolio-001"
+      ],
       "verification_steps": [
         "定义策略状态机：Developing → Paper → Small Live → Full Live → Deprecated → Archived",
         "每个状态对应的资金上限、风险限制由全局配置文件定义",
@@ -1134,7 +1276,10 @@
       "priority": 52,
       "risk_level": "medium",
       "estimated_effort_days": 8,
-      "dependencies": ["data-001", "strategy-001"],
+      "dependencies": [
+        "data-001",
+        "strategy-001"
+      ],
       "verification_steps": [
         "特征存储（Feast）和特征 pipeline",
         "模型版本控制（MLflow 或 DVC）",
@@ -1157,7 +1302,10 @@
       "priority": 53,
       "risk_level": "medium",
       "estimated_effort_days": 4,
-      "dependencies": ["ml-001", "core-001"],
+      "dependencies": [
+        "ml-001",
+        "core-001"
+      ],
       "verification_steps": [
         "实现在线学习框架（如 River 或增量学习）",
         "检测模型漂移（PSI > 0.2 触发重训练告警）",
@@ -1175,7 +1323,9 @@
       "priority": 54,
       "risk_level": "low",
       "estimated_effort_days": 3,
-      "dependencies": ["data-001"],
+      "dependencies": [
+        "data-001"
+      ],
       "verification_steps": [
         "部署 Feast 特征存储，定义因子 schema（如 momentum, volatility, liquidity）",
         "实现离线特征计算（历史数据）和在线特征服务（实时 tick）",
@@ -1193,7 +1343,10 @@
       "priority": 55,
       "risk_level": "medium",
       "estimated_effort_days": 3,
-      "dependencies": ["exec-001", "db-001"],
+      "dependencies": [
+        "exec-001",
+        "db-001"
+      ],
       "verification_steps": [
         "实现离线回放工具，支持三种模式：决策回放、订单匹配回放、完整回放",
         "使用交易所历史真实成交记录，逐笔重放，对比系统决策与实际结果",
@@ -1211,7 +1364,9 @@
       "priority": 56,
       "risk_level": "low",
       "estimated_effort_days": 2,
-      "dependencies": ["config-001"],
+      "dependencies": [
+        "config-001"
+      ],
       "verification_steps": [
         "CI/CD 中增加配置漂移检测步骤：自动对比 dev、test、prod 的 risk.yaml, system.yaml 等核心文件",
         "发现差异时输出报告并阻止部署（除非明确忽略）",
@@ -1228,7 +1383,9 @@
       "priority": 57,
       "risk_level": "low",
       "estimated_effort_days": 9,
-      "dependencies": ["setup-001"],
+      "dependencies": [
+        "setup-001"
+      ],
       "verification_steps": [
         "编写 ARCHITECTURE.md：包含系统架构图（至少使用 C4 模型中的 Context 和 Container 层级，展示核心组件和数据流），并增加 Component 层级图，详细展示核心模块间依赖关系（例如数据模块→回测引擎→策略框架→风控→执行→监控），以及各模块之间的接口契约",
         "新增核心流程序列图（Sequence Diagram）：展示 Tick → Strategy → Risk → Order → Exchange 的关键流程，标注各步骤的延迟预算和错误处理",
@@ -1252,7 +1409,9 @@
       "priority": 58,
       "risk_level": "low",
       "estimated_effort_days": 2,
-      "dependencies": ["docs-001"],
+      "dependencies": [
+        "docs-001"
+      ],
       "verification_steps": [
         "定义标准化资金影响评估模板，包含字段：最大潜在亏损（基于 VaR 和压力测试）、流动性冲击估算（持仓 vs 市场深度）、极端情景损失（市场单日 -10%、流动性枯竭等）、Invariant 风险分析（变更可能打破的不变性）、建议的缓释措施",
         "实现自动生成工具：输入模块变更的 diff，自动填充模板生成评估报告",
@@ -1270,7 +1429,9 @@
       "priority": 59,
       "risk_level": "low",
       "estimated_effort_days": 1,
-      "dependencies": ["setup-001"],
+      "dependencies": [
+        "setup-001"
+      ],
       "verification_steps": [
         "编写 ROADMAP.md，记录各 feature 的预计完成时间和关键里程碑",
         "包含功能优先级排序和依赖关系概览",

@@ -1,0 +1,28 @@
+# Quant Trading System — Progress Log
+# Last updated: 2026-05-18
+
+## Current Session: setup-001
+
+### Completed
+- [x] Git repo initialized (main branch)
+- [x] .gitignore configured (Python, IDE, secrets, data, Docker)
+- [x] Production directory structure: src/, config/, data/, logs/, tests/, deployment/, scripts/, docs/
+- [x] Python packages: quant_trading (core, data, strategy, risk, execution, portfolio, monitor, ml, compliance, utils)
+- [x] pyproject.toml with Poetry 2.4.1, Pydantic v2, pandas, polars, numpy, backtrader, redis, clickhouse
+- [x] Pre-commit hooks: black, ruff, mypy (strict), bandit, gitleaks
+- [x] init.sh: dev/test/prod support, --force-rebuild, --clean
+- [x] Docker multi-stage build (builder → production)
+- [x] docker-compose: app + redis + clickhouse + nginx (with health checks)
+- [x] GitHub Actions CI/CD: lint → security → test → build → push (ghcr.io)
+- [x] CI matrix: Python 3.9, 3.10, 3.11
+- [x] Security: bandit + semgrep + gitleaks in CI
+
+### Remaining Risks
+- Smoke Test not executed (requires config-001 and data-001 to be complete)
+- Docker build not verified (no registry configured yet)
+- Poetry install not fully tested in this env (poetry install timed out)
+- No unit tests written yet (setup is infrastructure, not logic)
+- GitHub repo not created yet (need to push via git remote)
+
+### Next Feature
+- config-001: Multi-environment config management (Pydantic Settings, SecretStr, Vault)
