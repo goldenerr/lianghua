@@ -533,7 +533,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "risk-006",
@@ -727,7 +727,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "monitor-003",
@@ -771,7 +771,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "deploy-001",
@@ -823,7 +823,7 @@
         "执行策略/模型代码签名校验 + Kill Switch 功能验证（若适用）",
         "生成并验证系统版本清单（core-004）"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "security-002",
@@ -895,7 +895,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-002",
@@ -1043,7 +1043,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "test-009",
@@ -1246,7 +1246,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "portfolio-004",
@@ -1355,7 +1355,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "config-drift-001",
@@ -1400,7 +1400,7 @@
         "完成资金影响评估报告生成与风控审批流程验证",
         "在文档版本历史中注明 v2.13 为最终稳定版，后续仅做 bugfix、环境适配、安全补丁或特定市场合规要求"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "docs-002",
@@ -1439,7 +1439,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
