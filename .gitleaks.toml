@@ -1,0 +1,22 @@
+# Gitleaks configuration for Quant Trading System
+# See: https://github.com/gitleaks/gitleaks#configuration
+
+title = "Quant Trading System — Gitleaks Config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist"
+paths = [
+    '''poetry.lock''',
+    '''.gitignore''',
+]
+
+[[rules]]
+id = "generic-api-key"
+[rules.allowlist]
+paths = [
+    '''tests/''',
+    '''config/example.yaml''',
+]
