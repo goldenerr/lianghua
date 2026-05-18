@@ -166,7 +166,7 @@
         "运行全量 Smoke Test + 回测-实盘一致性测试（差异 <5%），更新 claude-progress.txt 并提交",
         "完成资金影响评估报告生成与风控审批流程验证"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "backtest-001",
