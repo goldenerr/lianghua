@@ -105,6 +105,8 @@ def grid_search(
     values = list(param_grid.values())
     best: Optional[TrialResult] = None
     trials: list[TrialResult] = []
+    scores = {Objective.MAX_SHARPE: "sharpe", Objective.MAX_CALMAR: "calmar",
+              Objective.MIN_MDD: "max_drawdown", Objective.MAX_RETURN: "total_return"}
 
     for combo in product(*values):
         params = dict(zip(keys, combo))
@@ -114,11 +116,9 @@ def grid_search(
         if best is None:
             best = trial
         else:
-            scores = {Objective.MAX_SHARPE: "sharpe", Objective.MAX_CALMAR: "calmar",
-                      Objective.MIN_MDD: "max_drawdown", Objective.MAX_RETURN: "total_return"}
             attr = scores.get(objective, "sharpe")
             val, best_val = getattr(trial, attr), getattr(best, attr)
-            if object == Objective.MIN_MDD:
+            if objective == Objective.MIN_MDD:
                 if val < best_val:
                     best = trial
             elif val > best_val:
