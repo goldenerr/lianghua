@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-05-18T19:47:56.821990",
+  "data": {
+    "source": "akshare/sina",
+    "range": "2000-2026",
+    "stocks": 1200
+  },
+  "full_backtest": {
+    "valid": 1196,
+    "mean_sharpe": -0.0764,
+    "median_sharpe": -0.0529,
+    "sharpe_gt_1": 0.0017,
+    "sharpe_gt_1.2": 0.0008,
+    "mean_mdd": 0.2531,
+    "median_mdd": 0.2393,
+    "mdd_lt_15pct": 0.1505,
+    "mdd_lt_25pct": 0.5376,
+    "mean_calmar": 0.0904,
+    "mean_win_rate": 0.4547
+  },
+  "walk_forward": {
+    "valid": 1160,
+    "mean_oos_sharpe": -0.1183,
+    "mean_sharpe_decay": 1.2063,
+    "decay_lt_30pct": 0.4897
+  },
+  "gates": {
+    "sharpe_mean_ge_1.2": false,
+    "sharpe_median_ge_0.8": false,
+    "mdd_median_le_15pct": false,
+    "mdd_median_le_25pct": true,
+    "wf_decay_le_30pct": false,
+    "wf_oos_sharpe_positive": false,
+    "all_passed": false
+  },
+  "elapsed_s": 300.8
+}

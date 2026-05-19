@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-05-18T19:25:30.235591",
+  "source": "akshare/sina",
+  "start": "20000101",
+  "end": "20260518",
+  "actual_range": "2000-01-04 \u2192 2026-05-18",
+  "total": 1200,
+  "success": 1200,
+  "failed": 0,
+  "total_rows": 4099545,
+  "elapsed_s": 3087.0
+}

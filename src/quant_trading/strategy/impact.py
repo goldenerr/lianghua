@@ -87,13 +87,18 @@ def evaluate_impact(
     )
 
 
-def _compute_impact_metrics(before: np.ndarray, after: np.ndarray) -> ImpactMetrics:
+def _compute_impact_metrics(before: np.ndarray, after: np.ndarray, risk_free_rate: float = 0.025) -> ImpactMetrics:
     def _calc(r: np.ndarray) -> tuple:
         if len(r) < 2:
             return 0.0, 0.0, 0.0
         ann_ret = float(np.mean(r) * 252)
         ann_vol = float(np.std(r, ddof=1) * np.sqrt(252))
-        sharpe = ann_ret / ann_vol if ann_vol > 1e-10 else 0.0
+        if ann_vol > 1e-8:
+            sharpe = (ann_ret - risk_free_rate) / ann_vol
+            if abs(sharpe) > 100:
+                sharpe = 0.0
+        else:
+            sharpe = 0.0
         peak = np.maximum.accumulate(np.cumprod(1 + r))
         mdd = float(np.min((np.cumprod(1 + r) - peak) / peak))
         wr = float(np.mean(r > 0))

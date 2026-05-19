@@ -68,6 +68,7 @@ def evaluate_params(
     params: dict,
     returns: np.ndarray,
     objective: Objective = Objective.MAX_SHARPE,
+    risk_free_rate: float = 0.025,
 ) -> TrialResult:
     """Evaluate a parameter set on given returns."""
     r = np.asarray(returns, dtype=np.float64)
@@ -77,7 +78,14 @@ def evaluate_params(
     total_ret = float(np.cumprod(1 + r)[-1] - 1)
     ann_ret = float(np.mean(r) * 252)
     ann_vol = float(np.std(r, ddof=1) * np.sqrt(252))
-    sharpe = ann_ret / ann_vol if ann_vol > 1e-10 else 0.0
+    # NaN-safe: return 0 if vol is zero (instead of inf)
+    if ann_vol > 1e-8:
+        sharpe = (ann_ret - risk_free_rate) / ann_vol
+        # Cap extreme Sharpes from near-zero vol
+        if abs(sharpe) > 100:
+            sharpe = 0.0
+    else:
+        sharpe = 0.0
 
     peak = np.maximum.accumulate(np.cumprod(1 + r))
     dd = (np.cumprod(1 + r) - peak) / peak
