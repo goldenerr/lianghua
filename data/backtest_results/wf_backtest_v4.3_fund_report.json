@@ -1,0 +1,102 @@
+{
+  "ts": "2026-05-20T14:24:49.277682",
+  "version": "V4.3",
+  "desc": "V3.5 MR + Fundamental (PE/PB/PS)",
+  "has_fundamentals": true,
+  "n_fund_stocks": 184,
+  "cfg": {
+    "top_n": 30,
+    "rebalance_freq": 60,
+    "max_position_pct": 0.2,
+    "warmup_days": 252,
+    "test_warmup_days": 60,
+    "min_stocks": 50,
+    "min_history": 252,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0005,
+    "slippage_factor": 0.1,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 21
+  },
+  "weights": {
+    "rsi": 0.22,
+    "bollinger": 0.22,
+    "momentum": 0.16,
+    "macd": 0.1,
+    "vol_dev": 0.08,
+    "low_vol": 0.05,
+    "pe": 0.06,
+    "pb": 0.05,
+    "ps": 0.04
+  },
+  "full": {
+    "sharpe_ratio": 0.3832,
+    "annual_return": 0.0764,
+    "annual_volatility": 0.1342,
+    "max_drawdown": -0.501,
+    "calmar_ratio": 0.1526,
+    "win_rate": 0.5057,
+    "total_return": 4.0943,
+    "n_rebalances": 101,
+    "n_days": 6085,
+    "avg_active_stocks": 626.5,
+    "avg_turnover": 1.8515
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "train": 5050,
+        "test": 253,
+        "is": 0.2731,
+        "oos": 0.1816,
+        "act": 330.0
+      },
+      {
+        "fold": 1,
+        "train": 5303,
+        "test": 253,
+        "is": 0.3269,
+        "oos": -0.0169,
+        "act": 296.5
+      },
+      {
+        "fold": 2,
+        "train": 5556,
+        "test": 253,
+        "is": 0.3159,
+        "oos": -0.6088,
+        "act": 263.8
+      },
+      {
+        "fold": 3,
+        "train": 5809,
+        "test": 253,
+        "is": 0.3034,
+        "oos": 2.2082,
+        "act": 214.5
+      },
+      {
+        "fold": 4,
+        "train": 6062,
+        "test": 253,
+        "is": 0.3185,
+        "oos": 1.3922,
+        "act": 96.2
+      }
+    ],
+    "avg_is_sharpe": 0.3076,
+    "avg_oos_sharpe": 0.6313,
+    "sharpe_decay": -1.0525
+  },
+  "gates": {
+    "S": false,
+    "M": false,
+    "D": true,
+    "A": false
+  },
+  "elapsed": 84.4
+}

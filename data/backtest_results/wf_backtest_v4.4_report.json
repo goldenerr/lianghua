@@ -1,0 +1,102 @@
+{
+  "ts": "2026-05-20T14:55:14.142338",
+  "version": "V4.4",
+  "desc": "V3.5 exact MR + fundamentals overlay (10%)",
+  "has_fundamentals": true,
+  "n_fund_stocks": 715,
+  "cfg": {
+    "top_n": 30,
+    "rebalance_freq": 60,
+    "max_position_pct": 0.2,
+    "warmup_days": 252,
+    "test_warmup_days": 60,
+    "min_stocks": 50,
+    "min_history": 252,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0005,
+    "slippage_factor": 0.1,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 21
+  },
+  "weights": {
+    "rsi": 0.225,
+    "bollinger": 0.225,
+    "momentum": 0.18000000000000002,
+    "macd": 0.135,
+    "vol_dev": 0.09000000000000001,
+    "low_vol": 0.045000000000000005,
+    "pe": 0.05,
+    "pb": 0.03,
+    "ps": 0.020000000000000004
+  },
+  "full": {
+    "sharpe_ratio": 0.3561,
+    "annual_return": 0.0738,
+    "annual_volatility": 0.1369,
+    "max_drawdown": -0.5024,
+    "calmar_ratio": 0.1468,
+    "win_rate": 0.5126,
+    "total_return": 3.734,
+    "n_rebalances": 101,
+    "n_days": 6085,
+    "avg_active_stocks": 626.5,
+    "avg_turnover": 1.8406
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "train": 5050,
+        "test": 253,
+        "is": 0.2769,
+        "oos": 1.0727,
+        "act": 330.0
+      },
+      {
+        "fold": 1,
+        "train": 5303,
+        "test": 253,
+        "is": 0.3042,
+        "oos": -0.4317,
+        "act": 296.5
+      },
+      {
+        "fold": 2,
+        "train": 5556,
+        "test": 253,
+        "is": 0.2866,
+        "oos": -0.9115,
+        "act": 263.8
+      },
+      {
+        "fold": 3,
+        "train": 5809,
+        "test": 253,
+        "is": 0.2862,
+        "oos": 1.8672,
+        "act": 214.5
+      },
+      {
+        "fold": 4,
+        "train": 6062,
+        "test": 253,
+        "is": 0.3036,
+        "oos": 1.6195,
+        "act": 96.2
+      }
+    ],
+    "avg_is_sharpe": 0.2915,
+    "avg_oos_sharpe": 0.6432,
+    "sharpe_decay": -1.2067
+  },
+  "gates": {
+    "S": false,
+    "M": false,
+    "D": true,
+    "A": false
+  },
+  "elapsed": 109.4
+}
