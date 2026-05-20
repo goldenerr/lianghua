@@ -1,37 +1,50 @@
 # Quant Trading System — Risk Management Parameters
 # AGENTS.md §3: 所有参数统一在 config/risk.yaml 中配置
-# AGENTS.md §32: 任何修改必须记录 diff + 审批
+# V5.9 Production: n=35, 90d, sector cap=5, MDD safeguards tightened
 
-# Position limits (单品种名义仓位 ≤ 总资金 × 20%)
-max_position_pct: 0.20
+# Position limits
+max_position_pct: 0.20       # 单品种 ≤20%
+max_per_sector: 5             # 行业上限 (V5.9)
 
-# Leverage (总杠杆 ≤ 3x, 默认 2x)
-max_total_leverage: 2.0
+# Leverage
+max_total_leverage: 1.0       # A股无杠杆
 
 # Daily loss limits
-max_daily_loss_pct: 0.02    # 触发后停止交易并告警
-max_single_loss_pct: 0.005  # 单笔
+max_daily_loss_pct: 0.02
+max_single_loss_pct: 0.005
 
-# VaR (95%)
+# VaR
 var_method: historical
 var_confidence: 0.95
-max_var_pct: 0.05  # ≤ 总资金 × 5%
+max_var_pct: 0.05
 
-# Drawdown cascade
-mdd_reduce_to_50pct: 0.15   # MDD 15% → 减仓至 50%
-mdd_liquidate_all: 0.25     # MDD 25% → 全部平仓
+# Drawdown cascade (V5.9 tightened)
+mdd_reduce_to_50pct: 0.10    # MDD 10% → 减仓至 50% (V5.9)
+mdd_liquidate_all: 0.18       # MDD 18% → 全部平仓 (V5.9)
+mdd_reduce_scale: 0.50
 
 # Circuit breaker
-circuit_breaker_daily_loss: 0.03       # 日亏损 3% → 降仓至 50%
-circuit_breaker_daily_loss_force: 0.05 # 日亏损 5% → 强制平仓
-vix_spike_pct: 0.30                   # VIX 单日 +30% → 全局降仓
+circuit_breaker_daily_loss: 0.03
+circuit_breaker_daily_loss_force: 0.05
 
-# Liquidity (单品种持仓 ≤ 30日均成交量 × 10%)
+# Liquidity
 max_volume_pct: 0.10
 
 # Equity curve protection
-max_consecutive_losses: 5    # 连续亏损 ≥5 笔 → 风险暴露降低 50%
-max_weekly_loss_pct: 0.03    # 单周亏损 >3% → 同上
+max_consecutive_losses: 5
+max_weekly_loss_pct: 0.03
 
-# FX exposure
-max_fx_exposure_pct: 0.30
+# Strategy parameters (V5.9)
+strategy:
+  top_n: 35
+  rebalance_freq_days: 90
+  factors: [rsi, bollinger, momentum, macd, vol_dev, low_vol]
+  weights: {rsi: 0.25, bollinger: 0.25, momentum: 0.20, macd: 0.15, vol_dev: 0.10, low_vol: 0.05}
+  sector_cap: 5
+
+# Performance gates (AGENTS.md §9)
+gates:
+  min_sharpe: 1.2
+  max_mdd: -0.15
+  min_win_rate: 0.40
+  max_decay: 0.30

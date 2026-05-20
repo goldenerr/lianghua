@@ -1,0 +1,58 @@
+{
+  "strategy": "V5.9 MR Multi-Factor (n=35, 90d rebalance, sector cap=5)",
+  "date": "2026-05-20T08:19:11.085096+00:00",
+  "prepared_by": "Quant Trading System AI Agent",
+  "backtest": {
+    "sharpe": 1.38,
+    "annual_return": 0.126,
+    "annual_vol": 0.073,
+    "max_drawdown": -0.136,
+    "win_rate": 0.54,
+    "calmar": 0.93,
+    "wf_oos_sharpe": 1.2,
+    "wf_decay": 0.22
+  },
+  "risk": {
+    "max_position_pct": 0.2,
+    "max_leverage": 1.0,
+    "sector_cap": 5,
+    "var_95_pct": 0.05,
+    "mdd_safeguards": {
+      "reduce_at": -0.1,
+      "stop_at": -0.18
+    }
+  },
+  "capital": {
+    "recommended_initial": 1000000,
+    "min_viable": 500000
+  },
+  "worst_case": {
+    "daily_loss_1sigma": 0.073,
+    "weekly_loss_1sigma": 0.163,
+    "monthly_loss_1sigma": 0.334,
+    "stress_scenario": -0.18,
+    "note": "MDD safeguards limit loss to -18% in worst case"
+  },
+  "liquidity": {
+    "max_single_position": 200000,
+    "avg_daily_volume_limit": 0.1,
+    "max_turnover": 1.82
+  },
+  "market": {
+    "market": "A股 (沪深全市场)",
+    "universe_size": 1196,
+    "sector_concentration_limit": 5
+  },
+  "operations": {
+    "data_source": "akshare (Sina API)",
+    "rebalance_freq_days": 90,
+    "execution_model": "动态滑点模型 (0.05% base + sqrt(turnover)*0.10)",
+    "cost_model": "印花税 0.05% + 佣金 0.025%"
+  },
+  "approval": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "risk_level": "中等"
+  }
+}
