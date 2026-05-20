@@ -1,0 +1,93 @@
+{
+  "ts": "2026-05-19T11:45:46.906518",
+  "cfg": {
+    "top_n": 30,
+    "rebalance_freq": 60,
+    "max_position_pct": 0.2,
+    "warmup_days": 252,
+    "test_warmup_days": 60,
+    "min_stocks": 50,
+    "min_history": 252,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0005,
+    "slippage_factor": 0.1,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 21,
+    "vol_target": 0.18,
+    "vol_lookback": 60,
+    "max_leverage": 1.0,
+    "stress_vol_threshold": 0.25,
+    "max_cash": 0.3
+  },
+  "full": {
+    "sharpe_ratio": 0.2365,
+    "annual_return": 0.0563,
+    "annual_volatility": 0.1325,
+    "max_drawdown": -0.5533,
+    "calmar_ratio": 0.1018,
+    "win_rate": 0.5055,
+    "total_return": 2.1533,
+    "n_rebalances": 101,
+    "n_days": 6085,
+    "avg_active_stocks": 626.5,
+    "avg_turnover": 1.7656,
+    "avg_cash": 0.0102
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "train": 5050,
+        "test": 253,
+        "is": 0.1421,
+        "oos": -0.0931,
+        "act": 330.0
+      },
+      {
+        "fold": 1,
+        "train": 5303,
+        "test": 253,
+        "is": 0.1691,
+        "oos": 0.0198,
+        "act": 296.5
+      },
+      {
+        "fold": 2,
+        "train": 5556,
+        "test": 253,
+        "is": 0.1584,
+        "oos": -0.7365,
+        "act": 263.8
+      },
+      {
+        "fold": 3,
+        "train": 5809,
+        "test": 253,
+        "is": 0.1554,
+        "oos": 2.0525,
+        "act": 214.5
+      },
+      {
+        "fold": 4,
+        "train": 6062,
+        "test": 253,
+        "is": 0.1713,
+        "oos": 2.0004,
+        "act": 96.2
+      }
+    ],
+    "avg_is_sharpe": 0.1593,
+    "avg_oos_sharpe": 0.6486,
+    "sharpe_decay": -3.0727
+  },
+  "gates": {
+    "S": false,
+    "M": false,
+    "D": true,
+    "A": false
+  },
+  "elapsed": 78.8
+}
