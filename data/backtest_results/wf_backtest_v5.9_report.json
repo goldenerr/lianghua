@@ -1,5 +1,5 @@
 {
-  "ts": "2026-05-20T16:10:57.326162",
+  "ts": "2026-05-20T16:33:33.989906",
   "version": "V5.9",
   "desc": "n=35 90d + sector cap (max 5 per industry)",
   "cfg": {
@@ -22,7 +22,7 @@
     "mdd_reduce_threshold": 0.1,
     "mdd_reduce_scale": 0.5,
     "mdd_stop_threshold": 0.18,
-    "mdd_stop_scale": 0.0
+    "mdd_stop_scale": 0.25
   },
   "full": {
     "sharpe_ratio": 1.3777,
@@ -91,5 +91,5 @@
     "W": true,
     "A": true
   },
-  "elapsed": 50.7
+  "elapsed": 53.3
 }

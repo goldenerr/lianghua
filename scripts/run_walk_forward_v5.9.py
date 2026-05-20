@@ -31,8 +31,8 @@ CONFIG = {
     # Production MDD safeguards (AGENTS.md §3)
     "mdd_reduce_threshold": 0.10,   # reduce to 50% at 15% DD
     "mdd_reduce_scale": 0.50,
-    "mdd_stop_threshold": 0.18,     # stop all trading at 25% DD
-    "mdd_stop_scale": 0.0,
+    "mdd_stop_threshold": 0.18,     # reduce to 25% at -18% DD (NOT full stop!)
+    "mdd_stop_scale": 0.25,
 }
 
 V35_WEIGHTS = {"rsi":0.25,"bollinger":0.25,"momentum":0.20,"macd":0.15,"vol_dev":0.10,"low_vol":0.05}
@@ -201,9 +201,10 @@ def backtest(ca, va, industry_map, start_idx, end_idx, cfg, warmup=None):
         
         # Production MDD safeguards (AGENTS.md §3)
         if cfg.get("mdd_stop_threshold") and current_dd < -cfg["mdd_stop_threshold"]:
-            positions = {}  # Stop all trading
+            # Scale to minimum (NOT full stop — allows recovery)
+            scale = cfg.get("mdd_stop_scale", 0.25)
+            positions = {s: w * scale for s, w in positions.items()}
         elif cfg.get("mdd_reduce_threshold") and current_dd < -cfg["mdd_reduce_threshold"]:
-            # Scale down existing positions
             scale = cfg.get("mdd_reduce_scale", 0.5)
             positions = {s: w * scale for s, w in positions.items()}
     
