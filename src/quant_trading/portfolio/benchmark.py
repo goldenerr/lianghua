@@ -95,7 +95,9 @@ class BenchmarkRegistry:
         periods_per_year: int = 252,
     ) -> Mapping[str, BenchmarkMetrics]:
         return {
-            benchmark_id: self.compare(benchmark_id, portfolio_returns, periods_per_year=periods_per_year)
+            benchmark_id: self.compare(
+                benchmark_id, portfolio_returns, periods_per_year=periods_per_year
+            )
             for benchmark_id in sorted(self._returns_by_id)
         }
 

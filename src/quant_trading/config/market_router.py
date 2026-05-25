@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 from datetime import date, datetime
+from typing import ClassVar
 
 from .market_calendar import CalendarRegistry, Market, MarketCalendar
 
@@ -52,18 +53,26 @@ class MarketRuleSet:
 
 # Default rule sets per market
 DEFAULT_RULES: dict[Market, MarketRuleSet] = {
-    Market.A_SHARES: MarketRuleSet(Market.A_SHARES, tick_size=0.01, lot_size=100, price_precision=2),
+    Market.A_SHARES: MarketRuleSet(
+        Market.A_SHARES, tick_size=0.01, lot_size=100, price_precision=2
+    ),
     Market.FUTURES: MarketRuleSet(Market.FUTURES, tick_size=1.0, lot_size=1, price_precision=0),
-    Market.CRYPTO: MarketRuleSet(Market.CRYPTO, tick_size=0.01, lot_size=1, price_precision=2, funding_rate=0.0001),
-    Market.US_STOCKS: MarketRuleSet(Market.US_STOCKS, tick_size=0.01, lot_size=1, price_precision=2),
-    Market.HK_STOCKS: MarketRuleSet(Market.HK_STOCKS, tick_size=0.01, lot_size=100, price_precision=2),
+    Market.CRYPTO: MarketRuleSet(
+        Market.CRYPTO, tick_size=0.01, lot_size=1, price_precision=2, funding_rate=0.0001
+    ),
+    Market.US_STOCKS: MarketRuleSet(
+        Market.US_STOCKS, tick_size=0.01, lot_size=1, price_precision=2
+    ),
+    Market.HK_STOCKS: MarketRuleSet(
+        Market.HK_STOCKS, tick_size=0.01, lot_size=100, price_precision=2
+    ),
     Market.OPTIONS: MarketRuleSet(Market.OPTIONS, tick_size=0.01, lot_size=1, price_precision=2),
 }
 
 # Fee models (placeholder — expanded in compliance-001)
 FEE_MODELS: dict[Market, str] = {
-    Market.A_SHARES: "cn_stock",       # 印花税 0.05% + 佣金
-    Market.FUTURES: "cn_futures",      # 交易所手续费
+    Market.A_SHARES: "cn_stock",  # 印花税 0.05% + 佣金
+    Market.FUTURES: "cn_futures",  # 交易所手续费
     Market.CRYPTO: "crypto_maker_taker",
     Market.US_STOCKS: "us_stock",
     Market.HK_STOCKS: "hk_stock",
@@ -180,7 +189,10 @@ class FuturesRolloverDetector:
             self._next_contract_lead_days = 0
             logger.info(
                 "Futures rollover: %s → %s (underlying=%s, date=%s)",
-                old.code, new.code, self.underlying, today,
+                old.code,
+                new.code,
+                self.underlying,
+                today,
             )
             return (old, new)
 
@@ -219,7 +231,7 @@ class MarketRouter:
     """
 
     # Data source mappings per market (expanded in data-001)
-    DATA_SOURCE_PRIORITY: dict[Market, list[str]] = {
+    DATA_SOURCE_PRIORITY: ClassVar[dict[Market, list[str]]] = {
         Market.A_SHARES: ["tushare", "akshare", "yfinance"],
         Market.FUTURES: ["tushare", "akshare", "ccxt"],
         Market.CRYPTO: ["ccxt", "binance"],

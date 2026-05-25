@@ -47,6 +47,8 @@ ruff = "^0.5"
 mypy = "^1.10"
 bandit = "^1.7"
 pre-commit = "^3.0"
+pandas-stubs = ">=2.0"
+types-pyyaml = "^6.0"
 ipython = "^8.0"
 jupyterlab = "^4.0"
 
@@ -107,6 +109,11 @@ select = [
 ignore = [
     "E501",  # line too long (handled by formatter)
     "B008",  # do not perform function calls in argument defaults
+    "RUF001",  # Chinese domain text intentionally uses full-width punctuation
+    "RUF002",  # Chinese audit/docstrings must remain human-readable
+    "RUF003",  # Chinese explanatory comments are intentional
+    "N803",  # Quant formulas conventionally use S/K/T/X arguments
+    "N806",  # Quant matrix notation conventionally uses P/Q/Omega variables
 ]
 
 [tool.ruff.format]
@@ -129,6 +136,21 @@ exclude = [
     ".venv/",
     "build/",
 ]
+
+[[tool.mypy.overrides]]
+module = [
+    "akshare",
+    "ccxt",
+    "ccxt.*",
+    "cupy",
+    "numba",
+    "pandas_market_calendars",
+    "scipy",
+    "scipy.*",
+    "xgboost",
+    "yfinance",
+]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"

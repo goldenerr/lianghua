@@ -7,6 +7,7 @@ References:
   - Almgren et al. (2005) "Direct Estimation of Equity Market Impact"
   - Kissell & Glantz (2003) "Optimal Trading Strategies"
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -17,11 +18,12 @@ import numpy as np
 @dataclass
 class MarketImpactParams:
     """Almgren-Chriss market impact parameters (calibrated for A-shares)."""
+
     # Permanent impact (information leakage): γ * σ * √(Q/V)
-    gamma: float = 0.15    # permanent impact coefficient
+    gamma: float = 0.15  # permanent impact coefficient
     # Temporary impact (liquidity demand): η * σ * (Q/(V*T))^β
-    eta: float = 0.15       # temporary impact coefficient
-    beta: float = 0.6       # temporary impact exponent (0.5-0.7 typical)
+    eta: float = 0.15  # temporary impact coefficient
+    beta: float = 0.6  # temporary impact exponent (0.5-0.7 typical)
     # Participation rate constraint
     max_participation: float = 0.05  # max 5% of volume
     # Spread cost
@@ -31,15 +33,17 @@ class MarketImpactParams:
 @dataclass
 class ExecutionSchedule:
     """Optimal execution schedule."""
+
     shares_per_slot: np.ndarray  # shares to trade in each time slot
-    expected_cost: float         # expected implementation shortfall
-    expected_cost_pct: float     # as % of order value
-    risk: float                  # execution risk (std of cost)
+    expected_cost: float  # expected implementation shortfall
+    expected_cost_pct: float  # as % of order value
+    risk: float  # execution risk (std of cost)
 
 
 # ═══════════════════════════════════════════════════════════════
 # TWAP (Time-Weighted Average Price)
 # ═══════════════════════════════════════════════════════════════
+
 
 def twap_schedule(total_shares: int, n_slots: int = 10) -> ExecutionSchedule:
     """Simple TWAP: equal shares per slot."""
@@ -57,6 +61,7 @@ def twap_schedule(total_shares: int, n_slots: int = 10) -> ExecutionSchedule:
 # Almgren-Chriss Optimal Execution
 # ═══════════════════════════════════════════════════════════════
 
+
 def almgren_chriss(
     shares: int,
     daily_volume: int,
@@ -64,13 +69,13 @@ def almgren_chriss(
     price: float,
     risk_aversion: float = 1e-6,
     n_slots: int = 10,
-    params: MarketImpactParams = None,
+    params: MarketImpactParams | None = None,
     seed: int | None = 42,
 ) -> ExecutionSchedule:
     """Almgren-Chriss optimal execution schedule.
-    
+
     Minimizes: temporary_impact + permanent_impact + λ * execution_risk
-    
+
     Args:
         shares: total shares to execute
         daily_volume: average daily volume
@@ -84,7 +89,9 @@ def almgren_chriss(
     if params is None:
         params = MarketImpactParams()
     if shares < 0 or daily_volume <= 0 or price <= 0 or volatility < 0 or n_slots <= 0:
-        raise ValueError("shares, volume, price, volatility and n_slots must describe a valid order")
+        raise ValueError(
+            "shares, volume, price, volatility and n_slots must describe a valid order"
+        )
     if shares == 0:
         return ExecutionSchedule(np.zeros(n_slots, dtype=int), 0.0, 0.0, 0.0)
 
@@ -107,12 +114,12 @@ def almgren_chriss(
 
     # Temporary impact: η * σ * (v/V_slot)^β * price
     # Optimal schedule from Euler-Lagrange
-    kappa = p.eta * sigma_slot / (volume_per_slot ** p.beta) * price
+    kappa = p.eta * sigma_slot / (volume_per_slot**p.beta) * price
 
     # Closed-form for κ = β=0 case (quadratic costs)
     # For general β, solve numerically
 
-    def objective(x):
+    def objective(x: np.ndarray) -> float:
         """Total cost of schedule x (shares per slot)."""
         if np.any(x < 0) or np.any(x > max_per_slot):
             return 1e10
@@ -126,10 +133,10 @@ def almgren_chriss(
 
         # Risk cost (variance of remaining position)
         remaining = Q - cum_traded
-        risk = np.sum(remaining ** 2) * sigma_slot ** 2
+        risk = np.sum(remaining**2) * sigma_slot**2
         risk_cost = risk_aversion * risk
 
-        return temp_cost + perm_cost + risk_cost
+        return float(temp_cost + perm_cost + risk_cost)
 
     # Initial guess: uniform
     x0 = np.ones(T) * Q / T
@@ -177,10 +184,10 @@ def almgren_chriss(
 # VWAP (Volume-Weighted Average Price)
 # ═══════════════════════════════════════════════════════════════
 
-def vwap_schedule(shares: int, volume_profile: np.ndarray,
-                   n_slots: int = 10) -> ExecutionSchedule:
+
+def vwap_schedule(shares: int, volume_profile: np.ndarray, n_slots: int = 10) -> ExecutionSchedule:
     """VWAP execution following historical volume profile.
-    
+
     Args:
         shares: total shares to execute
         volume_profile: historical volume per slot (length = n_slots)
@@ -211,6 +218,7 @@ def vwap_schedule(shares: int, volume_profile: np.ndarray,
 # Implementation Shortfall Estimation
 # ═══════════════════════════════════════════════════════════════
 
+
 def estimate_implementation_shortfall(
     shares: int,
     price: float,
@@ -218,16 +226,16 @@ def estimate_implementation_shortfall(
     volatility: float,
     side: str = "buy",
     urgency: float = 0.5,  # 0=passive, 1=aggressive
-    params: MarketImpactParams = None,
-) -> dict:
+    params: MarketImpactParams | None = None,
+) -> dict[str, float]:
     """Estimate total implementation shortfall including commissions.
-    
+
     Returns dict with cost breakdown as % of order value.
     """
     if params is None:
         params = MarketImpactParams()
 
-    order_value = shares * price
+    shares * price
     participation_rate = shares / max(daily_volume, 1)
 
     # 1. Spread cost (half-spread * side)
@@ -240,8 +248,8 @@ def estimate_implementation_shortfall(
     daily_vol_usd = volatility * price / np.sqrt(252)
     q_over_v = shares / max(daily_volume, 1)
 
-    perm_impact = params.gamma * daily_vol_usd * (q_over_v ** 0.5)
-    temp_impact = params.eta * daily_vol_usd * (q_over_v ** params.beta)
+    perm_impact = params.gamma * daily_vol_usd * (q_over_v**0.5)
+    temp_impact = params.eta * daily_vol_usd * (q_over_v**params.beta)
 
     # Urgency adjustment
     impact = (perm_impact + temp_impact) * (0.5 + 0.5 * urgency)
@@ -270,6 +278,7 @@ def estimate_implementation_shortfall(
 # Smart Order Routing (simplified)
 # ═══════════════════════════════════════════════════════════════
 
+
 def smart_route_order(
     shares: int,
     price: float,
@@ -279,7 +288,7 @@ def smart_route_order(
     max_pct_adv: float = 0.05,
 ) -> list[ExecutionSchedule]:
     """Smart order routing: split across algorithms based on order size.
-    
+
     Returns list of child schedules.
     """
     pct_adv = shares / max(daily_volume, 1)
@@ -291,8 +300,17 @@ def smart_route_order(
         return [vwap_schedule(shares, np.ones(6), 6)]
     elif pct_adv < 0.05:
         # Medium order: Almgren-Chriss over 1 day
-        return [almgren_chriss(shares, daily_volume, volatility, price,
-                               risk_aversion=1e-6, n_slots=10, params=params)]
+        return [
+            almgren_chriss(
+                shares,
+                daily_volume,
+                volatility,
+                price,
+                risk_aversion=1e-6,
+                n_slots=10,
+                params=params,
+            )
+        ]
     else:
         # Large order: split into 3 VWAP slices over 3 days
         slice_size = shares // 3

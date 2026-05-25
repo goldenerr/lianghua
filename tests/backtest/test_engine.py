@@ -1,4 +1,5 @@
 """Tests for backtest engine, metrics, and report."""
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -21,11 +22,13 @@ def _make_equity_curve(n=252, trend=0.0005, vol=0.01, seed=42):
 
 def _make_trades(n=50):
     rng = np.random.RandomState(42)
-    df = pd.DataFrame({
-        "pnl": rng.normal(500, 2000, n),
-        "hold_days": rng.randint(1, 30, n),
-    })
-    df.loc[rng.choice(n, int(n*0.3), replace=False), "pnl"] *= -1  # 30% losers
+    df = pd.DataFrame(
+        {
+            "pnl": rng.normal(500, 2000, n),
+            "hold_days": rng.randint(1, 30, n),
+        }
+    )
+    df.loc[rng.choice(n, int(n * 0.3), replace=False), "pnl"] *= -1  # 30% losers
     return df
 
 
@@ -89,9 +92,7 @@ class TestBacktestResult:
     def test_check_gates_all_pass(self):
         config = BacktestConfig(min_sharpe=1.0, max_mdd=0.20, min_win_rate=0.30)
         result = BacktestResult()
-        result.metrics = PerformanceMetrics(
-            sharpe_ratio=1.5, win_rate=0.45, max_drawdown=0.10
-        )
+        result.metrics = PerformanceMetrics(sharpe_ratio=1.5, win_rate=0.45, max_drawdown=0.10)
         result.check_gates(config)
         assert result.passed is True
 
@@ -99,11 +100,14 @@ class TestBacktestResult:
 class TestBacktestRegistry:
     def test_register_and_get(self):
         from quant_trading.backtest.engine import BacktestEngine
+
         class DummyEngine(BacktestEngine):
             def __init__(self):
                 super().__init__("dummy")
+
             def run(self, data, strategy, config=None):
                 return BacktestResult()
+
         BacktestRegistry.register("dummy", DummyEngine)
         engine = BacktestRegistry.create("dummy")
         assert engine.name == "dummy"
@@ -146,6 +150,7 @@ class TestReportGenerator:
 
     def test_json_serializable(self):
         import json
+
         result = BacktestResult(
             metrics=MetricsCalculator.from_equity_curve(_make_equity_curve(n=50)),
             passed=True,

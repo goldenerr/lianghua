@@ -3,6 +3,7 @@
 Secret issuance and production rotation remain responsibilities of Vault or an
 approved secret manager; this module stores metadata only, never raw secrets.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -28,7 +29,17 @@ ROLE_PERMISSIONS: dict[Role, frozenset[str]] = {
     Role.RISK: frozenset({"risk_configure", "kill_switch", "approve"}),
     Role.AUDITOR: frozenset({"audit"}),
     Role.ADMIN: frozenset(
-        {"deploy", "monitor", "restart", "trade", "strategy_control", "risk_configure", "kill_switch", "approve", "audit"}
+        {
+            "deploy",
+            "monitor",
+            "restart",
+            "trade",
+            "strategy_control",
+            "risk_configure",
+            "kill_switch",
+            "approve",
+            "audit",
+        }
     ),
 }
 
@@ -87,7 +98,9 @@ class ApiKey:
         if not reason.strip():
             raise ValueError("deactivation reason is required")
         self.active = False
-        audit_bus.record("api_key_deactivated", self.subject, {"key_id": self.key_id, "reason": reason})
+        audit_bus.record(
+            "api_key_deactivated", self.subject, {"key_id": self.key_id, "reason": reason}
+        )
 
 
 @dataclass

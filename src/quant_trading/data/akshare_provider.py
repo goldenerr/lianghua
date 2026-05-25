@@ -27,7 +27,7 @@ UTC = timezone.utc
 class AkshareProvider(DataProvider):
     """AKShare data provider for Chinese A-share market."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("akshare")
 
     @property
@@ -51,7 +51,7 @@ class AkshareProvider(DataProvider):
         if isinstance(df.index, pd.DatetimeIndex):
             if df.index.tz is None:
                 df.index = df.index.tz_localize("Asia/Shanghai").tz_convert("UTC")
-            elif df.index.tz.zone != "UTC":
+            elif str(df.index.tz) != "UTC":
                 df.index = df.index.tz_convert("UTC")
         return df
 
@@ -60,19 +60,17 @@ class AkshareProvider(DataProvider):
         code = self._clean_symbol(request.symbol)
 
         try:
-            import akshare as ak  # type: ignore[import-untyped]
+            import akshare as ak
 
             if request.frequency == Frequency.DAILY:
                 df = ak.stock_zh_a_hist(
                     symbol=code,
                     period="daily",
                     start_date=(
-                        request.start_date.strftime("%Y%m%d")
-                        if request.start_date else "20000101"
+                        request.start_date.strftime("%Y%m%d") if request.start_date else "20000101"
                     ),
                     end_date=(
-                        request.end_date.strftime("%Y%m%d")
-                        if request.end_date else "20500101"
+                        request.end_date.strftime("%Y%m%d") if request.end_date else "20500101"
                     ),
                     adjust="qfq",  # 前复权
                 )
@@ -120,16 +118,14 @@ class AkshareProvider(DataProvider):
                     symbol=request.symbol,
                 )
 
-        except ImportError:
+        except ImportError as exc:
             raise DataProviderError(
                 "akshare not installed. Run: pip install akshare",
                 provider=self.name,
                 symbol=request.symbol,
-            )
+            ) from exc
         except DataProviderError:
             raise
         except Exception as e:
             self.record_failure(str(e))
-            raise DataProviderError(
-                str(e), provider=self.name, symbol=request.symbol
-            ) from e
+            raise DataProviderError(str(e), provider=self.name, symbol=request.symbol) from e

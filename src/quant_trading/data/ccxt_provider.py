@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
+from typing import ClassVar
 
 import pandas as pd
 
@@ -34,7 +35,7 @@ class CcxtProvider(DataProvider):
     def supported_markets(self) -> list[str]:
         return ["加密货币"]
 
-    _FREQ_MAP: dict[Frequency, str] = {
+    _FREQ_MAP: ClassVar[dict[Frequency, str]] = {
         Frequency.DAILY: "1d",
         Frequency.HOURLY: "1h",
         Frequency.MINUTE: "1m",
@@ -50,12 +51,14 @@ class CcxtProvider(DataProvider):
         timeframe = self._FREQ_MAP.get(request.frequency, "1d")
 
         try:
-            import ccxt.async_support as ccxt_async  # type: ignore[import-untyped]
+            import ccxt.async_support as ccxt_async
 
-            exchange = getattr(ccxt_async, self.exchange_id)({
-                "enableRateLimit": True,
-                "timeout": 15000,
-            })
+            exchange = getattr(ccxt_async, self.exchange_id)(
+                {
+                    "enableRateLimit": True,
+                    "timeout": 15000,
+                }
+            )
 
             try:
                 since_ms = None
@@ -63,7 +66,8 @@ class CcxtProvider(DataProvider):
                     since_ms = int(
                         datetime.combine(
                             request.start_date, datetime.min.time(), tzinfo=UTC
-                        ).timestamp() * 1000
+                        ).timestamp()
+                        * 1000
                     )
 
                 ohlcv = await exchange.fetch_ohlcv(
@@ -96,16 +100,14 @@ class CcxtProvider(DataProvider):
             finally:
                 await exchange.close()
 
-        except ImportError:
+        except ImportError as exc:
             raise DataProviderError(
                 "ccxt not installed. Run: pip install ccxt",
                 provider=self.name,
                 symbol=request.symbol,
-            )
+            ) from exc
         except DataProviderError:
             raise
         except Exception as e:
             self.record_failure(str(e))
-            raise DataProviderError(
-                str(e), provider=self.name, symbol=request.symbol
-            ) from e
+            raise DataProviderError(str(e), provider=self.name, symbol=request.symbol) from e

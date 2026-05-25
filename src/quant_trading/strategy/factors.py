@@ -5,7 +5,11 @@ Factors adapted from quant-ashare-dev with IC-derived weights.
 All factor signals are computed per-stock, then cross-sectionally
 z-scored and IC-weighted to produce a composite score.
 """
+
 from __future__ import annotations
+
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 
@@ -13,34 +17,37 @@ import numpy as np
 # Weights from CSI300 rolling 6-month Spearman IC analysis
 # Key insight: in large-cap A-shares, trend-following dominates mean-reversion
 FACTOR_WEIGHTS = {
-    "bollinger": 0.278,     # trend > mean-reversion (neg IC = extremes outperform)
-    "rsi":       0.277,     # same — RSI away from 50 predicts continuation
-    "momentum":  0.263,     # positive momentum works in large-caps
-    "macd":      0.130,     # trend confirmation
-    "vol_dev":   0.047,     # weak signal
-    "low_vol":   0.005,     # weak in CSI 300
+    "bollinger": 0.278,  # trend > mean-reversion (neg IC = extremes outperform)
+    "rsi": 0.277,  # same — RSI away from 50 predicts continuation
+    "momentum": 0.263,  # positive momentum works in large-caps
+    "macd": 0.130,  # trend confirmation
+    "vol_dev": 0.047,  # weak signal
+    "low_vol": 0.005,  # weak in CSI 300
 }
 
+
 # ── Helper ────────────────────────────────────────────────────
-def _safe_div(a, b, fill=0.0):
+def _safe_div(
+    a: np.ndarray | float, b: np.ndarray | float, fill: float = 0.0
+) -> np.ndarray | float:
     """Divide with NaN handling."""
     if isinstance(b, np.ndarray):
         b = np.where(np.abs(b) < 1e-12, np.nan, b)
         result = a / b
-        return np.where(np.isnan(result), fill, result)
+        return np.asarray(np.where(np.isnan(result), fill, result), dtype=float)
     return a / b if abs(b) > 1e-12 else fill
 
 
 # ── Factor Functions ──────────────────────────────────────────
 def factor_rsi(closes: np.ndarray, period: int = 14) -> float:
     """RSI(14): signal = -|RSI - 50| (closer to 0 = neutral).
-    
+
     Negative IC means extremes outperform — we multiply by -1 so
     higher score = better in cross-sectional ranking.
     """
     if len(closes) < period + 1:
         return np.nan
-    delta = np.diff(closes[-period-1:])
+    delta = np.diff(closes[-period - 1 :])
     gain = np.clip(delta, 0, None).mean()
     loss = -np.clip(delta, None, 0).mean()
     if loss < 1e-12:
@@ -50,7 +57,7 @@ def factor_rsi(closes: np.ndarray, period: int = 14) -> float:
     # IC = -0.04 → extremes outperform → -|RSI-50| naturally lower for extremes
     # But since we want higher=better for ranking, and original signal = -|RSI-50|
     # which is ≤0, we keep as-is and rely on IC-weighted sum direction
-    return -abs(rsi - 50.0)
+    return float(-abs(rsi - 50.0))
 
 
 def factor_macd(closes: np.ndarray, fast: int = 12, slow: int = 26, signal: int = 9) -> float:
@@ -74,9 +81,9 @@ def _ema(series: np.ndarray, span: int) -> np.ndarray:
     # Use pandas-style alpha = 2/(span+1)
     alpha = 2.0 / (span + 1.0)
     result = np.full(len(series), np.nan)
-    result[span-1] = series[:span].mean()
+    result[span - 1] = series[:span].mean()
     for i in range(span, len(result)):
-        result[i] = alpha * series[i] + (1 - alpha) * result[i-1]
+        result[i] = alpha * series[i] + (1 - alpha) * result[i - 1]
     return result
 
 
@@ -86,15 +93,15 @@ def _ema_single_series(series: np.ndarray, span: int) -> np.ndarray:
         return np.full(len(series), np.nan)
     alpha = 2.0 / (span + 1.0)
     result = np.full(len(series), np.nan)
-    result[span-1] = np.mean(series[:span])
+    result[span - 1] = np.mean(series[:span])
     for i in range(span, len(result)):
-        result[i] = alpha * series[i] + (1 - alpha) * result[i-1]
+        result[i] = alpha * series[i] + (1 - alpha) * result[i - 1]
     return result
 
 
 def factor_bollinger(closes: np.ndarray, window: int = 20, num_std: float = 2.0) -> float:
     """Bollinger: -|close - MA| / bandwidth. Closer to 0 = near band center.
-    
+
     Negative IC means extreme positions (far from band) outperform,
     so we take the raw signal directly — it's already negative for extremes.
     IC-weighted sum handles direction.
@@ -109,14 +116,14 @@ def factor_bollinger(closes: np.ndarray, window: int = 20, num_std: float = 2.0)
     if width < 1e-12:
         return 0.0
     close = closes[-1]
-    return -abs(close - ma) / width
+    return float(-abs(close - ma) / width)
 
 
 def factor_momentum(closes: np.ndarray, lookback: int = 63, skip: int = 5) -> float:
     """Momentum: 3-month return skipping 1 week (避免短期反转)."""
     if len(closes) < lookback + skip:
         return np.nan
-    return float(closes[-1] / closes[-lookback-1] - 1.0)
+    return float(closes[-1] / closes[-lookback - 1] - 1.0)
 
 
 def factor_vol_dev(volumes: np.ndarray, window: int = 20) -> float:
@@ -126,29 +133,29 @@ def factor_vol_dev(volumes: np.ndarray, window: int = 20) -> float:
     ma = volumes[-window:].mean()
     if ma < 1e-12:
         return 0.0
-    return -abs(volumes[-1] / ma - 1.0)
+    return float(-abs(volumes[-1] / ma - 1.0))
 
 
 def factor_low_vol(closes: np.ndarray, window: int = 20) -> float:
     """Low volatility: -std daily returns. Higher = lower vol.
-    
+
     Returns -1 * annualized daily vol so higher score = lower risk.
     """
     if len(closes) < window + 1:
         return np.nan
-    rets = np.diff(closes[-window-1:]) / closes[-window-1:-1]
+    rets = np.diff(closes[-window - 1 :]) / closes[-window - 1 : -1]
     vol = np.std(rets, ddof=1) * np.sqrt(252)
-    return -vol  # negative vol → higher is lower risk
+    return float(-vol)  # negative vol → higher is lower risk
 
 
 # ── Factor Registry ───────────────────────────────────────────
-FACTOR_REGISTRY = {
-    "rsi":       (factor_rsi,       "close"),
-    "macd":      (factor_macd,      "close"),
+FACTOR_REGISTRY: dict[str, tuple[Callable[..., float], str]] = {
+    "rsi": (factor_rsi, "close"),
+    "macd": (factor_macd, "close"),
     "bollinger": (factor_bollinger, "close"),
-    "momentum":  (factor_momentum,  "close"),
-    "vol_dev":   (factor_vol_dev,   "volume"),
-    "low_vol":   (factor_low_vol,   "close"),
+    "momentum": (factor_momentum, "close"),
+    "vol_dev": (factor_vol_dev, "volume"),
+    "low_vol": (factor_low_vol, "close"),
 }
 
 
@@ -159,7 +166,7 @@ def compute_factor_scores(
     weights: dict[str, float] | None = None,
 ) -> dict[str, float]:
     """Compute factor values for one stock at current timestamp.
-    
+
     Returns {factor_name: raw_value} dict.
     NaN for insufficient data.
     """
@@ -168,7 +175,7 @@ def compute_factor_scores(
     if weights is None:
         weights = FACTOR_WEIGHTS
 
-    scores = {}
+    scores: dict[str, float] = {}
     for name in factors:
         func, data_type = FACTOR_REGISTRY[name]
         if data_type == "close":
@@ -186,7 +193,7 @@ def composite_score(
     cross_sectional_z: dict[str, tuple[float, float]] | None = None,
 ) -> float:
     """Compute IC-weighted composite score from factor values.
-    
+
     If cross_sectional_z is provided, z-score each factor before weighting.
     cross_sectional_z: {factor_name: (mean, std)} across all stocks.
     """
@@ -211,16 +218,16 @@ def composite_score(
 
     if total_weight < 1e-12:
         return np.nan
-    return score / total_weight  # normalize by sum of valid weights
+    return float(score / total_weight)  # normalize by sum of valid weights
 
 
 def rank_stocks(
-    stock_data: dict[str, dict],
+    stock_data: dict[str, dict[str, Any]],
     factors: list[str] | None = None,
     weights: dict[str, float] | None = None,
 ) -> list[tuple[str, float]]:
     """Cross-sectional ranking of stocks by composite factor score.
-    
+
     stock_data: {symbol: {"close": np.array, "volume": np.array}, ...}
     Returns: [(symbol, composite_score), ...] sorted descending.
     """
@@ -275,7 +282,11 @@ if __name__ == "__main__":
         df = pd.read_parquet(f)
         stock_data[f.stem] = {
             "close": df["close"].values[-252:],
-            "volume": df["volume"].values[-252:] if "volume" in df else df.get("vol", pd.Series()).values[-252:],
+            "volume": (
+                df["volume"].values[-252:]
+                if "volume" in df
+                else df.get("vol", pd.Series()).values[-252:]
+            ),
         }
 
     ranked = rank_stocks(stock_data)

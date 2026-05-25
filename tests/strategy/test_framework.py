@@ -1,4 +1,5 @@
 """Tests for strategy framework."""
+
 import pandas as pd
 from quant_trading.strategy.framework import (
     MovingAverageCrossStrategy,
@@ -14,11 +15,14 @@ class TestMAStrategy:
         config = StrategyConfig(parameters={"fast": 5, "slow": 20})
         s = MovingAverageCrossStrategy(config)
         # Create data where fast crosses above slow
-        close = [10.0]*19 + [11.0]  # Jump up
-        df = pd.DataFrame({"close": close}, index=pd.bdate_range("2024-01-01", periods=20, freq="B"))
+        close = [10.0] * 19 + [11.0]  # Jump up
+        df = pd.DataFrame(
+            {"close": close}, index=pd.bdate_range("2024-01-01", periods=20, freq="B")
+        )
         signals = s.on_data({"TEST": df})
         assert len(signals) > 0
         assert signals[0].signal_type == SignalType.BUY
+
 
 class TestRSIStrategy:
     def test_oversold_buy(self):

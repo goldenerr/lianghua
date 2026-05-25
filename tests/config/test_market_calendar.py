@@ -156,18 +156,21 @@ class TestSettlementWindow:
 class TestSession:
     def test_contains(self):
         from datetime import time as dt_time
+
         s = Session(dt_time(1, 30), dt_time(3, 30), "morning")
         dt = datetime(2026, 5, 18, 2, 0, tzinfo=UTC)
         assert s.contains(dt) is True
 
     def test_not_contains_before(self):
         from datetime import time as dt_time
+
         s = Session(dt_time(1, 30), dt_time(3, 30), "morning")
         dt = datetime(2026, 5, 18, 1, 0, tzinfo=UTC)
         assert s.contains(dt) is False
 
     def test_not_contains_after(self):
         from datetime import time as dt_time
+
         s = Session(dt_time(1, 30), dt_time(3, 30), "morning")
         dt = datetime(2026, 5, 18, 4, 0, tzinfo=UTC)
         assert s.contains(dt) is False

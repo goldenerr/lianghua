@@ -1,5 +1,5 @@
-
 """Multi-region failover (ops-002). AGENTS.md: cross-region sync, geo-redundancy."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -7,7 +7,10 @@ from datetime import datetime, timezone
 from enum import Enum
 
 
-class Region(str, Enum): PRIMARY="us-east"; SECONDARY="ap-southeast"; TERTIARY="eu-west"
+class Region(str, Enum):
+    PRIMARY = "us-east"
+    SECONDARY = "ap-southeast"
+    TERTIARY = "eu-west"
 
 
 @dataclass

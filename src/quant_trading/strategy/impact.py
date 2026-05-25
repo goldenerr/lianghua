@@ -24,9 +24,11 @@ class ParameterChange:
     new_value: float
     change_pct: float = 0.0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.old_value != 0:
-            self.change_pct = round((self.new_value - self.old_value) / abs(self.old_value) * 100, 2)
+            self.change_pct = round(
+                (self.new_value - self.old_value) / abs(self.old_value) * 100, 2
+            )
 
 
 @dataclass
@@ -86,8 +88,10 @@ def evaluate_impact(
     )
 
 
-def _compute_impact_metrics(before: np.ndarray, after: np.ndarray, risk_free_rate: float = 0.025) -> ImpactMetrics:
-    def _calc(r: np.ndarray) -> tuple:
+def _compute_impact_metrics(
+    before: np.ndarray, after: np.ndarray, risk_free_rate: float = 0.025
+) -> ImpactMetrics:
+    def _calc(r: np.ndarray) -> tuple[float, float, float]:
         if len(r) < 2:
             return 0.0, 0.0, 0.0
         ann_ret = float(np.mean(r) * 252)
@@ -106,9 +110,12 @@ def _compute_impact_metrics(before: np.ndarray, after: np.ndarray, risk_free_rat
     sb, mb, wb = _calc(before)
     sa, ma, wa = _calc(after)
     return ImpactMetrics(
-        sharpe_before=round(sb, 4), sharpe_after=round(sa, 4),
-        mdd_before=round(mb, 4), mdd_after=round(ma, 4),
-        win_rate_before=round(wb, 4), win_rate_after=round(wa, 4),
+        sharpe_before=round(sb, 4),
+        sharpe_after=round(sa, 4),
+        mdd_before=round(mb, 4),
+        mdd_after=round(ma, 4),
+        win_rate_before=round(wb, 4),
+        win_rate_after=round(wa, 4),
     )
 
 

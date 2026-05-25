@@ -15,13 +15,15 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 logger = logging.getLogger(__name__)
 UTC = timezone.utc
+StateT = TypeVar("StateT", bound=Enum)
 
 
 # ── States ────────────────────────────────────────────────────────────────
+
 
 class OrderState(str, Enum):
     CREATED = "created"
@@ -51,7 +53,13 @@ class SystemState(str, Enum):
 # Valid transitions per state machine
 _ORDER_TRANSITIONS: dict[OrderState, set[OrderState]] = {
     OrderState.CREATED: {OrderState.SUBMITTED, OrderState.CANCELLED, OrderState.REJECTED},
-    OrderState.SUBMITTED: {OrderState.PARTIALLY_FILLED, OrderState.FILLED, OrderState.CANCELLED, OrderState.REJECTED, OrderState.EXPIRED},
+    OrderState.SUBMITTED: {
+        OrderState.PARTIALLY_FILLED,
+        OrderState.FILLED,
+        OrderState.CANCELLED,
+        OrderState.REJECTED,
+        OrderState.EXPIRED,
+    },
     OrderState.PARTIALLY_FILLED: {OrderState.FILLED, OrderState.CANCELLED},
     OrderState.FILLED: set(),
     OrderState.CANCELLED: set(),
@@ -68,49 +76,56 @@ _POSITION_TRANSITIONS: dict[PositionState, set[PositionState]] = {
 
 # ── State Machine ─────────────────────────────────────────────────────────
 
-class StateMachine(ABC):
+
+class StateMachine(ABC, Generic[StateT]):
     """Abstract FSM — all core state changes go through this (AGENTS.md §2)."""
 
     @abstractmethod
-    def transition(self, new_state: Enum, metadata: dict | None = None) -> bool:
+    def transition(self, new_state: StateT, metadata: dict[str, Any] | None = None) -> bool:
         """Attempt state transition. Returns True if valid."""
 
 
-class OrderStateMachine(StateMachine):
+class OrderStateMachine(StateMachine[OrderState]):
     """Order lifecycle FSM."""
-    def __init__(self, order_id: str):
+
+    def __init__(self, order_id: str) -> None:
         self.order_id = order_id
         self.state = OrderState.CREATED
-        self.history: list[dict] = []
+        self.history: list[dict[str, Any]] = []
 
-    def transition(self, new_state: OrderState, metadata: dict | None = None) -> bool:
+    def transition(self, new_state: OrderState, metadata: dict[str, Any] | None = None) -> bool:
         if new_state not in _ORDER_TRANSITIONS[self.state]:
             logger.error(
                 "Invalid order transition: %s → %s (order=%s)",
-                self.state, new_state, self.order_id,
+                self.state,
+                new_state,
+                self.order_id,
             )
             return False
 
         old_state = self.state
         self.state = new_state
-        self.history.append({
-            "timestamp": datetime.now(UTC).isoformat(),
-            "from": old_state.value,
-            "to": new_state.value,
-            "metadata": metadata or {},
-        })
+        self.history.append(
+            {
+                "timestamp": datetime.now(UTC).isoformat(),
+                "from": old_state.value,
+                "to": new_state.value,
+                "metadata": metadata or {},
+            }
+        )
         return True
 
 
-class PositionStateMachine(StateMachine):
+class PositionStateMachine(StateMachine[PositionState]):
     """Position lifecycle FSM."""
-    def __init__(self, symbol: str):
+
+    def __init__(self, symbol: str) -> None:
         self.symbol = symbol
         self.state = PositionState.FLAT
         self.quantity: float = 0.0
         self.avg_price: float = 0.0
 
-    def transition(self, new_state: PositionState, metadata: dict | None = None) -> bool:
+    def transition(self, new_state: PositionState, metadata: dict[str, Any] | None = None) -> bool:
         if new_state not in _POSITION_TRANSITIONS[self.state]:
             return False
         self.state = new_state
@@ -120,21 +135,24 @@ class PositionStateMachine(StateMachine):
         return True
 
 
-class SystemStateMachine(StateMachine):
+class SystemStateMachine(StateMachine[SystemState]):
     """Global system state FSM."""
-    def __init__(self):
-        self.state = SystemState.INIT
-        self.history: list[dict] = []
 
-    def transition(self, new_state: SystemState, metadata: dict | None = None) -> bool:
+    def __init__(self) -> None:
+        self.state = SystemState.INIT
+        self.history: list[dict[str, Any]] = []
+
+    def transition(self, new_state: SystemState, metadata: dict[str, Any] | None = None) -> bool:
         old = self.state
         self.state = new_state
-        self.history.append({
-            "timestamp": datetime.now(UTC).isoformat(),
-            "from": old.value,
-            "to": new_state.value,
-            "metadata": metadata or {},
-        })
+        self.history.append(
+            {
+                "timestamp": datetime.now(UTC).isoformat(),
+                "from": old.value,
+                "to": new_state.value,
+                "metadata": metadata or {},
+            }
+        )
         logger.info("System state: %s → %s", old.value, new_state.value)
         return True
 
@@ -155,9 +173,11 @@ class SystemStateMachine(StateMachine):
 
 # ── Invariants ────────────────────────────────────────────────────────────
 
+
 @dataclass
 class InvariantCheck:
     """Result of a single invariant assertion."""
+
     name: str
     passed: bool
     details: str = ""
@@ -178,7 +198,7 @@ class InvariantEnforcer:
 
     POSITION_TOLERANCE = 0.0001  # ±0.01%
 
-    def __init__(self, system_fsm: SystemStateMachine):
+    def __init__(self, system_fsm: SystemStateMachine) -> None:
         self.system_fsm = system_fsm
         self._used_order_ids: set[str] = set()
         self._violation_count: dict[str, int] = {}
@@ -203,36 +223,48 @@ class InvariantEnforcer:
         local = internal_position + pending_orders
         diff = abs(local - exchange_position)
         pos_ok = diff <= self.POSITION_TOLERANCE * max(abs(exchange_position), 1.0)
-        results.append(InvariantCheck(
-            "position", pos_ok,
-            f"local={local:.4f} exchange={exchange_position:.4f} diff={diff:.6f}",
-        ))
+        results.append(
+            InvariantCheck(
+                "position",
+                pos_ok,
+                f"local={local:.4f} exchange={exchange_position:.4f} diff={diff:.6f}",
+            )
+        )
 
         # Equity Invariant
         computed = realized_pnl + unrealized_pnl + cash
         eq_diff = abs(computed - total_equity)
         eq_ok = eq_diff < 0.01
-        results.append(InvariantCheck(
-            "equity", eq_ok,
-            f"computed={computed:.2f} declared={total_equity:.2f}",
-        ))
+        results.append(
+            InvariantCheck(
+                "equity",
+                eq_ok,
+                f"computed={computed:.2f} declared={total_equity:.2f}",
+            )
+        )
 
         # Order Idempotency
         if client_order_id:
             dup = client_order_id in self._used_order_ids
             if not dup:
                 self._used_order_ids.add(client_order_id)
-            results.append(InvariantCheck(
-                "order_idempotency", not dup,
-                f"order_id={client_order_id}",
-            ))
+            results.append(
+                InvariantCheck(
+                    "order_idempotency",
+                    not dup,
+                    f"order_id={client_order_id}",
+                )
+            )
 
         # Risk Limit
         risk_ok = var_95 <= max_var
-        results.append(InvariantCheck(
-            "risk_limit", risk_ok,
-            f"VaR(95%)={var_95:.2f} max={max_var:.2f}",
-        ))
+        results.append(
+            InvariantCheck(
+                "risk_limit",
+                risk_ok,
+                f"VaR(95%)={var_95:.2f} max={max_var:.2f}",
+            )
+        )
 
         # On violation, enter Safe Mode
         failed = [r for r in results if not r.passed]

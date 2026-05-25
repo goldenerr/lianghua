@@ -113,8 +113,12 @@ def grid_search(
     values = list(param_grid.values())
     best: TrialResult | None = None
     trials: list[TrialResult] = []
-    scores = {Objective.MAX_SHARPE: "sharpe", Objective.MAX_CALMAR: "calmar",
-              Objective.MIN_MDD: "max_drawdown", Objective.MAX_RETURN: "total_return"}
+    scores = {
+        Objective.MAX_SHARPE: "sharpe",
+        Objective.MAX_CALMAR: "calmar",
+        Objective.MIN_MDD: "max_drawdown",
+        Objective.MAX_RETURN: "total_return",
+    }
 
     for combo in product(*values):
         params = dict(zip(keys, combo, strict=False))
@@ -133,7 +137,9 @@ def grid_search(
                 best = trial
 
     if best is None:
-        return OptimizationResult(best_params={}, best_score=0.0, all_trials=[], objective=objective)
+        return OptimizationResult(
+            best_params={}, best_score=0.0, all_trials=[], objective=objective
+        )
 
     return OptimizationResult(
         best_params=best.params,
@@ -180,8 +186,12 @@ def walk_forward_optimize(
 
         # Evaluate best params out-of-sample
         test_trial = evaluate_params(fold_result.best_params, test_returns, objective)
-        scores = {Objective.MAX_SHARPE: "sharpe", Objective.MAX_CALMAR: "calmar",
-                  Objective.MIN_MDD: "max_drawdown", Objective.MAX_RETURN: "total_return"}
+        scores = {
+            Objective.MAX_SHARPE: "sharpe",
+            Objective.MAX_CALMAR: "calmar",
+            Objective.MIN_MDD: "max_drawdown",
+            Objective.MAX_RETURN: "total_return",
+        }
         attr = scores.get(objective, "sharpe")
         fold_score = getattr(test_trial, attr)
 

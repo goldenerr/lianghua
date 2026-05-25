@@ -29,6 +29,7 @@ class TestDataSourceManager:
 
     def test_custom_provider_registration(self):
         from quant_trading.data.yfinance_provider import YfinanceProvider
+
         mgr = DataSourceManager(data_dir="test_data/")
         custom = YfinanceProvider()
         mgr.register(custom, "A股", priority=0)  # Highest priority

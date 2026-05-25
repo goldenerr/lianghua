@@ -1,5 +1,5 @@
-
 """Database & state persistence (db-001). AGENTS.md: Event Sourcing + CQRS + multi-tenant isolation."""
+
 from __future__ import annotations
 
 import copy
@@ -40,7 +40,11 @@ class EventStore:
         return len(self.events) - 1
 
     def replay(self, tenant_id: str | None = None) -> list[dict]:
-        evts = self.events if tenant_id is None else [e for e in self.events if e["tenant"] == tenant_id]
+        evts = (
+            self.events
+            if tenant_id is None
+            else [e for e in self.events if e["tenant"] == tenant_id]
+        )
         return copy.deepcopy(sorted(evts, key=lambda e: e["sequence"]))
 
     def verify_integrity(self) -> bool:

@@ -1,4 +1,5 @@
 """Recursive and redacted multi-environment config drift detection."""
+
 from __future__ import annotations
 
 import fnmatch

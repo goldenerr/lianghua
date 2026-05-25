@@ -1,4 +1,5 @@
 """Compatibility entrypoint for controlled canary deployment."""
+
 from __future__ import annotations
 
 from .deployment import CanaryController, CanaryMetrics, DeploymentDecision

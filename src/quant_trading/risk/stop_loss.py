@@ -9,9 +9,11 @@ Implements:
 Integrated into backtest loop as a position manager that overrides
 the rebalance-driven target weights.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 
@@ -24,14 +26,14 @@ class Position:
     weight: float
     peak_price: float = 0.0  # for trailing stop
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.peak_price == 0.0:
             self.peak_price = self.entry_price
 
 
 class StopLossManager:
     """Manages stop-loss and take-profit for a portfolio of positions.
-    
+
     Checks at each bar (day):
       - Trailing stop: current_price < peak_price * (1 - trail_pct)
       - Hard stop: current_price < entry_price * (1 - hard_stop_pct)
@@ -41,14 +43,14 @@ class StopLossManager:
 
     def __init__(
         self,
-        trail_stop_pct: float = 0.15,     # -15% from peak
-        hard_stop_pct: float = 0.20,      # -20% from entry (hard floor)
+        trail_stop_pct: float = 0.15,  # -15% from peak
+        hard_stop_pct: float = 0.20,  # -20% from entry (hard floor)
         profit_target_pct: float = 0.50,  # +50% take profit
-        max_hold_days: int = 252,         # exit after 1 year
+        max_hold_days: int = 252,  # exit after 1 year
         enable_trail: bool = True,
         enable_hard: bool = True,
-        enable_profit: bool = False,      # disabled by default (let winners run)
-        enable_time: bool = False,        # disabled by default
+        enable_profit: bool = False,  # disabled by default (let winners run)
+        enable_time: bool = False,  # disabled by default
     ):
         self.trail_stop_pct = trail_stop_pct
         self.hard_stop_pct = hard_stop_pct
@@ -60,7 +62,7 @@ class StopLossManager:
         self.enable_time = enable_time
 
         self.positions: dict[str, Position] = {}
-        self.exit_log: list[dict] = []  # record of exits
+        self.exit_log: list[dict[str, Any]] = []  # record of exits
 
     def update_prices(self, prices: dict[str, float], day: int) -> set[str]:
         """Check all positions against current prices. Return symbols to exit."""
@@ -99,20 +101,24 @@ class StopLossManager:
 
             if exit_reason:
                 exited.add(sym)
-                self.exit_log.append({
-                    "symbol": sym,
-                    "entry_day": pos.entry_day,
-                    "exit_day": day,
-                    "entry_price": round(pos.entry_price, 2),
-                    "exit_price": round(current, 2),
-                    "return": round(current / pos.entry_price - 1, 4),
-                    "reason": exit_reason,
-                })
+                self.exit_log.append(
+                    {
+                        "symbol": sym,
+                        "entry_day": pos.entry_day,
+                        "exit_day": day,
+                        "entry_price": round(pos.entry_price, 2),
+                        "exit_price": round(current, 2),
+                        "return": round(current / pos.entry_price - 1, 4),
+                        "reason": exit_reason,
+                    }
+                )
                 del self.positions[sym]
 
         return exited
 
-    def add_positions(self, new_weights: dict[str, float], prices: dict[str, float], day: int):
+    def add_positions(
+        self, new_weights: dict[str, float], prices: dict[str, float], day: int
+    ) -> None:
         """Add new positions. Update entry for existing positions that increased weight."""
         for sym, w in new_weights.items():
             if sym not in prices or prices[sym] <= 0:
@@ -136,14 +142,14 @@ class StopLossManager:
                     peak_price=current,
                 )
 
-    def remove_positions(self, symbols: set[str]):
+    def remove_positions(self, symbols: set[str]) -> None:
         """Remove positions (for rebalance exits, not stops)."""
         for sym in symbols:
             if sym in self.positions:
                 del self.positions[sym]
                 # Don't log — these are voluntary exits
 
-    def exit_summary(self) -> dict:
+    def exit_summary(self) -> dict[str, Any]:
         """Summary statistics of stop-loss exits."""
         if not self.exit_log:
             return {"total_exits": 0}

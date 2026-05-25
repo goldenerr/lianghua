@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -24,6 +24,7 @@ UTC = timezone.utc
 
 
 # ── Event types ───────────────────────────────────────────────────────────
+
 
 class EventType(str, Enum):
     TICK = "tick"
@@ -39,29 +40,42 @@ class EventType(str, Enum):
 @dataclass
 class Event:
     """Base event with required metadata fields."""
+
     event_type: EventType
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     symbol: str = ""
     trace_id: str = ""
     payload: dict[str, Any] = field(default_factory=dict)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.trace_id:
             import uuid
+
             self.trace_id = str(uuid.uuid4())[:12]
 
 
 @dataclass
 class TickEvent(Event):
     """Real-time market tick data."""
-    def __init__(self, symbol: str, price: float, volume: float,
-                 bid: float = 0.0, ask: float = 0.0, **kwargs):
+
+    def __init__(
+        self,
+        symbol: str,
+        price: float,
+        volume: float,
+        bid: float = 0.0,
+        ask: float = 0.0,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             event_type=EventType.TICK,
             symbol=symbol,
             payload={
-                "price": price, "volume": volume,
-                "bid": bid, "ask": ask, **kwargs,
+                "price": price,
+                "volume": volume,
+                "bid": bid,
+                "ask": ask,
+                **kwargs,
             },
         )
 
@@ -69,14 +83,25 @@ class TickEvent(Event):
 @dataclass
 class OrderEvent(Event):
     """Order submission event."""
-    def __init__(self, symbol: str, side: str, quantity: float,
-                 price: float = 0.0, order_type: str = "market", **kwargs):
+
+    def __init__(
+        self,
+        symbol: str,
+        side: str,
+        quantity: float,
+        price: float = 0.0,
+        order_type: str = "market",
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             event_type=EventType.ORDER,
             symbol=symbol,
             payload={
-                "side": side, "quantity": quantity,
-                "price": price, "order_type": order_type, **kwargs,
+                "side": side,
+                "quantity": quantity,
+                "price": price,
+                "order_type": order_type,
+                **kwargs,
             },
         )
 
@@ -84,14 +109,25 @@ class OrderEvent(Event):
 @dataclass
 class FillEvent(Event):
     """Order fill confirmation."""
-    def __init__(self, symbol: str, side: str, quantity: float,
-                 price: float, commission: float = 0.0, **kwargs):
+
+    def __init__(
+        self,
+        symbol: str,
+        side: str,
+        quantity: float,
+        price: float,
+        commission: float = 0.0,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             event_type=EventType.FILL,
             symbol=symbol,
             payload={
-                "side": side, "quantity": quantity,
-                "price": price, "commission": commission, **kwargs,
+                "side": side,
+                "quantity": quantity,
+                "price": price,
+                "commission": commission,
+                **kwargs,
             },
         )
 
@@ -99,14 +135,23 @@ class FillEvent(Event):
 @dataclass
 class RiskEvent(Event):
     """Risk management event."""
-    def __init__(self, symbol: str = "", risk_type: str = "",
-                 level: str = "warning", message: str = "", **kwargs):
+
+    def __init__(
+        self,
+        symbol: str = "",
+        risk_type: str = "",
+        level: str = "warning",
+        message: str = "",
+        **kwargs: Any,
+    ) -> None:
         super().__init__(
             event_type=EventType.RISK,
             symbol=symbol,
             payload={
-                "risk_type": risk_type, "level": level,
-                "message": message, **kwargs,
+                "risk_type": risk_type,
+                "level": level,
+                "message": message,
+                **kwargs,
             },
         )
 
@@ -114,7 +159,8 @@ class RiskEvent(Event):
 @dataclass
 class TimerEvent(Event):
     """Scheduled timer event for periodic tasks."""
-    def __init__(self, interval_seconds: float = 1.0, **kwargs):
+
+    def __init__(self, interval_seconds: float = 1.0, **kwargs: Any) -> None:
         super().__init__(
             event_type=EventType.TIMER,
             payload={"interval_seconds": interval_seconds, **kwargs},
@@ -124,7 +170,7 @@ class TimerEvent(Event):
 # ── Event bus ─────────────────────────────────────────────────────────────
 
 Handler = Callable[[Event], None]
-AsyncHandler = Callable[[Event], "asyncio.coroutine"]
+AsyncHandler = Callable[[Event], Awaitable[None]]
 
 
 class EventBus:
@@ -135,11 +181,9 @@ class EventBus:
     Shared between backtest and live execution (AGENTS.md §14).
     """
 
-    def __init__(self, redis_url: str | None = None):
+    def __init__(self, redis_url: str | None = None) -> None:
         self.redis_url = redis_url
-        self._handlers: dict[EventType, list[Handler]] = {
-            et: [] for et in EventType
-        }
+        self._handlers: dict[EventType, list[Handler]] = {et: [] for et in EventType}
         self._wildcard_handlers: list[Handler] = []
         self._event_count: dict[EventType, int] = {et: 0 for et in EventType}
         self._start_time: float | None = None
@@ -183,7 +227,7 @@ class EventBus:
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self.publish, event)
 
-    def get_stats(self) -> dict:
+    def get_stats(self) -> dict[str, Any]:
         """Get event throughput statistics."""
         elapsed = time.time() - (self._start_time or time.time())
         total = sum(self._event_count.values())
@@ -191,9 +235,7 @@ class EventBus:
             "total_events": total,
             "elapsed_seconds": round(elapsed, 2),
             "events_per_second": round(total / max(elapsed, 0.001), 1),
-            "by_type": {
-                et.value: count for et, count in self._event_count.items()
-            },
+            "by_type": {et.value: count for et, count in self._event_count.items()},
         }
 
     def reset_stats(self) -> None:

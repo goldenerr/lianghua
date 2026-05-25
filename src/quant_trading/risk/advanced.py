@@ -2,12 +2,14 @@
 Advanced risk modules (risk-002 through risk-006).
 AGENTS.md: Greeks, cross-market margin, dynamic stress, model risk, kill switch.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
 from math import erf, exp, log, pi, sqrt
 
 UTC = timezone.utc
+
 
 # risk-002: Option Greeks
 class GreeksCalculator:
@@ -20,7 +22,9 @@ class GreeksCalculator:
         return exp(-0.5 * x * x) / sqrt(2.0 * pi)
 
     @staticmethod
-    def delta(S: float, K: float, T: float, r: float, sigma: float, is_call: bool = True) -> dict:
+    def delta(
+        S: float, K: float, T: float, r: float, sigma: float, is_call: bool = True
+    ) -> dict[str, float]:
         """
         Black-Scholes Greeks computation.
 
@@ -42,28 +46,42 @@ class GreeksCalculator:
             theta = -(S * pdf_d1 * sigma) / (2 * sqrt(T)) - r * K * exp(-r * T) * nd2
         else:
             delta = nd1 - 1.0
-            theta = -(S * pdf_d1 * sigma) / (2 * sqrt(T)) + r * K * exp(-r * T) * GreeksCalculator._norm_cdf(-d2)
+            theta = -(S * pdf_d1 * sigma) / (2 * sqrt(T)) + r * K * exp(
+                -r * T
+            ) * GreeksCalculator._norm_cdf(-d2)
 
         gamma = pdf_d1 / (S * vol_sqrt_t)
         vega = S * pdf_d1 * sqrt(T)
-        return {"delta": float(delta), "gamma": float(gamma), "vega": float(vega), "theta": float(theta)}
+        return {
+            "delta": float(delta),
+            "gamma": float(gamma),
+            "vega": float(vega),
+            "theta": float(theta),
+        }
+
 
 # risk-003: Cross-market margin
 class CrossMarketMargin:
-    def __init__(self): self._accounts: dict = {}
-    def add_account(self, name: str, equity: float, margin_used: float):
+    def __init__(self) -> None:
+        self._accounts: dict[str, dict[str, float]] = {}
+
+    def add_account(self, name: str, equity: float, margin_used: float) -> None:
         if equity < 0 or margin_used < 0:
             raise ValueError("equity and margin_used must be non-negative")
         if margin_used > equity:
             raise ValueError("margin_used cannot exceed equity")
         self._accounts[name] = {"equity": equity, "margin": margin_used}
 
-    def total_exposure(self) -> float: return sum(a["margin"] for a in self._accounts.values())
-    def available_margin(self) -> float: return sum(a["equity"] - a["margin"] for a in self._accounts.values())
+    def total_exposure(self) -> float:
+        return sum(a["margin"] for a in self._accounts.values())
+
+    def available_margin(self) -> float:
+        return sum(a["equity"] - a["margin"] for a in self._accounts.values())
+
 
 # risk-006: Kill Switch
 class KillSwitch:
-    def __init__(self):
+    def __init__(self) -> None:
         self._active = False
         self.reason: str = ""
         self.activated_at: str | None = None
@@ -83,4 +101,5 @@ class KillSwitch:
         self.last_transition_at = datetime.now(UTC).isoformat()
 
     @property
-    def is_active(self) -> bool: return self._active
+    def is_active(self) -> bool:
+        return self._active

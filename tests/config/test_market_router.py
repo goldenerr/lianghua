@@ -38,7 +38,7 @@ class TestMarketRuleSet:
         rules = MarketRuleSet(Market.A_SHARES, lot_size=100)
         assert rules.round_quantity(250) == 200
         assert rules.round_quantity(251) == 300  # round half up
-        assert rules.round_quantity(50) == 0       # below half lot → 0
+        assert rules.round_quantity(50) == 0  # below half lot → 0
 
     def test_round_quantity_crypto(self):
         rules = MarketRuleSet(Market.CRYPTO, lot_size=1)
@@ -97,6 +97,7 @@ class TestMarketRouter:
         For A-shares, no overlap (session ends 07:00, settlement 08:00).
         Verify SettlementWindow directly instead."""
         from quant_trading.config.market_calendar import SettlementWindow
+
         # 07:45 UTC IS in settlement window for A-shares
         dt = datetime(2026, 5, 18, 7, 45, tzinfo=UTC)
         assert SettlementWindow.is_in_settlement_window(Market.A_SHARES, dt) is True
@@ -170,15 +171,11 @@ class TestFuturesRolloverDetector:
         assert detector.dominant_contract == cm1
 
         # Day 1: cm2 overtakes cm1 in volume
-        result = detector.check_rollover(
-            [(cm1, 5000), (cm2, 6000)], date(2024, 5, 1)
-        )
+        result = detector.check_rollover([(cm1, 5000), (cm2, 6000)], date(2024, 5, 1))
         assert result is None  # Not yet 2 consecutive days
 
         # Day 2: cm2 leads again → rollover
-        result = detector.check_rollover(
-            [(cm1, 4000), (cm2, 7000)], date(2024, 5, 2)
-        )
+        result = detector.check_rollover([(cm1, 4000), (cm2, 7000)], date(2024, 5, 2))
         assert result is not None
         old, new = result
         assert old.code == "IF2406"

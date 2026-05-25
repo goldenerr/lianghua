@@ -11,14 +11,17 @@ AGENTS.md §2: prod 配置必须从 Vault / AWS Secrets Manager 读取
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import os
 import signal
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 import yaml
+from pydantic import BaseModel
 
 from .settings import (
     AccountConfig,
@@ -32,6 +35,9 @@ from .settings import (
 )
 
 logger = logging.getLogger(__name__)
+ModelT = TypeVar("ModelT", bound=BaseModel)
+SecretResolver = Callable[[AccountConfig], ApiCredentials]
+ApprovalValidator = Callable[[QuantSettings], str]
 
 # Default config paths
 DEFAULT_CONFIG_DIR = Path("config")
@@ -59,12 +65,14 @@ class ConfigLoader:
         self,
         config_dir: Path | str = DEFAULT_CONFIG_DIR,
         env: Environment | None = None,
-        secret_resolver: Callable[[AccountConfig], ApiCredentials] | None = None,
-    ):
+        secret_resolver: SecretResolver | None = None,
+        approval_validator: ApprovalValidator | None = None,
+    ) -> None:
         self.config_dir = Path(config_dir)
         self._settings: QuantSettings | None = None
         self._env = env
         self._secret_resolver = secret_resolver
+        self._approval_validator = approval_validator
 
     # ── Public API ────────────────────────────────────────────────────────
 
@@ -81,9 +89,9 @@ class ConfigLoader:
         self._env = target_env
 
         # Layer 1-3: Base configs
-        system = self._load_yaml_model(
-            SYSTEM_CONFIG, SystemSettings
-        ) or SystemSettings(env=target_env)
+        system = self._load_yaml_model(SYSTEM_CONFIG, SystemSettings) or SystemSettings(
+            env=target_env
+        )
         risk = self._load_yaml_model(RISK_CONFIG, RiskSettings) or RiskSettings()
         api = self._load_yaml_model(API_CONFIG, ApiSettings) or ApiSettings()
 
@@ -92,16 +100,25 @@ class ConfigLoader:
         if env_path.exists():
             env_data = self._read_yaml(env_path)
             system = self._merge_override(system, env_data, SystemSettings)
+        system = system.model_copy(update={"env": target_env})
 
         # Layer 5: Accounts
-        accounts = self._load_accounts()
+        accounts = self._load_accounts(target_env)
 
         # Layer 6: Vault (prod only)
         if target_env == Environment.PROD:
-            accounts = self._resolve_secrets_from_vault(accounts)
+            accounts = self._resolve_production_secrets(accounts)
 
         # Layer 7: Environment variable overrides
-        accounts = self._apply_env_var_secrets(accounts)
+        if target_env == Environment.PROD and (
+            os.getenv("QUANT_API_KEY") or os.getenv("QUANT_API_SECRET")
+        ):
+            raise ValueError(
+                "Production secret policy violation: environment-variable credential "
+                "overrides are prohibited; use Vault, AWS Secrets Manager or sealed secrets."
+            )
+        if target_env != Environment.PROD:
+            accounts = self._apply_env_var_secrets(accounts)
 
         # Build final settings
         settings = QuantSettings(
@@ -109,6 +126,7 @@ class ConfigLoader:
             risk=risk,
             api=api,
             accounts=accounts,
+            config_hash=self._public_config_hash(system, risk, api, accounts),
         )
 
         # Startup validation
@@ -117,6 +135,9 @@ class ConfigLoader:
             msg = "Config validation failed:\n" + "\n".join(f"  - {e}" for e in errors)
             logger.error(msg)
             raise ValueError(msg)
+
+        if target_env == Environment.PROD:
+            settings = self._require_production_approval(settings)
 
         logger.info(
             "Configuration loaded: env=%s markets=%s accounts=%d",
@@ -160,7 +181,7 @@ class ConfigLoader:
             logger.error("YAML parse error in %s: %s", path, e)
             raise
 
-    def _load_yaml_model(self, filename: str, model_class: type) -> Any | None:
+    def _load_yaml_model(self, filename: str, model_class: type[ModelT]) -> ModelT | None:
         """从 YAML 文件加载并验证为 Pydantic 模型。"""
         path = self.config_dir / filename
         if not path.exists():
@@ -169,13 +190,18 @@ class ConfigLoader:
         data = self._read_yaml(path)
         return model_class.model_validate(data)
 
-    def _merge_override(self, base: Any, override: dict, model_class: type) -> Any:
+    def _merge_override(
+        self, base: ModelT, override: dict[str, Any], model_class: type[ModelT]
+    ) -> ModelT:
         """将环境覆盖合并到基础配置。"""
         base_data = base.model_dump()
-        base_data.update({k: v for k, v in override.items() if k in base_data and v is not None})
+        unknown = set(override) - set(base_data)
+        if unknown:
+            raise ValueError(f"unknown environment override keys: {sorted(unknown)}")
+        base_data.update({k: v for k, v in override.items() if v is not None})
         return model_class.model_validate(base_data)
 
-    def _load_accounts(self) -> list[AccountConfig]:
+    def _load_accounts(self, target_env: Environment) -> list[AccountConfig]:
         """从 config/accounts/ 加载所有账户配置。"""
         accounts_dir = self.config_dir / ACCOUNTS_DIR
         if not accounts_dir.exists():
@@ -187,6 +213,14 @@ class ConfigLoader:
                 continue  # 跳过示例文件
             try:
                 data = self._read_yaml(path)
+                declared_env = Environment(data.get("environment", Environment.DEV.value))
+                if declared_env != target_env:
+                    continue
+                if target_env == Environment.PROD and "credentials" in data:
+                    raise ValueError(
+                        f"Production secret policy violation: plaintext credentials are "
+                        f"prohibited in {path.name}; declare secret_ref only."
+                    )
                 # credentials 子对象
                 if "credentials" in data:
                     data["credentials"] = ApiCredentials.model_validate(data["credentials"])
@@ -198,47 +232,35 @@ class ConfigLoader:
                 raise
         return accounts
 
-    def _resolve_secrets_from_vault(
-        self, accounts: list[AccountConfig]
-    ) -> list[AccountConfig]:
+    def _resolve_production_secrets(self, accounts: list[AccountConfig]) -> list[AccountConfig]:
         """
-        从 Vault / AWS Secrets Manager 解析生产密钥。
-        AGENTS.md §2: prod 配置必须从 Vault 读取。
-        The actual Vault or Secrets Manager client is supplied through
-        ``secret_resolver`` so this loader never silently authenticates with
-        credentials loaded from production files.
+        从 Vault / AWS Secrets Manager / sealed secret 解析生产密钥。
+        Production files carry only a reference; injected integration code
+        resolves secret material without ever persisting it here.
         """
-        vault_addr = os.getenv("VAULT_ADDR")
-        break_glass = os.getenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", "").lower() in {"1", "true", "yes"}
-        if break_glass:
-            logger.warning(
-                "QUANT_ALLOW_PLAINTEXT_PROD_SECRETS is enabled. "
-                "Using file credentials in prod (emergency-only path)."
-            )
-            return accounts
-
-        if not vault_addr:
-            raise ValueError(
-                "Production secret policy violation: VAULT_ADDR is required in prod. "
-                "Set QUANT_ALLOW_PLAINTEXT_PROD_SECRETS=true only for emergency break-glass use."
-            )
-
         if self._secret_resolver is None:
             raise ValueError(
-                "Production secret policy violation: a Vault/AWS secret_resolver "
-                "must be configured when VAULT_ADDR is set."
+                "Production secret policy violation: a Vault/AWS/sealed secret_resolver "
+                "must be configured in prod."
             )
 
         resolved: list[AccountConfig] = []
         for account in accounts:
+            if not account.secret_ref or not account.secret_ref.startswith(
+                ("vault://", "aws-sm://", "sealed://")
+            ):
+                raise ValueError(
+                    f"Production secret policy violation: account {account.account_id} "
+                    "must declare a vault://, aws-sm:// or sealed:// secret_ref."
+                )
             credentials = self._secret_resolver(account)
-            resolved.append(account.model_copy(update={"credentials": credentials}))
+            resolved.append(
+                AccountConfig.model_validate({**account.model_dump(), "credentials": credentials})
+            )
         logger.info("Production secrets resolved for %d account(s)", len(resolved))
         return resolved
 
-    def _apply_env_var_secrets(
-        self, accounts: list[AccountConfig]
-    ) -> list[AccountConfig]:
+    def _apply_env_var_secrets(self, accounts: list[AccountConfig]) -> list[AccountConfig]:
         """
         环境变量覆盖密钥 (最高优先级)。
         QUANT_API_KEY / QUANT_API_SECRET 可覆盖所有账户的密钥。
@@ -254,6 +276,8 @@ class ConfigLoader:
         updated: list[AccountConfig] = []
         for acct in accounts:
             creds = acct.credentials
+            if creds is None:
+                raise ValueError(f"credentials not resolved for account: {acct.account_id}")
             new_creds = ApiCredentials(
                 exchange=creds.exchange,
                 api_key=SecretStr(env_key) if env_key else creds.api_key,
@@ -261,15 +285,58 @@ class ConfigLoader:
                 passphrase=creds.passphrase,
                 subaccount=creds.subaccount,
             )
-            updated.append(AccountConfig(
-                account_id=acct.account_id,
-                name=acct.name,
-                exchange=acct.exchange,
-                credentials=new_creds,
-                enabled=acct.enabled,
-                default_leverage=acct.default_leverage,
-            ))
+            updated.append(
+                AccountConfig(
+                    account_id=acct.account_id,
+                    name=acct.name,
+                    exchange=acct.exchange,
+                    environment=acct.environment,
+                    secret_ref=acct.secret_ref,
+                    credentials=new_creds,
+                    enabled=acct.enabled,
+                    default_leverage=acct.default_leverage,
+                )
+            )
         return updated
+
+    def _require_production_approval(self, settings: QuantSettings) -> QuantSettings:
+        if self._approval_validator is None:
+            raise ValueError(
+                "Production configuration approval is required: configure an approval_validator."
+            )
+        approval_ref = self._approval_validator(settings).strip()
+        if not approval_ref:
+            raise ValueError("Production configuration approval reference must not be empty.")
+        return settings.model_copy(update={"config_approval_ref": approval_ref})
+
+    @staticmethod
+    def _public_config_hash(
+        system: SystemSettings,
+        risk: RiskSettings,
+        api: ApiSettings,
+        accounts: list[AccountConfig],
+    ) -> str:
+        """Hash deploy-relevant configuration without credential material."""
+        account_metadata = [
+            {
+                "account_id": account.account_id,
+                "name": account.name,
+                "exchange": account.exchange,
+                "environment": account.environment.value,
+                "secret_ref": account.secret_ref,
+                "enabled": account.enabled,
+                "default_leverage": account.default_leverage,
+            }
+            for account in accounts
+        ]
+        payload = {
+            "system": system.model_dump(mode="json"),
+            "risk": risk.model_dump(mode="json"),
+            "api": api.model_dump(mode="json"),
+            "accounts": account_metadata,
+        }
+        material = json.dumps(payload, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(material.encode("utf-8")).hexdigest()
 
 
 # ── Hot-reload via SIGHUP ────────────────────────────────────────────────────
@@ -301,6 +368,7 @@ def install_hotreload_handler() -> None:
 
 
 # ── Convenience ──────────────────────────────────────────────────────────────
+
 
 def load_config(config_dir: Path | str = DEFAULT_CONFIG_DIR) -> QuantSettings:
     """快速加载配置。"""

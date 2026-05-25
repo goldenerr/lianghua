@@ -1,4 +1,5 @@
 """Tests for execution module — order management, reconciliation, order book, algorithms, fast path."""
+
 import asyncio
 import time
 
@@ -30,6 +31,7 @@ def _running_order_manager(audit_bus=None):
 
 
 # ── Order Manager ──────────────────────────────────────────────────
+
 
 class TestOrder:
     def test_create_market_order(self):
@@ -144,6 +146,7 @@ class TestOrderManager:
 
 # ── Position Reconciler ────────────────────────────────────────────
 
+
 class TestPositionReconciler:
     def test_exact_match(self):
         pr = PositionReconciler(tolerance=0.0001)
@@ -195,7 +198,9 @@ class TestPositionReconciler:
 
         # Use tiny backoff for test speed
         result = asyncio.run(
-            pr.reconcile_with_retry(fetch_internal, fetch_exchange, max_retries=2, backoff_seconds=(0.0, 0.0))
+            pr.reconcile_with_retry(
+                fetch_internal, fetch_exchange, max_retries=2, backoff_seconds=(0.0, 0.0)
+            )
         )
         assert result.matched is True
         assert result.attempts == 2
@@ -215,13 +220,16 @@ class TestPositionReconciler:
             return 110.0
 
         result = asyncio.run(
-            pr.reconcile_with_retry(fetch_internal, fetch_exchange, max_retries=2, backoff_seconds=(0.0, 0.0))
+            pr.reconcile_with_retry(
+                fetch_internal, fetch_exchange, max_retries=2, backoff_seconds=(0.0, 0.0)
+            )
         )
         assert result.matched is False
         assert triggered["value"] is True
 
 
 # ── Order Book ─────────────────────────────────────────────────────
+
 
 class TestVWAPSchedule:
     def test_uniform_volume(self):
@@ -303,6 +311,7 @@ class TestOrderBookSnapshot:
 
 
 # ── Fast Path ──────────────────────────────────────────────────────
+
 
 class TestLatencyBudget:
     def test_defaults(self):

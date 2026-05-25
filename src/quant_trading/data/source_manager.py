@@ -27,6 +27,7 @@ UTC = timezone.utc
 
 # ── Provider registry ─────────────────────────────────────────────────────────
 
+
 class DataSourceManager:
     """
     Manages data providers with priority-based routing and auto-degradation.
@@ -117,14 +118,8 @@ class DataSourceManager:
         request = DataRequest(
             symbol=symbol,
             frequency=frequency,
-            start_date=(
-                datetime.strptime(start_date, "%Y-%m-%d").date()
-                if start_date else None
-            ),
-            end_date=(
-                datetime.strptime(end_date, "%Y-%m-%d").date()
-                if end_date else None
-            ),
+            start_date=(datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None),
+            end_date=(datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None),
         )
 
         errors: list[str] = []
@@ -132,7 +127,9 @@ class DataSourceManager:
             if not provider.is_healthy:
                 logger.warning(
                     "Skipping unhealthy provider %s for %s (failures=%d)",
-                    provider.name, symbol, provider._fail_count,
+                    provider.name,
+                    symbol,
+                    provider._fail_count,
                 )
                 errors.append(f"{provider.name}: unhealthy ({provider._last_error})")
                 continue
@@ -146,7 +143,10 @@ class DataSourceManager:
                 if elapsed > self.LATENCY_THRESHOLD_SECONDS:
                     logger.warning(
                         "Provider %s latency %.1fs exceeds threshold %.1fs for %s",
-                        provider.name, elapsed, self.LATENCY_THRESHOLD_SECONDS, symbol,
+                        provider.name,
+                        elapsed,
+                        self.LATENCY_THRESHOLD_SECONDS,
+                        symbol,
                     )
 
                 return result
@@ -156,10 +156,9 @@ class DataSourceManager:
                 errors.append(f"{provider.name}: {e}")
 
                 # Check if we should degrade
-                if provider._fail_count >= self.MAX_FAILURES:
-                    if i + 1 < len(providers):
-                        next_p = providers[i + 1].name
-                        self._log_switch(provider.name, next_p, symbol, str(e))
+                if provider._fail_count >= self.MAX_FAILURES and i + 1 < len(providers):
+                    next_p = providers[i + 1].name
+                    self._log_switch(provider.name, next_p, symbol, str(e))
                 break  # Don't retry; let next priority take over on next call
 
         # All providers exhausted
@@ -181,7 +180,10 @@ class DataSourceManager:
         self._switch_log.append(entry)
         logger.warning(
             "Data source switch: %s → %s for %s — reason: %s",
-            from_provider, to_provider, symbol, reason,
+            from_provider,
+            to_provider,
+            symbol,
+            reason,
         )
         # AGENTS.md §10: 告警收敛 — 相同事件 5 分钟内只发送一次
         # (告警通道集成在 monitor-001)

@@ -1,4 +1,5 @@
 """Tests for compliance, persistence, portfolio, and monitor modules."""
+
 from datetime import date
 
 import numpy as np
@@ -13,6 +14,7 @@ from quant_trading.portfolio.firewall import CapitalFirewall
 from quant_trading.portfolio.optimizer import PortfolioOptimizer
 
 # ── Compliance ──────────────────────────────────────────────────────
+
 
 class TestTaxCalculator:
     def test_cn_stamp_duty(self):
@@ -47,17 +49,23 @@ class TestTaxCalculator:
 class TestComplianceReport:
     def test_create(self):
         r = CompReport(
-            report_id="rpt-1", jurisdiction=Jurisdiction.CN,
-            period_start=date(2026, 1, 1), period_end=date(2026, 1, 31),
-            total_trades=50, total_volume=1_000_000, stamp_duty_paid=500,
+            report_id="rpt-1",
+            jurisdiction=Jurisdiction.CN,
+            period_start=date(2026, 1, 1),
+            period_end=date(2026, 1, 31),
+            total_trades=50,
+            total_volume=1_000_000,
+            stamp_duty_paid=500,
         )
         assert r.report_id == "rpt-1"
         assert r.jurisdiction == Jurisdiction.CN
 
     def test_to_worm(self):
         r = CompReport(
-            report_id="wrm-1", jurisdiction=Jurisdiction.US,
-            period_start=date(2026, 1, 1), period_end=date(2026, 1, 1),
+            report_id="wrm-1",
+            jurisdiction=Jurisdiction.US,
+            period_start=date(2026, 1, 1),
+            period_end=date(2026, 1, 1),
         )
         data = r.to_worm()
         assert isinstance(data, bytes)
@@ -65,6 +73,7 @@ class TestComplianceReport:
 
 
 # ── Persistence ─────────────────────────────────────────────────────
+
 
 class TestEventStore:
     def test_append(self):
@@ -138,6 +147,7 @@ class TestEventStore:
 
 # ── Portfolio Firewall ──────────────────────────────────────────────
 
+
 class TestCapitalFirewall:
     def test_allocate_within_limit(self):
         cf = CapitalFirewall(100000, max_per_strategy=0.3)
@@ -173,7 +183,7 @@ class TestCapitalFirewall:
     def test_adjust_for_var(self):
         cf = CapitalFirewall(200000, max_per_strategy=1.0)
         cf.allocate("a", 100000)  # 50%
-        cf.allocate("b", 50000)   # 25%
+        cf.allocate("b", 50000)  # 25%
         adjustments = cf.adjust_for_var({"a": 0.3, "b": 0.2})
         # a: 100k > 60k (30% of 200k) → reduce by 40k
         assert "a" in adjustments
@@ -187,6 +197,7 @@ class TestCapitalFirewall:
 
 
 # ── Portfolio Optimizer ─────────────────────────────────────────────
+
 
 class TestPortfolioOptimizer:
     def test_equal_weight(self):
@@ -219,6 +230,7 @@ class TestPortfolioOptimizer:
 
 
 # ── Monitor ─────────────────────────────────────────────────────────
+
 
 class TestSystemMonitor:
     def test_defaults(self):

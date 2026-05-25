@@ -14,6 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from enum import Enum
+from typing import Any
 
 import pandas as pd
 
@@ -24,19 +25,19 @@ UTC = timezone.utc
 
 
 class EventType(str, Enum):
-    DIVIDEND = "dividend"          # 现金分红
-    STOCK_SPLIT = "stock_split"    # 拆股/合股
+    DIVIDEND = "dividend"  # 现金分红
+    STOCK_SPLIT = "stock_split"  # 拆股/合股
     RIGHTS_ISSUE = "rights_issue"  # 配股
-    MERGER = "merger"              # 并购
-    SPINOFF = "spinoff"           # 分拆上市
-    FUTURES_DELIVERY = "futures_delivery"    # 期货交割
-    OPTION_EXERCISE = "option_exercise"      # 期权行权
+    MERGER = "merger"  # 并购
+    SPINOFF = "spinoff"  # 分拆上市
+    FUTURES_DELIVERY = "futures_delivery"  # 期货交割
+    OPTION_EXERCISE = "option_exercise"  # 期权行权
 
 
 class AdjustmentMode(str, Enum):
-    PRE_ADJUSTED = "pre"       # 前复权 — backward adjust historical prices
-    POST_ADJUSTED = "post"     # 后复权 — forward adjust future prices
-    TOTAL_RETURN = "total"     # 总回报 — include dividends as reinvested
+    PRE_ADJUSTED = "pre"  # 前复权 — backward adjust historical prices
+    POST_ADJUSTED = "post"  # 后复权 — forward adjust future prices
+    TOTAL_RETURN = "total"  # 总回报 — include dividends as reinvested
 
 
 @dataclass
@@ -54,17 +55,17 @@ class CorporateActionEvent:
     split_ratio: float | None = None  # new_shares / old_shares
 
     # Rights issue
-    rights_ratio: float | None = None       # new shares per existing share
-    rights_price: float | None = None       # subscription price
+    rights_ratio: float | None = None  # new shares per existing share
+    rights_price: float | None = None  # subscription price
     rights_theoretical_price: float | None = None  # computed
 
     # Merger
-    merger_symbol: str | None = None        # target/acquiring symbol
-    merger_ratio: float | None = None       # exchange ratio
-    merger_cash: float | None = None        # cash per share
+    merger_symbol: str | None = None  # target/acquiring symbol
+    merger_ratio: float | None = None  # exchange ratio
+    merger_cash: float | None = None  # cash per share
 
     # Futures delivery
-    delivery_price: float | None = None     # settlement price
+    delivery_price: float | None = None  # settlement price
     delivery_quantity: float | None = None  # quantity to deliver
 
     # Metadata
@@ -90,7 +91,7 @@ class AdjustmentFactors:
 
     symbol: str
     dates: list[date] = field(default_factory=list)
-    pre_factors: list[float] = field(default_factory=list)   # 前复权
+    pre_factors: list[float] = field(default_factory=list)  # 前复权
     post_factors: list[float] = field(default_factory=list)  # 后复权
     total_return_factors: list[float] = field(default_factory=list)
 
@@ -215,7 +216,7 @@ class AdjustmentEngine:
                 # Post-adjust: adjust for the ex-dividend drop
                 post *= (close - div) / close
                 # Total return: reinvest dividend
-                tr *= (close / (close - div))
+                tr *= close / (close - div)
                 cum_div += div * (tr / post)  # Reinvested dividend shares
 
         elif event.event_type == EventType.RIGHTS_ISSUE:
@@ -265,14 +266,11 @@ def adjust_prices(
     if len(common_idx) == 0:
         return adjusted
 
-    if mode == AdjustmentMode.PRE_ADJUSTED:
-        factor_col = "pre_factor"
-    elif mode == AdjustmentMode.POST_ADJUSTED:
-        factor_col = "post_factor"
-    elif mode == AdjustmentMode.TOTAL_RETURN:
-        factor_col = "total_return_factor"
-    else:
-        factor_col = "pre_factor"
+    factor_col = {
+        AdjustmentMode.PRE_ADJUSTED: "pre_factor",
+        AdjustmentMode.POST_ADJUSTED: "post_factor",
+        AdjustmentMode.TOTAL_RETURN: "total_return_factor",
+    }[mode]
 
     factors_aligned = fac_df.loc[common_idx, factor_col]
 
@@ -284,9 +282,7 @@ def adjust_prices(
 
     # Volume adjusted inversely (shares * factor = price * volume / factor)
     if "volume" in adjusted.columns:
-        adjusted.loc[common_idx, "volume"] = (
-            adjusted.loc[common_idx, "volume"] / factors_aligned
-        )
+        adjusted.loc[common_idx, "volume"] = adjusted.loc[common_idx, "volume"] / factors_aligned
 
     return adjusted
 
@@ -301,7 +297,7 @@ class EventCalendar:
     Currently fetches from AKShare (A-shares). Extensible to other markets.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._cache: dict[str, list[CorporateActionEvent]] = {}
 
     async def fetch_dividends(
@@ -309,7 +305,7 @@ class EventCalendar:
     ) -> list[CorporateActionEvent]:
         """Fetch dividend history for an A-share stock."""
         try:
-            import akshare as ak  # type: ignore[import-untyped]
+            import akshare as ak
 
             code = symbol.split(".")[0]
             df = ak.stock_dividents_cninfo(symbol=code)
@@ -323,13 +319,15 @@ class EventCalendar:
                     ev_date = pd.Timestamp(row.get("除权除息日") or row.get("报告期")).date()
                     div_val = float(row.get("每股派息", 0) or 0)
                     if div_val > 0 and (start_date is None or ev_date >= start_date):
-                        events.append(CorporateActionEvent(
-                            symbol=symbol,
-                            event_date=ev_date,
-                            event_type=EventType.DIVIDEND,
-                            cash_dividend_per_share=div_val,
-                            source="akshare",
-                        ))
+                        events.append(
+                            CorporateActionEvent(
+                                symbol=symbol,
+                                event_date=ev_date,
+                                event_type=EventType.DIVIDEND,
+                                cash_dividend_per_share=div_val,
+                                source="akshare",
+                            )
+                        )
                 except (ValueError, KeyError):
                     continue
 
@@ -348,9 +346,11 @@ class EventCalendar:
             import akshare as ak
 
             code = symbol.split(".")[0]
-            df = ak.stock_zh_a_hist(
-                symbol=code, period="daily",
-                start_date="19900101", end_date="20500101",
+            ak.stock_zh_a_hist(
+                symbol=code,
+                period="daily",
+                start_date="19900101",
+                end_date="20500101",
                 adjust="",  # Unadjusted
             )
             # AKShare doesn't directly expose splits — detect from price discontinuities
@@ -428,7 +428,9 @@ class DeliveryHandler:
 
         Returns impact report dict.
         """
-        intrinsic = max(0, (underlying_price - strike) if option_type == "call" else (strike - underlying_price))
+        intrinsic = max(
+            0, (underlying_price - strike) if option_type == "call" else (strike - underlying_price)
+        )
         settlement = intrinsic * quantity
 
         return {
@@ -460,7 +462,7 @@ class ImpactReport:
     """
 
     @staticmethod
-    def generate(events: list[CorporateActionEvent], holdings: float = 0) -> dict:
+    def generate(events: list[CorporateActionEvent], holdings: float = 0) -> dict[str, Any]:
         """
         Generate impact summary from a list of corporate action events.
 
@@ -471,18 +473,20 @@ class ImpactReport:
         Returns:
             Report dict with cash flows, share changes, and capital requirements.
         """
-        report = {
+        by_type: dict[str, Any] = {}
+        details: list[dict[str, Any]] = []
+        report: dict[str, Any] = {
             "total_events": len(events),
             "cash_dividends_total": 0.0,
             "shares_change_pct": 0.0,
             "rights_issue_capital_needed": 0.0,
-            "by_type": {},
-            "details": [],
+            "by_type": by_type,
+            "details": details,
         }
 
         cum_split = 1.0
         for ev in events:
-            detail = {
+            detail: dict[str, Any] = {
                 "date": ev.event_date.isoformat(),
                 "type": ev.event_type.value,
                 "symbol": ev.symbol,
@@ -493,14 +497,14 @@ class ImpactReport:
                 report["cash_dividends_total"] += cash
                 detail["cash_amount"] = cash
                 detail["per_share"] = ev.cash_dividend_per_share
-                report.setdefault("by_type", {}).setdefault("dividend", 0)
-                report["by_type"]["dividend"] = report["by_type"].get("dividend", 0) + cash
+                by_type.setdefault("dividend", 0.0)
+                by_type["dividend"] += cash
 
             elif ev.event_type == EventType.STOCK_SPLIT and ev.split_ratio:
                 cum_split *= ev.split_ratio
                 detail["split_ratio"] = ev.split_ratio
                 detail["cumulative_split"] = cum_split
-                report.setdefault("by_type", {}).setdefault("split", []).append(ev.split_ratio)
+                by_type.setdefault("split", []).append(ev.split_ratio)
 
             elif ev.event_type == EventType.RIGHTS_ISSUE and ev.rights_ratio:
                 new_shares = holdings * ev.rights_ratio * cum_split
@@ -509,7 +513,7 @@ class ImpactReport:
                 detail["new_shares"] = new_shares
                 detail["capital_needed"] = capital
 
-            report["details"].append(detail)
+            details.append(detail)
 
         report["shares_change_pct"] = round((cum_split - 1.0) * 100, 2)
         report["cash_dividends_total"] = round(report["cash_dividends_total"], 2)

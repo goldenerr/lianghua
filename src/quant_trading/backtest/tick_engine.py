@@ -9,10 +9,12 @@ Key features:
   4. Market impact at tick granularity
   5. Exact bar-by-bar replay for strategy validation
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Any
 
 import numpy as np
 
@@ -20,17 +22,19 @@ import numpy as np
 @dataclass
 class Tick:
     """Single market tick."""
-    timestamp: float          # seconds from session start
+
+    timestamp: float  # seconds from session start
     price: float
     volume: int
     bid: float = 0.0
     ask: float = 0.0
-    is_buy: bool = True       # trade direction (Lee-Ready algo)
+    is_buy: bool = True  # trade direction (Lee-Ready algo)
 
 
 @dataclass
 class TickBar:
     """Aggregated bar (1min, 5min, etc.)"""
+
     timestamp: float
     open: float
     high: float
@@ -46,6 +50,7 @@ class TickBar:
 @dataclass
 class TickSession:
     """One trading session of tick data."""
+
     date: str
     ticks: list[Tick] = field(default_factory=list)
     bars: dict[int, list[TickBar]] = field(default_factory=dict)  # {resolution_seconds: bars}
@@ -54,12 +59,13 @@ class TickSession:
 @dataclass
 class TickBacktestResult:
     """Tick-level backtest result."""
+
     total_return: float
     sharpe_ratio: float
     max_drawdown: float
     win_rate: float
-    avg_slippage_bps: float      # average slippage in bps
-    fill_rate: float             # % of orders filled
+    avg_slippage_bps: float  # average slippage in bps
+    fill_rate: float  # % of orders filled
     avg_execution_time_sec: float  # average time to fill
     n_trades: int
     n_ticks_processed: int
@@ -69,9 +75,10 @@ class TickBacktestResult:
 # Synthetic Tick Generation
 # ═══════════════════════════════════════════════════════════════
 
+
 class TickGenerator:
     """Generate realistic synthetic tick data from daily OHLCV.
-    
+
     Uses:
       - Brownian bridge for intraday price path (respects O/H/L/C)
       - U-shaped volume profile (A-share specific)
@@ -80,12 +87,12 @@ class TickGenerator:
     """
 
     # A-share session: 9:30-11:30, 13:00-15:00 = 240 minutes
-    SESSION_START = 9 * 3600 + 30 * 60   # 09:30 in seconds
-    MORNING_END = 11 * 3600 + 30 * 60    # 11:30
-    AFTERNOON_START = 13 * 3600           # 13:00
-    SESSION_END = 15 * 3600              # 15:00
+    SESSION_START = 9 * 3600 + 30 * 60  # 09:30 in seconds
+    MORNING_END = 11 * 3600 + 30 * 60  # 11:30
+    AFTERNOON_START = 13 * 3600  # 13:00
+    SESSION_END = 15 * 3600  # 15:00
 
-    def __init__(self, tick_frequency_sec: float = 3.0, spread_bps: float = 2.0):
+    def __init__(self, tick_frequency_sec: float = 3.0, spread_bps: float = 2.0) -> None:
         """
         Args:
             tick_frequency_sec: average seconds between ticks (3s = ~4800 ticks/day)
@@ -95,17 +102,24 @@ class TickGenerator:
         self.spread_bps = spread_bps / 10000  # convert to decimal
         self.rng = np.random.RandomState(42)
 
-    def generate_session(self, open_price: float, high: float, low: float,
-                          close: float, volume: int, date_str: str = "",
-                          resolution_sec: int = 60) -> TickSession:
+    def generate_session(
+        self,
+        open_price: float,
+        high: float,
+        low: float,
+        close: float,
+        volume: int,
+        date_str: str = "",
+        resolution_sec: int = 60,
+    ) -> TickSession:
         """Generate one trading session of tick data.
-        
+
         Args:
             open_price, high, low, close: daily OHLC
             volume: daily volume (shares)
             date_str: date label
             resolution_sec: bar resolution (60 = 1min bars)
-        
+
         Returns TickSession with ticks and bars.
         """
         session = TickSession(date=date_str)
@@ -159,10 +173,18 @@ class TickGenerator:
 
         return session
 
-    def _generate_price_path(self, O, H, L, C, n_ticks, total_seconds):
+    def _generate_price_path(
+        self,
+        open_price: float,
+        high: float,
+        low: float,
+        close: float,
+        n_ticks: int,
+        total_seconds: int,
+    ) -> np.ndarray:
         """Generate Brownian bridge that respects OHLC."""
-        log_O = np.log(O)
-        log_C = np.log(C)
+        log_O = np.log(open_price)
+        log_C = np.log(close)
 
         # Standard Brownian bridge: B(t) = O + t*(C-O) + √t*(B_t - t*B_1)
         t = np.linspace(0, 1, n_ticks)
@@ -179,15 +201,17 @@ class TickGenerator:
         # Rescale to match H and L exactly
         log_path_min = log_path.min()
         log_path_max = log_path.max()
-        target_log_H = np.log(H)
-        target_log_L = np.log(L)
+        target_log_H = np.log(high)
+        target_log_L = np.log(low)
 
         if abs(log_path_max - log_path_min) > 1e-12:
-            log_path = target_log_L + (log_path - log_path_min) * (target_log_H - target_log_L) / (log_path_max - log_path_min)
+            log_path = target_log_L + (log_path - log_path_min) * (target_log_H - target_log_L) / (
+                log_path_max - log_path_min
+            )
 
-        return np.exp(log_path)
+        return np.asarray(np.exp(log_path), dtype=float)
 
-    def _generate_volume_profile(self, total_volume, n_ticks):
+    def _generate_volume_profile(self, total_volume: int, n_ticks: int) -> np.ndarray:
         """U-shaped intraday volume profile (typical for A-shares)."""
         t = np.linspace(0, 1, n_ticks)
 
@@ -203,7 +227,7 @@ class TickGenerator:
         scale = total_volume / volumes.sum() if volumes.sum() > 0 else 1
         volumes = (volumes * scale).astype(int)
 
-        return volumes
+        return np.asarray(volumes, dtype=int)
 
     def _aggregate_bars(self, ticks: list[Tick], resolution_sec: int) -> list[TickBar]:
         """Aggregate ticks into OHLCV bars."""
@@ -231,7 +255,7 @@ class TickGenerator:
                 low=min(prices),
                 close=prices[-1],
                 volume=sum(volumes),
-                vwap=np.average(prices, weights=volumes),
+                vwap=float(np.average(prices, weights=volumes)),
                 n_ticks=len(bar_ticks),
                 bid_close=bar_ticks[-1].bid,
                 ask_close=bar_ticks[-1].ask,
@@ -245,23 +269,24 @@ class TickGenerator:
 # Tick-Level Backtest Engine
 # ═══════════════════════════════════════════════════════════════
 
+
 class TickBacktestEngine:
     """Tick-level strategy backtesting with realistic microstructure."""
 
-    def __init__(self, tick_generator: TickGenerator = None):
+    def __init__(self, tick_generator: TickGenerator | None = None) -> None:
         self.generator = tick_generator or TickGenerator()
-        self.order_book = {}  # {symbol: list[TickBar]} current day's bars
+        self.order_book: dict[str, list[TickBar]] = {}  # current day's bars
 
     def run_backtest(
         self,
-        daily_data: dict[str, np.ndarray],  # {symbol: {open/high/low/close/volume arrays}}
-        signal_func: Callable,               # (date_idx, symbols) → {symbol: target_weight}
-        dates: list,
+        daily_data: dict[str, dict[str, np.ndarray]],
+        signal_func: Callable[[int, list[str]], dict[str, float]],
+        dates: list[str],
         initial_capital: float = 1e6,
         resolution_sec: int = 60,
     ) -> TickBacktestResult:
         """Run tick-level backtest.
-        
+
         Args:
             daily_data: per-symbol daily OHLCV data
             signal_func: generates target weights each day
@@ -270,7 +295,7 @@ class TickBacktestEngine:
             resolution_sec: bar resolution for execution
         """
         cash = initial_capital
-        positions = {}  # {symbol: {shares, avg_cost}}
+        positions: dict[str, dict[str, float]] = {}  # {symbol: {shares, avg_cost}}
         equity_curve = [initial_capital]
         daily_returns = []
         slippages_bps = []
@@ -284,22 +309,23 @@ class TickBacktestEngine:
             target_weights = signal_func(day_idx, list(daily_data.keys()))
 
             # Generate tick data for the day
-            sessions = {}
+            sessions: dict[str, TickSession] = {}
             for sym, data in daily_data.items():
-                if day_idx >= len(data.get('close', [])):
+                if day_idx >= len(data.get("close", [])):
                     continue
 
-                O = data['open'][day_idx]
-                H = data['high'][day_idx]
-                L = data['low'][day_idx]
-                C = data['close'][day_idx]
-                V = data['volume'][day_idx]
+                open_price = data["open"][day_idx]
+                high = float(data["high"][day_idx])
+                low = float(data["low"][day_idx])
+                close = float(data["close"][day_idx])
+                volume = float(data["volume"][day_idx])
+                open_price = float(open_price)
 
-                if O <= 0 or C <= 0 or V <= 0:
+                if open_price <= 0 or close <= 0 or volume <= 0:
                     continue
 
                 session = self.generator.generate_session(
-                    O, H, L, C, int(V), str(dates[day_idx]), resolution_sec
+                    open_price, high, low, close, int(volume), str(dates[day_idx]), resolution_sec
                 )
                 sessions[sym] = session
                 total_ticks += len(session.ticks)
@@ -310,11 +336,11 @@ class TickBacktestEngine:
                 positions, target_weights, sessions, cash, resolution_sec
             )
 
-            cash += day_trades['pnl']
-            n_trades += day_trades['n_trades']
-            slippages_bps.extend(day_trades['slippages'])
-            fill_rates.append(day_trades['fill_rate'])
-            exec_times.extend(day_trades['exec_times'])
+            cash += day_trades["pnl"]
+            n_trades += int(day_trades["n_trades"])
+            slippages_bps.extend(day_trades["slippages"])
+            fill_rates.append(float(day_trades["fill_rate"]))
+            exec_times.extend(day_trades["exec_times"])
 
             marked_positions = sum(
                 pos["shares"] * sessions[sym].ticks[-1].price
@@ -336,34 +362,47 @@ class TickBacktestEngine:
         mdd = np.min((eq - peak) / peak)
 
         return TickBacktestResult(
-            total_return=eq[-1] / eq[0] - 1,
-            sharpe_ratio=sharpe,
-            max_drawdown=mdd,
-            win_rate=np.mean(rets > 0),
-            avg_slippage_bps=np.mean(slippages_bps) * 10000 if slippages_bps else 0,
-            fill_rate=np.mean(fill_rates) if fill_rates else 0,
-            avg_execution_time_sec=np.mean(exec_times) if exec_times else 0,
+            total_return=float(eq[-1] / eq[0] - 1),
+            sharpe_ratio=float(sharpe),
+            max_drawdown=float(mdd),
+            win_rate=float(np.mean(rets > 0)),
+            avg_slippage_bps=float(np.mean(slippages_bps) * 10000) if slippages_bps else 0,
+            fill_rate=float(np.mean(fill_rates)) if fill_rates else 0,
+            avg_execution_time_sec=float(np.mean(exec_times)) if exec_times else 0,
             n_trades=n_trades,
             n_ticks_processed=total_ticks,
         )
 
-    def _execute_day(self, positions, target_weights, sessions, capital, resolution_sec):
+    def _execute_day(
+        self,
+        positions: dict[str, dict[str, float]],
+        target_weights: dict[str, float],
+        sessions: dict[str, TickSession],
+        capital: float,
+        resolution_sec: int,
+    ) -> dict[str, Any]:
         """Execute one day's trades bar-by-bar."""
-        trades = {'pnl': 0.0, 'n_trades': 0, 'slippages': [],
-                   'fill_rate': 0.0, 'exec_times': [], 'return_pct': 0.0}
+        trades: dict[str, Any] = {
+            "pnl": 0.0,
+            "n_trades": 0,
+            "slippages": [],
+            "fill_rate": 0.0,
+            "exec_times": [],
+            "return_pct": 0.0,
+        }
 
         # Calculate current weights
-        current_values = {}
+        current_values: dict[str, float] = {}
         total_value = capital
         for sym, pos in positions.items():
             if sym in sessions:
                 last_price = sessions[sym].ticks[-1].price if sessions[sym].ticks else 0
-                val = pos['shares'] * last_price
+                val = pos["shares"] * last_price
                 current_values[sym] = val
                 total_value += val
 
         # Generate orders
-        orders = []
+        orders: list[dict[str, Any]] = []
         for sym, tw in target_weights.items():
             if sym not in sessions:
                 continue
@@ -381,12 +420,14 @@ class TickBacktestEngine:
 
             shares = int(abs(diff) / current_price / 100) * 100
             if shares >= 100:
-                orders.append({
-                    'sym': sym,
-                    'side': 'buy' if diff > 0 else 'sell',
-                    'shares': shares,
-                    'remaining': shares,
-                })
+                orders.append(
+                    {
+                        "sym": sym,
+                        "side": "buy" if diff > 0 else "sell",
+                        "shares": shares,
+                        "remaining": shares,
+                    }
+                )
 
         if not orders:
             return trades
@@ -396,10 +437,10 @@ class TickBacktestEngine:
 
         for bar_idx in range(max_bars):
             for order in orders:
-                if order['remaining'] <= 0:
+                if order["remaining"] <= 0:
                     continue
 
-                sym = order['sym']
+                sym = order["sym"]
                 bars = sessions[sym].bars.get(resolution_sec, [])
                 if bar_idx >= len(bars):
                     continue
@@ -408,62 +449,57 @@ class TickBacktestEngine:
 
                 # Execute at VWAP ± half spread
                 exec_price = bar.vwap
-                if order['side'] == 'buy':
-                    exec_price = bar.ask_close
-                else:
-                    exec_price = bar.bid_close
+                exec_price = bar.ask_close if order["side"] == "buy" else bar.bid_close
 
                 # VWAP participation: fill proportional to bar volume / daily volume
                 daily_vol = sum(b.volume for b in bars)
-                if daily_vol > 0:
-                    fill_pct = min(1.0, bar.volume / daily_vol * 3)  # up to 3x volume share
-                else:
-                    fill_pct = 0.1
+                fill_pct = (
+                    min(1.0, bar.volume / daily_vol * 3) if daily_vol > 0 else 0.1
+                )  # up to 3x volume share
 
-                fill_shares = int(order['remaining'] * fill_pct)
+                fill_shares = int(order["remaining"] * fill_pct)
                 if fill_shares < 100:
                     continue
 
-                fill_shares = min(fill_shares, order['remaining'])
+                fill_shares = min(fill_shares, order["remaining"])
 
                 # Record trade
                 mid_price = (bar.high + bar.low) / 2
                 slippage = abs(exec_price - mid_price) / mid_price
 
-                if order['side'] == 'buy':
+                if order["side"] == "buy":
                     cost = fill_shares * exec_price
-                    trades['pnl'] -= cost
-                    position = positions.setdefault(sym, {'shares': 0, 'avg_cost': 0.0})
-                    old_shares = position['shares']
+                    trades["pnl"] -= cost
+                    position = positions.setdefault(sym, {"shares": 0, "avg_cost": 0.0})
+                    old_shares = position["shares"]
                     new_shares = old_shares + fill_shares
-                    position['avg_cost'] = (
-                        (old_shares * position['avg_cost'] + cost) / new_shares
-                    )
-                    position['shares'] = new_shares
+                    position["avg_cost"] = (old_shares * position["avg_cost"] + cost) / new_shares
+                    position["shares"] = new_shares
                 else:
-                    position = positions.get(sym)
-                    available = position['shares'] if position else 0
+                    sell_position = positions.get(sym)
+                    available = sell_position["shares"] if sell_position else 0
                     fill_shares = min(fill_shares, available)
                     if fill_shares <= 0:
                         continue
                     proceeds = fill_shares * exec_price
-                    trades['pnl'] += proceeds
-                    position['shares'] -= fill_shares
-                    if position['shares'] <= 0:
+                    trades["pnl"] += proceeds
+                    assert sell_position is not None
+                    sell_position["shares"] -= fill_shares
+                    if sell_position["shares"] <= 0:
                         positions.pop(sym, None)
 
-                order['remaining'] -= fill_shares
+                order["remaining"] -= fill_shares
 
-                trades['n_trades'] += 1
-                trades['slippages'].append(slippage)
-                trades['exec_times'].append(bar_idx * resolution_sec / 60)
+                trades["n_trades"] += 1
+                trades["slippages"].append(slippage)
+                trades["exec_times"].append(bar_idx * resolution_sec / 60)
 
         # Check fill rate
-        total_ordered = sum(o['shares'] for o in orders)
-        total_remaining = sum(o['remaining'] for o in orders)
-        trades['fill_rate'] = 1.0 - total_remaining / max(total_ordered, 1)
+        total_ordered = sum(o["shares"] for o in orders)
+        total_remaining = sum(o["remaining"] for o in orders)
+        trades["fill_rate"] = 1.0 - total_remaining / max(total_ordered, 1)
 
         # Calculate day return
-        trades['return_pct'] = trades['pnl'] / max(capital, 1)
+        trades["return_pct"] = trades["pnl"] / max(capital, 1)
 
         return trades

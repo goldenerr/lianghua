@@ -1,4 +1,5 @@
 """Tests for state machine and invariant enforcement."""
+
 from quant_trading.core.state_machine import (
     InvariantEnforcer,
     OrderState,
@@ -94,9 +95,14 @@ class TestInvariantEnforcer:
         fsm.transition(SystemState.RUNNING)
         enforcer = InvariantEnforcer(fsm)
         results = enforcer.check_all(
-            internal_position=100, exchange_position=100,
-            realized_pnl=5000, unrealized_pnl=1000, cash=94000,
-            total_equity=100000, var_95=3.0, max_var=5.0,
+            internal_position=100,
+            exchange_position=100,
+            realized_pnl=5000,
+            unrealized_pnl=1000,
+            cash=94000,
+            total_equity=100000,
+            var_95=3.0,
+            max_var=5.0,
         )
         assert all(r.passed for r in results)
 
@@ -105,8 +111,11 @@ class TestInvariantEnforcer:
         fsm.transition(SystemState.RUNNING)
         enforcer = InvariantEnforcer(fsm)
         results = enforcer.check_all(
-            internal_position=100, exchange_position=100,
-            realized_pnl=5000, unrealized_pnl=1000, cash=94000,
+            internal_position=100,
+            exchange_position=100,
+            realized_pnl=5000,
+            unrealized_pnl=1000,
+            cash=94000,
             total_equity=200000,  # MISMATCH
         )
         assert any(not r.passed for r in results)
@@ -117,7 +126,7 @@ class TestInvariantEnforcer:
         fsm.transition(SystemState.RUNNING)
         enforcer = InvariantEnforcer(fsm)
 
-        r1 = enforcer.check_all(client_order_id="dup-1")
+        enforcer.check_all(client_order_id="dup-1")
         r2 = enforcer.check_all(client_order_id="dup-1")
         assert any(not r.passed for r in r2)
 

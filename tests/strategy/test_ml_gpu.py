@@ -62,6 +62,7 @@ def test_crowding_and_cpu_gpu_fallback_factor_matrix(monkeypatch) -> None:
     cpu = compute_factor_matrix_cpu(closes, volumes, amounts)
 
     import quant_trading.strategy.gpu_factors as gpu
+
     monkeypatch.setattr(gpu, "HAS_CUPY", False)
     fallback = compute_factor_matrix_gpu(closes, volumes, amounts)
     assert set(cpu) == set(fallback)

@@ -2,11 +2,12 @@
 # AGENTS.md §2: prod 配置必须从 Vault / AWS Secrets Manager 读取
 env: prod
 
-# In production, these secrets come from Vault:
+# In production, these secrets come from Vault / AWS Secrets Manager / sealed secrets:
 #   - exchange API keys
 #   - database passwords
 #   - encryption keys
 # NEVER store real secrets in this file.
+# Production startup requires a validated configuration approval reference.
 # This file only contains non-sensitive prod overrides.
 
 auto_trade_enabled: false   # Must be manually enabled after approval

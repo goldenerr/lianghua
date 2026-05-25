@@ -48,7 +48,8 @@ class VaRMethod(str, Enum):
 
 class TradingSession(BaseModel):
     """单个市场交易时段配置。UTC 内部存储。"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
     market: Market
     sessions: list[tuple[str, str]]  # [(HH:MM, HH:MM), ...]
     timezone: str = "Asia/Shanghai"
@@ -56,7 +57,8 @@ class TradingSession(BaseModel):
 
 class MarketRules(BaseModel):
     """单个市场的交易规则。"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
     market: Market
     tick_size: float = Field(gt=0, description="最小变动价位")
     lot_size: int = Field(ge=1, description="每手数量")
@@ -67,7 +69,8 @@ class MarketRules(BaseModel):
 
 class ApiEndpointConfig(BaseModel):
     """单个交易所 API 端点配置。"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
     base_url: str
     ws_url: str | None = None
     timeout_seconds: int = Field(default=10, ge=1, le=60)
@@ -79,7 +82,8 @@ class ApiEndpointConfig(BaseModel):
 
 class ApiCredentials(BaseModel):
     """单个交易所凭证。所有敏感字段强制 SecretStr/SecretBytes。"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
     exchange: str
     api_key: SecretStr
     api_secret: SecretBytes  # bytes for binary signing keys
@@ -103,13 +107,24 @@ class ApiCredentials(BaseModel):
 
 class AccountConfig(BaseModel):
     """多账户配置。"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
     account_id: str
     name: str
     exchange: str
-    credentials: ApiCredentials
+    environment: Environment = Environment.DEV
+    secret_ref: str | None = None
+    credentials: ApiCredentials | None = None
     enabled: bool = True
     default_leverage: float = Field(default=1.0, ge=1.0, le=125.0)
+
+    @model_validator(mode="after")
+    def credentials_or_reference_present(self) -> AccountConfig:
+        if self.credentials is None and not (self.secret_ref and self.secret_ref.strip()):
+            raise ValueError("account must provide credentials or secret_ref")
+        if self.credentials is not None and self.credentials.exchange != self.exchange:
+            raise ValueError("credential exchange must match account exchange")
+        return self
 
 
 # ── Top-level Settings ───────────────────────────────────────────────────────
@@ -117,22 +132,17 @@ class AccountConfig(BaseModel):
 
 class SystemSettings(BaseModel):
     """系统级配置 (system.yaml)"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     env: Environment = Environment.DEV
     primary_markets: list[Market] = Field(
-        default=[Market.A_SHARES],
-        min_length=1,
-        description="主要交易市场列表"
+        default=[Market.A_SHARES], min_length=1, description="主要交易市场列表"
     )
     trading_sessions: list[TradingSession] = Field(
-        default_factory=list,
-        description="各市场交易时段"
+        default_factory=list, description="各市场交易时段"
     )
-    market_rules: list[MarketRules] = Field(
-        default_factory=list,
-        description="各市场交易规则"
-    )
+    market_rules: list[MarketRules] = Field(default_factory=list, description="各市场交易规则")
     # Graceful shutdown
     close_positions_on_shutdown: bool = False
     shutdown_timeout_seconds: int = Field(default=30, ge=5, le=300)
@@ -152,10 +162,12 @@ class SystemSettings(BaseModel):
 
 class RiskSettings(BaseModel):
     """风控参数 (risk.yaml)。每次变更必须更新此文件并提交。"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     # 仓位限制
     max_position_pct: float = Field(default=0.20, gt=0, le=1.0)
+    max_per_sector: int = Field(default=5, ge=1)
     max_total_leverage: float = Field(default=2.0, ge=1.0, le=10.0)
     # 亏损限制
     max_daily_loss_pct: float = Field(default=0.02, gt=0, le=1.0)
@@ -167,6 +179,7 @@ class RiskSettings(BaseModel):
     # 回撤
     mdd_reduce_to_50pct: float = Field(default=0.15, gt=0, le=1.0)
     mdd_liquidate_all: float = Field(default=0.25, gt=0, le=1.0)
+    mdd_reduce_scale: float = Field(default=0.50, gt=0, le=1.0)
     # 熔断
     circuit_breaker_daily_loss: float = Field(default=0.03, gt=0, le=1.0)
     circuit_breaker_daily_loss_force: float = Field(default=0.05, gt=0, le=1.0)
@@ -178,19 +191,62 @@ class RiskSettings(BaseModel):
     max_weekly_loss_pct: float = Field(default=0.03, gt=0, le=1.0)
     # 外汇
     max_fx_exposure_pct: float = Field(default=0.30, gt=0, le=1.0)
+    strategy: StrategyRiskSettings | None = None
+    gates: PerformanceGateSettings | None = None
 
     @model_validator(mode="after")
     def mdd_order_consistent(self) -> RiskSettings:
         if self.mdd_reduce_to_50pct >= self.mdd_liquidate_all:
             raise ValueError("mdd_reduce_to_50pct must be < mdd_liquidate_all")
         if self.circuit_breaker_daily_loss >= self.circuit_breaker_daily_loss_force:
-            raise ValueError("circuit_breaker_daily_loss must be < circuit_breaker_daily_loss_force")
+            raise ValueError(
+                "circuit_breaker_daily_loss must be < circuit_breaker_daily_loss_force"
+            )
         return self
+
+
+class StrategyRiskSettings(BaseModel):
+    """Validated allocation parameters embedded in the risk configuration."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    top_n: int = Field(ge=1)
+    rebalance_freq_days: int = Field(ge=1)
+    factors: list[str] = Field(min_length=1)
+    weights: dict[str, float] = Field(min_length=1)
+    sector_cap: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def factors_and_weights_consistent(self) -> StrategyRiskSettings:
+        if set(self.factors) != set(self.weights):
+            raise ValueError("strategy factors and weights must define identical names")
+        if any(weight < 0 for weight in self.weights.values()):
+            raise ValueError("strategy weights must be non-negative")
+        if abs(sum(self.weights.values()) - 1.0) > 1e-6:
+            raise ValueError("strategy weights must sum to 1.0")
+        if self.sector_cap > self.top_n:
+            raise ValueError("strategy sector_cap cannot exceed top_n")
+        return self
+
+
+class PerformanceGateSettings(BaseModel):
+    """Validated strategy admission gates from risk.yaml."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    min_sharpe: float = Field(ge=0)
+    max_mdd: float = Field(lt=0, ge=-1.0)
+    min_win_rate: float = Field(ge=0, le=1.0)
+    max_decay: float = Field(ge=0, le=1.0)
+
+
+RiskSettings.model_rebuild()
 
 
 class ApiSettings(BaseModel):
     """交易所 API 配置 (api.yaml)"""
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     exchanges: dict[str, ApiEndpointConfig] = Field(default_factory=dict)
 
@@ -200,7 +256,8 @@ class QuantSettings(BaseModel):
     顶层配置聚合模型 — frozen=True 防止运行时修改。
     从多个 YAML 文件加载，支持环境变量覆盖。
     """
-    model_config = ConfigDict(frozen=True)
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     system: SystemSettings = Field(default_factory=SystemSettings)
     risk: RiskSettings = Field(default_factory=RiskSettings)
@@ -209,6 +266,7 @@ class QuantSettings(BaseModel):
     # 运行时的系统版本清单 (core-004 填充)
     version: str = "0.1.0"
     config_hash: str = ""
+    config_approval_ref: str = ""
 
 
 # ── Validation helpers ───────────────────────────────────────────────────────
@@ -225,6 +283,8 @@ def validate_config(settings: QuantSettings) -> list[str]:
 
     if not settings.system.primary_markets:
         errors.append("system.primary_markets must not be empty")
+    if settings.system.env == Environment.PROD and not settings.system.require_manual_approval:
+        errors.append("production requires manual approval for funds-impacting operations")
 
     try:
         RiskSettings.model_validate(settings.risk.model_dump())
@@ -232,11 +292,19 @@ def validate_config(settings: QuantSettings) -> list[str]:
         errors.append(f"risk settings invalid: {e}")
 
     for i, acct in enumerate(settings.accounts):
+        if acct.credentials is None:
+            errors.append(f"accounts[{i}].credentials have not been resolved")
+            continue
         try:
             key_val = acct.credentials.api_key.get_secret_value()
             if not key_val.strip():
                 errors.append(f"accounts[{i}].api_key is empty")
         except Exception:
             errors.append(f"accounts[{i}].api_key is missing or invalid")
+
+    if settings.system.auto_trade_enabled and not any(
+        account.enabled and account.credentials is not None for account in settings.accounts
+    ):
+        errors.append("automatic trading requires an enabled account with resolved credentials")
 
     return errors

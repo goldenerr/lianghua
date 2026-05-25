@@ -1,5 +1,5 @@
-
 """Position reconciler (exec-002). AGENTS.md §18: 30s reconciliation, Safe Mode on mismatch."""
+
 from __future__ import annotations
 
 import asyncio

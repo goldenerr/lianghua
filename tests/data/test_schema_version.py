@@ -1,4 +1,6 @@
 """Tests for data schema version management (data-004)."""
+
+from dataclasses import FrozenInstanceError
 from datetime import datetime, timezone
 
 import pytest
@@ -17,7 +19,7 @@ UTC = timezone.utc
 
 
 class TestSchemaVersion:
-    def test_parse_vYYYY_MM(self):
+    def test_parse_vyyyy_mm(self):
         v = SchemaVersion.parse("v2026.05")
         assert v.year == 2026
         assert v.month == 5
@@ -52,7 +54,7 @@ class TestSchemaVersion:
 
     def test_frozen(self):
         v = SchemaVersion.parse("v2026.05")
-        with pytest.raises(Exception):
+        with pytest.raises(FrozenInstanceError):
             v.year = 2027  # type: ignore
 
     def test_current(self):
@@ -94,24 +96,31 @@ class TestCompatibilityMatrix:
     def test_newer_minor_patch(self):
         m = CompatibilityMatrix()
         src = SchemaTable(
-            "t", SchemaVersion.parse("v2026.05"),
-            {"a": "Float64"}, required_columns=["a"],
+            "t",
+            SchemaVersion.parse("v2026.05"),
+            {"a": "Float64"},
+            required_columns=["a"],
         )
         tgt = SchemaTable(
-            "t", SchemaVersion.parse("v2026.05.01"),
+            "t",
+            SchemaVersion.parse("v2026.05.01"),
             {"a": "Float64", "b": "String"},
-            required_columns=["a"], optional_columns=["b"],
+            required_columns=["a"],
+            optional_columns=["b"],
         )
         assert m.check(src, tgt) == CompatibilityLevel.BACKWARD
 
     def test_added_required_column_incompatible(self):
         m = CompatibilityMatrix()
         src = SchemaTable(
-            "t", SchemaVersion.parse("v2026.05"),
-            {"a": "Float64"}, required_columns=["a"],
+            "t",
+            SchemaVersion.parse("v2026.05"),
+            {"a": "Float64"},
+            required_columns=["a"],
         )
         tgt = SchemaTable(
-            "t", SchemaVersion.parse("v2026.06"),
+            "t",
+            SchemaVersion.parse("v2026.06"),
             {"a": "Float64", "b": "String"},
             required_columns=["a", "b"],  # b is now required → incompatible
         )
@@ -120,12 +129,14 @@ class TestCompatibilityMatrix:
     def test_dropped_required_column_incompatible(self):
         m = CompatibilityMatrix()
         src = SchemaTable(
-            "t", SchemaVersion.parse("v2026.05"),
+            "t",
+            SchemaVersion.parse("v2026.05"),
             {"a": "Float64", "b": "Float64"},
             required_columns=["a", "b"],
         )
         tgt = SchemaTable(
-            "t", SchemaVersion.parse("v2026.06"),
+            "t",
+            SchemaVersion.parse("v2026.06"),
             {"a": "Float64", "c": "Float64"},
             required_columns=["a", "c"],
         )
@@ -147,12 +158,15 @@ class TestCompatibilityMatrix:
     def test_optional_removed_forward_compatible(self):
         m = CompatibilityMatrix()
         src = SchemaTable(
-            "t", SchemaVersion.parse("v2026.05"),
+            "t",
+            SchemaVersion.parse("v2026.05"),
             {"a": "Float64", "b": "Float64"},
-            required_columns=["a"], optional_columns=["b"],
+            required_columns=["a"],
+            optional_columns=["b"],
         )
         tgt = SchemaTable(
-            "t", SchemaVersion.parse("v2026.06"),
+            "t",
+            SchemaVersion.parse("v2026.06"),
             {"a": "Float64"},
             required_columns=["a"],
         )

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
 from enum import Enum
+from typing import ClassVar
 
 import pandas as pd
 
@@ -23,6 +24,7 @@ UTC = timezone.utc
 
 class Market(str, Enum):
     """Trading market identifier. Must match config/system.yaml primary_markets."""
+
     A_SHARES = "A股"
     FUTURES = "期货"
     CRYPTO = "加密货币"
@@ -33,11 +35,11 @@ class Market(str, Enum):
 
 # pandas_market_calendars exchange codes
 _MARKET_TO_CALENDAR: dict[Market, str] = {
-    Market.A_SHARES: "XSHG",       # Shanghai Stock Exchange
+    Market.A_SHARES: "XSHG",  # Shanghai Stock Exchange
     Market.US_STOCKS: "NYSE",
     Market.HK_STOCKS: "HKEX",
     # Futures and Crypto — custom calendar (24/7 minus known holidays)
-    Market.FUTURES: "XSHG",        # Uses Shanghai calendar + night session logic
+    Market.FUTURES: "XSHG",  # Uses Shanghai calendar + night session logic
 }
 
 
@@ -65,8 +67,8 @@ class Session:
 # AGENTS.md §30: 加密货币 24/7, A股 9:30-11:30,13:00-15:00, 期货含夜盘
 
 A_SHARE_SESSIONS = [
-    Session(time(1, 30), time(3, 30), "上午"),   # 9:30-11:30 CST = 1:30-3:30 UTC
-    Session(time(5, 0), time(7, 0), "下午"),     # 13:00-15:00 CST = 5:00-7:00 UTC
+    Session(time(1, 30), time(3, 30), "上午"),  # 9:30-11:30 CST = 1:30-3:30 UTC
+    Session(time(5, 0), time(7, 0), "下午"),  # 13:00-15:00 CST = 5:00-7:00 UTC
 ]
 
 FUTURES_SESSIONS = [
@@ -84,8 +86,8 @@ CRYPTO_SESSIONS = [
 ]
 
 HK_STOCK_SESSIONS = [
-    Session(time(1, 30), time(4, 0), "上午"),    # 9:30-12:00 HKT = 1:30-4:00 UTC
-    Session(time(5, 0), time(8, 0), "下午"),     # 13:00-16:00 HKT = 5:00-8:00 UTC
+    Session(time(1, 30), time(4, 0), "上午"),  # 9:30-12:00 HKT = 1:30-4:00 UTC
+    Session(time(5, 0), time(8, 0), "下午"),  # 13:00-16:00 HKT = 5:00-8:00 UTC
 ]
 
 _MARKET_SESSIONS: dict[Market, list[Session]] = {
@@ -246,7 +248,7 @@ class MarketCalendar:
 class CalendarRegistry:
     """Global registry of market calendars, keyed by Market enum."""
 
-    _calendars: dict[Market, MarketCalendar] = {}
+    _calendars: ClassVar[dict[Market, MarketCalendar]] = {}
 
     @classmethod
     def get(cls, market: Market) -> MarketCalendar:
@@ -277,18 +279,16 @@ class SettlementWindow:
     """
 
     # Settlement times in UTC
-    SETTLEMENT_TIMES: dict[Market, time] = {
-        Market.A_SHARES: time(8, 0),     # T+1 16:00 CST → 08:00 UTC
-        Market.FUTURES: time(7, 30),     # 15:30 CST → 07:30 UTC
-        Market.HK_STOCKS: time(8, 0),    # 16:00 HKT → 08:00 UTC
+    SETTLEMENT_TIMES: ClassVar[dict[Market, time]] = {
+        Market.A_SHARES: time(8, 0),  # T+1 16:00 CST → 08:00 UTC
+        Market.FUTURES: time(7, 30),  # 15:30 CST → 07:30 UTC
+        Market.HK_STOCKS: time(8, 0),  # 16:00 HKT → 08:00 UTC
     }
 
     WINDOW_MINUTES: int = 30  # Restrict new positions 30 min before settlement
 
     @classmethod
-    def is_in_settlement_window(
-        cls, market: Market, dt: datetime | None = None
-    ) -> bool:
+    def is_in_settlement_window(cls, market: Market, dt: datetime | None = None) -> bool:
         """Check if we're in the pre-settlement restricted window."""
         settle_time = cls.SETTLEMENT_TIMES.get(market)
         if settle_time is None:

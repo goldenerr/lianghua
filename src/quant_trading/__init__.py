@@ -3,4 +3,5 @@ Quant Trading System — Production-grade multi-market quantitative trading plat
 
 Version: 0.1.0-dev
 """
+
 __version__ = "0.1.0-dev"

@@ -22,7 +22,9 @@ def test_psi_detects_shifted_feature_distribution() -> None:
 
 
 def test_robustness_and_regime_bias_provide_production_gates() -> None:
-    predictor = lambda values: values[:, 0] * 0.1
+    def predictor(values):
+        return values[:, 0] * 0.1
+
     robustness = evaluate_adversarial_robustness(predictor, np.ones((20, 1)), tolerance=0.001)
     bias = evaluate_regime_bias([0, 0, 1, 1], [0, 0.1, 0, 0], ["bull", "bull", "bear", "bear"], 0.2)
     assert robustness["passed"] is True

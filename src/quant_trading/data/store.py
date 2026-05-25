@@ -23,8 +23,7 @@ UTC = timezone.utc
 
 
 class ClickHouseLike(Protocol):
-    def insert_dataframe(self, query: str, df: pd.DataFrame) -> object:
-        ...
+    def insert_dataframe(self, query: str, df: pd.DataFrame) -> object: ...
 
 
 class DataStore:
@@ -148,7 +147,8 @@ class DataStore:
     def get_latest_version(self, symbol: str, frequency: Frequency) -> dict | None:
         """Get the most recent version entry for a symbol."""
         matching = [
-            v for v in self._version_log
+            v
+            for v in self._version_log
             if v["symbol"] == symbol and v["frequency"] == frequency.value
         ]
         return matching[-1] if matching else None

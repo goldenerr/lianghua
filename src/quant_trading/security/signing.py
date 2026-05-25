@@ -1,4 +1,5 @@
 """HMAC integrity signatures for strategy and model artifacts (security-001)."""
+
 from __future__ import annotations
 
 import hashlib

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class YfinanceProvider(DataProvider):
     """Yahoo Finance data provider via yfinance library."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("yfinance")
 
     @property
@@ -54,7 +54,7 @@ class YfinanceProvider(DataProvider):
         interval = self._to_interval(request.frequency)
 
         try:
-            import yfinance as yf  # type: ignore[import-untyped]
+            import yfinance as yf
 
             ticker = yf.Ticker(yf_symbol)
 
@@ -89,16 +89,14 @@ class YfinanceProvider(DataProvider):
                 source=self.name,
             )
 
-        except ImportError:
+        except ImportError as exc:
             raise DataProviderError(
                 "yfinance not installed. Run: pip install yfinance",
                 provider=self.name,
                 symbol=request.symbol,
-            )
+            ) from exc
         except DataProviderError:
             raise
         except Exception as e:
             self.record_failure(str(e))
-            raise DataProviderError(
-                str(e), provider=self.name, symbol=request.symbol
-            ) from e
+            raise DataProviderError(str(e), provider=self.name, symbol=request.symbol) from e

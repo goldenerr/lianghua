@@ -2,6 +2,7 @@
 Capital Impact Assessment — V5.9 Production Candidate
 AGENTS.md §7 & §11: Required before production deployment.
 """
+
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -34,22 +35,22 @@ class CapitalImpactAssessment:
 
     # MDD safeguards
     mdd_reduce_threshold: float = -0.10  # reduce to 50% at -10% DD
-    mdd_stop_threshold: float = -0.18    # stop all trading at -18% DD
+    mdd_stop_threshold: float = -0.18  # stop all trading at -18% DD
 
     # Capital allocation
     recommended_initial_capital: float = 1_000_000  # 100万
-    min_viable_capital: float = 500_000              # 50万
+    min_viable_capital: float = 500_000  # 50万
 
     # Worst-case analysis
     worst_case_daily_loss_pct: float = 0.073  # 1-sigma daily vol
     worst_case_weekly_loss_pct: float = 0.163  # sqrt(5) * daily
     worst_case_monthly_loss_pct: float = 0.334  # sqrt(21) * daily
-    stress_scenario_loss_pct: float = -0.18    # stops at -18% DD in worst case
+    stress_scenario_loss_pct: float = -0.18  # stops at -18% DD in worst case
 
     # Liquidity risk
-    max_single_position_value: float = 200_000   # 20% of 1M
-    avg_daily_volume_pct: float = 0.10           # positions ≤10% of ADV
-    max_portfolio_turnover: float = 1.82         # 182% per rebalance
+    max_single_position_value: float = 200_000  # 20% of 1M
+    avg_daily_volume_pct: float = 0.10  # positions ≤10% of ADV
+    max_portfolio_turnover: float = 1.82  # 182% per rebalance
 
     # Market risk
     primary_market: str = "A股 (沪深全市场)"
@@ -91,7 +92,7 @@ class CapitalImpactAssessment:
                 "mdd_safeguards": {
                     "reduce_at": self.mdd_reduce_threshold,
                     "stop_at": self.mdd_stop_threshold,
-                }
+                },
             },
             "capital": {
                 "recommended_initial": self.recommended_initial_capital,
@@ -102,7 +103,7 @@ class CapitalImpactAssessment:
                 "weekly_loss_1sigma": self.worst_case_weekly_loss_pct,
                 "monthly_loss_1sigma": self.worst_case_monthly_loss_pct,
                 "stress_scenario": self.stress_scenario_loss_pct,
-                "note": "MDD safeguards limit loss to -18% in worst case"
+                "note": "MDD safeguards limit loss to -18% in worst case",
             },
             "liquidity": {
                 "max_single_position": self.max_single_position_value,
@@ -125,7 +126,7 @@ class CapitalImpactAssessment:
                 "approved_by": self.approved_by,
                 "approved_at": self.approved_at,
                 "risk_level": self.risk_level,
-            }
+            },
         }
 
 
@@ -171,7 +172,8 @@ def generate_v59_report(output_dir: str | Path | None = None) -> dict:
 
     path = out / "capital_impact_v5.9.md"
     with open(path, "w") as f:
-        f.write(f"""# 资金影响评估报告 — V5.9 多因子均值回归策略
+        f.write(
+            f"""# 资金影响评估报告 — V5.9 多因子均值回归策略
 
 **日期**: {assessment.date}
 **策略**: {assessment.strategy}
@@ -213,7 +215,8 @@ def generate_v59_report(output_dir: str | Path | None = None) -> dict:
 
 ---
 *AGENTS.md §7 & §11 要求。由量化交易系统 AI Agent 自动生成。*
-""")
+"""
+        )
 
     print(f"Capital impact assessment saved to {path}")
     return report

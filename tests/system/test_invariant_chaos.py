@@ -20,7 +20,7 @@ def test_equity_mismatch_triggers_safe_mode():
         cash=10.0,
         total_equity=1000.0,  # intentional violation
     )
-    equity = [r for r in results if r.name == "equity"][0]
+    equity = next(r for r in results if r.name == "equity")
     assert equity.passed is False
     assert enforcer._violation_count.get("equity", 0) >= 1
     assert fsm.state == SystemState.SAFE_MODE

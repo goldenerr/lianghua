@@ -15,6 +15,7 @@ from quant_trading.config.settings import ApiCredentials, Environment
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
 def _write_yaml(path: Path, data: dict) -> None:
     """Write a dict as YAML file."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -40,10 +41,13 @@ class TestConfigLoader:
 
     def test_loads_partial_config(self, tmp_path: Path):
         """Should load partial config — only risk.yaml present."""
-        _write_yaml(tmp_path / "risk.yaml", {
-            "max_position_pct": 0.15,
-            "max_total_leverage": 3.0,
-        })
+        _write_yaml(
+            tmp_path / "risk.yaml",
+            {
+                "max_position_pct": 0.15,
+                "max_total_leverage": 3.0,
+            },
+        )
 
         loader = ConfigLoader(config_dir=tmp_path)
         settings = loader.load()
@@ -54,35 +58,47 @@ class TestConfigLoader:
 
     def test_loads_full_config(self, tmp_path: Path):
         """Should load system, risk, api, and account configs."""
-        _write_yaml(tmp_path / "system.yaml", {
-            "env": "dev",
-            "primary_markets": ["A股", "加密货币"],
-        })
-        _write_yaml(tmp_path / "risk.yaml", {
-            "max_position_pct": 0.10,
-        })
-        _write_yaml(tmp_path / "api.yaml", {
-            "exchanges": {
-                "binance": {
-                    "base_url": "https://api.binance.com",
-                    "timeout_seconds": 5,
-                    "max_retries": 2,
-                    "rate_limit_rps": 10,
-                    "circuit_breaker_failures": 5,
-                    "circuit_breaker_cooldown_seconds": 30,
-                }
-            }
-        })
-        _write_yaml(tmp_path / "accounts" / "dev.yaml", {
-            "account_id": "dev-001",
-            "name": "Dev",
-            "exchange": "binance",
-            "credentials": {
-                "exchange": "binance",
-                "api_key": "k",
-                "api_secret": "s",
+        _write_yaml(
+            tmp_path / "system.yaml",
+            {
+                "env": "dev",
+                "primary_markets": ["A股", "加密货币"],
             },
-        })
+        )
+        _write_yaml(
+            tmp_path / "risk.yaml",
+            {
+                "max_position_pct": 0.10,
+            },
+        )
+        _write_yaml(
+            tmp_path / "api.yaml",
+            {
+                "exchanges": {
+                    "binance": {
+                        "base_url": "https://api.binance.com",
+                        "timeout_seconds": 5,
+                        "max_retries": 2,
+                        "rate_limit_rps": 10,
+                        "circuit_breaker_failures": 5,
+                        "circuit_breaker_cooldown_seconds": 30,
+                    }
+                }
+            },
+        )
+        _write_yaml(
+            tmp_path / "accounts" / "dev.yaml",
+            {
+                "account_id": "dev-001",
+                "name": "Dev",
+                "exchange": "binance",
+                "credentials": {
+                    "exchange": "binance",
+                    "api_key": "k",
+                    "api_secret": "s",
+                },
+            },
+        )
 
         loader = ConfigLoader(config_dir=tmp_path)
         settings = loader.load()
@@ -96,22 +112,28 @@ class TestConfigLoader:
 
     def test_env_override_merges(self, tmp_path: Path):
         """Environment file should override base values."""
-        _write_yaml(tmp_path / "system.yaml", {
-            "env": "dev",
-            "auto_trade_enabled": False,
-            "warmup_bars": 20,
-        })
-        _write_yaml(tmp_path / "dev.yaml", {
-            "auto_trade_enabled": True,
-        })
+        _write_yaml(
+            tmp_path / "system.yaml",
+            {
+                "env": "dev",
+                "auto_trade_enabled": False,
+                "warmup_bars": 20,
+            },
+        )
+        _write_yaml(
+            tmp_path / "dev.yaml",
+            {
+                "warmup_bars": 40,
+            },
+        )
 
         loader = ConfigLoader(config_dir=tmp_path)
         settings = loader.load()
 
-        # dev.yaml should override auto_trade_enabled
-        assert settings.system.auto_trade_enabled is True
-        # warmup_bars from system.yaml should be preserved
-        assert settings.system.warmup_bars == 20
+        # dev.yaml should override a validated non-funds-impacting setting.
+        assert settings.system.warmup_bars == 40
+        # Safety-sensitive value from system.yaml is preserved.
+        assert settings.system.auto_trade_enabled is False
 
     def test_detects_env_from_files(self, tmp_path: Path):
         """Should detect environment from existing env files."""
@@ -160,16 +182,19 @@ class TestEnvVarOverrides:
     def test_env_var_overrides_credentials(self, tmp_path: Path, monkeypatch):
         """QUANT_API_KEY should override all account credentials."""
         _write_yaml(tmp_path / "system.yaml", {"env": "dev"})
-        _write_yaml(tmp_path / "accounts" / "dev.yaml", {
-            "account_id": "dev-001",
-            "name": "Dev",
-            "exchange": "binance",
-            "credentials": {
+        _write_yaml(
+            tmp_path / "accounts" / "dev.yaml",
+            {
+                "account_id": "dev-001",
+                "name": "Dev",
                 "exchange": "binance",
-                "api_key": "placeholder",
-                "api_secret": "placeholder",
+                "credentials": {
+                    "exchange": "binance",
+                    "api_key": "placeholder",
+                    "api_secret": "placeholder",
+                },
             },
-        })
+        )
 
         monkeypatch.setenv("QUANT_API_KEY", "real_key_from_env")
         monkeypatch.setenv("QUANT_API_SECRET", "real_secret_from_env")
@@ -178,92 +203,102 @@ class TestEnvVarOverrides:
         settings = loader.load()
 
         assert settings.accounts[0].credentials.api_key.get_secret_value() == "real_key_from_env"
-        assert settings.accounts[0].credentials.api_secret.get_secret_value() == b"real_secret_from_env"
+        assert (
+            settings.accounts[0].credentials.api_secret.get_secret_value()
+            == b"real_secret_from_env"
+        )
 
 
 class TestProdSecretPolicy:
     """Test strict prod secret policy."""
 
-    def test_prod_without_vault_fails(self, tmp_path: Path, monkeypatch):
-        _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
-        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
-            "account_id": "prod-001",
-            "name": "Prod",
-            "exchange": "binance",
-            "credentials": {
+    @staticmethod
+    def _write_prod_reference(tmp_path: Path) -> None:
+        _write_yaml(tmp_path / "system.yaml", {"env": "prod", "require_manual_approval": True})
+        _write_yaml(
+            tmp_path / "accounts" / "prod.yaml",
+            {
+                "account_id": "prod-001",
+                "name": "Prod",
                 "exchange": "binance",
-                "api_key": "k",
-                "api_secret": "s",
+                "environment": "prod",
+                "secret_ref": "vault://quant/accounts/prod-001/binance",
             },
-        })
-        monkeypatch.delenv("VAULT_ADDR", raising=False)
-        monkeypatch.delenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", raising=False)
+        )
 
-        with pytest.raises(ValueError, match="VAULT_ADDR is required in prod"):
-            ConfigLoader(config_dir=tmp_path).load(env=Environment.PROD)
-
-    def test_prod_break_glass_allows_plaintext(self, tmp_path: Path, monkeypatch):
-        _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
-        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
-            "account_id": "prod-001",
-            "name": "Prod",
-            "exchange": "binance",
-            "credentials": {
-                "exchange": "binance",
-                "api_key": "k",
-                "api_secret": "s",
-            },
-        })
-        monkeypatch.delenv("VAULT_ADDR", raising=False)
-        monkeypatch.setenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", "true")
-
-        settings = ConfigLoader(config_dir=tmp_path).load(env=Environment.PROD)
-        assert len(settings.accounts) == 1
-
-    def test_prod_vault_address_without_resolver_fails(self, tmp_path: Path, monkeypatch):
-        _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
-        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
-            "account_id": "prod-001",
-            "name": "Prod",
-            "exchange": "binance",
-            "credentials": {
-                "exchange": "binance",
-                "api_key": "plaintext",
-                "api_secret": "plaintext",
-            },
-        })
-        monkeypatch.setenv("VAULT_ADDR", "https://vault.example")
-        monkeypatch.delenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", raising=False)
-
+    def test_prod_without_secret_resolver_fails(self, tmp_path: Path):
+        self._write_prod_reference(tmp_path)
         with pytest.raises(ValueError, match="secret_resolver"):
             ConfigLoader(config_dir=tmp_path).load(env=Environment.PROD)
 
-    def test_prod_uses_resolved_credentials(self, tmp_path: Path, monkeypatch):
+    def test_prod_plaintext_credentials_are_always_rejected(self, tmp_path: Path):
         _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
-        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
-            "account_id": "prod-001",
-            "name": "Prod",
-            "exchange": "binance",
-            "credentials": {
+        _write_yaml(
+            tmp_path / "accounts" / "prod.yaml",
+            {
+                "account_id": "prod-001",
+                "name": "Prod",
                 "exchange": "binance",
-                "api_key": "plaintext",
-                "api_secret": "plaintext",
+                "environment": "prod",
+                "credentials": {
+                    "exchange": "binance",
+                    "api_key": "k",
+                    "api_secret": "s",
+                },
             },
-        })
-        monkeypatch.setenv("VAULT_ADDR", "https://vault.example")
-        monkeypatch.delenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", raising=False)
+        )
 
-        def resolver(_account):
+        with pytest.raises(ValueError, match="plaintext credentials are prohibited"):
+            ConfigLoader(config_dir=tmp_path).load(env=Environment.PROD)
+
+    def test_prod_env_credential_override_is_rejected(self, tmp_path: Path, monkeypatch):
+        self._write_prod_reference(tmp_path)
+        monkeypatch.setenv("QUANT_API_KEY", "forbidden")
+
+        def resolver(_account: object) -> ApiCredentials:
             return ApiCredentials(
                 exchange="binance",
                 api_key=SecretStr("vault-key"),
                 api_secret=SecretBytes(b"vault-secret"),
             )
 
-        settings = ConfigLoader(config_dir=tmp_path, secret_resolver=resolver).load(env=Environment.PROD)
+        with pytest.raises(ValueError, match="environment-variable credential"):
+            ConfigLoader(config_dir=tmp_path, secret_resolver=resolver).load(env=Environment.PROD)
+
+    def test_prod_requires_configuration_approval(self, tmp_path: Path):
+        self._write_prod_reference(tmp_path)
+
+        def resolver(_account: object) -> ApiCredentials:
+            return ApiCredentials(
+                exchange="binance",
+                api_key=SecretStr("vault-key"),
+                api_secret=SecretBytes(b"vault-secret"),
+            )
+
+        with pytest.raises(ValueError, match="approval_validator"):
+            ConfigLoader(config_dir=tmp_path, secret_resolver=resolver).load(env=Environment.PROD)
+
+    def test_prod_uses_resolved_credentials_and_approval(self, tmp_path: Path):
+        self._write_prod_reference(tmp_path)
+
+        def resolver(_account: object) -> ApiCredentials:
+            return ApiCredentials(
+                exchange="binance",
+                api_key=SecretStr("vault-key"),
+                api_secret=SecretBytes(b"vault-secret"),
+            )
+
+        settings = ConfigLoader(
+            config_dir=tmp_path,
+            secret_resolver=resolver,
+            approval_validator=lambda settings: f"RISK-APPROVAL-{settings.config_hash[:8]}",
+        ).load(env=Environment.PROD)
         credentials = settings.accounts[0].credentials
+        assert credentials is not None
         assert credentials.api_key.get_secret_value() == "vault-key"
         assert credentials.api_secret.get_secret_value() == b"vault-secret"
+        assert settings.config_approval_ref.startswith("RISK-APPROVAL-")
+        assert settings.config_hash
 
 
 class TestValidation:
@@ -276,6 +311,13 @@ class TestValidation:
         loader = ConfigLoader(config_dir=tmp_path)
         with pytest.raises(ValueError, match="primary_markets"):
             loader.load()
+
+    def test_unknown_environment_override_fails(self, tmp_path: Path):
+        _write_yaml(tmp_path / "system.yaml", {"env": "dev"})
+        _write_yaml(tmp_path / "dev.yaml", {"undeclared_limit": 7})
+
+        with pytest.raises(ValueError, match="unknown environment override"):
+            ConfigLoader(config_dir=tmp_path).load()
 
 
 class TestGlobalLoader:

@@ -41,7 +41,9 @@ def test_live_transition_requires_approval_and_minimum_paper_duration() -> None:
 
 
 def test_direct_promotion_is_blocked_and_retirement_stops_signals() -> None:
-    lifecycle = StrategyLifecycle("mean_reversion", LifecyclePolicy.from_yaml("config/portfolio.yaml"))
+    lifecycle = StrategyLifecycle(
+        "mean_reversion", LifecyclePolicy.from_yaml("config/portfolio.yaml")
+    )
     with pytest.raises(PermissionError, match="direct promotion"):
         lifecycle.promote()
     lifecycle.request_transition(Stage.PAPER)

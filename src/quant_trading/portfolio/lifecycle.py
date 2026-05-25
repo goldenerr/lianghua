@@ -87,7 +87,9 @@ class StrategyLifecycle:
     def maximum_capital_pct(self) -> float:
         return self.policy.limit_for(self.stage).maximum_capital_pct
 
-    def request_transition(self, target: Stage, evidence: dict[str, Any] | None = None) -> TransitionRequest:
+    def request_transition(
+        self, target: Stage, evidence: dict[str, Any] | None = None
+    ) -> TransitionRequest:
         if _NEXT_STAGE.get(self.stage) != target:
             raise ValueError(f"invalid lifecycle transition: {self.stage.value} -> {target.value}")
         request = TransitionRequest(

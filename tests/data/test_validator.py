@@ -15,12 +15,14 @@ def _make_ohlcv_df(
         dates = pd.bdate_range("2024-01-01", periods=len(close_prices), freq="B")
     data = {"close": close_prices}
     if add_ohlcv:
-        data.update({
-            "open": [p * 0.99 for p in close_prices],
-            "high": [p * 1.01 for p in close_prices],
-            "low": [p * 0.98 for p in close_prices],
-            "volume": [1000000.0] * len(close_prices),
-        })
+        data.update(
+            {
+                "open": [p * 0.99 for p in close_prices],
+                "high": [p * 1.01 for p in close_prices],
+                "low": [p * 0.98 for p in close_prices],
+                "volume": [1000000.0] * len(close_prices),
+            }
+        )
     df = pd.DataFrame(data, index=pd.DatetimeIndex(pd.to_datetime(dates)))
     return df
 

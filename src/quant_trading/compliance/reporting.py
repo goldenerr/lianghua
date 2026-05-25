@@ -1,4 +1,5 @@
 """Config-driven regulatory reporting and append-only local archive adapter."""
+
 from __future__ import annotations
 
 import csv
@@ -8,7 +9,7 @@ from dataclasses import asdict, dataclass
 from datetime import date, datetime, timezone
 from io import StringIO
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal, cast
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 import yaml
@@ -115,8 +116,12 @@ class ComplianceReportingEngine:
         self.active_jurisdiction = config.active_jurisdiction
         self.audit_bus = audit_bus or AuditBus()
 
-    def change_jurisdiction(self, target: Jurisdiction, approved_by: str = "", approval_ref: str = "") -> None:
-        if self.config.require_approval_for_mode_change and (not approved_by.strip() or not approval_ref.strip()):
+    def change_jurisdiction(
+        self, target: Jurisdiction, approved_by: str = "", approval_ref: str = ""
+    ) -> None:
+        if self.config.require_approval_for_mode_change and (
+            not approved_by.strip() or not approval_ref.strip()
+        ):
             raise PermissionError("regulatory mode change requires compliance approval")
         self.config.template(target)
         previous = self.active_jurisdiction
@@ -124,7 +129,12 @@ class ComplianceReportingEngine:
         self.audit_bus.record(
             "regulatory_mode_changed",
             "compliance",
-            {"from": previous.value, "to": target.value, "approved_by": approved_by, "approval_ref": approval_ref},
+            {
+                "from": previous.value,
+                "to": target.value,
+                "approved_by": approved_by,
+                "approval_ref": approval_ref,
+            },
         )
 
     def generate_daily_reports(
@@ -138,16 +148,25 @@ class ComplianceReportingEngine:
         totals = {
             "total_trades": len(trades),
             "total_notional": round(sum(trade.notional for trade in trades), 2),
-            "stamp_duty_paid": round(sum(tax.stamp_duty(t.notional) for t in trades if t.side.lower() == "sell"), 2),
-            "execution_fees": round(sum(tax.execution_fee(t.notional, t.liquidity) for t in trades), 2),
+            "stamp_duty_paid": round(
+                sum(tax.stamp_duty(t.notional) for t in trades if t.side.lower() == "sell"), 2
+            ),
+            "execution_fees": round(
+                sum(tax.execution_fee(t.notional, t.liquidity) for t in trades), 2
+            ),
             "capital_gains_tax": round(sum(tax.capital_gains(t.realized_pnl) for t in trades), 2),
         }
-        large_trades = [asdict(trade) for trade in trades if trade.notional >= template.large_trade_threshold]
+        large_trades = [
+            asdict(trade) for trade in trades if trade.notional >= template.large_trade_threshold
+        ]
         failed_checks = [asdict(check) for check in risk_checks if not check.passed]
-        data = {
+        data: dict[str, dict[str, Any]] = {
             "daily_trade": {**totals, "orders": [asdict(trade) for trade in trades]},
             "large_trade": {"threshold": template.large_trade_threshold, "trades": large_trades},
-            "risk_compliance": {"checks": [asdict(check) for check in risk_checks], "failed_checks": failed_checks},
+            "risk_compliance": {
+                "checks": [asdict(check) for check in risk_checks],
+                "failed_checks": failed_checks,
+            },
         }
         reports = [
             RegulatoryReport(
@@ -165,7 +184,11 @@ class ComplianceReportingEngine:
         self.audit_bus.record(
             "compliance_reports_generated",
             "compliance",
-            {"jurisdiction": self.active_jurisdiction.value, "date": report_date.isoformat(), "report_ids": [r.report_id for r in reports]},
+            {
+                "jurisdiction": self.active_jurisdiction.value,
+                "date": report_date.isoformat(),
+                "report_ids": [r.report_id for r in reports],
+            },
         )
         return reports
 
@@ -174,7 +197,9 @@ class ComplianceReportingEngine:
         if format_name not in template.output_formats:
             raise ValueError(f"format not enabled for jurisdiction: {format_name}")
         if format_name == "json":
-            return json.dumps(report.to_dict(), ensure_ascii=False, sort_keys=True, indent=2).encode("utf-8")
+            return json.dumps(
+                report.to_dict(), ensure_ascii=False, sort_keys=True, indent=2
+            ).encode("utf-8")
         if format_name == "xml":
             return _to_xml(report)
         if format_name == "csv":
@@ -211,7 +236,11 @@ class ImmutableReportArchive:
         entry["hash"] = _hash_entry(entry)
         with self._chain_path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(entry, ensure_ascii=True, sort_keys=True) + "\n")
-        self.audit_bus.record("compliance_report_archived", "compliance", {"report_id": report.report_id, "sha256": entry["sha256"]})
+        self.audit_bus.record(
+            "compliance_report_archived",
+            "compliance",
+            {"report_id": report.report_id, "sha256": entry["sha256"]},
+        )
         return path
 
     def verify_integrity(self) -> bool:
@@ -230,18 +259,24 @@ class ImmutableReportArchive:
             previous_hash = stored_hash
         return True
 
-    def _entries(self) -> list[dict]:
+    def _entries(self) -> list[dict[str, Any]]:
         if not self._chain_path.exists():
             return []
-        return [json.loads(line) for line in self._chain_path.read_text(encoding="utf-8").splitlines() if line]
+        return [
+            json.loads(line)
+            for line in self._chain_path.read_text(encoding="utf-8").splitlines()
+            if line
+        ]
 
     def _last_hash(self) -> str:
         entries = self._entries()
         return entries[-1]["hash"] if entries else "GENESIS"
 
 
-def _hash_entry(entry: dict) -> str:
-    return hashlib.sha256(json.dumps(entry, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+def _hash_entry(entry: dict[str, Any]) -> str:
+    return hashlib.sha256(
+        json.dumps(entry, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
 
 
 def _to_xml(report: RegulatoryReport) -> bytes:
@@ -251,14 +286,22 @@ def _to_xml(report: RegulatoryReport) -> bytes:
     SubElement(root, "retentionYears").text = str(report.retention_years)
     payload = SubElement(root, "payload")
     payload.text = json.dumps(report.payload, ensure_ascii=False, sort_keys=True)
-    return tostring(root, encoding="utf-8", xml_declaration=True)
+    return cast(bytes, tostring(root, encoding="utf-8", xml_declaration=True))
 
 
 def _to_csv(report: RegulatoryReport) -> bytes:
     output = StringIO()
     writer = csv.writer(output)
     writer.writerow(["report_id", "report_type", "jurisdiction", "report_date", "payload"])
-    writer.writerow([report.report_id, report.report_type, report.jurisdiction.value, report.report_date.isoformat(), json.dumps(report.payload, ensure_ascii=False, sort_keys=True)])
+    writer.writerow(
+        [
+            report.report_id,
+            report.report_type,
+            report.jurisdiction.value,
+            report.report_date.isoformat(),
+            json.dumps(report.payload, ensure_ascii=False, sort_keys=True),
+        ]
+    )
     return output.getvalue().encode("utf-8")
 
 
@@ -281,5 +324,7 @@ def _to_pdf(report: RegulatoryReport) -> bytes:
     start = len(body)
     body += f"xref\n0 {len(objects) + 1}\n0000000000 65535 f \n".encode()
     body += b"".join(f"{offset:010d} 00000 n \n".encode() for offset in offsets[1:])
-    body += f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{start}\n%%EOF\n".encode()
+    body += (
+        f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{start}\n%%EOF\n".encode()
+    )
     return body

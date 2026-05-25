@@ -13,8 +13,12 @@ def test_feed_aggregates_and_emits_completed_bars():
     feed = LiveDataFeed(["AAPL"])
     emitted = []
     feed.on_bar.append(emitted.append)
-    feed._aggregate_bar("AAPL", Quote("AAPL", 99, 101, price=100, volume=10, timestamp=60), "1m", 60)
-    feed._aggregate_bar("AAPL", Quote("AAPL", 100, 102, price=101, volume=20, timestamp=120), "1m", 60)
+    feed._aggregate_bar(
+        "AAPL", Quote("AAPL", 99, 101, price=100, volume=10, timestamp=60), "1m", 60
+    )
+    feed._aggregate_bar(
+        "AAPL", Quote("AAPL", 100, 102, price=101, volume=20, timestamp=120), "1m", 60
+    )
     assert len(emitted) == 1
     assert emitted[0].open == 100
     assert emitted[0].close == 100

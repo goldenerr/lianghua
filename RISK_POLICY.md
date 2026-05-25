@@ -107,11 +107,13 @@ Emergency mode is required for configured severe loss, kill-switch or unrecovera
 
 All authoritative operational events must pass through the hash-chained audit bus. Local append-only archives are useful validation adapters but are not substitutes for approved external immutable retention in production.
 
+Production configuration loading is fail-closed: account YAML documents may contain an approved `secret_ref` only, never credential material or environment-variable substitutions. Runtime must resolve the reference through an approved secret integration and return a configuration approval reference bound to the public configuration hash before startup can succeed.
+
 ## Validation Gates
 
 | Stage | Minimum evidence | Status as of 2026-05-25 |
 | --- | --- | --- |
-| Local regression | Coverage `>=80%`, deterministic and safety tests | Met locally: `572` passing, `85.42%` coverage |
+| Local regression | Coverage `>=80%`, deterministic and safety tests | Met locally: `579` passing, `84.79%` coverage; Ruff/Black/mypy clean |
 | Backtest approval | Validated full dataset, overfit controls and capital report | Not approved |
 | Paper trading | At least 3 months, performance no less than 70% of accepted backtest | Not completed |
 | Small live | At most 1% capital for at least 1 month with limits satisfied | Not started |
@@ -121,6 +123,6 @@ All authoritative operational events must pass through the hash-chained audit bu
 
 - No completed external immutable archive integration or retention attestation.
 - No complete CI enforcement of signatures, drift reports and approval evidence.
-- No approved production secret-manager, market feed, benchmark, factor-registry or model-registry integration.
+- Runtime now requires secret-manager and configuration-approval adapters for production, but no approved production service integration, market feed, benchmark, factor-registry or model-registry is connected.
 - No measured production-like latency, capacity or cross-region failover evidence.
 - No completed paper-trading or small-live acceptance period.

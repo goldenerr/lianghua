@@ -5,14 +5,17 @@ from pydantic import SecretBytes, SecretStr, ValidationError
 from quant_trading.config.settings import (
     AccountConfig,
     ApiCredentials,
+    Environment,
     QuantSettings,
     RiskSettings,
+    StrategyRiskSettings,
     SystemSettings,
     VaRMethod,
     validate_config,
 )
 
 # ── SystemSettings ────────────────────────────────────────────────────────
+
 
 class TestSystemSettings:
     def test_defaults(self):
@@ -27,7 +30,7 @@ class TestSystemSettings:
 
     def test_frozen_prevents_mutation(self):
         s = SystemSettings()
-        with pytest.raises(Exception):  # frozen=True blocks __setattr__
+        with pytest.raises(ValidationError):  # frozen=True blocks __setattr__
             s.warmup_bars = 999  # type: ignore
 
     def test_shutdown_timeout_range(self):
@@ -36,6 +39,7 @@ class TestSystemSettings:
 
 
 # ── RiskSettings ──────────────────────────────────────────────────────────
+
 
 class TestRiskSettings:
     def test_defaults(self):
@@ -57,7 +61,7 @@ class TestRiskSettings:
 
     def test_frozen(self):
         r = RiskSettings()
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             r.max_position_pct = 0.50  # type: ignore
 
     def test_range_validation(self):
@@ -68,8 +72,23 @@ class TestRiskSettings:
         with pytest.raises(ValidationError):
             RiskSettings(max_daily_loss_pct=-0.01)
 
+    def test_strategy_weights_are_validated(self):
+        with pytest.raises(ValidationError, match="sum to 1.0"):
+            StrategyRiskSettings(
+                top_n=10,
+                rebalance_freq_days=20,
+                factors=["momentum", "volatility"],
+                weights={"momentum": 0.7, "volatility": 0.2},
+                sector_cap=2,
+            )
+
+    def test_unknown_risk_parameter_is_rejected(self):
+        with pytest.raises(ValidationError, match="extra_forbidden"):
+            RiskSettings.model_validate({"unapproved_risk_limit": 0.1})
+
 
 # ── ApiCredentials ────────────────────────────────────────────────────────
+
 
 class TestApiCredentials:
     def test_creates_with_secretstr(self):
@@ -103,7 +122,7 @@ class TestApiCredentials:
             api_key=SecretStr("key"),
             api_secret=SecretBytes(b"secret"),
         )
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             creds.exchange = "okx"  # type: ignore
 
     def test_secret_values_not_leaked_in_repr(self):
@@ -118,6 +137,7 @@ class TestApiCredentials:
 
 
 # ── AccountConfig ─────────────────────────────────────────────────────────
+
 
 class TestAccountConfig:
     def test_valid_account(self):
@@ -149,8 +169,19 @@ class TestAccountConfig:
                 default_leverage=0,  # < 1
             )
 
+    def test_production_reference_can_be_resolved_later(self):
+        acct = AccountConfig(
+            account_id="prod-1",
+            name="Production",
+            exchange="binance",
+            environment="prod",
+            secret_ref="vault://quant/accounts/prod-1/binance",
+        )
+        assert acct.credentials is None
+
 
 # ── validate_config ───────────────────────────────────────────────────────
+
 
 class TestValidateConfig:
     def test_empty_markets_caught_by_pydantic(self):
@@ -181,9 +212,15 @@ class TestValidateConfig:
             api_key=SecretStr("k"),
             api_secret=SecretBytes(b"s"),
         )
-        acct = AccountConfig(
-            account_id="x", name="x", exchange="binance", credentials=creds
-        )
+        acct = AccountConfig(account_id="x", name="x", exchange="binance", credentials=creds)
         s = QuantSettings(accounts=[acct])
         errors = validate_config(s)
         assert errors == []
+
+    def test_production_requires_manual_approval(self):
+        settings = QuantSettings(system=SystemSettings(env=Environment.PROD))
+        assert any("manual approval" in error for error in validate_config(settings))
+
+    def test_auto_trade_requires_resolved_enabled_account(self):
+        settings = QuantSettings(system=SystemSettings(auto_trade_enabled=True))
+        assert any("automatic trading" in error for error in validate_config(settings))

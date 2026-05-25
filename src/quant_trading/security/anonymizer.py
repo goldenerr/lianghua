@@ -72,7 +72,9 @@ class AuditQueryService:
         if not requester.can("audit"):
             raise PermissionError("audit permission is required")
 
-    def query(self, requester: User, filters: Mapping[str, str] | None = None) -> list[dict[str, Any]]:
+    def query(
+        self, requester: User, filters: Mapping[str, str] | None = None
+    ) -> list[dict[str, Any]]:
         self._authorize(requester)
         criteria = filters or {}
         events = deepcopy(self.audit_bus.query(limit=10000))
@@ -88,7 +90,9 @@ class AuditQueryService:
             ]
         if criteria.get("from_timestamp"):
             start = datetime.fromisoformat(criteria["from_timestamp"])
-            events = [event for event in events if datetime.fromisoformat(event["timestamp"]) >= start]
+            events = [
+                event for event in events if datetime.fromisoformat(event["timestamp"]) >= start
+            ]
         return [anonymize_value(event) for event in events]
 
     def export_csv(

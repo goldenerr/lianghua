@@ -14,9 +14,17 @@ def test_hard_and_trailing_stops_exit_positions_and_summarize() -> None:
 
 
 def test_profit_time_and_rebalance_removal_paths() -> None:
-    manager = StopLossManager(enable_trail=False, enable_hard=False, enable_profit=True, enable_time=True,
-                              profit_target_pct=0.25, max_hold_days=5)
-    manager.add_positions({"WIN": 0.4, "STALE": 0.3, "REMOVE": 0.3}, {"WIN": 100, "STALE": 100, "REMOVE": 100}, 0)
+    manager = StopLossManager(
+        enable_trail=False,
+        enable_hard=False,
+        enable_profit=True,
+        enable_time=True,
+        profit_target_pct=0.25,
+        max_hold_days=5,
+    )
+    manager.add_positions(
+        {"WIN": 0.4, "STALE": 0.3, "REMOVE": 0.3}, {"WIN": 100, "STALE": 100, "REMOVE": 100}, 0
+    )
     manager.remove_positions({"REMOVE"})
     assert "REMOVE" not in manager.current_positions()
 

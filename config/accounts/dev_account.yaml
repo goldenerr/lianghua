@@ -3,6 +3,7 @@
 account_id: dev-001
 name: "Development Account"
 exchange: binance
+environment: dev
 enabled: true
 default_leverage: 1.0
 # Credentials in dev are placeholder/test values.

@@ -27,7 +27,9 @@ def detect_concept_drift(
     baseline_window = baseline[-window:]
     current_window = current[-window:]
     pooled_scale = np.sqrt((baseline_window.var(ddof=1) + current_window.var(ddof=1)) / 2)
-    drift = abs(float(current_window.mean() - baseline_window.mean())) / max(float(pooled_scale), 1e-12)
+    drift = abs(float(current_window.mean() - baseline_window.mean())) / max(
+        float(pooled_scale), 1e-12
+    )
     return {"drift_score": round(drift, 6), "significant": drift > threshold}
 
 
@@ -63,7 +65,11 @@ class ModelRollbackController:
         self.audit.record(
             "model_candidate_activated",
             "model_rollback",
-            {"version": self.deployment.active_version, "approved_by": approved_by, "approval_ref": approval_ref},
+            {
+                "version": self.deployment.active_version,
+                "approved_by": approved_by,
+                "approval_ref": approval_ref,
+            },
         )
 
     def rollback_on_drift(self, report: dict[str, float | bool]) -> bool:

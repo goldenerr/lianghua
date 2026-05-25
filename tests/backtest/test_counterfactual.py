@@ -1,4 +1,5 @@
 """Tests for counterfactual backtesting & stress tests (backtest-003)."""
+
 import numpy as np
 import pytest
 from quant_trading.backtest.counterfactual import (
@@ -16,8 +17,11 @@ class TestCounterfactualScenario:
     def test_shock_period(self):
         returns = np.zeros(100)
         scenario = CounterfactualScenario(
-            name="test", scenario_type=ScenarioType.SHOCK_PERIOD,
-            shock_value=-0.05, shock_start_idx=10, shock_duration=5,
+            name="test",
+            scenario_type=ScenarioType.SHOCK_PERIOD,
+            shock_value=-0.05,
+            shock_start_idx=10,
+            shock_duration=5,
         )
         modified = scenario.apply(returns)
         # First 10 unchanged, next 5 shocked, rest unchanged
@@ -29,8 +33,11 @@ class TestCounterfactualScenario:
     def test_shock_duration_clamped(self):
         returns = np.zeros(10)
         scenario = CounterfactualScenario(
-            name="test", scenario_type=ScenarioType.SHOCK_PERIOD,
-            shock_value=-0.05, shock_start_idx=8, shock_duration=10,
+            name="test",
+            scenario_type=ScenarioType.SHOCK_PERIOD,
+            shock_value=-0.05,
+            shock_start_idx=8,
+            shock_duration=10,
         )
         modified = scenario.apply(returns)
         # Should only shock indices 8-9 (2 remaining)
@@ -41,7 +48,8 @@ class TestCounterfactualScenario:
         rng = np.random.RandomState(42)
         returns = rng.normal(0, 0.01, 100)
         scenario = CounterfactualScenario(
-            name="test", scenario_type=ScenarioType.VOLATILITY_SPIKE,
+            name="test",
+            scenario_type=ScenarioType.VOLATILITY_SPIKE,
             vol_multiplier=3.0,
         )
         modified = scenario.apply(returns)
@@ -50,7 +58,8 @@ class TestCounterfactualScenario:
     def test_remove_outliers(self):
         returns = np.array([0.0] * 50 + [0.20, -0.25] + [0.0] * 48)
         scenario = CounterfactualScenario(
-            name="test", scenario_type=ScenarioType.REMOVE_OUTLIERS,
+            name="test",
+            scenario_type=ScenarioType.REMOVE_OUTLIERS,
             outlier_threshold=3.0,
         )
         modified = scenario.apply(returns)
@@ -60,7 +69,8 @@ class TestCounterfactualScenario:
         rng = np.random.RandomState(42)
         returns = rng.normal(0, 0.01, 50)
         scenario = CounterfactualScenario(
-            name="test", scenario_type=ScenarioType.BOOTSTRAP,
+            name="test",
+            scenario_type=ScenarioType.BOOTSTRAP,
         )
         modified = scenario.apply(returns)
         assert len(modified) == len(returns)
@@ -71,7 +81,8 @@ class TestCounterfactualScenario:
         returns = np.zeros(20)
         volumes = np.ones(20) * 1000.0
         scenario = CounterfactualScenario(
-            name="test", scenario_type=ScenarioType.LIQUIDITY_CRUNCH,
+            name="test",
+            scenario_type=ScenarioType.LIQUIDITY_CRUNCH,
             volume_reduction=0.5,
         )
         scenario.apply(returns, volumes)
@@ -81,7 +92,8 @@ class TestCounterfactualScenario:
         returns = np.ones(10) * 0.01
         original = returns.copy()
         scenario = CounterfactualScenario(
-            name="test", scenario_type=ScenarioType.VOLATILITY_SPIKE,
+            name="test",
+            scenario_type=ScenarioType.VOLATILITY_SPIKE,
             vol_multiplier=2.0,
         )
         scenario.apply(returns)
@@ -179,19 +191,37 @@ class TestStressTestEngine:
     def test_max_drawdown_across_all(self, engine):
         report = StressTestReport(
             baseline=StressTestResult(
-                scenario_name="Base", total_return=0.1, annualized_return=0.1,
-                annualized_volatility=0.15, sharpe_ratio=0.67,
-                max_drawdown=-0.1, max_drawdown_days=10, max_leverage=2.0,
-                var_95=-0.02, cvar_95=-0.03, liquidity_gap_pct=0.1,
-                worst_day_return=-0.03, vs_baseline_return=0.0, passed=True,
+                scenario_name="Base",
+                total_return=0.1,
+                annualized_return=0.1,
+                annualized_volatility=0.15,
+                sharpe_ratio=0.67,
+                max_drawdown=-0.1,
+                max_drawdown_days=10,
+                max_leverage=2.0,
+                var_95=-0.02,
+                cvar_95=-0.03,
+                liquidity_gap_pct=0.1,
+                worst_day_return=-0.03,
+                vs_baseline_return=0.0,
+                passed=True,
             ),
             scenarios=[
                 StressTestResult(
-                    scenario_name="Bad", total_return=-0.3, annualized_return=-0.3,
-                    annualized_volatility=0.3, sharpe_ratio=-1.0,
-                    max_drawdown=-0.5, max_drawdown_days=30, max_leverage=5.0,
-                    var_95=-0.08, cvar_95=-0.10, liquidity_gap_pct=0.5,
-                    worst_day_return=-0.10, vs_baseline_return=-0.4, passed=False,
+                    scenario_name="Bad",
+                    total_return=-0.3,
+                    annualized_return=-0.3,
+                    annualized_volatility=0.3,
+                    sharpe_ratio=-1.0,
+                    max_drawdown=-0.5,
+                    max_drawdown_days=30,
+                    max_leverage=5.0,
+                    var_95=-0.08,
+                    cvar_95=-0.10,
+                    liquidity_gap_pct=0.5,
+                    worst_day_return=-0.10,
+                    vs_baseline_return=-0.4,
+                    passed=False,
                 ),
             ],
         )

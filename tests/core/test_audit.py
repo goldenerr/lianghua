@@ -1,4 +1,5 @@
 """Tests for audit bus (core-003)."""
+
 import pytest
 from quant_trading.core.audit import AuditBus
 from quant_trading.core.events import EventBus, EventType

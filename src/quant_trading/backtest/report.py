@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
+from typing import Any
 
 from .engine import BacktestResult
 
@@ -20,10 +21,10 @@ class ReportGenerator:
     @staticmethod
     def generate(
         result: BacktestResult,
-        monte_carlo: dict | None = None,
-        stress_test: dict[str, dict] | None = None,
+        monte_carlo: dict[str, Any] | None = None,
+        stress_test: dict[str, dict[str, Any]] | None = None,
         include_trades: bool = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Generate a comprehensive backtest report.
 
@@ -31,7 +32,7 @@ class ReportGenerator:
         """
         m = result.metrics
 
-        report = {
+        report: dict[str, Any] = {
             "report_metadata": {
                 "generated_at": datetime.now(UTC).isoformat(),
                 "config": result.config.__dict__ if result.config else {},
@@ -39,9 +40,12 @@ class ReportGenerator:
             },
             "performance_summary": m.to_dict(),
             "quality_gates": {
-                "sharpe_passed": m.sharpe_ratio >= (result.config.min_sharpe if result.config else 1.2),
-                "mdd_passed": abs(m.max_drawdown) <= (result.config.max_mdd if result.config else 0.15),
-                "win_rate_passed": m.win_rate >= (result.config.min_win_rate if result.config else 0.40),
+                "sharpe_passed": m.sharpe_ratio
+                >= (result.config.min_sharpe if result.config else 1.2),
+                "mdd_passed": abs(m.max_drawdown)
+                <= (result.config.max_mdd if result.config else 0.15),
+                "win_rate_passed": m.win_rate
+                >= (result.config.min_win_rate if result.config else 0.40),
             },
             "warnings": result.warnings,
             "errors": result.errors,
@@ -51,7 +55,9 @@ class ReportGenerator:
         if result.wf_folds:
             report["walk_forward"] = {
                 "n_folds": len(result.wf_folds),
-                "oos_sharpe": round(result.wf_oos_metrics.sharpe_ratio, 4) if result.wf_oos_metrics else None,
+                "oos_sharpe": (
+                    round(result.wf_oos_metrics.sharpe_ratio, 4) if result.wf_oos_metrics else None
+                ),
                 "folds": [f.to_dict() for f in result.wf_folds],
             }
 
@@ -71,7 +77,7 @@ class ReportGenerator:
         return report
 
     @staticmethod
-    def to_json(report: dict, indent: int = 2) -> str:
+    def to_json(report: dict[str, Any], indent: int = 2) -> str:
         return json.dumps(report, indent=indent, ensure_ascii=False, default=str)
 
     @staticmethod

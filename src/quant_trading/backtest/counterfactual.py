@@ -23,13 +23,13 @@ UTC = timezone.utc
 
 
 class ScenarioType(str, Enum):
-    REMOVE_OUTLIERS = "remove_outliers"       # Drop extreme returns
-    SHOCK_PERIOD = "shock_period"             # Apply shock to date range
-    BOOTSTRAP = "bootstrap"                   # Resample returns
-    VOLATILITY_SPIKE = "volatility_spike"     # Amplify volatility
-    LIQUIDITY_CRUNCH = "liquidity_crunch"     # Reduce volume + widen spreads
-    HISTORICAL = "historical"                 # Pre-built historical scenario
-    CUSTOM = "custom"                         # User-defined
+    REMOVE_OUTLIERS = "remove_outliers"  # Drop extreme returns
+    SHOCK_PERIOD = "shock_period"  # Apply shock to date range
+    BOOTSTRAP = "bootstrap"  # Resample returns
+    VOLATILITY_SPIKE = "volatility_spike"  # Amplify volatility
+    LIQUIDITY_CRUNCH = "liquidity_crunch"  # Reduce volume + widen spreads
+    HISTORICAL = "historical"  # Pre-built historical scenario
+    CUSTOM = "custom"  # User-defined
 
 
 @dataclass
@@ -39,16 +39,16 @@ class CounterfactualScenario:
     name: str
     scenario_type: ScenarioType
     # Shock period
-    shock_value: float = 0.0               # Daily shock (e.g., -0.03 for -3%/day)
+    shock_value: float = 0.0  # Daily shock (e.g., -0.03 for -3%/day)
     shock_start_idx: int = 0
-    shock_duration: int = 20               # Days
+    shock_duration: int = 20  # Days
     # Volatility spike
-    vol_multiplier: float = 3.0            # Multiply returns by this
+    vol_multiplier: float = 3.0  # Multiply returns by this
     # Outlier removal
-    outlier_threshold: float = 4.0         # Z-score threshold
+    outlier_threshold: float = 4.0  # Z-score threshold
     # Liquidity crunch
-    volume_reduction: float = 0.5          # Reduce volume to 50%
-    spread_widening: float = 3.0           # Widen spreads to 3x
+    volume_reduction: float = 0.5  # Reduce volume to 50%
+    spread_widening: float = 3.0  # Widen spreads to 3x
     # Metadata
     description: str = ""
 
@@ -61,7 +61,7 @@ class CounterfactualScenario:
 
         if self.scenario_type == ScenarioType.SHOCK_PERIOD:
             end = min(self.shock_start_idx + self.shock_duration, len(r))
-            r[self.shock_start_idx:end] += self.shock_value
+            r[self.shock_start_idx : end] += self.shock_value
 
         elif self.scenario_type == ScenarioType.VOLATILITY_SPIKE:
             r = r * self.vol_multiplier
@@ -102,12 +102,12 @@ class HistoricalScenarios:
         return CounterfactualScenario(
             name="COVID-19 Crash 2020.03",
             scenario_type=ScenarioType.HISTORICAL,
-            shock_value=-0.05,         # -5% daily
+            shock_value=-0.05,  # -5% daily
             shock_start_idx=0,
-            shock_duration=23,         # 23 trading days
-            vol_multiplier=3.0,        # Extreme volatility
+            shock_duration=23,  # 23 trading days
+            vol_multiplier=3.0,  # Extreme volatility
             description="S&P 500 -34% in 23 days. 4 circuit breakers triggered. "
-                       "VIX spiked to 82.69.",
+            "VIX spiked to 82.69.",
         )
 
     @staticmethod
@@ -120,12 +120,12 @@ class HistoricalScenarios:
         return CounterfactualScenario(
             name="China A-Share Crash 2015.08",
             scenario_type=ScenarioType.HISTORICAL,
-            shock_value=-0.06,         # -6% daily (limit down)
+            shock_value=-0.06,  # -6% daily (limit down)
             shock_start_idx=0,
             shock_duration=15,
             vol_multiplier=2.5,
             description="Shanghai Composite -43%. Mass limit-downs. "
-                       "Government intervention with 'national team' buying.",
+            "Government intervention with 'national team' buying.",
         )
 
     @staticmethod
@@ -138,12 +138,12 @@ class HistoricalScenarios:
         return CounterfactualScenario(
             name="Bear Market 2022",
             scenario_type=ScenarioType.HISTORICAL,
-            shock_value=-0.015,        # -1.5% daily (sustained grind)
+            shock_value=-0.015,  # -1.5% daily (sustained grind)
             shock_start_idx=0,
-            shock_duration=60,         # ~3 months of grinding
+            shock_duration=60,  # ~3 months of grinding
             vol_multiplier=1.5,
             description="Fed rate hikes, S&P -25%, NASDAQ -33%. "
-                       "Bond-equity correlation broke. Crypto -65%.",
+            "Bond-equity correlation broke. Crypto -65%.",
         )
 
     @staticmethod
@@ -152,12 +152,12 @@ class HistoricalScenarios:
         return CounterfactualScenario(
             name="Flash Crash",
             scenario_type=ScenarioType.LIQUIDITY_CRUNCH,
-            volume_reduction=0.1,       # Volume drops to 10%
-            spread_widening=10.0,       # Spreads 10x wider
+            volume_reduction=0.1,  # Volume drops to 10%
+            spread_widening=10.0,  # Spreads 10x wider
             shock_value=-0.08,
             shock_duration=3,
             description="Sudden liquidity evaporation. Volume -90%, spreads 10x. "
-                       "Algorithmic cascades. Recovers within hours.",
+            "Algorithmic cascades. Recovers within hours.",
         )
 
     @staticmethod
@@ -166,12 +166,12 @@ class HistoricalScenarios:
         return CounterfactualScenario(
             name="Stagflation",
             scenario_type=ScenarioType.SHOCK_PERIOD,
-            shock_value=-0.003,         # -0.3% daily grind
+            shock_value=-0.003,  # -0.3% daily grind
             shock_start_idx=0,
-            shock_duration=120,         # ~6 months
+            shock_duration=120,  # ~6 months
             vol_multiplier=2.0,
             description="Low growth + high inflation. Bonds and equities both suffer. "
-                       "Commodities outperform.",
+            "Commodities outperform.",
         )
 
     @classmethod
@@ -206,11 +206,11 @@ class StressTestResult:
     var_95: float
     cvar_95: float
     # Liquidity
-    liquidity_gap_pct: float        # % of days where volume < threshold
+    liquidity_gap_pct: float  # % of days where volume < threshold
     worst_day_return: float
     # Comparison
-    vs_baseline_return: float       # Difference from baseline total return
-    passed: bool = True             # Whether risk limits not breached
+    vs_baseline_return: float  # Difference from baseline total return
+    passed: bool = True  # Whether risk limits not breached
 
 
 @dataclass
@@ -232,7 +232,7 @@ class StressTestReport:
         if not self.scenarios:
             return self.baseline.max_drawdown
         # max_drawdown is negative — worst is the most negative (min)
-        return min(r.max_drawdown for r in self.scenarios + [self.baseline])
+        return min(r.max_drawdown for r in [*self.scenarios, self.baseline])
 
     @property
     def all_passed(self) -> bool:
@@ -250,8 +250,7 @@ class StressTestReport:
             "worst_return": round(self.worst_case.total_return, 4) if self.worst_case else None,
             "worst_max_dd": round(self.max_drawdown_across_all, 4),
             "vs_baseline_worst": (
-                round(self.worst_case.vs_baseline_return, 4)
-                if self.worst_case else None
+                round(self.worst_case.vs_baseline_return, 4) if self.worst_case else None
             ),
         }
 
@@ -293,7 +292,10 @@ class StressTestEngine:
         modified_volumes = volumes.copy() if volumes is not None else None
         modified_returns = scenario.apply(returns, modified_volumes)
         return self._compute_metrics(
-            scenario.name, modified_returns, modified_volumes, returns,
+            scenario.name,
+            modified_returns,
+            modified_volumes,
+            returns,
         )
 
     def run_all(
@@ -307,10 +309,7 @@ class StressTestEngine:
             scenarios = HistoricalScenarios.all_scenarios()
 
         baseline = self.compute_baseline(returns, volumes)
-        results = [
-            self.run_scenario(returns, s, volumes)
-            for s in scenarios
-        ]
+        results = [self.run_scenario(returns, s, volumes) for s in scenarios]
         return StressTestReport(baseline=baseline, scenarios=results)
 
     def _compute_metrics(
@@ -399,7 +398,7 @@ class PerturbationResult:
     sharpe_values: list[float]
     return_values: list[float]
     max_dd_values: list[float]
-    sensitivity: float = 0.0     # max_change / param_change
+    sensitivity: float = 0.0  # max_change / param_change
 
 
 class ParameterPerturbation:
@@ -413,7 +412,7 @@ class ParameterPerturbation:
     @staticmethod
     def test_slippage(
         base_returns: np.ndarray,
-        slippage_bps_values: list[float] = None,
+        slippage_bps_values: list[float] | None = None,
     ) -> PerturbationResult:
         """
         Test sensitivity to slippage (basis points).
@@ -437,7 +436,8 @@ class ParameterPerturbation:
         # Sensitivity = avg sharpe change per unit parameter change
         sensitivity = (
             abs(sharpes[-1] - sharpes[0]) / abs(slippage_bps_values[-1] - slippage_bps_values[0])
-            if len(slippage_bps_values) > 1 else 0.0
+            if len(slippage_bps_values) > 1
+            else 0.0
         )
 
         return PerturbationResult(
@@ -453,20 +453,21 @@ class ParameterPerturbation:
     @staticmethod
     def test_costs(
         base_returns: np.ndarray,
-        commission_bps_values: list[float] = None,
+        commission_bps_values: list[float] | None = None,
     ) -> PerturbationResult:
         """Test sensitivity to commission costs."""
         if commission_bps_values is None:
             commission_bps_values = [0, 1, 3, 5, 10, 15]
 
         return ParameterPerturbation.test_slippage(
-            base_returns, commission_bps_values,
+            base_returns,
+            commission_bps_values,
         )
 
     @staticmethod
     def test_latency(
         base_returns: np.ndarray,
-        latency_ms_values: list[float] = None,
+        latency_ms_values: list[float] | None = None,
     ) -> PerturbationResult:
         """
         Test sensitivity to execution latency.
@@ -490,7 +491,8 @@ class ParameterPerturbation:
 
         sensitivity = (
             abs(sharpes[-1] - sharpes[0]) / abs(latency_ms_values[-1] - latency_ms_values[0])
-            if len(latency_ms_values) > 1 else 0.0
+            if len(latency_ms_values) > 1
+            else 0.0
         )
 
         return PerturbationResult(

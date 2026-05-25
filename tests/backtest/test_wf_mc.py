@@ -1,4 +1,5 @@
 """Tests for walk-forward, Monte Carlo, and stress testing."""
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -13,9 +14,11 @@ from quant_trading.backtest.walk_forward import WalkForwardValidator
 
 # ── Mock engine ───────────────────────────────────────────────────────────────
 
+
 def _mock_strategy(data, params=None):
     """Simple mock strategy that generates random signals."""
     pass
+
 
 class MockEngine(BacktestEngine):
     def __init__(self):
@@ -30,10 +33,12 @@ class MockEngine(BacktestEngine):
             100_000 * (1 + returns).cumprod(),
             index=pd.bdate_range("2024-01-01", periods=n_days, freq="B"),
         )
-        trades = pd.DataFrame({
-            "pnl": rng.normal(500, 2000, 100),
-            "hold_days": rng.randint(1, 20, 100),
-        })
+        trades = pd.DataFrame(
+            {
+                "pnl": rng.normal(500, 2000, 100),
+                "hold_days": rng.randint(1, 20, 100),
+            }
+        )
         trades.loc[rng.choice(100, 30, replace=False), "pnl"] *= -1
         metrics = MetricsCalculator.from_equity_curve(equity, trades)
         return BacktestResult(metrics=metrics, equity_curve=equity, trades=trades, passed=True)
@@ -41,16 +46,19 @@ class MockEngine(BacktestEngine):
 
 # ── WalkForwardValidator ──────────────────────────────────────────────────────
 
+
 class TestWalkForwardValidator:
     def test_runs_folds(self):
         engine = MockEngine()
         config = BacktestConfig(wf_folds=3, wf_oos_pct=0.2)
         wf = WalkForwardValidator(engine, config, purge_days=5)
 
-        data = {"TEST": pd.DataFrame(
-            {"close": np.random.randn(200) + 100},
-            index=pd.DatetimeIndex(pd.bdate_range("2024-01-01", periods=200, freq="B")),
-        )}
+        data = {
+            "TEST": pd.DataFrame(
+                {"close": np.random.randn(200) + 100},
+                index=pd.DatetimeIndex(pd.bdate_range("2024-01-01", periods=200, freq="B")),
+            )
+        }
         result = wf.run(data, _mock_strategy)
         assert result.wf_folds is not None
         assert result.wf_oos_metrics is not None
@@ -66,10 +74,12 @@ class TestWalkForwardValidator:
         config = BacktestConfig(deterministic=True)
         wf = WalkForwardValidator(engine, config, purge_days=5)
 
-        data = {"TEST": pd.DataFrame(
-            {"close": np.random.randn(300) + 100},
-            index=pd.DatetimeIndex(pd.bdate_range("2024-01-01", periods=300, freq="B")),
-        )}
+        data = {
+            "TEST": pd.DataFrame(
+                {"close": np.random.randn(300) + 100},
+                index=pd.DatetimeIndex(pd.bdate_range("2024-01-01", periods=300, freq="B")),
+            )
+        }
         result = wf.sensitivity_test(
             data,
             lambda params: _mock_strategy,
@@ -83,13 +93,16 @@ class TestWalkForwardValidator:
 
 # ── MonteCarloSimulator ───────────────────────────────────────────────────────
 
+
 class TestMonteCarloSimulator:
     def test_runs_simulations(self):
         config = BacktestConfig(mc_runs=100, deterministic=True)
         sim = MonteCarloSimulator(config)
-        trades = pd.DataFrame({
-            "pnl": np.random.RandomState(42).normal(500, 2000, 80),
-        })
+        trades = pd.DataFrame(
+            {
+                "pnl": np.random.RandomState(42).normal(500, 2000, 80),
+            }
+        )
         result = sim.run(trades)
         assert "sharpe" in result
         assert result["n_simulations"] == 100
@@ -104,15 +117,18 @@ class TestMonteCarloSimulator:
     def test_mdd_distribution(self):
         config = BacktestConfig(mc_runs=50, deterministic=True)
         sim = MonteCarloSimulator(config)
-        trades = pd.DataFrame({
-            "pnl": np.random.RandomState(42).normal(200, 1500, 60),
-        })
+        trades = pd.DataFrame(
+            {
+                "pnl": np.random.RandomState(42).normal(200, 1500, 60),
+            }
+        )
         result = sim.run(trades)
         assert "mdd" in result
         assert float(result["mdd"]["mean"]) >= 0
 
 
 # ── StressTestRunner ──────────────────────────────────────────────────────────
+
 
 class TestStressTestRunner:
     def test_apply_covid_scenario(self):
@@ -133,7 +149,7 @@ class TestStressTestRunner:
         assert "covid_2020" in results
         assert "china_2015" in results
         assert "bear_2022" in results
-        for name, r in results.items():
+        for _name, r in results.items():
             assert "sharpe" in r
             assert "mdd_pct" in r
 

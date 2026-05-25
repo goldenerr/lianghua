@@ -1,4 +1,5 @@
 """Tests for dynamic stress generator, model sentinel, and drift report."""
+
 import numpy as np
 from quant_trading.risk.dynamic_stress import (
     MarketRegime,
@@ -48,11 +49,13 @@ class TestDetectRegime:
     def test_multi_asset_correlation(self):
         rng = np.random.RandomState(42)
         base = rng.normal(0, 0.01, 252)
-        returns = np.column_stack([
-            base,
-            base * 0.8 + rng.normal(0, 0.002, 252),
-            -base * 0.7 + rng.normal(0, 0.002, 252),
-        ])
+        returns = np.column_stack(
+            [
+                base,
+                base * 0.8 + rng.normal(0, 0.002, 252),
+                -base * 0.7 + rng.normal(0, 0.002, 252),
+            ]
+        )
         regime = detect_regime(returns)
         assert regime.correlation > 0.6
 

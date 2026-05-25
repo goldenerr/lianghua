@@ -1,5 +1,5 @@
-
 """Business continuity & fault injection platform (monitor-003)."""
+
 from dataclasses import dataclass
 
 
@@ -10,7 +10,7 @@ class FaultInjector:
     active: bool = False
     last_duration_ms: int = 0
 
-    def inject(self, duration_ms: int=100) -> dict:
+    def inject(self, duration_ms: int = 100) -> dict:
         if duration_ms < 0:
             raise ValueError("duration_ms must be non-negative")
         self.active = True

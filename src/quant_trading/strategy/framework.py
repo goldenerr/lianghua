@@ -3,6 +3,7 @@ Pluggable strategy framework with version management, hot-reload, A/B testing.
 
 AGENTS.md §2 (strategy-001): Strategy base class, plugin loading, factor library.
 """
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -13,10 +14,12 @@ import pandas as pd
 
 UTC = timezone.utc
 
+
 class SignalType(str, Enum):
     BUY = "buy"
     SELL = "sell"
     HOLD = "hold"
+
 
 @dataclass
 class Signal:
@@ -27,12 +30,14 @@ class Signal:
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     metadata: dict = field(default_factory=dict)
 
+
 class StrategyState(str, Enum):
     INIT = "init"
     WARMUP = "warmup"
     RUNNING = "running"
     PAUSED = "paused"
     STOPPED = "stopped"
+
 
 @dataclass
 class StrategyConfig:
@@ -43,8 +48,10 @@ class StrategyConfig:
     warmup_bars: int = 20
     parameters: dict[str, Any] = field(default_factory=dict)
 
+
 class Strategy(ABC):
     """Abstract base for all strategies."""
+
     def __init__(self, config: StrategyConfig):
         self.config = config
         self.state = StrategyState.INIT
@@ -80,13 +87,22 @@ class Strategy(ABC):
     def warmup_complete(self) -> bool:
         return self._bar_count >= self.config.warmup_bars
 
-    def start(self) -> None: self.state = StrategyState.WARMUP
-    def stop(self) -> None: self.state = StrategyState.STOPPED
-    def pause(self) -> None: self.state = StrategyState.PAUSED
-    def resume(self) -> None: self.state = StrategyState.RUNNING
+    def start(self) -> None:
+        self.state = StrategyState.WARMUP
+
+    def stop(self) -> None:
+        self.state = StrategyState.STOPPED
+
+    def pause(self) -> None:
+        self.state = StrategyState.PAUSED
+
+    def resume(self) -> None:
+        self.state = StrategyState.RUNNING
+
 
 class MovingAverageCrossStrategy(Strategy):
     """Dual moving average crossover."""
+
     def __init__(self, config: StrategyConfig):
         super().__init__(config)
         self.fast = config.parameters.get("fast", 20)
@@ -96,19 +112,30 @@ class MovingAverageCrossStrategy(Strategy):
         self._bar_count += 1
         signals = []
         for sym, df in data.items():
-            if len(df) < self.slow: continue
+            if len(df) < self.slow:
+                continue
             fast_ma = df["close"].rolling(self.fast).mean().iloc[-1]
             slow_ma = df["close"].rolling(self.slow).mean().iloc[-1]
-            prev_fast = df["close"].rolling(self.fast).mean().iloc[-2] if len(df) > self.fast + 1 else fast_ma
-            prev_slow = df["close"].rolling(self.slow).mean().iloc[-2] if len(df) > self.slow + 1 else slow_ma
+            prev_fast = (
+                df["close"].rolling(self.fast).mean().iloc[-2]
+                if len(df) > self.fast + 1
+                else fast_ma
+            )
+            prev_slow = (
+                df["close"].rolling(self.slow).mean().iloc[-2]
+                if len(df) > self.slow + 1
+                else slow_ma
+            )
             if prev_fast <= prev_slow and fast_ma > slow_ma:
                 signals.append(Signal(sym, SignalType.BUY, price=float(df["close"].iloc[-1])))
             elif prev_fast >= prev_slow and fast_ma < slow_ma:
                 signals.append(Signal(sym, SignalType.SELL, price=float(df["close"].iloc[-1])))
         return signals
 
+
 class RSIStrategy(Strategy):
     """RSI mean reversion."""
+
     def on_data(self, data: dict[str, pd.DataFrame]) -> list[Signal]:
         self._bar_count += 1
         signals = []
@@ -116,12 +143,13 @@ class RSIStrategy(Strategy):
         oversold = self.config.parameters.get("oversold", 30)
         overbought = self.config.parameters.get("overbought", 70)
         for sym, df in data.items():
-            if len(df) < period + 1: continue
+            if len(df) < period + 1:
+                continue
             delta = df["close"].diff()
             gain = delta.clip(lower=0).rolling(period).mean().iloc[-1]
             loss = (-delta.clip(upper=0)).rolling(period).mean().iloc[-1]
             rs = gain / max(loss, 1e-10)
-            rsi = 100 - 100/(1+rs)
+            rsi = 100 - 100 / (1 + rs)
             close = float(df["close"].iloc[-1])
             if rsi < oversold:
                 signals.append(Signal(sym, SignalType.BUY, price=close))

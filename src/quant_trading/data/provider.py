@@ -25,18 +25,20 @@ class Frequency(str, Enum):
 @dataclass
 class DataRequest:
     """Standardized data request."""
+
     symbol: str
     frequency: Frequency = Frequency.DAILY
     start_date: date | None = None
     end_date: date | None = None
     limit: int = 1000
     # Optional provider-specific params
-    extra: dict = field(default_factory=dict)
+    extra: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
 class DataResult:
     """Standardized data result with metadata."""
+
     symbol: str
     frequency: Frequency
     data: pd.DataFrame
@@ -45,7 +47,7 @@ class DataResult:
     data_range: tuple[date, date] | None = None  # (start, end) of actual data
     row_count: int = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.row_count = len(self.data)
         if not self.data.empty and self.data_range is None:
             idx = self.data.index
@@ -58,9 +60,7 @@ class DataResult:
 
 
 # Expected column schema after normalization
-EXPECTED_COLUMNS = frozenset({
-    "open", "high", "low", "close", "volume", "vwap", "trades"
-})
+EXPECTED_COLUMNS = frozenset({"open", "high", "low", "close", "volume", "vwap", "trades"})
 
 
 class DataProvider(ABC):
@@ -73,7 +73,7 @@ class DataProvider(ABC):
     4. Raise DataProviderError on failures
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
         self._fail_count: int = 0
         self._last_error: str | None = None
@@ -119,11 +119,19 @@ class DataProvider(ABC):
         """
         column_map = {
             # Standard names
-            "Open": "open", "High": "high", "Low": "low", "Close": "close",
-            "Volume": "volume", "Vol": "volume",
+            "Open": "open",
+            "High": "high",
+            "Low": "low",
+            "Close": "close",
+            "Volume": "volume",
+            "Vol": "volume",
             # Chinese names (akshare, tushare)
-            "开盘": "open", "最高": "high", "最低": "low", "收盘": "close",
-            "成交量": "volume", "成交额": "amount",
+            "开盘": "open",
+            "最高": "high",
+            "最低": "low",
+            "收盘": "close",
+            "成交量": "volume",
+            "成交额": "amount",
             # yfinance
             "Adj Close": "adj_close",
         }
@@ -148,6 +156,7 @@ class DataProvider(ABC):
 
 class DataProviderError(Exception):
     """Raised when a data provider encounters a non-recoverable error."""
+
     def __init__(self, message: str, provider: str = "", symbol: str = ""):
         self.provider = provider
         self.symbol = symbol

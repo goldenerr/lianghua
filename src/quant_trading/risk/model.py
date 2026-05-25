@@ -6,9 +6,11 @@ STYLE FACTORS: Value, Momentum, Volatility, Size, Liquidity, Quality, Growth
 COVARIANCE: Ledoit-Wolf shrinkage with EWMA decay
 SPECIFIC RISK: Bayesian shrinkage estimator
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import numpy as np
 
@@ -16,17 +18,19 @@ import numpy as np
 # Risk Model Configuration
 # ═══════════════════════════════════════════════════════════════
 
+
 @dataclass
 class RiskModelConfig:
     """Risk model calibration parameters."""
+
     # Factor covariance
-    cov_method: str = "ledoit_wolf"   # ledoit_wolf, ewma, sample
-    ewma_lambda: float = 0.94         # EWMA decay (RiskMetrics)
+    cov_method: str = "ledoit_wolf"  # ledoit_wolf, ewma, sample
+    ewma_lambda: float = 0.94  # EWMA decay (RiskMetrics)
     shrinkage_target: str = "constant_correlation"  # or "diagonal"
 
     # Specific risk
     specific_risk_method: str = "bayesian"  # bayesian, structural, sample
-    specific_risk_shrinkage: float = 0.3    # shrinkage towards structural
+    specific_risk_shrinkage: float = 0.3  # shrinkage towards structural
 
     # VaR / CVaR
     var_confidence: float = 0.95
@@ -41,9 +45,10 @@ class RiskModelConfig:
 # Factor Covariance Estimation
 # ═══════════════════════════════════════════════════════════════
 
+
 def estimate_factor_covariance(
     factor_returns: np.ndarray,  # (n_factors, n_periods)
-    config: RiskModelConfig = None,
+    config: RiskModelConfig | None = None,
 ) -> np.ndarray:
     """Estimate factor covariance matrix with shrinkage."""
     if config is None:
@@ -53,10 +58,11 @@ def estimate_factor_covariance(
 
     if config.cov_method == "ewma":
         lambd = config.ewma_lambda
-        weights = np.array([(1 - lambd) * lambd ** (n_periods - 1 - t)
-                           for t in range(n_periods)])
+        weights = np.array([(1 - lambd) * lambd ** (n_periods - 1 - t) for t in range(n_periods)])
         weights /= weights.sum()
-        centered = factor_returns - np.average(factor_returns, axis=1, weights=weights).reshape(-1, 1)
+        centered = factor_returns - np.average(factor_returns, axis=1, weights=weights).reshape(
+            -1, 1
+        )
         cov = centered @ np.diag(weights) @ centered.T
     elif config.cov_method == "ledoit_wolf":
         sample_cov = np.cov(factor_returns, ddof=1)
@@ -81,10 +87,10 @@ def estimate_factor_covariance(
     eigvals = np.maximum(eigvals, 1e-8)
     cov = eigvecs @ np.diag(eigvals) @ eigvecs.T
 
-    return cov
+    return cast(np.ndarray, cov)
 
 
-def _compute_shrinkage(returns, sample_cov, target):
+def _compute_shrinkage(returns: np.ndarray, sample_cov: np.ndarray, target: np.ndarray) -> float:
     """Ledoit-Wolf optimal shrinkage intensity."""
     n, T = returns.shape
     rets_centered = returns - returns.mean(axis=1, keepdims=True)
@@ -92,13 +98,13 @@ def _compute_shrinkage(returns, sample_cov, target):
     for t in range(T):
         x = rets_centered[:, t]
         pi_mat += np.outer(x, x) ** 2
-    pi_hat = np.sum(pi_mat - sample_cov ** 2) / T
+    pi_hat = np.sum(pi_mat - sample_cov**2) / T
     gamma_hat = np.sum((sample_cov - target) ** 2)
     delta = max(0, min(1, pi_hat / max(gamma_hat, 1e-12) / T))
-    return delta
+    return float(delta)
 
 
-def _newey_west_adjust(returns, cov, max_lags):
+def _newey_west_adjust(returns: np.ndarray, cov: np.ndarray, max_lags: int) -> np.ndarray:
     """Newey-West auto-correlation consistent covariance adjustment."""
     n_factors, n_periods = returns.shape
     if n_periods < 3 or max_lags < 1:
@@ -110,24 +116,27 @@ def _newey_west_adjust(returns, cov, max_lags):
     for lag in range(1, max_lags + 1):
         weight = 1 - lag / (max_lags + 1)
         for t in range(n_periods - lag):
-            adjustment += weight * (np.outer(rets_centered[:, t], rets_centered[:, t+lag]) +
-                                    np.outer(rets_centered[:, t+lag], rets_centered[:, t]))
+            adjustment += weight * (
+                np.outer(rets_centered[:, t], rets_centered[:, t + lag])
+                + np.outer(rets_centered[:, t + lag], rets_centered[:, t])
+            )
 
-    return cov + adjustment / n_periods
+    return cast(np.ndarray, cov + adjustment / n_periods)
 
 
 # ═══════════════════════════════════════════════════════════════
 # Specific Risk Estimation
 # ═══════════════════════════════════════════════════════════════
 
+
 def estimate_specific_risk(
-    asset_returns: np.ndarray,      # (n_assets, n_periods)
-    factor_exposures: np.ndarray,   # (n_assets, n_factors)
-    factor_returns: np.ndarray,     # (n_factors, n_periods)
-    config: RiskModelConfig = None,
+    asset_returns: np.ndarray,  # (n_assets, n_periods)
+    factor_exposures: np.ndarray,  # (n_assets, n_factors)
+    factor_returns: np.ndarray,  # (n_factors, n_periods)
+    config: RiskModelConfig | None = None,
 ) -> np.ndarray:
     """Estimate specific (idiosyncratic) risk for each asset.
-    
+
     Uses Bayesian shrinkage: blend sample residual vol with structural estimate
     (inverse of sqrt(market cap) proxy).
     """
@@ -150,35 +159,37 @@ def estimate_specific_risk(
         # Bayesian shrinkage: blend sample towards structural
         # Shrinkage weight based on estimation error
         shrinkage = config.specific_risk_shrinkage
-        blended_var = (1 - shrinkage) * sample_var + shrinkage * (structural_vol ** 2)
-        return np.sqrt(np.maximum(blended_var, 1e-12))
+        blended_var = (1 - shrinkage) * sample_var + shrinkage * (structural_vol**2)
+        return cast(np.ndarray, np.sqrt(np.maximum(blended_var, 1e-12)))
     else:
-        return sample_vol
+        return cast(np.ndarray, sample_vol)
 
 
 # ═══════════════════════════════════════════════════════════════
 # Portfolio Risk Decomposition (Barra-style)
 # ═══════════════════════════════════════════════════════════════
 
+
 @dataclass
 class PortfolioRisk:
     """Full portfolio risk decomposition."""
-    total_risk: float             # annualized %
-    systematic_risk: float        # from factor exposures
-    specific_risk: float          # idiosyncratic
+
+    total_risk: float  # annualized %
+    systematic_risk: float  # from factor exposures
+    specific_risk: float  # idiosyncratic
     factor_contributions: dict[str, float]  # risk contribution per factor
-    var_95: float                 # Value at Risk (95%)
-    cvar_95: float                # Conditional VaR (95%)
-    tracking_error: float = 0.0   # vs benchmark
+    var_95: float  # Value at Risk (95%)
+    cvar_95: float  # Conditional VaR (95%)
+    tracking_error: float = 0.0  # vs benchmark
 
 
 def decompose_portfolio_risk(
-    weights: np.ndarray,           # (n_assets,)
+    weights: np.ndarray,  # (n_assets,)
     factor_exposures: np.ndarray,  # (n_assets, n_factors)
-    factor_cov: np.ndarray,        # (n_factors, n_factors)
-    specific_risk: np.ndarray,     # (n_assets,)
-    factor_names: list[str] = None,
-    benchmark_weights: np.ndarray = None,
+    factor_cov: np.ndarray,  # (n_factors, n_factors)
+    specific_risk: np.ndarray,  # (n_assets,)
+    factor_names: list[str] | None = None,
+    benchmark_weights: np.ndarray | None = None,
     horizon_days: int = 1,
 ) -> PortfolioRisk:
     """Barra-style portfolio risk decomposition."""
@@ -211,8 +222,9 @@ def decompose_portfolio_risk(
 
     # VaR / CVaR (parametric, assuming normality)
     from scipy.stats import norm
+
     z_95 = norm.ppf(0.95)
-    z_99 = norm.ppf(0.99)
+    norm.ppf(0.99)
     daily_total_risk = total_risk / ann_factor
 
     var_95 = z_95 * daily_total_risk  # negative in loss terms
@@ -223,7 +235,9 @@ def decompose_portfolio_risk(
     te = 0.0
     if benchmark_weights is not None:
         active_weights = weights - benchmark_weights
-        active_sys = active_weights @ factor_exposures @ factor_cov @ factor_exposures.T @ active_weights
+        active_sys = (
+            active_weights @ factor_exposures @ factor_cov @ factor_exposures.T @ active_weights
+        )
         active_spec = np.sum((active_weights * specific_risk) ** 2)
         te = np.sqrt(max(active_sys + active_spec, 0)) * ann_factor
 
@@ -244,22 +258,34 @@ def decompose_portfolio_risk(
 
 STRESS_SCENARIOS = {
     "2020_covid_crash": {
-        "value": -0.08, "momentum": -0.05, "volatility": 0.15,
-        "size": -0.03, "liquidity": -0.10,
+        "value": -0.08,
+        "momentum": -0.05,
+        "volatility": 0.15,
+        "size": -0.03,
+        "liquidity": -0.10,
     },
     "2015_summer_crash": {
-        "value": -0.02, "momentum": -0.08, "volatility": 0.20,
-        "size": -0.05, "liquidity": -0.12,
+        "value": -0.02,
+        "momentum": -0.08,
+        "volatility": 0.20,
+        "size": -0.05,
+        "liquidity": -0.12,
     },
     "2008_gfc": {
-        "value": -0.05, "momentum": -0.10, "volatility": 0.25,
-        "size": -0.08, "liquidity": -0.15,
+        "value": -0.05,
+        "momentum": -0.10,
+        "volatility": 0.25,
+        "size": -0.08,
+        "liquidity": -0.15,
     },
     "rate_hike_shock": {
-        "value": 0.03, "momentum": -0.03, "volatility": 0.05,
+        "value": 0.03,
+        "momentum": -0.03,
+        "volatility": 0.05,
     },
     "liquidity_crisis": {
-        "liquidity": -0.20, "size": -0.10,
+        "liquidity": -0.20,
+        "size": -0.10,
     },
 }
 
@@ -268,7 +294,7 @@ def stress_test_portfolio(
     weights: np.ndarray,
     factor_exposures: np.ndarray,
     factor_names: list[str],
-    benchmark_weights: np.ndarray = None,
+    benchmark_weights: np.ndarray | None = None,
 ) -> dict[str, float]:
     """Stress test portfolio under historical and hypothetical scenarios."""
     results = {}

@@ -3,6 +3,7 @@ Multi-layered risk management system (risk-001).
 
 AGENTS.md §6: Pre-trade, in-trade, post-trade risk checks.
 """
+
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -27,14 +28,17 @@ class RiskLimits:
     max_consecutive_losses: int = 5
     max_weekly_loss_pct: float = 0.03
 
+
 @dataclass
 class RiskCheckResult:
     passed: bool
     reason: str = ""
     limits: dict = field(default_factory=dict)
 
+
 class RiskEngine:
     """Pre/in/post trade risk management."""
+
     def __init__(
         self,
         limits: RiskLimits | None = None,
@@ -76,7 +80,11 @@ class RiskEngine:
             f"Position {pct:.1%} vs limit {self.limits.max_position_pct:.1%}",
             limits={"max_position_pct": self.limits.max_position_pct, "position_pct": pct},
         )
-        self._emit("position_limit", result, {"position_value": position_value, "total_equity": total_equity})
+        self._emit(
+            "position_limit",
+            result,
+            {"position_value": position_value, "total_equity": total_equity},
+        )
         return result
 
     def check_leverage(self, total_exposure: float, total_equity: float) -> RiskCheckResult:
@@ -87,7 +95,9 @@ class RiskEngine:
             f"Leverage {lev:.1f}x vs limit {self.limits.max_leverage:.1f}x",
             limits={"max_leverage": self.limits.max_leverage, "leverage": lev},
         )
-        self._emit("leverage", result, {"total_exposure": total_exposure, "total_equity": total_equity})
+        self._emit(
+            "leverage", result, {"total_exposure": total_exposure, "total_equity": total_equity}
+        )
         return result
 
     def check_daily_loss(self, daily_pnl: float, total_equity: float) -> RiskCheckResult:
@@ -107,7 +117,9 @@ class RiskEngine:
 
     def check_var(self, returns: np.ndarray) -> RiskCheckResult:
         if len(returns) < 10:
-            result = RiskCheckResult(True, "Insufficient data", limits={"max_var_pct": self.limits.max_var_pct})
+            result = RiskCheckResult(
+                True, "Insufficient data", limits={"max_var_pct": self.limits.max_var_pct}
+            )
             self._emit("var", result, {"sample_size": len(returns)})
             return result
         var = abs(np.percentile(returns, (1 - self.limits.var_confidence) * 100))
@@ -127,7 +139,10 @@ class RiskEngine:
             result = RiskCheckResult(
                 False,
                 f"MDD {current_mdd:.1%} - LIQUIDATE ALL",
-                limits={"mdd_reduce": self.limits.mdd_reduce, "mdd_liquidate": self.limits.mdd_liquidate},
+                limits={
+                    "mdd_reduce": self.limits.mdd_reduce,
+                    "mdd_liquidate": self.limits.mdd_liquidate,
+                },
             )
             self._emit("mdd", result, {"current_mdd": current_mdd})
             self._escalate(SystemState.EMERGENCY, result.reason)
@@ -136,7 +151,10 @@ class RiskEngine:
             result = RiskCheckResult(
                 False,
                 f"MDD {current_mdd:.1%} - REDUCE 50%",
-                limits={"mdd_reduce": self.limits.mdd_reduce, "mdd_liquidate": self.limits.mdd_liquidate},
+                limits={
+                    "mdd_reduce": self.limits.mdd_reduce,
+                    "mdd_liquidate": self.limits.mdd_liquidate,
+                },
             )
             self._emit("mdd", result, {"current_mdd": current_mdd})
             self._escalate(SystemState.SAFE_MODE, result.reason)
@@ -144,7 +162,10 @@ class RiskEngine:
         result = RiskCheckResult(
             True,
             "MDD OK",
-            limits={"mdd_reduce": self.limits.mdd_reduce, "mdd_liquidate": self.limits.mdd_liquidate},
+            limits={
+                "mdd_reduce": self.limits.mdd_reduce,
+                "mdd_liquidate": self.limits.mdd_liquidate,
+            },
         )
         self._emit("mdd", result, {"current_mdd": current_mdd})
         return result

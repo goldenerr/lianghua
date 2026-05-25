@@ -4,7 +4,9 @@ AGENTS.md session gate: quick backtest plus risk check verifies health.
 AGENTS.md section 17: backtest/live consistency difference must be less than 5%.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -25,7 +27,7 @@ from quant_trading.risk.advanced import KillSwitch
 @dataclass
 class SmokeTestResult:
     passed: bool
-    steps: list[dict]
+    steps: list[dict[str, Any]]
     coverage_pct: float
     test_count: int
     duration_seconds: float
@@ -35,10 +37,15 @@ class SmokeTestResult:
 class SimpleBacktestEngine(BacktestEngine):
     """Minimal backtest engine that actually runs real math."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("simple")
 
-    def run(self, data, strategy, config=None):
+    def run(
+        self,
+        data: dict[str, pd.DataFrame],
+        strategy: Callable[[np.ndarray], float],
+        config: BacktestConfig | None = None,
+    ) -> BacktestResult:
         cfg = config or BacktestConfig(deterministic=True)
 
         # Use the first symbol's close prices
@@ -97,13 +104,13 @@ class SimpleBacktestEngine(BacktestEngine):
         return result
 
 
-def sma_crossover(prices, fast=10, slow=30):
+def sma_crossover(prices: np.ndarray, fast: int = 10, slow: int = 30) -> float:
     """Simple moving average crossover strategy — returns 1 (long), -1 (short), 0 (flat)."""
     if len(prices) < slow:
-        return 0
+        return 0.0
     fast_ma = np.mean(prices[-fast:])
     slow_ma = np.mean(prices[-slow:])
-    return 1 if fast_ma > slow_ma else 0
+    return 1.0 if fast_ma > slow_ma else 0.0
 
 
 def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
@@ -114,8 +121,8 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     import time
 
     t_start = time.time()
-    steps = []
-    all_passed = True
+    steps: list[dict[str, Any]] = []
+    all_passed: bool = True
 
     # ── Step 1: Order Manager ──────────────────────────────────────
     fsm = SystemStateMachine()
@@ -125,7 +132,7 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     om.submit(o)
     ok = o.status.value == "submitted" and om.get("smoke-1") is not None
     steps.append({"step": "order_manager", "passed": ok, "detail": "submit + get"})
-    all_passed = all_passed and ok
+    all_passed &= bool(ok)
 
     # ── Step 2: Kill Switch ────────────────────────────────────────
     ks = KillSwitch()
@@ -134,7 +141,7 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     ok = ks.is_active
     ks.deactivate()
     steps.append({"step": "kill_switch", "passed": ok, "detail": "activate + deactivate"})
-    all_passed = all_passed and ok
+    all_passed &= bool(ok)
 
     # ── Step 3: Backtest Engine ─────────────────────────────────────
     rng = np.random.RandomState(seed)
@@ -144,7 +151,7 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     engine = SimpleBacktestEngine()
     config = BacktestConfig(initial_capital=1_000_000, deterministic=True)
 
-    def strategy(p):
+    def strategy(p: np.ndarray) -> float:
         return sma_crossover(p, fast=10, slow=30)
 
     result = engine.run(data, strategy, config)
@@ -156,14 +163,14 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
             "detail": f"Sharpe={result.metrics.sharpe_ratio:.2f}, MDD={abs(result.metrics.max_drawdown):.1%}",
         }
     )
-    all_passed = all_passed and ok
+    all_passed &= bool(ok)
 
     # ── Step 4: Report Generation ──────────────────────────────────
     report = ReportGenerator.generate(result, include_trades=False)
     summary = ReportGenerator.summary(report)
     ok = "BACKTEST PERFORMANCE REPORT" in summary
     steps.append({"step": "report_generation", "passed": ok, "detail": "summary generated"})
-    all_passed = all_passed and ok
+    all_passed &= bool(ok)
 
     # ── Step 5: Forward-Looking Bias Detection ─────────────────────
     # Use a synthetic signal column that shouldn't trigger bias
@@ -174,14 +181,14 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     steps.append(
         {"step": "forward_bias_check", "passed": ok, "detail": f"{len(violations)} violations"}
     )
-    all_passed = all_passed and ok
+    all_passed &= bool(ok)
 
     # ── Step 6: Monitor Health ─────────────────────────────────────
     sm = SystemMonitor()
     sm.update(cpu_pct=50, mem_pct=60)
     ok = sm.is_healthy()
     steps.append({"step": "monitor_health", "passed": ok, "detail": "system healthy"})
-    all_passed = all_passed and ok
+    all_passed &= bool(ok)
 
     # ── Step 7: Backtest-Live Consistency Check ─────────────────────
     # AGENTS.md §17: Same engine, same data, slight param difference → metrics should be close
@@ -194,7 +201,7 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     result3 = engine.run(data3, strategy, config)
 
     # Deterministic inputs and parameters must reproduce the same key metrics.
-    diffs = {}
+    diffs: dict[str, float] = {}
     for attr in ["sharpe_ratio", "max_drawdown", "win_rate"]:
         v1 = abs(getattr(result.metrics, attr))
         v2 = abs(getattr(result3.metrics, attr))

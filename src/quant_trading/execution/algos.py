@@ -1,5 +1,5 @@
-
 """Algorithmic trading strategies (exec-003). AGENTS.md §7: VWAP/TWAP/POV."""
+
 import numpy as np
 
 

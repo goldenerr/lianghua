@@ -1,4 +1,5 @@
 """Tests for remaining 0% coverage modules — risk advanced, ops, backtest, factor, impact."""
+
 import numpy as np
 from quant_trading.backtest.optimized import vectorized_mdd, vectorized_sharpe, vectorized_trade_pnl
 from quant_trading.factor_store import FactorDefinition, FactorStore
@@ -8,6 +9,7 @@ from quant_trading.operations_mr import FailoverManager, Region
 from quant_trading.risk.advanced import CrossMarketMargin, GreeksCalculator, KillSwitch
 
 # ── Risk Advanced ───────────────────────────────────────────────────
+
 
 class TestGreeksCalculator:
     def test_delta(self):
@@ -74,6 +76,7 @@ class TestKillSwitch:
 
 # ── Operations ──────────────────────────────────────────────────────
 
+
 class TestBackupManager:
     def test_backup(self, tmp_path):
         bm = BackupManager(storage_dir=tmp_path)
@@ -116,6 +119,7 @@ class TestFailoverManager:
 
 
 # ── Backtest Optimized ──────────────────────────────────────────────
+
 
 class TestVectorizedSharpe:
     def test_positive_returns(self):
@@ -169,6 +173,7 @@ class TestVectorizedTradePnl:
 
 # ── Factor Store ────────────────────────────────────────────────────
 
+
 class TestFactorStore:
     def test_register(self):
         fs = FactorStore()
@@ -197,10 +202,12 @@ class TestFactorDefinition:
 
 # ── Impact Assessment ───────────────────────────────────────────────
 
+
 class TestImpactAssessment:
     def test_create(self):
         ia = ImpactAssessment(
-            change_id="CHG-001", max_potential_loss=50000,
+            change_id="CHG-001",
+            max_potential_loss=50000,
             extreme_case_loss=200000,
         )
         assert ia.change_id == "CHG-001"

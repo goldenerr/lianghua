@@ -35,7 +35,7 @@ def test_equity_invariant_holds():
         var_95=0.01,
         max_var=0.05,
     )
-    equity = [r for r in results if r.name == "equity"][0]
+    equity = next(r for r in results if r.name == "equity")
     assert equity.passed is True
     assert fsm.state != SystemState.SAFE_MODE
 
@@ -45,8 +45,8 @@ def test_order_idempotency():
     enforcer = InvariantEnforcer(fsm)
     first = enforcer.check_all(client_order_id="dup-001")
     second = enforcer.check_all(client_order_id="dup-001")
-    first_idem = [r for r in first if r.name == "order_idempotency"][0]
-    second_idem = [r for r in second if r.name == "order_idempotency"][0]
+    first_idem = next(r for r in first if r.name == "order_idempotency")
+    second_idem = next(r for r in second if r.name == "order_idempotency")
     assert first_idem.passed is True
     assert second_idem.passed is False
     assert fsm.state == SystemState.SAFE_MODE

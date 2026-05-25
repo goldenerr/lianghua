@@ -8,7 +8,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy
 import pandas
@@ -119,7 +119,7 @@ def write_signed_manifest(
 
 def load_manifest(path: str | Path) -> dict[str, Any]:
     """Read an artifact manifest for querying or verification."""
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    return cast(dict[str, Any], json.loads(Path(path).read_text(encoding="utf-8")))
 
 
 def _without_signature(manifest: dict[str, Any]) -> dict[str, Any]:

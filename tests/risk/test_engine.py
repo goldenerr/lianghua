@@ -1,4 +1,5 @@
 """Tests for risk engine."""
+
 import numpy as np
 import pytest
 from quant_trading.core.audit import AuditBus

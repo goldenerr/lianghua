@@ -1,4 +1,5 @@
 """Tax and regulatory report domain models for compliance-001."""
+
 from __future__ import annotations
 
 import json
@@ -57,7 +58,11 @@ class TaxCalculator:
     def execution_fee(self, notional: float, liquidity: str = "taker") -> float:
         if liquidity not in {"maker", "taker"}:
             raise ValueError("liquidity must be maker or taker")
-        rate = self.active_rule.maker_fee_rate if liquidity == "maker" else self.active_rule.taker_fee_rate
+        rate = (
+            self.active_rule.maker_fee_rate
+            if liquidity == "maker"
+            else self.active_rule.taker_fee_rate
+        )
         return round(max(0.0, notional) * rate, 2)
 
 

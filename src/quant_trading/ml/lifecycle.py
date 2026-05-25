@@ -81,7 +81,9 @@ def detect_feature_drift(
     for idx, name in enumerate(names):
         boundaries = np.unique(np.quantile(baseline[:, idx], np.linspace(0, 1, bins + 1)))
         if boundaries.size < 2:
-            psi_by_feature[name] = 0.0 if np.allclose(baseline[:, idx], observed[:, idx]) else float("inf")
+            psi_by_feature[name] = (
+                0.0 if np.allclose(baseline[:, idx], observed[:, idx]) else float("inf")
+            )
             continue
         boundaries[0], boundaries[-1] = -np.inf, np.inf
         expected, _ = np.histogram(baseline[:, idx], bins=boundaries)
@@ -109,7 +111,11 @@ def evaluate_adversarial_robustness(
     baseline = np.asarray(predictor(data), dtype=float).reshape(-1)
     positive = np.asarray(predictor(data + epsilon), dtype=float).reshape(-1)
     negative = np.asarray(predictor(data - epsilon), dtype=float).reshape(-1)
-    if baseline.size != data.shape[0] or positive.shape != baseline.shape or negative.shape != baseline.shape:
+    if (
+        baseline.size != data.shape[0]
+        or positive.shape != baseline.shape
+        or negative.shape != baseline.shape
+    ):
         raise ValueError("predictor must emit one prediction per observation")
     worst_change = np.maximum(np.abs(positive - baseline), np.abs(negative - baseline))
     pass_rate = float(np.mean(worst_change <= tolerance))
@@ -137,10 +143,16 @@ def evaluate_regime_bias(
         mask = np.asarray([label == regime for label in regimes])
         errors[regime] = round(float(np.mean(np.abs(forecast[mask] - realized[mask]))), 6)
     error_gap = max(errors.values()) - min(errors.values()) if len(errors) > 1 else 0.0
-    return {"mean_absolute_error_by_regime": errors, "error_gap": error_gap, "biased": error_gap > maximum_error_gap}
+    return {
+        "mean_absolute_error_by_regime": errors,
+        "error_gap": error_gap,
+        "biased": error_gap > maximum_error_gap,
+    }
 
 
-def shadow_test(prod_model: Callable, shadow_model: Callable, data: np.ndarray) -> dict[str, object]:
+def shadow_test(
+    prod_model: Callable, shadow_model: Callable, data: np.ndarray
+) -> dict[str, object]:
     """Compare production and candidate predictions without placing orders."""
 
     values = _matrix(data, "data")
@@ -187,6 +199,11 @@ class ModelPromotionGate:
         self.audit.record(
             "model_production_approved",
             "model_promotion_gate",
-            {"model": model.name, "version": model.version, "approved_by": approved_by, "approval_ref": approval_ref},
+            {
+                "model": model.name,
+                "version": model.version,
+                "approved_by": approved_by,
+                "approval_ref": approval_ref,
+            },
         )
         return promoted

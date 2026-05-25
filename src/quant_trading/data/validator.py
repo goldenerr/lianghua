@@ -24,6 +24,7 @@ OHLCV_COLUMNS = ["open", "high", "low", "close", "volume"]
 @dataclass
 class ValidationResult:
     """Result of a data quality validation run."""
+
     symbol: str
     passed: bool
     errors: list[str] = field(default_factory=list)
@@ -47,10 +48,10 @@ class DataValidator:
 
     def __init__(
         self,
-        max_missing_pct: float = 0.01,          # §4: 缺失值 ≤ 1%
-        max_price_jump_pct: float = 0.20,       # §4: 价格跳动 ≤ ±20%
-        max_data_delay_seconds: float = 30.0,    # §4: 延迟 ≤ 30s
-        max_cross_check_diff_pct: float = 0.005, # §4: 交叉校验差异 < 0.5%
+        max_missing_pct: float = 0.01,  # §4: 缺失值 ≤ 1%
+        max_price_jump_pct: float = 0.20,  # §4: 价格跳动 ≤ ±20%
+        max_data_delay_seconds: float = 30.0,  # §4: 延迟 ≤ 30s
+        max_cross_check_diff_pct: float = 0.005,  # §4: 交叉校验差异 < 0.5%
     ):
         self.max_missing_pct = max_missing_pct
         self.max_price_jump_pct = max_price_jump_pct
@@ -59,9 +60,7 @@ class DataValidator:
 
     # ── Individual checks ─────────────────────────────────────────────────
 
-    def check_missing_values(
-        self, df: pd.DataFrame, result: ValidationResult
-    ) -> None:
+    def check_missing_values(self, df: pd.DataFrame, result: ValidationResult) -> None:
         """Check: missing value ratio ≤ 1% for OHLCV columns."""
         available_cols = [c for c in OHLCV_COLUMNS if c in df.columns]
         if not available_cols:
@@ -77,9 +76,7 @@ class DataValidator:
                     f"{col}: {pct:.2%} missing (threshold: {self.max_missing_pct:.1%})"
                 )
 
-    def check_price_jumps(
-        self, df: pd.DataFrame, result: ValidationResult
-    ) -> None:
+    def check_price_jumps(self, df: pd.DataFrame, result: ValidationResult) -> None:
         """Check: day-over-day close price change ≤ ±20%."""
         if "close" not in df.columns or len(df) < 2:
             return
@@ -90,7 +87,9 @@ class DataValidator:
 
         result.stats["max_price_return"] = round(abs(returns).max(), 4) if len(returns) > 0 else 0
         result.stats["price_jump_count"] = len(jumps)
-        result.stats["price_jump_pct"] = round(len(jumps) / len(returns), 4) if len(returns) > 0 else 0
+        result.stats["price_jump_pct"] = (
+            round(len(jumps) / len(returns), 4) if len(returns) > 0 else 0
+        )
 
         if len(jumps) > 0:
             jump_pct = len(jumps) / len(returns)
@@ -111,9 +110,7 @@ class DataValidator:
         if dupes > 0:
             result.add_error(f"{dupes} duplicate index entries found")
 
-    def check_freshness(
-        self, df: pd.DataFrame, result: ValidationResult
-    ) -> None:
+    def check_freshness(self, df: pd.DataFrame, result: ValidationResult) -> None:
         """Check real-time data freshness: latest data point ≤ 30s old."""
         if df.empty:
             return
@@ -182,7 +179,9 @@ class DataValidator:
         result.stats["overlap_days"] = len(common_idx)
         result.stats["max_diff_pct"] = round(max_diff, 6)
         result.stats["mean_diff_pct"] = round(mean_diff, 6)
-        result.stats["exceed_threshold_count"] = int((diff_pct > self.max_cross_check_diff_pct).sum())
+        result.stats["exceed_threshold_count"] = int(
+            (diff_pct > self.max_cross_check_diff_pct).sum()
+        )
 
         if max_diff > self.max_cross_check_diff_pct:
             result.add_error(
@@ -227,7 +226,9 @@ class DataValidator:
         else:
             logger.error(
                 "Data quality FAILED for %s: %d errors, %d warnings",
-                symbol, len(result.errors), len(result.warnings),
+                symbol,
+                len(result.errors),
+                len(result.warnings),
             )
 
         return result

@@ -2,6 +2,7 @@
 Order management and exchange integration (exec-001).
 AGENTS.md §7: Support limit/market/stop/take-profit orders.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -13,9 +14,26 @@ from quant_trading.core.state_machine import SystemStateMachine
 
 UTC = timezone.utc
 
-class OrderSide(str, Enum): BUY = "buy"; SELL = "sell"
-class OrderType(str, Enum): MARKET = "market"; LIMIT = "limit"; STOP = "stop"; TAKE_PROFIT = "take_profit"
-class OrderStatus(str, Enum): PENDING = "pending"; SUBMITTED = "submitted"; PARTIAL = "partial"; FILLED = "filled"; CANCELLED = "cancelled"
+
+class OrderSide(str, Enum):
+    BUY = "buy"
+    SELL = "sell"
+
+
+class OrderType(str, Enum):
+    MARKET = "market"
+    LIMIT = "limit"
+    STOP = "stop"
+    TAKE_PROFIT = "take_profit"
+
+
+class OrderStatus(str, Enum):
+    PENDING = "pending"
+    SUBMITTED = "submitted"
+    PARTIAL = "partial"
+    FILLED = "filled"
+    CANCELLED = "cancelled"
+
 
 @dataclass
 class Order:
@@ -31,6 +49,7 @@ class Order:
     avg_price: float = 0.0
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     timeout_seconds: int = 30
+
 
 class OrderManager:
     def __init__(
@@ -102,5 +121,12 @@ class OrderManager:
         )
         return False
 
-    def get(self, order_id: str) -> Order | None: return self._orders.get(order_id)
-    def get_active(self) -> list[Order]: return [o for o in self._orders.values() if o.status in (OrderStatus.PENDING, OrderStatus.SUBMITTED, OrderStatus.PARTIAL)]
+    def get(self, order_id: str) -> Order | None:
+        return self._orders.get(order_id)
+
+    def get_active(self) -> list[Order]:
+        return [
+            o
+            for o in self._orders.values()
+            if o.status in (OrderStatus.PENDING, OrderStatus.SUBMITTED, OrderStatus.PARTIAL)
+        ]

@@ -1,4 +1,5 @@
 """Tests for event-driven engine — EventBus and event types."""
+
 import time
 
 from quant_trading.core.events import (
@@ -142,7 +143,7 @@ class TestEventBus:
             bus.publish(ev)
         elapsed = time.time() - t0
 
-        stats = bus.get_stats()
+        bus.get_stats()
         rate = 50000 / elapsed
         # Should achieve at least 50K/sec (100K target in optimized env)
         assert rate > 10000, f"Event rate {rate:.0f}/s below 10K minimum"

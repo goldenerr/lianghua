@@ -26,6 +26,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date, timezone
 from enum import Enum
+from typing import ClassVar
 
 import numpy as np
 import pandas as pd
@@ -74,7 +75,7 @@ class PerformanceMetrics:
     trading_days: int = 0
     symbol_count: int = 0
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, object]:
         return {
             "total_return_pct": round(self.total_return * 100, 2),
             "annualized_return_pct": round(self.annualized_return * 100, 2),
@@ -121,7 +122,7 @@ class MetricsCalculator:
         m.trading_days = len(equity)
 
         # Returns
-        m.total_return = (equity.iloc[-1] / equity.iloc[0]) - 1
+        m.total_return = float((equity.iloc[-1] / equity.iloc[0]) - 1)
         years = m.trading_days / cls.TRADING_DAYS_PER_YEAR
         terminal_growth = 1 + m.total_return
         if terminal_growth <= 0:
@@ -131,7 +132,7 @@ class MetricsCalculator:
             m.annualized_return = terminal_growth ** (1 / max(years, 0.01)) - 1
 
         # Volatility
-        m.annualized_volatility = returns.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR)
+        m.annualized_volatility = float(returns.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR))
 
         # Sharpe
         excess = m.annualized_return - risk_free_rate
@@ -139,13 +140,15 @@ class MetricsCalculator:
 
         # Sortino (downside deviation)
         downside = returns[returns < 0]
-        downside_vol = downside.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR) if len(downside) > 0 else 1e-10
+        downside_vol = (
+            downside.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR) if len(downside) > 0 else 1e-10
+        )
         m.sortino_ratio = excess / max(downside_vol, 1e-10)
 
         # Max drawdown
         cummax = equity.cummax()
         drawdown = (equity - cummax) / cummax
-        m.max_drawdown = abs(drawdown.min())
+        m.max_drawdown = float(abs(drawdown.min()))
         # DD duration
         dd_start = None
         max_dur = 0
@@ -164,27 +167,29 @@ class MetricsCalculator:
         m.calmar_ratio = m.annualized_return / max(abs(m.max_drawdown), 1e-10)
 
         # VaR / CVaR
-        m.var_95 = abs(np.percentile(returns, 5))
+        m.var_95 = float(abs(np.percentile(returns, 5)))
         tail = returns[returns <= -m.var_95]
-        m.cvar_95 = abs(tail.mean()) if len(tail) > 0 else m.var_95
+        m.cvar_95 = float(abs(tail.mean())) if len(tail) > 0 else m.var_95
 
         # Trade metrics
         if trades is not None and not trades.empty:
             m.total_trades = len(trades)
-            pnls = trades["pnl"].values if "pnl" in trades.columns else np.array([])
+            pnls = (
+                np.asarray(trades["pnl"], dtype=float) if "pnl" in trades.columns else np.array([])
+            )
             if len(pnls) > 0:
                 wins = pnls[pnls > 0]
                 losses = pnls[pnls < 0]
                 m.winning_trades = len(wins)
                 m.losing_trades = len(losses)
                 m.win_rate = len(wins) / len(pnls) if len(pnls) > 0 else 0
-                m.avg_win = wins.mean() if len(wins) > 0 else 0
-                m.avg_loss = losses.mean() if len(losses) > 0 else 0
-                total_wins = wins.sum() if len(wins) > 0 else 0
-                total_losses = abs(losses.sum()) if len(losses) > 0 else 1e-10
-                m.profit_factor = total_wins / total_losses
+                m.avg_win = float(wins.mean()) if len(wins) > 0 else 0
+                m.avg_loss = float(losses.mean()) if len(losses) > 0 else 0
+                total_wins = float(wins.sum()) if len(wins) > 0 else 0
+                total_losses = float(abs(losses.sum())) if len(losses) > 0 else 1e-10
+                m.profit_factor = float(total_wins / total_losses)
             if "hold_days" in trades.columns:
-                m.avg_hold_days = trades["hold_days"].mean()
+                m.avg_hold_days = float(trades["hold_days"].mean())
 
         m.cumulative_returns = (equity / equity.iloc[0] - 1).tolist()
         return m
@@ -203,13 +208,14 @@ class BacktestMode(str, Enum):
 @dataclass
 class BacktestConfig:
     """Configuration for a backtest run."""
+
     mode: BacktestMode = BacktestMode.STANDARD
     initial_capital: float = 1_000_000.0
     start_date: date | None = None
     end_date: date | None = None
-    commission_rate: float = 0.0003       # 0.03% per trade
-    slippage_model: str = "fixed"          # "fixed" | "volatility" | "orderbook"
-    slippage_bps: float = 5.0              # 5 bps fixed slippage
+    commission_rate: float = 0.0003  # 0.03% per trade
+    slippage_model: str = "fixed"  # "fixed" | "volatility" | "orderbook"
+    slippage_bps: float = 5.0  # 5 bps fixed slippage
     risk_free_rate: float = 0.02
     adjustment_mode: str = "total_return"  # "pre" | "post" | "total_return"
     deterministic: bool = True
@@ -226,13 +232,14 @@ class BacktestConfig:
     min_sharpe: float = 1.2
     max_mdd: float = 0.15
     min_win_rate: float = 0.40
-    max_sharpe_decay_oos: float = 0.30   # OOS Sharpe decline ≤ 30%
+    max_sharpe_decay_oos: float = 0.30  # OOS Sharpe decline ≤ 30%
     max_param_sensitivity: float = 0.15  # ±10% param change → ≤ 15% perf swing
 
 
 @dataclass
 class BacktestResult:
     """Complete result of a backtest run."""
+
     metrics: PerformanceMetrics = field(default_factory=PerformanceMetrics)
     equity_curve: pd.Series = field(default_factory=pd.Series)
     trades: pd.DataFrame = field(default_factory=pd.DataFrame)
@@ -251,21 +258,15 @@ class BacktestResult:
         gates_passed = True
 
         if m.sharpe_ratio < config.min_sharpe:
-            self.errors.append(
-                f"Sharpe {m.sharpe_ratio:.2f} < minimum {config.min_sharpe}"
-            )
+            self.errors.append(f"Sharpe {m.sharpe_ratio:.2f} < minimum {config.min_sharpe}")
             gates_passed = False
 
         if abs(m.max_drawdown) > config.max_mdd:
-            self.errors.append(
-                f"MDD {abs(m.max_drawdown):.1%} > maximum {config.max_mdd:.1%}"
-            )
+            self.errors.append(f"MDD {abs(m.max_drawdown):.1%} > maximum {config.max_mdd:.1%}")
             gates_passed = False
 
         if m.win_rate < config.min_win_rate:
-            self.errors.append(
-                f"Win rate {m.win_rate:.1%} < minimum {config.min_win_rate:.1%}"
-            )
+            self.errors.append(f"Win rate {m.win_rate:.1%} < minimum {config.min_win_rate:.1%}")
             gates_passed = False
 
         self.passed = gates_passed
@@ -278,7 +279,7 @@ class BacktestEngine(ABC):
     Plugin-based: implement run() and register with registry.
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str = "backtest") -> None:
         self.name = name
 
     @abstractmethod
@@ -290,9 +291,7 @@ class BacktestEngine(ABC):
     ) -> BacktestResult:
         """Execute a backtest. Must be implemented by plugins."""
 
-    def validate_no_forward_bias(
-        self, data: pd.DataFrame, signal_col: str = "signal"
-    ) -> list[str]:
+    def validate_no_forward_bias(self, data: pd.DataFrame, signal_col: str = "signal") -> list[str]:
         """
         Forward-looking bias checklist (AGENTS.md §5).
         Returns list of violations found.
@@ -306,14 +305,11 @@ class BacktestEngine(ABC):
             if signal_col in data.columns and signal_col in shifted.columns:
                 corr = data[signal_col].corr(shifted[signal_col])
                 if abs(corr) > 0.99:
-                    violations.append(
-                        f"Suspicious autocorrelation in {signal_col}: r={corr:.4f}"
-                    )
+                    violations.append(f"Suspicious autocorrelation in {signal_col}: r={corr:.4f}")
 
         # Check 3: Date alignment — no future timestamps in training
-        if isinstance(data.index, pd.DatetimeIndex):
-            if not data.index.is_monotonic_increasing:
-                violations.append("Data index is not monotonically increasing")
+        if isinstance(data.index, pd.DatetimeIndex) and not data.index.is_monotonic_increasing:
+            violations.append("Data index is not monotonically increasing")
 
         return violations
 
@@ -324,7 +320,7 @@ class BacktestEngine(ABC):
 class BacktestRegistry:
     """Plugin registry for backtest engines."""
 
-    _engines: dict[str, type[BacktestEngine]] = {}
+    _engines: ClassVar[dict[str, type[BacktestEngine]]] = {}
 
     @classmethod
     def register(cls, name: str, engine_class: type[BacktestEngine]) -> None:
@@ -333,7 +329,9 @@ class BacktestRegistry:
     @classmethod
     def get(cls, name: str) -> type[BacktestEngine]:
         if name not in cls._engines:
-            raise KeyError(f"Backtest engine '{name}' not registered. Available: {list(cls._engines)}")
+            raise KeyError(
+                f"Backtest engine '{name}' not registered. Available: {list(cls._engines)}"
+            )
         return cls._engines[name]
 
     @classmethod

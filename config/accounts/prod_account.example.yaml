@@ -1,17 +1,15 @@
 # Production account template
 # AGENTS.md §2: 生产配置必须从 Vault 读取，此文件仅作模板参考
 #
-# Copy to: config/accounts/<account_name>.yaml
-# Then replace credentials with Vault references or env vars.
+# Copy to: config/accounts/<account_name>.yaml only through the approved deployment process.
+# The secret_ref is resolved at runtime by Vault / AWS Secrets Manager / sealed secrets.
 #
 # account_id: prod-001
 # name: "Production Account"
 # exchange: binance
+# environment: prod
 # enabled: true
 # default_leverage: 2.0
-# credentials:
-#   exchange: binance
-#   # api_key 和 api_secret 从环境变量 QUANT_API_KEY / QUANT_API_SECRET 读取
-#   api_key: "${QUANT_API_KEY}"
-#   api_secret: "${QUANT_API_SECRET}"
-#   subaccount: ""
+# secret_ref: "vault://quant/accounts/prod-001/binance"
+# NEVER place credentials, API keys, environment substitutions, or plaintext
+# secret material in a production account YAML document.

@@ -2,6 +2,7 @@
 Portfolio optimization (portfolio-001).
 AGENTS.md §26: Risk parity, Sharpe-based weighting, rebalancing.
 """
+
 import numpy as np
 
 
@@ -18,18 +19,19 @@ class PortfolioOptimizer:
             sigma = np.sqrt(w @ cov_matrix @ w)
             mrc = cov_matrix @ w / sigma
             risk_budget = w * mrc
-            if np.allclose(risk_budget, risk_budget.mean(), atol=1e-6): break
+            if np.allclose(risk_budget, risk_budget.mean(), atol=1e-6):
+                break
             w = w * risk_budget.mean() / (mrc + 1e-10)
             w = w / w.sum()
         return w
 
     @staticmethod
     def max_sharpe(returns: np.ndarray, rf: float = 0.02) -> np.ndarray:
-        mean = returns.mean(axis=0) - rf/252
+        mean = returns.mean(axis=0) - rf / 252
         cov = np.cov(returns.T)
         try:
             inv_cov = np.linalg.inv(cov)
             w = inv_cov @ mean
-            return w / w.sum()
+            return np.asarray(w / w.sum(), dtype=float)
         except np.linalg.LinAlgError:
             return PortfolioOptimizer.equal_weight(returns.shape[1])

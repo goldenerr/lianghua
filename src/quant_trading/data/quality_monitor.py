@@ -30,13 +30,14 @@ UTC = timezone.utc
 @dataclass
 class Alert:
     """A quality alert event."""
+
     symbol: str
     severity: str  # "error", "warning", "info"
     message: str
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     dedup_key: str = ""  # Used for alert convergence
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not self.dedup_key:
             self.dedup_key = f"{self.symbol}:{self.severity}:{hash(self.message) % 10000}"
 
@@ -49,7 +50,7 @@ class AlertManager:
 
     CONVERGENCE_WINDOW_SECONDS = 300  # 5 minutes
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._alerts: list[Alert] = []
         self._last_sent: dict[str, float] = {}  # dedup_key → epoch time
         self._callbacks: list[Callable[[Alert], None]] = []
@@ -90,6 +91,7 @@ class AlertManager:
 @dataclass
 class SymbolHealth:
     """Per-symbol quality health score (0–100)."""
+
     symbol: str
     score: float = 100.0
     missing_ok: bool = True
@@ -123,7 +125,7 @@ class DataQualityMonitor:
       "两个独立数据源交叉验证"
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.validator = DataValidator()
         self.alert_manager = AlertManager()
         self._health: dict[str, SymbolHealth] = {}
@@ -143,22 +145,28 @@ class DataQualityMonitor:
         self._health[symbol] = health
 
         if not health.validation_result or not health.validation_result.passed:
-            self.alert_manager.emit(Alert(
-                symbol=symbol,
-                severity="error" if health.score < 60 else "warning",
-                message=f"Quality check failed: score={health.score:.0f}, "
-                        f"errors={health.validation_result.errors if health.validation_result else 'N/A'}",
-            ))
+            self.alert_manager.emit(
+                Alert(
+                    symbol=symbol,
+                    severity="error" if health.score < 60 else "warning",
+                    message=f"Quality check failed: score={health.score:.0f}, "
+                    f"errors={health.validation_result.errors if health.validation_result else 'N/A'}",
+                )
+            )
         elif health.score < 100:
-            self.alert_manager.emit(Alert(
-                symbol=symbol,
-                severity="info",
-                message=f"Quality warning: score={health.score:.0f}",
-            ))
+            self.alert_manager.emit(
+                Alert(
+                    symbol=symbol,
+                    severity="info",
+                    message=f"Quality warning: score={health.score:.0f}",
+                )
+            )
 
         logger.info(
             "Quality check: %s → score=%.0f status=%s",
-            symbol, health.score, health.status,
+            symbol,
+            health.score,
+            health.status,
         )
         return health
 
@@ -189,12 +197,14 @@ class DataQualityMonitor:
         result = self.validator.cross_validate(df1, df2, source1, source2)
 
         if not result.passed:
-            self.alert_manager.emit(Alert(
-                symbol=symbol,
-                severity="error",
-                message=f"Cross-validation FAILED: {source1} vs {source2} "
-                        f"max_diff={result.stats.get('max_diff_pct', 'N/A')}",
-            ))
+            self.alert_manager.emit(
+                Alert(
+                    symbol=symbol,
+                    severity="error",
+                    message=f"Cross-validation FAILED: {source1} vs {source2} "
+                    f"max_diff={result.stats.get('max_diff_pct', 'N/A')}",
+                )
+            )
 
         return result
 
@@ -226,22 +236,30 @@ class DataQualityMonitor:
                 for s, h in self._health.items()
             ],
             "recent_alerts": [
-                {"symbol": a.symbol, "severity": a.severity, "message": a.message,
-                 "timestamp": a.timestamp.isoformat()}
+                {
+                    "symbol": a.symbol,
+                    "severity": a.severity,
+                    "message": a.message,
+                    "timestamp": a.timestamp.isoformat(),
+                }
                 for a in self.alert_manager.get_recent_alerts(20)
             ],
         }
 
     # ── Internal ──────────────────────────────────────────────────────────
 
-    def _compute_health(
-        self, symbol: str, result: ValidationResult
-    ) -> SymbolHealth:
+    def _compute_health(self, symbol: str, result: ValidationResult) -> SymbolHealth:
         """Compute 0-100 health score from validation result."""
         score = 100.0
 
         # Missing value penalty: -20 per column exceeding threshold
-        for col in ["missing_open", "missing_high", "missing_low", "missing_close", "missing_volume"]:
+        for col in [
+            "missing_open",
+            "missing_high",
+            "missing_low",
+            "missing_close",
+            "missing_volume",
+        ]:
             pct = float(result.stats.get(col, 0))
             if pct > self.validator.max_missing_pct:
                 score -= 20

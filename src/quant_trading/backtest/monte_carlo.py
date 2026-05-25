@@ -8,6 +8,7 @@ AGENTS.md §6: Stress test scenarios (2020.3, 2015.8, 2022 bear)
 from __future__ import annotations
 
 import logging
+from typing import Any, ClassVar
 
 import numpy as np
 import pandas as pd
@@ -29,11 +30,11 @@ class MonteCarloSimulator:
     Assesses strategy robustness beyond single path.
     """
 
-    def __init__(self, config: BacktestConfig):
+    def __init__(self, config: BacktestConfig) -> None:
         self.config = config
         self.rng = np.random.RandomState(42) if config.deterministic else np.random.RandomState()
 
-    def run(self, trades: pd.DataFrame) -> dict:
+    def run(self, trades: pd.DataFrame) -> dict[str, Any]:
         """
         Run Monte Carlo on trade PnLs.
 
@@ -53,18 +54,18 @@ class MonteCarloSimulator:
             # Block resample (preserve autocorrelation structure)
             block_size = min(self.config.mc_resample_block_size, n_trades)
             n_blocks = n_trades // block_size
-            resampled = []
+            resampled: list[float] = []
             for __ in range(n_blocks):
                 idx = self.rng.randint(0, n_trades - block_size + 1)
-                resampled.extend(pnls[idx:idx + block_size])
+                resampled.extend(pnls[idx : idx + block_size])
             # Handle remainder
             remainder = n_trades - len(resampled)
             if remainder > 0:
                 idx = self.rng.randint(0, n_trades - remainder + 1)
-                resampled.extend(pnls[idx:idx + remainder])
+                resampled.extend(pnls[idx : idx + remainder])
 
-            resampled = np.array(resampled)
-            equity = 1.0 + np.cumsum(resampled)
+            resampled_arr = np.array(resampled)
+            equity = 1.0 + np.cumsum(resampled_arr)
             equity_series = pd.Series(equity)
 
             metrics = MetricsCalculator.from_equity_curve(equity_series)
@@ -102,7 +103,7 @@ class StressTestRunner:
     """
 
     # Pre-calculated stress multipliers for known crisis periods
-    SCENARIOS = {
+    SCENARIOS: ClassVar[dict[str, dict[str, Any]]] = {
         "covid_2020": {
             "description": "COVID-19 crash (Feb-Mar 2020)",
             "shock_pct": -0.34,  # S&P 500 drawdown
@@ -153,7 +154,7 @@ class StressTestRunner:
         scenario = cls.SCENARIOS[scenario_name]
         eq = equity_curve.copy()
         n = len(eq)
-        duration = min(scenario["duration_days"], n)
+        duration = min(int(scenario["duration_days"]), n)
 
         # Find insertion point (middle of series)
         start_idx = max(0, n // 2 - duration // 2)
@@ -161,8 +162,10 @@ class StressTestRunner:
 
         # Generate shock path
         rng = np.random.RandomState(42)
-        daily_shock = -(1 - (1 - scenario["shock_pct"]) ** (1/duration))
-        daily_vol = daily_shock * scenario["vol_multiplier"] / 3.0
+        shock_pct = float(scenario["shock_pct"])
+        vol_multiplier = float(scenario["vol_multiplier"])
+        daily_shock = -(1 - (1 - shock_pct) ** (1 / duration))
+        daily_vol = daily_shock * vol_multiplier / 3.0
 
         shocks = rng.normal(loc=daily_shock, scale=daily_vol, size=end_idx - start_idx)
 
@@ -173,11 +176,9 @@ class StressTestRunner:
         return MetricsCalculator.from_equity_curve(eq)
 
     @classmethod
-    def run_all_scenarios(
-        cls, equity_curve: pd.Series
-    ) -> dict[str, dict]:
+    def run_all_scenarios(cls, equity_curve: pd.Series) -> dict[str, dict[str, Any]]:
         """Run all predefined stress scenarios."""
-        results = {}
+        results: dict[str, dict[str, Any]] = {}
         for name in cls.SCENARIOS:
             metrics = cls.apply_scenario(equity_curve, name)
             results[name] = {

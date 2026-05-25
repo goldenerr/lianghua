@@ -38,7 +38,7 @@ class WalkForwardValidator:
         engine: BacktestEngine,
         config: BacktestConfig,
         purge_days: int = 5,
-    ):
+    ) -> None:
         self.engine = engine
         self.config = config
         self.purge_days = purge_days  # Days to purge between train/test
@@ -62,7 +62,9 @@ class WalkForwardValidator:
         n = len(all_dates)
 
         if n < self.config.wf_folds * 2:
-            return BacktestResult(errors=[f"Not enough data ({n} days) for {self.config.wf_folds} folds"])
+            return BacktestResult(
+                errors=[f"Not enough data ({n} days) for {self.config.wf_folds} folds"]
+            )
 
         fold_size = n // (self.config.wf_folds + 1)
         results: list[PerformanceMetrics] = []
@@ -73,22 +75,22 @@ class WalkForwardValidator:
             train_end_idx = (fold + 1) * fold_size - self.purge_days
             # Test: next segment
             test_start_idx = train_end_idx + self.purge_days + 1
-            test_end_idx = min(test_start_idx + int(fold_size * (1 + self.config.wf_oos_pct)), n - 1)
+            test_end_idx = min(
+                test_start_idx + int(fold_size * (1 + self.config.wf_oos_pct)), n - 1
+            )
 
             if test_end_idx <= test_start_idx:
                 break
 
-            train_dates = all_dates[:train_end_idx + 1]
-            test_dates = all_dates[test_start_idx:test_end_idx + 1]
+            train_dates = all_dates[: train_end_idx + 1]
+            test_dates = all_dates[test_start_idx : test_end_idx + 1]
 
             # Split data
             train_data = {
-                sym: df.loc[df.index.isin(train_dates)]
-                for sym, df in data.items()
+                sym: df.loc[[idx in train_dates for idx in df.index]] for sym, df in data.items()
             }
             test_data = {
-                sym: df.loc[df.index.isin(test_dates)]
-                for sym, df in data.items()
+                sym: df.loc[[idx in test_dates for idx in df.index]] for sym, df in data.items()
             }
 
             if any(df.empty for df in train_data.values()):
@@ -98,9 +100,10 @@ class WalkForwardValidator:
 
             # Run on OOS
             oos_config = BacktestConfig(
-                **{**self.config.__dict__,
-                   "start_date": test_dates[0].date() if hasattr(test_dates[0], "date") else None,
-                   "end_date": test_dates[-1].date() if hasattr(test_dates[-1], "date") else None,
+                **{
+                    **self.config.__dict__,
+                    "start_date": test_dates[0].date() if hasattr(test_dates[0], "date") else None,
+                    "end_date": test_dates[-1].date() if hasattr(test_dates[-1], "date") else None,
                 }
             )
             oos_result = self.engine.run(test_data, strategy, oos_config)
@@ -114,10 +117,10 @@ class WalkForwardValidator:
         oos_sharpes = [m.sharpe_ratio for m in results]
 
         avg_oos = PerformanceMetrics(
-            annualized_return=np.mean(oos_returns),
-            sharpe_ratio=np.mean(oos_sharpes),
+            annualized_return=float(np.mean(oos_returns)),
+            sharpe_ratio=float(np.mean(oos_sharpes)),
             max_drawdown=max(m.max_drawdown for m in results),
-            win_rate=np.mean([m.win_rate for m in results]),
+            win_rate=float(np.mean([m.win_rate for m in results])),
             total_trades=sum(m.total_trades for m in results),
         )
 

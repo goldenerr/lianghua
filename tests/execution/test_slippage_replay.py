@@ -1,4 +1,5 @@
 """Tests for slippage model, impact model, and order replay."""
+
 import pytest
 from quant_trading.execution.replay import ReplayMode, ReplayResult, replay_orders
 from quant_trading.execution.slippage import ImpactModel, SlippageModel
@@ -49,6 +50,7 @@ class TestImpactModel:
 
 # ── Replay ──────────────────────────────────────────────────────────
 
+
 class TestReplayResult:
     def test_match_rate_empty(self):
         rr = ReplayResult(mode=ReplayMode.DECISION, orders_replayed=0)
@@ -59,7 +61,9 @@ class TestReplayResult:
         assert rr.match_rate == 1.0
 
     def test_match_rate_half(self):
-        rr = ReplayResult(mode=ReplayMode.ORDER_MATCHING, orders_replayed=10, matches=5, mismatches=5)
+        rr = ReplayResult(
+            mode=ReplayMode.ORDER_MATCHING, orders_replayed=10, matches=5, mismatches=5
+        )
         assert rr.match_rate == 0.5
 
 

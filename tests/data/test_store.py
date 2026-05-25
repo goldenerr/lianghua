@@ -13,9 +13,13 @@ def _make_df(dates=None, values=None):
     if values is None:
         values = list(range(100, 105))
     return pd.DataFrame(
-        {"open": values, "high": [v + 1 for v in values],
-         "low": [v - 1 for v in values], "close": values,
-         "volume": [1000.0] * len(values)},
+        {
+            "open": values,
+            "high": [v + 1 for v in values],
+            "low": [v - 1 for v in values],
+            "close": values,
+            "volume": [1000.0] * len(values),
+        },
         index=pd.DatetimeIndex(pd.to_datetime(dates)),
     )
 
@@ -74,7 +78,7 @@ class TestDataStore:
         is_fresh = store.check_freshness("OLD", max_age_hours=24)
         assert is_fresh is False
         # But passes a very large threshold
-        is_fresh_wide = store.check_freshness("OLD", max_age_hours=365*24*3)
+        is_fresh_wide = store.check_freshness("OLD", max_age_hours=365 * 24 * 3)
         assert is_fresh_wide is True
 
     def test_write_batch(self, tmp_path: Path):

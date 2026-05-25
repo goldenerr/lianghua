@@ -5,6 +5,7 @@ Every rebalance: compute rank IC for each factor over the past N months
 on the current universe. Use IC magnitude as weight (higher |IC| = more weight).
 Weights are EMA-smoothed to reduce noise.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -12,11 +13,11 @@ import numpy as np
 
 def rolling_spearman_ic(
     factor_values: dict[str, np.ndarray],  # {factor_name: [N_stocks]}
-    forward_returns: np.ndarray,           # [N_stocks] next-period returns
+    forward_returns: np.ndarray,  # [N_stocks] next-period returns
     factors: list[str] | None = None,
 ) -> dict[str, float]:
     """Compute rank IC for each factor against forward returns.
-    
+
     IC = Spearman rank correlation between factor rank and future return rank.
     """
     if factors is None:
@@ -45,7 +46,7 @@ def rolling_spearman_ic(
         f_centered = f_rank - f_rank.mean()
         r_centered = r_rank - r_rank.mean()
 
-        denom = np.sqrt((f_centered ** 2).sum() * (r_centered ** 2).sum())
+        denom = np.sqrt((f_centered**2).sum() * (r_centered**2).sum())
         if denom < 1e-12:
             ic[name] = 0.0
         else:
@@ -56,7 +57,7 @@ def rolling_spearman_ic(
 
 class AdaptiveWeights:
     """EMA-smoothed factor weights based on rolling IC.
-    
+
     For each rebalance:
       1. Compute factor values and forward returns for all stocks
       2. Compute rank IC per factor
@@ -68,9 +69,9 @@ class AdaptiveWeights:
         self,
         base_weights: dict[str, float],
         factors: list[str] | None = None,
-        ic_halflife: float = 6.0,   # EMA halflife in rebalance periods (~6 quarters)
-        min_weight: float = 0.02,   # floor to prevent factor extinction
-        max_weight: float = 0.40,   # cap to prevent single-factor domination
+        ic_halflife: float = 6.0,  # EMA halflife in rebalance periods (~6 quarters)
+        min_weight: float = 0.02,  # floor to prevent factor extinction
+        max_weight: float = 0.40,  # cap to prevent single-factor domination
     ):
         self.base_weights = dict(base_weights)
         self.factors = factors or list(base_weights.keys())
@@ -88,7 +89,7 @@ class AdaptiveWeights:
         forward_returns: np.ndarray,
     ) -> dict[str, float]:
         """Update EMA weights from new IC observations.
-        
+
         Returns updated weights dict.
         """
         ic = rolling_spearman_ic(factor_values, forward_returns, self.factors)
@@ -155,10 +156,14 @@ if __name__ == "__main__":
             "vol": rng.normal(-0.1, 1, N),
         }
         # Returns driven more by momentum (true IC higher)
-        fwd_returns = 0.3 * fv["momentum"] + 0.1 * fv["rsi"] + 0.05 * fv["vol"] + rng.normal(0, 0.5, N)
+        fwd_returns = (
+            0.3 * fv["momentum"] + 0.1 * fv["rsi"] + 0.05 * fv["vol"] + rng.normal(0, 0.5, N)
+        )
 
         weights = aw.update(fv, fwd_returns)
-        print(f"  Period {period}: weights = {', '.join(f'{k}={v:.3f}' for k, v in weights.items())}")
+        print(
+            f"  Period {period}: weights = {', '.join(f'{k}={v:.3f}' for k, v in weights.items())}"
+        )
 
     print(f"\n  Final: {aw.current_weights()}")
     print("  Expected: momentum > rsi > vol (momentum has true IC=0.3)")

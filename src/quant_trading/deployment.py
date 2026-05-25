@@ -4,6 +4,7 @@ This module decides whether a deployment may advance; it never deploys or
 trades automatically. Production rollout still requires artifact signature
 verification and the documented approval workflow.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -84,7 +85,9 @@ class CanaryController:
 
         current_index = self.stages.index(self.percentage)
         self.percentage = self.stages[current_index + 1]
-        decision = DeploymentDecision.COMPLETE if self.percentage == 100 else DeploymentDecision.ADVANCE
+        decision = (
+            DeploymentDecision.COMPLETE if self.percentage == 100 else DeploymentDecision.ADVANCE
+        )
         return self._record(decision, metrics, observation_hours, [])
 
     def _breach_reasons(self, metrics: CanaryMetrics) -> list[str]:

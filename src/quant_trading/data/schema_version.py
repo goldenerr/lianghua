@@ -19,6 +19,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from typing import ClassVar
 
 logger = logging.getLogger(__name__)
 UTC = timezone.utc
@@ -58,8 +59,7 @@ class SchemaVersion:
         m = VERSION_RE.match(s)
         if not m:
             raise ValueError(
-                f"Invalid schema version: '{version_str}'. "
-                f"Expected format: vYYYY.MM[.PATCH]"
+                f"Invalid schema version: '{version_str}'. " f"Expected format: vYYYY.MM[.PATCH]"
             )
         return cls(
             year=int(m.group(1)),
@@ -91,9 +91,7 @@ class SchemaTable:
     @property
     def schema_hash(self) -> str:
         """Stable hash of the schema structure (columns + types)."""
-        content = json.dumps(
-            {"name": self.name, "columns": self.columns}, sort_keys=True
-        )
+        content = json.dumps({"name": self.name, "columns": self.columns}, sort_keys=True)
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
 
@@ -101,9 +99,9 @@ class SchemaTable:
 
 
 class CompatibilityLevel(str, Enum):
-    FULL = "full"               # Identical schema
-    BACKWARD = "backward"       # New schema reads old data (added optional columns)
-    FORWARD = "forward"         # Old schema reads new data (dropped optional columns)
+    FULL = "full"  # Identical schema
+    BACKWARD = "backward"  # New schema reads old data (added optional columns)
+    FORWARD = "forward"  # Old schema reads new data (dropped optional columns)
     INCOMPATIBLE = "incompatible"  # Breaking change (renamed/dropped required columns, type change)
 
 
@@ -120,7 +118,7 @@ class CompatibilityMatrix:
     - Cross-month: INCOMPATIBLE unless explicit allowlist
     """
 
-    _allowlist: dict[tuple[str, str], CompatibilityLevel] = {}
+    _allowlist: ClassVar[dict[tuple[str, str], CompatibilityLevel]] = {}
 
     def allow(self, from_ver: str, to_ver: str, level: CompatibilityLevel) -> None:
         """Explicitly allow a compatibility level between two versions."""
@@ -200,7 +198,7 @@ class SchemaRegistry:
     AGENTS.md §4: 每个数据表在元数据中声明版本
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._tables: dict[str, list[SchemaTable]] = {}  # name → versions
         self._current: dict[str, SchemaTable] = {}  # name → current version
         self.matrix = CompatibilityMatrix()
@@ -214,12 +212,15 @@ class SchemaRegistry:
 
         # Same-month patches are backward compatible
         for prev in self._tables[table.name]:
-            if prev.version != table.version:
-                if prev.version.year == table.version.year and prev.version.month == table.version.month:
-                    self.matrix.allow(
-                        str(prev.version), str(table.version),
-                        CompatibilityLevel.BACKWARD,
-                    )
+            if prev.version != table.version and (
+                prev.version.year == table.version.year
+                and prev.version.month == table.version.month
+            ):
+                self.matrix.allow(
+                    str(prev.version),
+                    str(table.version),
+                    CompatibilityLevel.BACKWARD,
+                )
 
     def get_current(self, table_name: str) -> SchemaTable | None:
         """Get the current schema version for a table."""
@@ -240,75 +241,118 @@ class SchemaRegistry:
         now = SchemaVersion.current()
 
         # market_data
-        self.register(SchemaTable(
-            name="market_data",
-            version=now,
-            columns={
-                "symbol": "String", "exchange": "String",
-                "timestamp": "DateTime64(3)",
-                "open": "Float64", "high": "Float64",
-                "low": "Float64", "close": "Float64",
-                "volume": "Float64", "vwap": "Float64",
-                "trades": "UInt32", "data_source": "String",
-                "adjusted": "UInt8",
-            },
-            description="OHLCV market data (daily/minute/tick)",
-            required_columns=["symbol", "timestamp", "open", "high", "low", "close", "volume"],
-            optional_columns=["vwap", "trades", "data_source", "adjusted", "exchange"],
-        ))
+        self.register(
+            SchemaTable(
+                name="market_data",
+                version=now,
+                columns={
+                    "symbol": "String",
+                    "exchange": "String",
+                    "timestamp": "DateTime64(3)",
+                    "open": "Float64",
+                    "high": "Float64",
+                    "low": "Float64",
+                    "close": "Float64",
+                    "volume": "Float64",
+                    "vwap": "Float64",
+                    "trades": "UInt32",
+                    "data_source": "String",
+                    "adjusted": "UInt8",
+                },
+                description="OHLCV market data (daily/minute/tick)",
+                required_columns=["symbol", "timestamp", "open", "high", "low", "close", "volume"],
+                optional_columns=["vwap", "trades", "data_source", "adjusted", "exchange"],
+            )
+        )
 
         # order_events
-        self.register(SchemaTable(
-            name="order_events",
-            version=now,
-            columns={
-                "event_time": "DateTime64(3)", "client_order_id": "String",
-                "exchange_order_id": "String", "strategy_id": "String",
-                "symbol": "String", "order_type": "String", "side": "String",
-                "quantity": "Float64", "price": "Float64",
-                "status": "String", "filled_qty": "Float64",
-                "avg_price": "Float64", "commission": "Float64",
-                "trace_id": "String",
-            },
-            description="Order lifecycle events",
-            required_columns=["event_time", "client_order_id", "symbol", "side", "quantity"],
-            optional_columns=["exchange_order_id", "strategy_id", "order_type", "price",
-                            "status", "filled_qty", "avg_price", "commission", "trace_id"],
-        ))
+        self.register(
+            SchemaTable(
+                name="order_events",
+                version=now,
+                columns={
+                    "event_time": "DateTime64(3)",
+                    "client_order_id": "String",
+                    "exchange_order_id": "String",
+                    "strategy_id": "String",
+                    "symbol": "String",
+                    "order_type": "String",
+                    "side": "String",
+                    "quantity": "Float64",
+                    "price": "Float64",
+                    "status": "String",
+                    "filled_qty": "Float64",
+                    "avg_price": "Float64",
+                    "commission": "Float64",
+                    "trace_id": "String",
+                },
+                description="Order lifecycle events",
+                required_columns=["event_time", "client_order_id", "symbol", "side", "quantity"],
+                optional_columns=[
+                    "exchange_order_id",
+                    "strategy_id",
+                    "order_type",
+                    "price",
+                    "status",
+                    "filled_qty",
+                    "avg_price",
+                    "commission",
+                    "trace_id",
+                ],
+            )
+        )
 
         # risk_metrics
-        self.register(SchemaTable(
-            name="risk_metrics",
-            version=now,
-            columns={
-                "timestamp": "DateTime64(3)", "strategy_id": "String",
-                "var_95": "Float64", "sharpe_20d": "Float64",
-                "max_drawdown": "Float64", "total_exposure": "Float64",
-                "leverage": "Float64", "daily_pnl": "Float64",
-                "total_equity": "Float64",
-            },
-            description="Risk metrics timeseries",
-            required_columns=["timestamp", "strategy_id", "var_95", "total_exposure", "total_equity"],
-            optional_columns=["sharpe_20d", "max_drawdown", "leverage", "daily_pnl"],
-        ))
+        self.register(
+            SchemaTable(
+                name="risk_metrics",
+                version=now,
+                columns={
+                    "timestamp": "DateTime64(3)",
+                    "strategy_id": "String",
+                    "var_95": "Float64",
+                    "sharpe_20d": "Float64",
+                    "max_drawdown": "Float64",
+                    "total_exposure": "Float64",
+                    "leverage": "Float64",
+                    "daily_pnl": "Float64",
+                    "total_equity": "Float64",
+                },
+                description="Risk metrics timeseries",
+                required_columns=[
+                    "timestamp",
+                    "strategy_id",
+                    "var_95",
+                    "total_exposure",
+                    "total_equity",
+                ],
+                optional_columns=["sharpe_20d", "max_drawdown", "leverage", "daily_pnl"],
+            )
+        )
 
         # audit_events
-        self.register(SchemaTable(
-            name="audit_events",
-            version=now,
-            columns={
-                "event_time": "DateTime64(3)", "event_type": "String",
-                "source": "String", "trace_id": "String",
-                "payload": "String", "signature": "String",
-            },
-            description="Immutable audit trail",
-            required_columns=["event_time", "event_type", "source", "trace_id"],
-            optional_columns=["payload", "signature"],
-        ))
+        self.register(
+            SchemaTable(
+                name="audit_events",
+                version=now,
+                columns={
+                    "event_time": "DateTime64(3)",
+                    "event_type": "String",
+                    "source": "String",
+                    "trace_id": "String",
+                    "payload": "String",
+                    "signature": "String",
+                },
+                description="Immutable audit trail",
+                required_columns=["event_time", "event_type", "source", "trace_id"],
+                optional_columns=["payload", "signature"],
+            )
+        )
 
         logger.info(
             "Default schemas registered: %s — version %s",
-            list(self._current.keys()), now,
+            list(self._current.keys()),
+            now,
         )
 
 
@@ -362,26 +406,30 @@ class SchemaValidator:
             try:
                 data_ver = SchemaVersion.parse(data_ver_str)
             except ValueError as e:
-                reports.append(CompatibilityReport(
-                    table_name=table_name,
-                    data_version=SchemaVersion(0, 0),
-                    required_version=SchemaVersion(0, 0),
-                    level=CompatibilityLevel.INCOMPATIBLE,
-                    compatible=False,
-                    notes=f"Invalid version format: {e}",
-                ))
+                reports.append(
+                    CompatibilityReport(
+                        table_name=table_name,
+                        data_version=SchemaVersion(0, 0),
+                        required_version=SchemaVersion(0, 0),
+                        level=CompatibilityLevel.INCOMPATIBLE,
+                        compatible=False,
+                        notes=f"Invalid version format: {e}",
+                    )
+                )
                 continue
 
             current = self.registry.get_current(table_name)
             if current is None:
-                reports.append(CompatibilityReport(
-                    table_name=table_name,
-                    data_version=data_ver,
-                    required_version=SchemaVersion(0, 0),
-                    level=CompatibilityLevel.INCOMPATIBLE,
-                    compatible=False,
-                    notes=f"Unknown table: '{table_name}' not in registry",
-                ))
+                reports.append(
+                    CompatibilityReport(
+                        table_name=table_name,
+                        data_version=data_ver,
+                        required_version=SchemaVersion(0, 0),
+                        level=CompatibilityLevel.INCOMPATIBLE,
+                        compatible=False,
+                        notes=f"Unknown table: '{table_name}' not in registry",
+                    )
+                )
                 continue
 
             # Build a synthetic source table for the stored data version
@@ -393,7 +441,9 @@ class SchemaValidator:
                 if data_ver < current.version:
                     level = CompatibilityLevel.BACKWARD
                     compatible = True
-                    notes = f"Data version {data_ver} predates registry. Assuming backward compatible."
+                    notes = (
+                        f"Data version {data_ver} predates registry. Assuming backward compatible."
+                    )
                 else:
                     level = CompatibilityLevel.INCOMPATIBLE
                     compatible = False
@@ -475,7 +525,10 @@ class MigrationEngine:
             return None
 
         # For same-month patches, they're backward compatible — no migration needed
-        if from_version.year == to_table.version.year and from_version.month == to_table.version.month:
+        if (
+            from_version.year == to_table.version.year
+            and from_version.month == to_table.version.month
+        ):
             return None
 
         # For cross-month: generate migration notes but can't auto-migrate
@@ -544,7 +597,7 @@ class SchemaAuditLog:
     AGENTS.md §4 (data-004): 记录每次 schema 变更的审计日志
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._entries: list[SchemaChangeEntry] = []
 
     def record(
@@ -567,7 +620,11 @@ class SchemaAuditLog:
         self._entries.append(entry)
         logger.info(
             "Schema change: %s %s → %s (%s): %s",
-            table_name, from_version, to_version, change_type, details,
+            table_name,
+            from_version,
+            to_version,
+            change_type,
+            details,
         )
 
     def get_history(self, table_name: str | None = None) -> list[SchemaChangeEntry]:
