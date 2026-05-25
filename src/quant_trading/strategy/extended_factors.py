@@ -13,30 +13,30 @@ Categories:
   Volume (3)   — volume trend, volume breakout, money flow
 """
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Optional
-import numpy as np
 
+from dataclasses import dataclass
+
+import numpy as np
 
 # ═══════════════════════════════════════════════════════════════
 # Value Factors (from fundamental PE/PB/PS data)
 # ═══════════════════════════════════════════════════════════════
 
-def value_ep(pe_ttm: Optional[float]) -> float:
+def value_ep(pe_ttm: float | None) -> float:
     """Earnings yield: 1/PE. Higher = cheaper."""
     if pe_ttm is None or np.isnan(pe_ttm) or pe_ttm <= 0:
         return np.nan
     return 1.0 / pe_ttm
 
 
-def value_bp(pb_mrq: Optional[float]) -> float:
+def value_bp(pb_mrq: float | None) -> float:
     """Book-to-Price: 1/PB. Higher = cheaper."""
     if pb_mrq is None or np.isnan(pb_mrq) or pb_mrq <= 0:
         return np.nan
     return 1.0 / pb_mrq
 
 
-def value_sp(ps_ttm: Optional[float]) -> float:
+def value_sp(ps_ttm: float | None) -> float:
     """Sales-to-Price: 1/PS. Higher = cheaper."""
     if ps_ttm is None or np.isnan(ps_ttm) or ps_ttm <= 0:
         return np.nan
@@ -143,7 +143,7 @@ def reversal_1m(closes: np.ndarray) -> float:
 def realized_vol(closes: np.ndarray, window: int = 21) -> float:
     """Annualized realized volatility over window days."""
     if len(closes) < window + 1: return np.nan
-    rets = np.diff(closes[-window-1:]) / closes[-window-2:-1]
+    rets = np.diff(closes[-window-1:]) / closes[-window-1:-1]
     rets = rets[~np.isnan(rets)]
     if len(rets) < 10: return np.nan
     return float(np.std(rets, ddof=1) * np.sqrt(252))
@@ -160,7 +160,7 @@ def realized_vol_3m(closes: np.ndarray) -> float:
 def max_daily_return(closes: np.ndarray, window: int = 21) -> float:
     """Maximum daily return in window (lottery-demand proxy)."""
     if len(closes) < window + 1: return np.nan
-    rets = np.diff(closes[-window-1:]) / closes[-window-2:-1]
+    rets = np.diff(closes[-window-1:]) / closes[-window-1:-1]
     rets = rets[~np.isnan(rets)]
     if len(rets) == 0: return np.nan
     return -float(np.max(rets))  # negative: high max ret = bad
@@ -169,7 +169,7 @@ def max_daily_return(closes: np.ndarray, window: int = 21) -> float:
 def return_skewness(closes: np.ndarray, window: int = 63) -> float:
     """Skewness of daily returns (investors prefer positive skew)."""
     if len(closes) < window + 3: return np.nan
-    rets = np.diff(closes[-window-1:]) / closes[-window-2:-1]
+    rets = np.diff(closes[-window-1:]) / closes[-window-1:-1]
     rets = rets[~np.isnan(rets)]
     if len(rets) < 20: return np.nan
     m = np.mean(rets)
@@ -201,7 +201,7 @@ def dollar_volume(amounts: np.ndarray, window: int = 21) -> float:
 def amihud_illiquidity(closes: np.ndarray, amounts: np.ndarray, window: int = 21) -> float:
     """Amihud illiquidity: avg(|ret| / dollar_volume). Higher = less liquid."""
     if len(closes) < window + 1: return np.nan
-    rets = np.abs(np.diff(closes[-window-1:]) / closes[-window-2:-1])
+    rets = np.abs(np.diff(closes[-window-1:]) / closes[-window-1:-1])
     amounts_w = amounts[-window:]
     ratio = rets / np.maximum(amounts_w, 1e-12)
     ratio = ratio[~np.isnan(ratio)]
@@ -405,7 +405,7 @@ CATEGORY_WEIGHTS = {cat: _cat_weight for cat in CATEGORIES}
 def compute_factor(spec: FactorSpec, data: dict) -> float:
     """Compute a single factor from stock data dict."""
     try:
-        args = [np.asarray(data[col]) if col in data and not isinstance(data[col], (int, float)) 
+        args = [np.asarray(data[col]) if col in data and not isinstance(data[col], (int, float))
                 else data.get(col) for col in spec.data_cols]
         return spec.func(*args)
     except (ValueError, TypeError, KeyError):
@@ -415,5 +415,5 @@ def compute_factor(spec: FactorSpec, data: dict) -> float:
 def compute_all_factors(stock_data: dict, factor_names: list[str] = None) -> dict[str, float]:
     """Compute all specified factors for one stock."""
     names = factor_names or FACTOR_NAMES
-    return {name: compute_factor(FACTOR_BY_NAME[name], stock_data) for name in names 
+    return {name: compute_factor(FACTOR_BY_NAME[name], stock_data) for name in names
             if name in FACTOR_BY_NAME}

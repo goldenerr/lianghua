@@ -60,10 +60,11 @@ def factor_macd(closes: np.ndarray, fast: int = 12, slow: int = 26, signal: int 
     ema_fast = _ema(closes, fast)
     ema_slow = _ema(closes, slow)
     dif = ema_fast - ema_slow
-    dea = _ema(np.array([dif]), signal) if not isinstance(dif, np.ndarray) else _ema_single_series(dif, signal)
-    if isinstance(dif, np.ndarray):
-        return float(dif[-1] - dea[-1])
-    return dif - dea
+    valid_dif = dif[~np.isnan(dif)]
+    if len(valid_dif) < signal:
+        return np.nan
+    dea = _ema_single_series(valid_dif, signal)
+    return float(valid_dif[-1] - dea[-1])
 
 
 def _ema(series: np.ndarray, span: int) -> np.ndarray:
@@ -166,7 +167,7 @@ def compute_factor_scores(
         factors = list(FACTOR_REGISTRY.keys())
     if weights is None:
         weights = FACTOR_WEIGHTS
-    
+
     scores = {}
     for name in factors:
         func, data_type = FACTOR_REGISTRY[name]
@@ -191,23 +192,23 @@ def composite_score(
     """
     if weights is None:
         weights = FACTOR_WEIGHTS
-    
+
     score = 0.0
     total_weight = 0.0
     for name, w in weights.items():
         v = factor_values.get(name, np.nan)
         if np.isnan(v):
             continue
-        
+
         # Apply cross-sectional z-score if available
         if cross_sectional_z and name in cross_sectional_z:
             mu, sigma = cross_sectional_z[name]
             if sigma > 1e-12:
                 v = (v - mu) / sigma
-        
+
         score += w * v
         total_weight += w
-    
+
     if total_weight < 1e-12:
         return np.nan
     return score / total_weight  # normalize by sum of valid weights
@@ -227,7 +228,7 @@ def rank_stocks(
         factors = list(FACTOR_REGISTRY.keys())
     if weights is None:
         weights = FACTOR_WEIGHTS
-    
+
     # Step 1: compute raw factor values per stock
     raw_factors: dict[str, dict[str, float]] = {}
     for sym, data in stock_data.items():
@@ -236,10 +237,10 @@ def rank_stocks(
         fv = compute_factor_scores(closes, volumes, factors, weights)
         if not all(np.isnan(v) for v in fv.values()):
             raw_factors[sym] = fv
-    
+
     if not raw_factors:
         return []
-    
+
     # Step 2: compute cross-sectional mean/std for z-scoring
     cross_z = {}
     for name in factors:
@@ -247,26 +248,28 @@ def rank_stocks(
         valid = [v for v in vals if not np.isnan(v)]
         if len(valid) >= 5:
             cross_z[name] = (float(np.mean(valid)), float(np.std(valid, ddof=1)))
-    
+
     # Step 3: compute composite scores
     ranked = []
     for sym, fv in raw_factors.items():
         cs = composite_score(fv, weights, cross_z)
         if not np.isnan(cs):
             ranked.append((sym, cs))
-    
+
     ranked.sort(key=lambda x: x[1], reverse=True)
     return ranked
 
 
 # ── Quick test ────────────────────────────────────────────────
 if __name__ == "__main__":
-    import pandas as pd
+    import os
     from pathlib import Path
-    
-    DATA_DIR = Path("/home/hermes/.hermes/projects/lianghua/data/parquet")
+
+    import pandas as pd
+
+    DATA_DIR = Path(os.getenv("QUANT_FACTOR_DATA_DIR", "data/parquet"))
     files = sorted(DATA_DIR.glob("*.parquet"))[:50]
-    
+
     stock_data = {}
     for f in files:
         df = pd.read_parquet(f)
@@ -274,12 +277,12 @@ if __name__ == "__main__":
             "close": df["close"].values[-252:],
             "volume": df["volume"].values[-252:] if "volume" in df else df.get("vol", pd.Series()).values[-252:],
         }
-    
+
     ranked = rank_stocks(stock_data)
     print(f"Ranked {len(ranked)} stocks")
     for sym, score in ranked[:10]:
         print(f"  {sym}: {score:.4f}")
     if ranked:
-        print(f"  ...")
+        print("  ...")
         for sym, score in ranked[-3:]:
             print(f"  {sym}: {score:.4f}")

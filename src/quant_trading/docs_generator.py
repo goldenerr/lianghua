@@ -2,6 +2,8 @@
 """Architecture & risk policy documentation generator (docs-001).
 AGENTS.md §34: C4图, 序列图, NFR, 指标库, 版本化, 变更影响矩阵."""
 from dataclasses import dataclass, field
+
+
 @dataclass
 class ArchitectureDoc:
     title: str = "Quant Trading System"; version: str = "2.13.0"

@@ -19,7 +19,6 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 UTC = timezone.utc
@@ -51,7 +50,7 @@ class SchemaVersion:
         return f"v{self.year:04d}.{self.month:02d}"
 
     @classmethod
-    def parse(cls, version_str: str) -> "SchemaVersion":
+    def parse(cls, version_str: str) -> SchemaVersion:
         """Parse a version string like 'v2026.05' or '2026.05'."""
         s = version_str.strip()
         if not s.startswith("v"):
@@ -69,7 +68,7 @@ class SchemaVersion:
         )
 
     @classmethod
-    def current(cls) -> "SchemaVersion":
+    def current(cls) -> SchemaVersion:
         """Create a version from the current date."""
         now = datetime.now(UTC)
         return cls(year=now.year, month=now.month)
@@ -222,11 +221,11 @@ class SchemaRegistry:
                         CompatibilityLevel.BACKWARD,
                     )
 
-    def get_current(self, table_name: str) -> Optional[SchemaTable]:
+    def get_current(self, table_name: str) -> SchemaTable | None:
         """Get the current schema version for a table."""
         return self._current.get(table_name)
 
-    def get_version(self, table_name: str, version: SchemaVersion) -> Optional[SchemaTable]:
+    def get_version(self, table_name: str, version: SchemaVersion) -> SchemaTable | None:
         """Get a specific historical version of a table schema."""
         for t in self._tables.get(table_name, []):
             if t.version == version:
@@ -345,7 +344,7 @@ class SchemaValidator:
     def validate(
         self,
         data_versions: dict[str, str],  # table_name → schema version string
-        required_version: Optional[str] = None,
+        required_version: str | None = None,
     ) -> list[CompatibilityReport]:
         """
         Validate all data schemas against current registry.
@@ -460,7 +459,7 @@ class MigrationEngine:
     def generate_migration(
         from_version: SchemaVersion,
         to_table: SchemaTable,
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Generate a migration script for compatible changes.
 
@@ -571,13 +570,13 @@ class SchemaAuditLog:
             table_name, from_version, to_version, change_type, details,
         )
 
-    def get_history(self, table_name: Optional[str] = None) -> list[SchemaChangeEntry]:
+    def get_history(self, table_name: str | None = None) -> list[SchemaChangeEntry]:
         """Get change history, optionally filtered by table."""
         if table_name:
             return [e for e in self._entries if e.table_name == table_name]
         return list(self._entries)
 
-    def get_last_change(self, table_name: str) -> Optional[SchemaChangeEntry]:
+    def get_last_change(self, table_name: str) -> SchemaChangeEntry | None:
         """Get the most recent change for a table."""
         for e in reversed(self._entries):
             if e.table_name == table_name:

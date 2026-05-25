@@ -12,10 +12,8 @@ from __future__ import annotations
 
 import logging
 from datetime import date, datetime
-from enum import Enum
-from typing import Any, Callable, Optional
 
-from .market_calendar import Market, MarketCalendar, CalendarRegistry
+from .market_calendar import CalendarRegistry, Market, MarketCalendar
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +30,8 @@ class MarketRuleSet:
         tick_size: float = 0.01,
         lot_size: int = 100,
         price_precision: int = 2,
-        funding_rate: Optional[float] = None,
-        settlement_time_utc: Optional[str] = None,
+        funding_rate: float | None = None,
+        settlement_time_utc: str | None = None,
     ):
         self.market = market
         self.tick_size = tick_size
@@ -126,12 +124,12 @@ class FuturesRolloverDetector:
     ):
         self.underlying = underlying
         self.consecutive_days = consecutive_days
-        self._dominant: Optional[ContractMonth] = None
+        self._dominant: ContractMonth | None = None
         self._volume_history: dict[ContractMonth, int] = {}
         self._next_contract_lead_days: int = 0
 
     @property
-    def dominant_contract(self) -> Optional[ContractMonth]:
+    def dominant_contract(self) -> ContractMonth | None:
         return self._dominant
 
     def update_volume(self, contract: ContractMonth, volume: float) -> None:
@@ -146,7 +144,7 @@ class FuturesRolloverDetector:
 
     def check_rollover(
         self, contracts: list[tuple[ContractMonth, float]], today: date
-    ) -> Optional[tuple[ContractMonth, ContractMonth]]:
+    ) -> tuple[ContractMonth, ContractMonth] | None:
         """
         Check if dominant should switch.
 
@@ -254,7 +252,7 @@ class MarketRouter:
     def is_trading_allowed(
         cls,
         market: Market,
-        dt: Optional[datetime] = None,
+        dt: datetime | None = None,
         *,
         allow_settlement_window: bool = False,
     ) -> tuple[bool, str]:

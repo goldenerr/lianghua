@@ -11,7 +11,6 @@ AGENTS.md §5 (strategy-003):
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
 
 import numpy as np
 

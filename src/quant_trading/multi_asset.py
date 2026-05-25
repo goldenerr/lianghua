@@ -9,11 +9,13 @@ Supported:
   - Unified order/position/risk management across assets
 """
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Optional
-from enum import Enum
-import numpy as np
+
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
+
+import numpy as np
+import pandas as pd
 
 log = logging.getLogger("multi_asset")
 
@@ -93,10 +95,10 @@ ASHARE_SPEC = AssetSpec("", "sse/szse", AssetClass.SPOT, Market.ASHARE,
 
 class MultiAssetDataProvider:
     """Unified data provider across spot, futures, and crypto."""
-    
+
     def __init__(self):
         self._ccxt_exchanges: dict[str, object] = {}
-    
+
     def _get_ccxt(self, exchange_id: str = "binance"):
         if exchange_id not in self._ccxt_exchanges:
             try:
@@ -105,13 +107,13 @@ class MultiAssetDataProvider:
             except (ImportError, AttributeError):
                 return None
         return self._ccxt_exchanges[exchange_id]
-    
+
     def fetch_ohlcv(
-        self, 
-        asset: AssetSpec, 
+        self,
+        asset: AssetSpec,
         timeframe: str = "1d",
         limit: int = 500,
-    ) -> "np.ndarray | None":
+    ) -> np.ndarray | None:
         """Fetch OHLCV data for any asset type.
         
         Returns: numpy array [timestamp, open, high, low, close, volume]
@@ -123,20 +125,20 @@ class MultiAssetDataProvider:
         elif asset.market == Market.COMMODITY:
             return self._fetch_commodity_ohlcv(asset, limit)
         return None
-    
+
     def _fetch_crypto_ohlcv(self, asset: AssetSpec, timeframe: str, limit: int):
         """Fetch crypto OHLCV via CCXT."""
         exchange = self._get_ccxt(asset.exchange)
         if exchange is None:
             return None
-        
+
         try:
             ohlcv = exchange.fetch_ohlcv(asset.symbol, timeframe, limit=limit)
             return np.array(ohlcv)  # [ts, O, H, L, C, V]
         except Exception as e:
             log.warning(f"Crypto OHLCV {asset.symbol}: {e}")
             return None
-    
+
     def _fetch_ashare_ohlcv(self, asset: AssetSpec, limit: int):
         """Fetch A-share OHLCV via akshare."""
         try:
@@ -155,7 +157,7 @@ class MultiAssetDataProvider:
         except Exception as e:
             log.warning(f"A-share OHLCV {asset.symbol}: {e}")
             return None
-    
+
     def _fetch_commodity_ohlcv(self, asset: AssetSpec, limit: int):
         """Fetch Chinese commodity futures via akshare."""
         try:
@@ -169,28 +171,28 @@ class MultiAssetDataProvider:
             ])[-limit:]
         except Exception:
             return None
-    
-    def fetch_funding_rate(self, asset: AssetSpec) -> Optional[float]:
+
+    def fetch_funding_rate(self, asset: AssetSpec) -> float | None:
         """Fetch current funding rate for perpetual futures."""
         if asset.asset_class != AssetClass.PERPETUAL:
             return None
-        
+
         exchange = self._get_ccxt(asset.exchange)
         if exchange is None:
             return None
-        
+
         try:
             funding = exchange.fetch_funding_rate(asset.symbol)
             return funding.get('fundingRate', 0)
         except Exception:
             return None
-    
+
     def fetch_order_book(self, asset: AssetSpec, depth: int = 10) -> dict:
         """Fetch order book for any asset."""
         exchange = self._get_ccxt(asset.exchange)
         if exchange is None:
             return {'bids': [], 'asks': []}
-        
+
         try:
             ob = exchange.fetch_order_book(asset.symbol, limit=depth)
             return {'bids': ob['bids'][:depth], 'asks': ob['asks'][:depth]}
@@ -227,12 +229,12 @@ class CrossAssetRiskConfig:
 
 class CrossAssetRiskManager:
     """Multi-asset risk management."""
-    
+
     def __init__(self, config: CrossAssetRiskConfig = None):
         self.config = config or CrossAssetRiskConfig()
-    
+
     def check_exposure_limits(
-        self, 
+        self,
         positions: dict[str, dict],  # {symbol: {market_value, leverage, ...}}
         prices: dict[str, float],
         total_capital: float,
@@ -242,31 +244,31 @@ class CrossAssetRiskManager:
         Returns: {check_name: (passed: bool, message: str)}
         """
         results = {}
-        
+
         # Aggregate by asset class
         class_exposure: dict[AssetClass, float] = {}
         currency_exposure: dict[str, float] = {}
         total_leverage = 0.0
-        
+
         for symbol, pos in positions.items():
             asset = ASSET_REGISTRY.get(symbol)
             if asset is None:
                 continue
-            
+
             mv = pos.get('market_value', 0)
             lev = pos.get('leverage', 1.0)
-            
+
             class_exposure[asset.asset_class] = class_exposure.get(asset.asset_class, 0) + abs(mv)
             currency_exposure[asset.quote_currency] = currency_exposure.get(asset.quote_currency, 0) + abs(mv)
             total_leverage += abs(mv) * lev
-            
+
             # Single asset limit
             single_pct = abs(mv) / total_capital
             results[f"single_{symbol}"] = (
                 single_pct <= self.config.max_single_asset_pct,
                 f"{symbol}: {single_pct:.1%} / {self.config.max_single_asset_pct:.0%}"
             )
-        
+
         # Asset class limits
         for aclass, limit in self.config.max_exposure_pct.items():
             exp = class_exposure.get(aclass, 0) / total_capital
@@ -274,14 +276,14 @@ class CrossAssetRiskManager:
                 exp <= limit,
                 f"{aclass.value}: {exp:.1%} / {limit:.0%}"
             )
-        
+
         # Total leverage
         leverage_ratio = total_leverage / total_capital
         results["total_leverage"] = (
             leverage_ratio <= self.config.max_total_leverage,
             f"Total leverage: {leverage_ratio:.1f}x / {self.config.max_total_leverage:.1f}x"
         )
-        
+
         # Currency exposure
         for currency, limit in self.config.max_currency_exposure_pct.items():
             exp = currency_exposure.get(currency, 0) / total_capital
@@ -289,9 +291,9 @@ class CrossAssetRiskManager:
                 exp <= limit,
                 f"{currency}: {exp:.1%} / {limit:.0%}"
             )
-        
+
         return results
-    
+
     def should_reduce_exposure(self, check_results: dict) -> tuple[bool, list[str]]:
         """Determine if exposure should be reduced based on risk checks."""
         violations = [name for name, (passed, msg) in check_results.items() if not passed]
@@ -304,13 +306,13 @@ class CrossAssetRiskManager:
 
 class MultiAssetPositionManager:
     """Unified position tracking across assets."""
-    
+
     def __init__(self):
         self.positions: dict[str, dict] = {}  # {symbol: {shares, avg_price, ...}}
         self.closed_pnl: float = 0.0
         self.funding_payments: float = 0.0
-    
-    def update_position(self, symbol: str, asset: AssetSpec, side: str, 
+
+    def update_position(self, symbol: str, asset: AssetSpec, side: str,
                          quantity: float, price: float):
         """Update position after trade."""
         if symbol not in self.positions:
@@ -318,9 +320,9 @@ class MultiAssetPositionManager:
                 'shares': 0, 'avg_price': 0, 'realized_pnl': 0,
                 'asset': asset, 'side': 'flat',
             }
-        
+
         pos = self.positions[symbol]
-        
+
         if side == 'buy':
             new_shares = pos['shares'] + quantity
             if pos['shares'] <= 0 < new_shares:
@@ -352,17 +354,17 @@ class MultiAssetPositionManager:
             else:
                 pos['shares'] = new_shares
                 pos['avg_price'] = price
-        
+
         pos['side'] = 'long' if pos['shares'] > 0 else ('short' if pos['shares'] < 0 else 'flat')
-    
+
     def get_unrealized_pnl(self, symbol: str, current_price: float) -> float:
         """Calculate unrealized PnL for a position."""
         pos = self.positions.get(symbol)
         if pos is None or pos['side'] == 'flat':
             return 0.0
-        
+
         return pos['shares'] * (current_price - pos['avg_price'])
-    
+
     def get_total_equity(self, prices: dict[str, float], cash: float) -> float:
         """Calculate total equity across all positions."""
         total = cash + self.closed_pnl + self.funding_payments

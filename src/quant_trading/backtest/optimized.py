@@ -3,7 +3,7 @@ Vectorized backtest performance optimization (backtest-002).
 AGENTS.md §15: Numba/Polars for 20x speedup.
 """
 import numpy as np
-import pandas as pd
+
 
 def vectorized_sharpe(returns: np.ndarray, rf: float = 0.02) -> float:
     excess = returns.mean() - rf / 252

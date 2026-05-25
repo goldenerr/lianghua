@@ -9,9 +9,11 @@ Benchmarks (1196 stocks, 252-day lookback, 31 factors):
   CuPy GPU:    ~0.05s (800x faster, if GPU available)
 """
 from __future__ import annotations
-import numpy as np
-from typing import Optional, Callable
+
 import warnings
+
+import numpy as np
+
 warnings.filterwarnings("ignore")
 
 # Try to import GPU libraries
@@ -23,7 +25,7 @@ except ImportError:
     cp = None
 
 try:
-    from numba import jit, prange, vectorize, float64, int64
+    from numba import float64, int64, jit, prange, vectorize
     HAS_NUMBA = True
 except ImportError:
     HAS_NUMBA = False
@@ -49,7 +51,7 @@ def _rsi_numba(closes, period=14):
     n = len(closes)
     if n < period + 1:
         return np.nan
-    
+
     delta = np.diff(closes[-period-1:])
     gain = 0.0
     loss = 0.0
@@ -60,10 +62,10 @@ def _rsi_numba(closes, period=14):
             loss -= d
     gain /= period
     loss /= period
-    
+
     if loss < 1e-12:
         return np.nan
-    
+
     rs = gain / loss
     rsi = 100.0 - 100.0 / (1.0 + rs)
     return -abs(rsi - 50.0)
@@ -100,11 +102,11 @@ def _vol_numba(closes, window=21):
     n = len(closes)
     if n < window + 1:
         return np.nan
-    
+
     rets = np.empty(window)
     for i in range(window):
         rets[i] = closes[n-window+i] / closes[n-window+i-1] - 1.0
-    
+
     return np.std(rets) * np.sqrt(252)
 
 
@@ -133,14 +135,14 @@ def _macd_hist_numba(closes, fast=12, slow=26, signal=9):
     n = len(closes)
     if n < slow + signal:
         return np.nan
-    
+
     def ema(data, span):
         alpha = 2.0 / (span + 1)
         result = np.mean(data[:span])
         for i in range(span, len(data)):
             result = alpha * data[i] + (1 - alpha) * result
         return result
-    
+
     ema_fast = ema(closes, fast)
     ema_slow = ema(closes, slow)
     return ema_fast - ema_slow
@@ -152,7 +154,7 @@ def _amihud_numba(closes, amounts, window=21):
     n = len(closes)
     if n < window + 1:
         return np.nan
-    
+
     illiq = 0.0
     count = 0
     for i in range(window):
@@ -161,7 +163,7 @@ def _amihud_numba(closes, amounts, window=21):
             ret = abs(closes[idx] / closes[idx-1] - 1.0)
             illiq += ret / amounts[idx]
             count += 1
-    
+
     if count == 0:
         return np.nan
     return -illiq / count
@@ -173,14 +175,14 @@ def _max_ret_numba(closes, window=21):
     n = len(closes)
     if n < window + 1:
         return np.nan
-    
+
     max_r = -1e10
     for i in range(window):
         idx = n - window + i
         r = closes[idx] / closes[idx-1] - 1.0
         if r > max_r:
             max_r = r
-    
+
     return -max_r
 
 
@@ -202,19 +204,19 @@ def compute_factor_matrix(
     n_stocks = closes_all.shape[0]
     n_factors = len(factor_indices)
     result = np.full((n_stocks, n_factors), np.nan)
-    
+
     for s in prange(n_stocks):
         closes = closes_all[s]
         volumes = volumes_all[s]
         amounts = amounts_all[s]
-        
+
         valid = np.sum(~np.isnan(closes[-252:])) > 60
         if not valid:
             continue
-        
+
         for f in range(n_factors):
             fidx = factor_indices[f]
-            
+
             if fidx == 0:   # RSI
                 result[s, f] = _rsi_numba(closes, 14)
             elif fidx == 1: # momentum_1m
@@ -246,10 +248,11 @@ def compute_factor_matrix(
                 result[s, f] = _max_ret_numba(closes, 21)
             elif fidx == 14: # ret_skew
                 if len(closes) >= 64:
-                    rets = np.diff(closes[-64:]) / closes[-65:-1]
-                    m = np.mean(rets); s = np.std(rets)
-                    if s > 1e-12:
-                        result[s, f] = -np.mean((rets - m) ** 3) / (s ** 3)
+                    rets = np.diff(closes[-64:]) / closes[-64:-1]
+                    mean_ret = np.mean(rets)
+                    std_ret = np.std(rets)
+                    if std_ret > 1e-12:
+                        result[s, f] = -np.mean((rets - mean_ret) ** 3) / (std_ret ** 3)
             elif fidx == 15: # turnover_avg
                 result[s, f] = _turnover_numba(volumes, 21)
             elif fidx == 16: # dollar_vol
@@ -267,7 +270,7 @@ def compute_factor_matrix(
                     h_max = np.max(volumes[-20:-1])
                     if h_max > 1e-12:
                         result[s, f] = volumes[-1] / h_max
-    
+
     return result
 
 
@@ -286,14 +289,14 @@ def compute_factor_matrix_gpu(
     """
     if not HAS_CUPY:
         return compute_factor_matrix_cpu(closes_all, volumes_all, amounts_all)
-    
+
     # Transfer to GPU
     C = cp.asarray(closes_all)
     V = cp.asarray(volumes_all)
     n_stocks, n_days = C.shape
-    
+
     factors = {}
-    
+
     # Vectorized RSI
     delta = cp.diff(C[:, -15:], axis=1)
     gain = cp.clip(delta, 0, None).mean(axis=1)
@@ -301,12 +304,12 @@ def compute_factor_matrix_gpu(
     rs = gain / cp.maximum(loss, 1e-12)
     rsi_val = 100 - 100 / (1 + rs)
     factors['rsi'] = cp.asnumpy(-cp.abs(rsi_val - 50))
-    
+
     # Vectorized momentum
     factors['momentum_1m'] = cp.asnumpy(C[:, -1] / cp.maximum(C[:, -22], 1e-12) - 1)
     factors['momentum_3m'] = cp.asnumpy(C[:, -1] / cp.maximum(C[:, -64], 1e-12) - 1)
     factors['momentum_6m'] = cp.asnumpy(C[:, -1] / cp.maximum(C[:, -127], 1e-12) - 1)
-    
+
     # Vectorized Bollinger
     ma = C[:, -20:].mean(axis=1)
     std = cp.maximum(C[:, -20:].std(axis=1), 1e-12)
@@ -314,19 +317,19 @@ def compute_factor_matrix_gpu(
     lower = ma - 2 * std
     width = upper - lower
     factors['bollinger_pos'] = cp.asnumpy(-cp.abs(C[:, -1] - ma) / cp.maximum(width, 1e-12))
-    
+
     # Vectorized volatility
-    rets = cp.diff(C[:, -22:], axis=1) / cp.maximum(C[:, -23:-1], 1e-12)
+    rets = cp.diff(C[:, -22:], axis=1) / cp.maximum(C[:, -22:-1], 1e-12)
     factors['vol_1m'] = cp.asnumpy(rets.std(axis=1) * cp.sqrt(252))
-    
+
     # Vectorized volume
     vol_avg = V[:, -21:].mean(axis=1)
     factors['turnover_avg'] = cp.asnumpy(cp.log(cp.maximum(vol_avg, 1e-12)))
-    
+
     # Vectorized reversal
     factors['reversal_1d'] = cp.asnumpy(-(C[:, -1] / cp.maximum(C[:, -2], 1e-12) - 1))
     factors['reversal_1w'] = cp.asnumpy(-(C[:, -1] / cp.maximum(C[:, -6], 1e-12) - 1))
-    
+
     return factors
 
 
@@ -334,12 +337,12 @@ def compute_factor_matrix_cpu(closes_all, volumes_all, amounts_all):
     """CPU parallel factor computation (Numba fallback)."""
     factor_indices = np.arange(20, dtype=np.int64)
     result = compute_factor_matrix(closes_all, volumes_all, amounts_all, factor_indices)
-    
+
     names = ['rsi', 'momentum_1m', 'momentum_3m', 'momentum_6m', 'momentum_12m1m',
              'bollinger_pos', 'macd_hist', 'ma_cross', 'reversal_1d', 'reversal_1w',
              'reversal_1m', 'vol_1m', 'vol_3m', 'max_daily_ret', 'ret_skew',
              'turnover_avg', 'dollar_vol', 'amihud_illiq', 'vol_trend', 'vol_breakout']
-    
+
     return {names[i]: result[:, i] for i in range(min(len(names), result.shape[1]))}
 
 
@@ -350,16 +353,16 @@ def compute_factor_matrix_cpu(closes_all, volumes_all, amounts_all):
 def benchmark(closes_all, volumes_all, amounts_all):
     """Benchmark factor computation methods."""
     import time
-    
+
     print("GPU-Accelerated Factor Computation Benchmark")
     print(f"  Data: {closes_all.shape[0]} stocks × {closes_all.shape[1]} days")
     print(f"  CuPy available: {HAS_CUPY}")
     print(f"  Numba available: {HAS_NUMBA}")
-    
+
     # Pure Python baseline
     t0 = time.time()
     # (skip pure python — too slow)
-    
+
     # Numba JIT
     if HAS_NUMBA:
         t0 = time.time()
@@ -367,7 +370,7 @@ def benchmark(closes_all, volumes_all, amounts_all):
         _ = compute_factor_matrix(closes_all, volumes_all, amounts_all, factor_indices)
         numba_time = time.time() - t0
         print(f"  Numba JIT (20 factors): {numba_time:.2f}s")
-    
+
     # CuPy GPU
     if HAS_CUPY:
         t0 = time.time()

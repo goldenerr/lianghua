@@ -2,8 +2,10 @@
 Dynamic slippage & market impact model (exec-002).
 AGENTS.md §7: 回测必须使用动态滑点（基于订单簿深度或波动率）.
 """
-import numpy as np
 from dataclasses import dataclass
+
+import numpy as np
+
 
 @dataclass
 class SlippageModel:

@@ -5,6 +5,7 @@ AGENTS.md §13: 行情→信号≤10ms, 信号→订单≤60ms. C++/Rust hot pat
 from dataclasses import dataclass
 from time import perf_counter_ns
 
+
 @dataclass
 class LatencyBudget: market_data_ns: int = 10_000_000; signal_ns: int = 30_000_000; order_ns: int = 60_000_000
 

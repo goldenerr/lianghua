@@ -1,12 +1,15 @@
-"""Tests for smoke test framework — exercises full system pipeline."""
+"""Tests for smoke test framework - exercises full system pipeline."""
+
 import numpy as np
 import pandas as pd
+from quant_trading.backtest.engine import BacktestConfig, BacktestResult
 from quant_trading.smoke_test import (
-    run_full_smoke_test, SmokeTestResult, SimpleBacktestEngine,
+    SimpleBacktestEngine,
+    SmokeTestResult,
+    run_full_smoke_test,
     sma_crossover,
 )
-from quant_trading.backtest.engine import BacktestConfig, BacktestResult
-from quant_trading.test_harness import smoke_test, monte_carlo_test
+from quant_trading.test_harness import monte_carlo_test, smoke_test
 
 
 class TestSMAStrategy:
@@ -26,7 +29,9 @@ class TestSimpleBacktestEngine:
     def test_run_with_random_data(self):
         rng = np.random.RandomState(42)
         prices = 100 * np.cumprod(1 + rng.normal(0.0005, 0.015, 200))
-        data = {"TEST": pd.DataFrame({"close": prices}, index=pd.date_range("2024-01-01", periods=200))}
+        data = {
+            "TEST": pd.DataFrame({"close": prices}, index=pd.date_range("2024-01-01", periods=200))
+        }
         engine = SimpleBacktestEngine()
 
         def strat(p):
@@ -65,9 +70,12 @@ class TestSimpleBacktestEngine:
 
     def test_clean_data_no_bias(self):
         rng = np.random.RandomState(42)
-        df = pd.DataFrame({
-            "close": 100 * np.cumprod(1 + rng.normal(0.0005, 0.015, 200)),
-        }, index=pd.date_range("2024-01-01", periods=200))
+        df = pd.DataFrame(
+            {
+                "close": 100 * np.cumprod(1 + rng.normal(0.0005, 0.015, 200)),
+            },
+            index=pd.date_range("2024-01-01", periods=200),
+        )
         df["signal"] = np.random.choice([-1, 0, 1], size=200)  # random signals
 
         engine = SimpleBacktestEngine()
@@ -86,9 +94,16 @@ class TestFullSmokeTest:
     def test_all_steps_named(self):
         result = run_full_smoke_test(seed=123)
         step_names = {s["step"] for s in result.steps}
-        expected = {"order_manager", "kill_switch", "backtest_engine",
-                     "report_generation", "forward_bias_check", "monitor_health",
-                     "backtest_consistency", "config_defaults"}
+        expected = {
+            "order_manager",
+            "kill_switch",
+            "backtest_engine",
+            "report_generation",
+            "forward_bias_check",
+            "monitor_health",
+            "backtest_consistency",
+            "config_defaults",
+        }
         assert step_names == expected
 
     def test_every_step_passed(self):
@@ -99,7 +114,7 @@ class TestFullSmokeTest:
     def test_reproducible(self):
         r1 = run_full_smoke_test(seed=42)
         r2 = run_full_smoke_test(seed=42)
-        for s1, s2 in zip(r1.steps, r2.steps):
+        for s1, s2 in zip(r1.steps, r2.steps, strict=False):
             assert s1["passed"] == s2["passed"]
 
 
@@ -110,8 +125,6 @@ class TestHarnessStubs:
         assert len(result["modules"]) == 3
 
     def test_monte_carlo_test(self):
-        rng = np.random.RandomState(42)
-
         def always_pass(rng_state):
             return True
 

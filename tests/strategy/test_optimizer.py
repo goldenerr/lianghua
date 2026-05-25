@@ -1,8 +1,12 @@
 """Tests for strategy optimizer — grid search + walk-forward."""
 import numpy as np
 from quant_trading.strategy.optimizer import (
-    grid_search, walk_forward_optimize, evaluate_params,
-    Objective, TrialResult, OptimizationResult,
+    Objective,
+    OptimizationResult,
+    TrialResult,
+    evaluate_params,
+    grid_search,
+    walk_forward_optimize,
 )
 
 

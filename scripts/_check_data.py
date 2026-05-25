@@ -1,5 +1,7 @@
 import pandas as pd, numpy as np, os
-data_dir = '/home/hermes/.hermes/projects/lianghua/data/parquet'
+from _paths import DATA_DIR
+
+data_dir = str(DATA_DIR)
 files = sorted(os.listdir(data_dir))
 lens = []
 for f in files[:500]:

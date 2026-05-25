@@ -4,6 +4,7 @@ AGENTS.md §7: VWAP/TWAP/POV 拆分算法.
 """
 import numpy as np
 
+
 def vwap_schedule(total_qty: float, periods: int, volume_profile: np.ndarray = None) -> np.ndarray:
     weights = volume_profile / volume_profile.sum() if volume_profile is not None else np.ones(periods) / periods
     return np.round(weights * total_qty, 2)

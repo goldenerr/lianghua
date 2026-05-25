@@ -1,9 +1,13 @@
 """Tests for strategy framework."""
-import numpy as np
 import pandas as pd
 from quant_trading.strategy.framework import (
-    MovingAverageCrossStrategy, RSIStrategy, StrategyConfig, SignalType
+    MovingAverageCrossStrategy,
+    RSIStrategy,
+    SignalType,
+    StrategyConfig,
+    StrategyState,
 )
+
 
 class TestMAStrategy:
     def test_golden_cross(self):
@@ -26,3 +30,19 @@ class TestRSIStrategy:
         signals = s.on_data({"TEST": df})
         if signals:
             assert signals[0].signal_type == SignalType.BUY
+
+
+class TestStrategyLifecycleEvents:
+    def test_order_fill_and_risk_events_are_recorded(self):
+        config = StrategyConfig(name="audit_strategy")
+        s = MovingAverageCrossStrategy(config)
+
+        s.on_order({"client_order_id": "o-1", "symbol": "AAPL"})
+        s.on_fill({"client_order_id": "o-1", "filled_qty": 10})
+        s.on_risk({"level": "critical", "reason": "var breach"})
+
+        history = s.event_history()
+        assert history["orders"][0]["client_order_id"] == "o-1"
+        assert history["fills"][0]["filled_qty"] == 10
+        assert history["risk_events"][0]["reason"] == "var breach"
+        assert s.state == StrategyState.PAUSED

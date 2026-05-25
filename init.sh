@@ -83,8 +83,11 @@ fi
 
 # ── Pre-commit hooks (dev only) ──────────────────────────────────────────────
 if [ "$ENV" = "dev" ]; then
-    echo "[hooks] Installing pre-commit hooks..."
-    pre-commit install --install-hooks 2>&1 | tail -3
+    echo "[hooks] Installing pre-commit launcher..."
+    # Hook environments may require network downloads; do not make startup
+    # depend on remote availability. CI and explicit `pre-commit install-hooks`
+    # still exercise the complete hook set.
+    pre-commit install
 fi
 
 # ── Config validation ────────────────────────────────────────────────────────

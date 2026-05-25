@@ -7,16 +7,12 @@ AGENTS.md §4: 数据交叉校验使用两个独立数据源。
 from __future__ import annotations
 
 import logging
-from datetime import date
-from typing import Optional
-
-import pandas as pd
 
 from .provider import (
     DataProvider,
+    DataProviderError,
     DataRequest,
     DataResult,
-    DataProviderError,
     Frequency,
 )
 

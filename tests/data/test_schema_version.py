@@ -1,17 +1,16 @@
 """Tests for data schema version management (data-004)."""
-import pytest
 from datetime import datetime, timezone
 
+import pytest
 from quant_trading.data.schema_version import (
-    SchemaVersion,
-    SchemaTable,
     CompatibilityLevel,
     CompatibilityMatrix,
-    SchemaRegistry,
-    SchemaValidator,
-    CompatibilityReport,
     MigrationEngine,
     SchemaAuditLog,
+    SchemaRegistry,
+    SchemaTable,
+    SchemaValidator,
+    SchemaVersion,
 )
 
 UTC = timezone.utc

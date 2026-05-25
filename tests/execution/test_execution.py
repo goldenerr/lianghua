@@ -1,15 +1,32 @@
 """Tests for execution module — order management, reconciliation, order book, algorithms, fast path."""
-import pytest
+import asyncio
 import time
+
 import numpy as np
+import pytest
+from quant_trading.core.audit import AuditBus
+from quant_trading.core.state_machine import SystemState, SystemStateMachine
+from quant_trading.execution.fast_path import FastPath, LatencyBudget
+from quant_trading.execution.order_book import (
+    OrderBookSnapshot,
+    pov_schedule,
+    twap_schedule,
+    vwap_schedule,
+)
 from quant_trading.execution.order_manager import (
-    Order, OrderManager, OrderSide, OrderType, OrderStatus,
+    Order,
+    OrderManager,
+    OrderSide,
+    OrderStatus,
+    OrderType,
 )
 from quant_trading.execution.reconciler import PositionReconciler
-from quant_trading.execution.order_book import (
-    vwap_schedule, twap_schedule, pov_schedule, OrderBookSnapshot,
-)
-from quant_trading.execution.fast_path import FastPath, LatencyBudget
+
+
+def _running_order_manager(audit_bus=None):
+    fsm = SystemStateMachine()
+    fsm.transition(SystemState.RUNNING)
+    return OrderManager(audit_bus=audit_bus, system_fsm=fsm)
 
 
 # ── Order Manager ──────────────────────────────────────────────────
@@ -43,7 +60,7 @@ class TestOrder:
 
 class TestOrderManager:
     def test_submit_order(self):
-        om = OrderManager()
+        om = _running_order_manager()
         o = Order("id-1", "600519.SH", OrderSide.BUY, 100)
         oid = om.submit(o)
         assert oid == "id-1"
@@ -52,32 +69,43 @@ class TestOrderManager:
 
     def test_submit_idempotent_client_id(self):
         """AGENTS.md §36: unique client_order_id, re-submit returns existing."""
-        om = OrderManager()
+        om = _running_order_manager()
         o1 = Order("dup-id", "AAPL", OrderSide.BUY, 10)
         o2 = Order("dup-id", "AAPL", OrderSide.BUY, 20)
         om.submit(o1)
         om.submit(o2)
         result = om.get("dup-id")
         assert result is not None
-        assert result.quantity == 20  # overwritten
+        assert result.quantity == 10  # idempotent replay keeps original
+
+    def test_order_manager_emits_audit_events(self):
+        audit = AuditBus()
+        om = _running_order_manager(audit_bus=audit)
+        o = Order("evt-1", "AAPL", OrderSide.BUY, 10)
+        om.submit(o)
+        om.cancel("evt-1")
+        events = audit.query(limit=10)
+        types = [e["event_type"] for e in events]
+        assert "order_submitted" in types
+        assert "order_cancelled" in types
 
     def test_cancel_order(self):
-        om = OrderManager()
+        om = _running_order_manager()
         o = Order("c-1", "AAPL", OrderSide.SELL, 50)
         om.submit(o)
         assert om.cancel("c-1") is True
         assert o.status == OrderStatus.CANCELLED
 
     def test_cancel_nonexistent(self):
-        om = OrderManager()
+        om = _running_order_manager()
         assert om.cancel("no-such-id") is False
 
     def test_get_nonexistent(self):
-        om = OrderManager()
+        om = _running_order_manager()
         assert om.get("ghost") is None
 
     def test_get_active_filters_cancelled(self):
-        om = OrderManager()
+        om = _running_order_manager()
         om.submit(Order("a-1", "AAPL", OrderSide.BUY, 10))
         o2 = Order("a-2", "AAPL", OrderSide.BUY, 20)
         om.submit(o2)
@@ -87,15 +115,31 @@ class TestOrderManager:
         assert active[0].client_order_id == "a-1"
 
     def test_get_active_includes_submitted_and_pending(self):
-        om = OrderManager()
+        om = _running_order_manager()
         om.submit(Order("p-1", "AAPL", OrderSide.BUY, 10))  # goes to SUBMITTED
         assert len(om.get_active()) == 1
 
     def test_multiple_orders(self):
-        om = OrderManager()
+        om = _running_order_manager()
         for i in range(5):
             om.submit(Order(f"m-{i}", "AAPL", OrderSide.BUY, 10))
         assert len(om.get_active()) == 5
+
+    def test_order_blocked_when_system_not_running(self):
+        audit = AuditBus()
+        om = OrderManager(audit_bus=audit)  # Defaults to INIT, can_trade=False.
+        with pytest.raises(RuntimeError, match="blocked"):
+            om.submit(Order("blk-1", "AAPL", OrderSide.BUY, 1))
+        events = audit.query(event_type="order_rejected_system_state")
+        assert len(events) == 1
+        assert events[0]["payload"]["system_state"] == SystemState.INIT.value
+
+    def test_order_allowed_when_system_running(self):
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        om = OrderManager(system_fsm=fsm)
+        oid = om.submit(Order("run-1", "AAPL", OrderSide.BUY, 1))
+        assert oid == "run-1"
 
 
 # ── Position Reconciler ────────────────────────────────────────────
@@ -134,6 +178,47 @@ class TestPositionReconciler:
         assert pr_loose.reconcile(100, 90) is True  # 10/90=11.1% < 15%
         pr_tight = PositionReconciler(tolerance=0.00001)  # 0.001% tolerance
         assert pr_tight.reconcile(1000, 1000.1) is False  # 0.1/1000.1=0.00999% > 0.001%
+
+    def test_reconcile_with_retry_succeeds_after_retry(self):
+        pr = PositionReconciler(tolerance=0.001)
+        pairs = [(100.0, 101.0), (100.0, 100.0)]
+        state = {"idx": 0}
+
+        async def fetch_internal():
+            i, _ = pairs[state["idx"]]
+            return i
+
+        async def fetch_exchange():
+            _, e = pairs[state["idx"]]
+            state["idx"] += 1
+            return e
+
+        # Use tiny backoff for test speed
+        result = asyncio.run(
+            pr.reconcile_with_retry(fetch_internal, fetch_exchange, max_retries=2, backoff_seconds=(0.0, 0.0))
+        )
+        assert result.matched is True
+        assert result.attempts == 2
+
+    def test_reconcile_with_retry_failure_triggers_safe_mode_callback(self):
+        triggered = {"value": False}
+
+        def on_safe_mode(_msg: str):
+            triggered["value"] = True
+
+        pr = PositionReconciler(tolerance=0.00001, on_safe_mode=on_safe_mode)
+
+        async def fetch_internal():
+            return 100.0
+
+        async def fetch_exchange():
+            return 110.0
+
+        result = asyncio.run(
+            pr.reconcile_with_retry(fetch_internal, fetch_exchange, max_retries=2, backoff_seconds=(0.0, 0.0))
+        )
+        assert result.matched is False
+        assert triggered["value"] is True
 
 
 # ── Order Book ─────────────────────────────────────────────────────

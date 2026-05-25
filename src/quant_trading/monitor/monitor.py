@@ -2,8 +2,7 @@
 System monitoring (monitor-001).
 AGENTS.md §8: Structured logging, alert channels.
 """
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import timezone
 
 UTC = timezone.utc
 

@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
 from enum import Enum
-from typing import Optional
 
 import pandas as pd
 
@@ -112,8 +111,8 @@ class MarketCalendar:
     def __init__(self, market: Market):
         self.market = market
         self.sessions = _MARKET_SESSIONS.get(market, [])
-        self._calendar: Optional[object] = None
-        self._holidays: Optional[set[date]] = None
+        self._calendar: object | None = None
+        self._holidays: set[date] | None = None
 
     @property
     def is_24_7(self) -> bool:
@@ -164,7 +163,7 @@ class MarketCalendar:
             current += timedelta(days=1)
         return days
 
-    def time_to_next_open(self, dt: datetime) -> Optional[timedelta]:
+    def time_to_next_open(self, dt: datetime) -> timedelta | None:
         """Time until the next trading session opens. None if 24/7."""
         if self.is_24_7 or not self.sessions:
             return None
@@ -187,7 +186,7 @@ class MarketCalendar:
         next_open = datetime.combine(next_day, first_session.open, tzinfo=UTC)
         return next_open - utc_dt
 
-    def time_to_close(self, dt: datetime) -> Optional[timedelta]:
+    def time_to_close(self, dt: datetime) -> timedelta | None:
         """Time until the current session closes. None if 24/7 or out of session."""
         if self.is_24_7:
             return None
@@ -257,13 +256,13 @@ class CalendarRegistry:
         return cls._calendars[market]
 
     @classmethod
-    def is_any_market_open(cls, markets: list[Market], dt: Optional[datetime] = None) -> bool:
+    def is_any_market_open(cls, markets: list[Market], dt: datetime | None = None) -> bool:
         """Check if any of the given markets is in session."""
         check_dt = dt or datetime.now(UTC)
         return any(cls.get(m).is_in_session(check_dt) for m in markets)
 
     @classmethod
-    def all_markets_closed(cls, markets: list[Market], dt: Optional[datetime] = None) -> bool:
+    def all_markets_closed(cls, markets: list[Market], dt: datetime | None = None) -> bool:
         """Check if all given markets are closed."""
         return not cls.is_any_market_open(markets, dt)
 
@@ -288,7 +287,7 @@ class SettlementWindow:
 
     @classmethod
     def is_in_settlement_window(
-        cls, market: Market, dt: Optional[datetime] = None
+        cls, market: Market, dt: datetime | None = None
     ) -> bool:
         """Check if we're in the pre-settlement restricted window."""
         settle_time = cls.SETTLEMENT_TIMES.get(market)

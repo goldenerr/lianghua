@@ -13,9 +13,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Optional
 
-import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -86,7 +84,8 @@ class DataValidator:
         if "close" not in df.columns or len(df) < 2:
             return
 
-        returns = df["close"].pct_change().dropna()
+        # Missing closes must stay missing instead of inheriting a prior price.
+        returns = df["close"].pct_change(fill_method=None).dropna()
         jumps = returns[abs(returns) > self.max_price_jump_pct]
 
         result.stats["max_price_return"] = round(abs(returns).max(), 4) if len(returns) > 0 else 0

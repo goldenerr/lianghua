@@ -12,10 +12,10 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from enum import Enum, auto
-from typing import Any, Optional
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 UTC = timezone.utc
@@ -72,7 +72,7 @@ class StateMachine(ABC):
     """Abstract FSM — all core state changes go through this (AGENTS.md §2)."""
 
     @abstractmethod
-    def transition(self, new_state: Enum, metadata: Optional[dict] = None) -> bool:
+    def transition(self, new_state: Enum, metadata: dict | None = None) -> bool:
         """Attempt state transition. Returns True if valid."""
 
 
@@ -83,7 +83,7 @@ class OrderStateMachine(StateMachine):
         self.state = OrderState.CREATED
         self.history: list[dict] = []
 
-    def transition(self, new_state: OrderState, metadata: Optional[dict] = None) -> bool:
+    def transition(self, new_state: OrderState, metadata: dict | None = None) -> bool:
         if new_state not in _ORDER_TRANSITIONS[self.state]:
             logger.error(
                 "Invalid order transition: %s → %s (order=%s)",
@@ -110,7 +110,7 @@ class PositionStateMachine(StateMachine):
         self.quantity: float = 0.0
         self.avg_price: float = 0.0
 
-    def transition(self, new_state: PositionState, metadata: Optional[dict] = None) -> bool:
+    def transition(self, new_state: PositionState, metadata: dict | None = None) -> bool:
         if new_state not in _POSITION_TRANSITIONS[self.state]:
             return False
         self.state = new_state
@@ -126,12 +126,14 @@ class SystemStateMachine(StateMachine):
         self.state = SystemState.INIT
         self.history: list[dict] = []
 
-    def transition(self, new_state: SystemState, metadata: Optional[dict] = None) -> bool:
+    def transition(self, new_state: SystemState, metadata: dict | None = None) -> bool:
         old = self.state
         self.state = new_state
         self.history.append({
             "timestamp": datetime.now(UTC).isoformat(),
-            "from": old.value, "to": new_state.value,
+            "from": old.value,
+            "to": new_state.value,
+            "metadata": metadata or {},
         })
         logger.info("System state: %s → %s", old.value, new_state.value)
         return True

@@ -8,8 +8,7 @@ AGENTS.md §5: Purged Cross-Validation to prevent data leakage.
 from __future__ import annotations
 
 import logging
-from datetime import date
-from typing import Callable, Optional
+from collections.abc import Callable
 
 import numpy as np
 import pandas as pd
@@ -19,7 +18,6 @@ from .engine import (
     BacktestEngine,
     BacktestResult,
     PerformanceMetrics,
-    MetricsCalculator,
 )
 
 logger = logging.getLogger(__name__)

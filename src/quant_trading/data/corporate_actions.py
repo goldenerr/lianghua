@@ -14,9 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from enum import Enum
-from typing import Optional
 
-import numpy as np
 import pandas as pd
 
 UTC = timezone.utc
@@ -50,24 +48,24 @@ class CorporateActionEvent:
     event_type: EventType
 
     # Dividend
-    cash_dividend_per_share: Optional[float] = None  # 每股现金分红
+    cash_dividend_per_share: float | None = None  # 每股现金分红
 
     # Stock split (e.g., 2:1 split → split_ratio=2.0; 1:2 reverse → 0.5)
-    split_ratio: Optional[float] = None  # new_shares / old_shares
+    split_ratio: float | None = None  # new_shares / old_shares
 
     # Rights issue
-    rights_ratio: Optional[float] = None       # new shares per existing share
-    rights_price: Optional[float] = None       # subscription price
-    rights_theoretical_price: Optional[float] = None  # computed
+    rights_ratio: float | None = None       # new shares per existing share
+    rights_price: float | None = None       # subscription price
+    rights_theoretical_price: float | None = None  # computed
 
     # Merger
-    merger_symbol: Optional[str] = None        # target/acquiring symbol
-    merger_ratio: Optional[float] = None       # exchange ratio
-    merger_cash: Optional[float] = None        # cash per share
+    merger_symbol: str | None = None        # target/acquiring symbol
+    merger_ratio: float | None = None       # exchange ratio
+    merger_cash: float | None = None        # cash per share
 
     # Futures delivery
-    delivery_price: Optional[float] = None     # settlement price
-    delivery_quantity: Optional[float] = None  # quantity to deliver
+    delivery_price: float | None = None     # settlement price
+    delivery_quantity: float | None = None  # quantity to deliver
 
     # Metadata
     source: str = ""
@@ -127,7 +125,7 @@ class AdjustmentEngine:
     def compute_factors(
         self,
         events: list[CorporateActionEvent],
-        price_series: Optional[pd.Series] = None,
+        price_series: pd.Series | None = None,
     ) -> AdjustmentFactors:
         """
         Compute adjustment factors from a list of corporate events.
@@ -307,7 +305,7 @@ class EventCalendar:
         self._cache: dict[str, list[CorporateActionEvent]] = {}
 
     async def fetch_dividends(
-        self, symbol: str, start_date: Optional[date] = None
+        self, symbol: str, start_date: date | None = None
     ) -> list[CorporateActionEvent]:
         """Fetch dividend history for an A-share stock."""
         try:
@@ -343,7 +341,7 @@ class EventCalendar:
             return []
 
     async def fetch_splits(
-        self, symbol: str, start_date: Optional[date] = None
+        self, symbol: str, start_date: date | None = None
     ) -> list[CorporateActionEvent]:
         """Fetch stock split / reverse split history."""
         try:
@@ -361,7 +359,7 @@ class EventCalendar:
             return []
 
     async def fetch_all(
-        self, symbol: str, start_date: Optional[date] = None
+        self, symbol: str, start_date: date | None = None
     ) -> list[CorporateActionEvent]:
         """Fetch all corporate action events for a symbol."""
         cache_key = f"{symbol}:{start_date or 'all'}"

@@ -8,15 +8,16 @@ References:
   - Kissell & Glantz (2003) "Optimal Trading Strategies"
 """
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
+
 import numpy as np
 
 
 @dataclass
 class MarketImpactParams:
     """Almgren-Chriss market impact parameters (calibrated for A-shares)."""
-    # Permanent impact (information leakage): γ * σ * √(Q/V)  
+    # Permanent impact (information leakage): γ * σ * √(Q/V)
     gamma: float = 0.15    # permanent impact coefficient
     # Temporary impact (liquidity demand): η * σ * (Q/(V*T))^β
     eta: float = 0.15       # temporary impact coefficient
@@ -64,6 +65,7 @@ def almgren_chriss(
     risk_aversion: float = 1e-6,
     n_slots: int = 10,
     params: MarketImpactParams = None,
+    seed: int | None = 42,
 ) -> ExecutionSchedule:
     """Almgren-Chriss optimal execution schedule.
     
@@ -77,80 +79,92 @@ def almgren_chriss(
         risk_aversion: lambda (risk penalty)
         n_slots: number of time slots
         params: market impact parameters
+        seed: local optimization seed; defaults to deterministic execution
     """
     if params is None:
         params = MarketImpactParams()
-    
+    if shares < 0 or daily_volume <= 0 or price <= 0 or volatility < 0 or n_slots <= 0:
+        raise ValueError("shares, volume, price, volatility and n_slots must describe a valid order")
+    if shares == 0:
+        return ExecutionSchedule(np.zeros(n_slots, dtype=int), 0.0, 0.0, 0.0)
+
     p = params
     T = n_slots
     Q = shares
     V = daily_volume
     sigma = volatility  # annualized
-    
+
     # Per-slot volatility
     sigma_slot = sigma / np.sqrt(252 * T)
-    
+
     # Volume per slot
     volume_per_slot = V / T
-    
+
     # Maximum shares per slot (participation constraint)
     max_per_slot = int(volume_per_slot * p.max_participation)
-    
-    # Temporary impact: η * σ * (v/V_slot)^β * price  
+    if max_per_slot <= 0 or max_per_slot * T < Q:
+        raise ValueError("order exceeds execution capacity under max_participation")
+
+    # Temporary impact: η * σ * (v/V_slot)^β * price
     # Optimal schedule from Euler-Lagrange
     kappa = p.eta * sigma_slot / (volume_per_slot ** p.beta) * price
-    
+
     # Closed-form for κ = β=0 case (quadratic costs)
     # For general β, solve numerically
-    
+
     def objective(x):
         """Total cost of schedule x (shares per slot)."""
         if np.any(x < 0) or np.any(x > max_per_slot):
             return 1e10
-        
+
         # Temporary impact cost
         temp_cost = np.sum(kappa * (x / volume_per_slot) ** p.beta * x)
-        
+
         # Permanent impact cost
         cum_traded = np.cumsum(x)
         perm_cost = np.sum(p.gamma * sigma_slot * np.sqrt(x / volume_per_slot) * cum_traded * price)
-        
+
         # Risk cost (variance of remaining position)
         remaining = Q - cum_traded
         risk = np.sum(remaining ** 2) * sigma_slot ** 2
         risk_cost = risk_aversion * risk
-        
+
         return temp_cost + perm_cost + risk_cost
-    
+
     # Initial guess: uniform
     x0 = np.ones(T) * Q / T
-    
+    rng = np.random.default_rng(seed)
+
     # Solve via simple gradient-free optimization
     best_x = x0.copy()
     best_cost = objective(best_x)
-    
+
     # Try front-loaded vs back-loaded variants
     for _ in range(50):
-        candidate = np.clip(np.random.dirichlet(np.ones(T)) * Q, 0, max_per_slot)
+        candidate = np.clip(rng.dirichlet(np.ones(T)) * Q, 0, max_per_slot)
         candidate = candidate * Q / candidate.sum()  # renormalize
         candidate = np.clip(candidate, 0, max_per_slot)
         if np.sum(candidate) < Q * 0.95:
             continue
-        
+
         cost = objective(candidate)
         if cost < best_cost:
             best_cost = cost
             best_x = candidate.copy()
-    
+
     # Normalize
     x = np.round(best_x).astype(int)
     diff = shares - x.sum()
     x[0] += diff  # adjust remainder
-    
+    if np.any(x < 0) or np.any(x > max_per_slot):
+        x = np.full(T, Q // T, dtype=int)
+        x[: Q % T] += 1
+    best_cost = objective(x.astype(float))
+
     # Expected cost estimate
     expected_cost_pct = best_cost / (Q * price) if Q * price > 0 else 0
     execution_risk = sigma_slot * np.sqrt(np.sum((Q - np.cumsum(x)) ** 2))
-    
+
     return ExecutionSchedule(
         shares_per_slot=x,
         expected_cost=float(best_cost),
@@ -163,7 +177,7 @@ def almgren_chriss(
 # VWAP (Volume-Weighted Average Price)
 # ═══════════════════════════════════════════════════════════════
 
-def vwap_schedule(shares: int, volume_profile: np.ndarray, 
+def vwap_schedule(shares: int, volume_profile: np.ndarray,
                    n_slots: int = 10) -> ExecutionSchedule:
     """VWAP execution following historical volume profile.
     
@@ -174,17 +188,17 @@ def vwap_schedule(shares: int, volume_profile: np.ndarray,
     """
     if len(volume_profile) == 0:
         return twap_schedule(shares, n_slots)
-    
+
     # Normalize volume profile to probabilities
     profile = np.array(volume_profile[-n_slots:], dtype=float)
     if profile.sum() < 1e-12:
         return twap_schedule(shares, n_slots)
-    
+
     weights = profile / profile.sum()
     shares_per_slot = np.round(weights * shares).astype(int)
     diff = shares - shares_per_slot.sum()
     shares_per_slot[np.argmax(weights)] += diff
-    
+
     return ExecutionSchedule(
         shares_per_slot=shares_per_slot,
         expected_cost=0.0,
@@ -212,36 +226,36 @@ def estimate_implementation_shortfall(
     """
     if params is None:
         params = MarketImpactParams()
-    
+
     order_value = shares * price
     participation_rate = shares / max(daily_volume, 1)
-    
+
     # 1. Spread cost (half-spread * side)
     spread_cost = params.half_spread
     if side == "buy":
         spread_cost = params.half_spread
-    
+
     # 2. Market impact (Almgren universal model)
     # I = σ * (γ * |Q/V|^α + η * |Q/(V*T)|^β)  * sign(Q)
     daily_vol_usd = volatility * price / np.sqrt(252)
     q_over_v = shares / max(daily_volume, 1)
-    
+
     perm_impact = params.gamma * daily_vol_usd * (q_over_v ** 0.5)
     temp_impact = params.eta * daily_vol_usd * (q_over_v ** params.beta)
-    
+
     # Urgency adjustment
     impact = (perm_impact + temp_impact) * (0.5 + 0.5 * urgency)
     impact_pct = impact / max(price, 0.01)
-    
+
     # 3. Delay cost (risk of adverse selection during execution)
     delay_cost = volatility * np.sqrt(urgency / 252) * 0.5  # half of daily vol
-    
+
     # 4. Commission
     commission = 0.00025  # 0.025%
     stamp_duty = 0.0005 if side == "sell" else 0.0  # 0.05% only on sells
-    
+
     total_pct = spread_cost + impact_pct + delay_cost + commission + stamp_duty
-    
+
     return {
         "total_cost_pct": round(total_pct * 100, 4),
         "spread_bps": round(spread_cost * 10000, 1),
@@ -269,9 +283,9 @@ def smart_route_order(
     Returns list of child schedules.
     """
     pct_adv = shares / max(daily_volume, 1)
-    
+
     params = MarketImpactParams(max_participation=max_pct_adv)
-    
+
     if pct_adv < 0.01:
         # Small order: VWAP over 30min
         return [vwap_schedule(shares, np.ones(6), 6)]

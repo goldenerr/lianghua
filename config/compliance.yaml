@@ -1,0 +1,26 @@
+# Development regulatory templates. Production activation requires compliance approval.
+active_jurisdiction: cn
+require_approval_for_mode_change: true
+templates:
+  cn:
+    jurisdiction: cn
+    report_types: [daily_trade, large_trade, risk_compliance]
+    large_trade_threshold: 1000000
+    retention_years: 7
+    output_formats: [xml, pdf, csv, json]
+    stamp_duty_rate: 0.0005
+  us:
+    jurisdiction: us
+    report_types: [daily_trade, large_trade, risk_compliance]
+    large_trade_threshold: 1000000
+    retention_years: 7
+    output_formats: [xml, pdf, csv, json]
+    capital_gains_rate: 0.20
+  crypto:
+    jurisdiction: crypto
+    report_types: [daily_trade, large_trade, risk_compliance]
+    large_trade_threshold: 500000
+    retention_years: 7
+    output_formats: [xml, pdf, csv, json]
+    maker_fee_rate: 0.0002
+    taker_fee_rate: 0.0005

@@ -78,13 +78,11 @@ jobs:
         uses: semgrep/semgrep-action@v1
         with:
           config: p/python
-        continue-on-error: true
 
       - name: Gitleaks secrets scan
         uses: gitleaks/gitleaks-action@v2
         with:
           config-path: .gitleaks.toml
-        continue-on-error: true
 
       - name: Upload security reports
         if: always()
@@ -104,7 +102,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11"]
     services:
       redis:
         image: redis:7-alpine
@@ -148,6 +146,9 @@ jobs:
           poetry run pytest --cov=src/quant_trading --cov-report=xml --cov-report=term \
             -n auto --dist loadscope -v
 
+      - name: Run explicit safety smoke test
+        run: poetry run pytest -q tests/integration/test_smoke.py
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -173,6 +174,23 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry and locked dependencies
+        run: |
+          pipx install poetry==${{ env.POETRY_VERSION }}
+          poetry install --only main --no-interaction
+
+      - name: Build and verify signed artifact manifest
+        env:
+          QUANT_MANIFEST_SIGNING_KEY: ${{ secrets.QUANT_MANIFEST_SIGNING_KEY }}
+        run: |
+          test -n "$QUANT_MANIFEST_SIGNING_KEY"
+          poetry run quant-cli build-manifest --key-id github-actions-release --schema-version v2026.05
+          poetry run quant-cli manifest deployment/artifact-manifest.json --verify
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

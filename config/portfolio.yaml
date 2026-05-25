@@ -1,0 +1,26 @@
+# Development-stage lifecycle limits. Production promotion requires approved records.
+stages:
+  developing:
+    maximum_capital_pct: 0.0
+    requires_risk_approval: true
+    minimum_days_in_previous_stage: 0
+  paper:
+    maximum_capital_pct: 0.0
+    requires_risk_approval: true
+    minimum_days_in_previous_stage: 0
+  small_live:
+    maximum_capital_pct: 0.01
+    requires_risk_approval: true
+    minimum_days_in_previous_stage: 90
+  full_live:
+    maximum_capital_pct: 1.0
+    requires_risk_approval: true
+    minimum_days_in_previous_stage: 30
+  deprecated:
+    maximum_capital_pct: 0.0
+    requires_risk_approval: true
+    minimum_days_in_previous_stage: 0
+  archived:
+    maximum_capital_pct: 0.0
+    requires_risk_approval: true
+    minimum_days_in_previous_stage: 0

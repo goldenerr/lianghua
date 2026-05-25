@@ -1,10 +1,12 @@
 """Tests for state machine and invariant enforcement."""
-import pytest
 from quant_trading.core.state_machine import (
-    OrderStateMachine, OrderState,
-    PositionStateMachine, PositionState,
-    SystemStateMachine, SystemState,
-    InvariantEnforcer, InvariantCheck,
+    InvariantEnforcer,
+    OrderState,
+    OrderStateMachine,
+    PositionState,
+    PositionStateMachine,
+    SystemState,
+    SystemStateMachine,
 )
 
 

@@ -12,14 +12,12 @@ from __future__ import annotations
 
 import logging
 import time
-from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Callable, Optional
 
 import pandas as pd
 
-from .provider import Frequency
 from .validator import DataValidator, ValidationResult
 
 logger = logging.getLogger(__name__)
@@ -97,8 +95,8 @@ class SymbolHealth:
     missing_ok: bool = True
     price_jumps_ok: bool = True
     freshness_ok: bool = True
-    validation_result: Optional[ValidationResult] = None
-    last_checked: Optional[datetime] = None
+    validation_result: ValidationResult | None = None
+    last_checked: datetime | None = None
 
     @property
     def status(self) -> str:
@@ -200,7 +198,7 @@ class DataQualityMonitor:
 
         return result
 
-    def get_health(self, symbol: str) -> Optional[SymbolHealth]:
+    def get_health(self, symbol: str) -> SymbolHealth | None:
         """Get health status for a symbol."""
         return self._health.get(symbol)
 

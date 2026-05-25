@@ -2,14 +2,12 @@
 
 from datetime import date, datetime, timezone
 
-import pytest
-
 from quant_trading.config.market_calendar import (
+    CalendarRegistry,
     Market,
     MarketCalendar,
-    CalendarRegistry,
-    SettlementWindow,
     Session,
+    SettlementWindow,
 )
 
 UTC = timezone.utc

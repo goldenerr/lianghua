@@ -1,15 +1,16 @@
 """Tests for compliance, persistence, portfolio, and monitor modules."""
+from datetime import date
+
 import numpy as np
 import pytest
-from datetime import date
-from quant_trading.compliance.compliance import TaxCalculator, Jurisdiction, ComplianceReport as CompReport
+from quant_trading.compliance.compliance import ComplianceReport as CompReport
+from quant_trading.compliance.compliance import Jurisdiction, TaxCalculator
 from quant_trading.data.persistence import EventStore, StorageBackend
+from quant_trading.monitor.continuity import FaultInjector
+from quant_trading.monitor.dashboard import StrategyDashboard
+from quant_trading.monitor.monitor import SystemMonitor
 from quant_trading.portfolio.firewall import CapitalFirewall
 from quant_trading.portfolio.optimizer import PortfolioOptimizer
-from quant_trading.monitor.monitor import SystemMonitor
-from quant_trading.monitor.dashboard import StrategyDashboard
-from quant_trading.monitor.continuity import FaultInjector
-
 
 # ── Compliance ──────────────────────────────────────────────────────
 
@@ -110,6 +111,29 @@ class TestEventStore:
     def test_backend_default(self):
         es = EventStore()
         assert es.backend == StorageBackend.PARQUET
+
+    def test_hash_chain_integrity(self):
+        es = EventStore()
+        es.append("order", {"qty": 10}, tenant_id="t1")
+        es.append("fill", {"qty": 10}, tenant_id="t1")
+        events = es.replay()
+        assert events[0]["previous_hash"] == "GENESIS"
+        assert events[1]["previous_hash"] == events[0]["hash"]
+        assert es.verify_integrity() is True
+
+    def test_replay_does_not_mutate_event_store(self):
+        es = EventStore()
+        es.append("risk", {"passed": True})
+        replayed = es.replay()
+        replayed[0]["payload"]["passed"] = False
+        assert es.replay()[0]["payload"]["passed"] is True
+        assert es.verify_integrity() is True
+
+    def test_integrity_detects_internal_tampering(self):
+        es = EventStore()
+        es.append("config_change", {"approved": True})
+        es.events[0]["payload"]["approved"] = False
+        assert es.verify_integrity() is False
 
 
 # ── Portfolio Firewall ──────────────────────────────────────────────
@@ -251,5 +275,6 @@ class TestFaultInjector:
 
     def test_recover(self):
         fi = FaultInjector(target="data_feed")
+        fi.inject()
         result = fi.recover()
         assert result["recovered"] is True

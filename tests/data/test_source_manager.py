@@ -1,12 +1,10 @@
 """Tests for DataSourceManager — provider routing and degradation."""
 
-import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
-import pandas as pd
+from unittest.mock import AsyncMock
 
-from quant_trading.data.provider import (
-    DataRequest, DataResult, DataProviderError, Frequency
-)
+import pandas as pd
+import pytest
+from quant_trading.data.provider import DataProviderError, DataResult, Frequency
 from quant_trading.data.source_manager import DataSourceManager
 
 

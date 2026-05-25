@@ -1,7 +1,7 @@
 import pandas as pd, numpy as np
 from pathlib import Path
 
-DATA_DIR = Path("/home/hermes/.hermes/projects/lianghua/data/parquet")
+from _paths import DATA_DIR
 
 f = sorted(DATA_DIR.glob("*.parquet"))[100]
 df = pd.read_parquet(f)

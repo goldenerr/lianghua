@@ -22,10 +22,10 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date, timezone
 from enum import Enum
-from typing import Any, Callable, Optional
 
 import numpy as np
 import pandas as pd
@@ -69,8 +69,8 @@ class PerformanceMetrics:
     cvar_95: float = 0.0
 
     # Metadata
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    start_date: date | None = None
+    end_date: date | None = None
     trading_days: int = 0
     symbol_count: int = 0
 
@@ -104,7 +104,7 @@ class MetricsCalculator:
     def from_equity_curve(
         cls,
         equity: pd.Series,
-        trades: Optional[pd.DataFrame] = None,
+        trades: pd.DataFrame | None = None,
         risk_free_rate: float = 0.02,
     ) -> PerformanceMetrics:
         """Compute all metrics from an equity curve Series."""
@@ -123,7 +123,12 @@ class MetricsCalculator:
         # Returns
         m.total_return = (equity.iloc[-1] / equity.iloc[0]) - 1
         years = m.trading_days / cls.TRADING_DAYS_PER_YEAR
-        m.annualized_return = ((1 + m.total_return) ** (1 / max(years, 0.01))) - 1
+        terminal_growth = 1 + m.total_return
+        if terminal_growth <= 0:
+            # Equity at or below zero is economic ruin; cap return at -100%.
+            m.annualized_return = -1.0
+        else:
+            m.annualized_return = terminal_growth ** (1 / max(years, 0.01)) - 1
 
         # Volatility
         m.annualized_volatility = returns.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR)
@@ -200,8 +205,8 @@ class BacktestConfig:
     """Configuration for a backtest run."""
     mode: BacktestMode = BacktestMode.STANDARD
     initial_capital: float = 1_000_000.0
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    start_date: date | None = None
+    end_date: date | None = None
     commission_rate: float = 0.0003       # 0.03% per trade
     slippage_model: str = "fixed"          # "fixed" | "volatility" | "orderbook"
     slippage_bps: float = 5.0              # 5 bps fixed slippage
@@ -231,14 +236,14 @@ class BacktestResult:
     metrics: PerformanceMetrics = field(default_factory=PerformanceMetrics)
     equity_curve: pd.Series = field(default_factory=pd.Series)
     trades: pd.DataFrame = field(default_factory=pd.DataFrame)
-    config: Optional[BacktestConfig] = None
+    config: BacktestConfig | None = None
     passed: bool = False
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
     # Walk-Forward specific
     wf_folds: list[PerformanceMetrics] = field(default_factory=list)
-    wf_oos_metrics: Optional[PerformanceMetrics] = None
+    wf_oos_metrics: PerformanceMetrics | None = None
 
     def check_gates(self, config: BacktestConfig) -> bool:
         """Check if results pass AGENTS.md §5 quality gates."""
@@ -281,7 +286,7 @@ class BacktestEngine(ABC):
         self,
         data: dict[str, pd.DataFrame],
         strategy: Callable,
-        config: Optional[BacktestConfig] = None,
+        config: BacktestConfig | None = None,
     ) -> BacktestResult:
         """Execute a backtest. Must be implemented by plugins."""
 

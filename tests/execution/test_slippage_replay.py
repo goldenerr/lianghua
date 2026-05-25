@@ -1,8 +1,7 @@
 """Tests for slippage model, impact model, and order replay."""
-import numpy as np
 import pytest
-from quant_trading.execution.slippage import SlippageModel, ImpactModel
-from quant_trading.execution.replay import replay_orders, ReplayMode, ReplayResult
+from quant_trading.execution.replay import ReplayMode, ReplayResult, replay_orders
+from quant_trading.execution.slippage import ImpactModel, SlippageModel
 
 
 class TestSlippageModel:
@@ -89,14 +88,16 @@ def test_replay_mismatch():
     result = replay_orders(orders, engine)
     assert result.matches == 0
     assert result.mismatches == 1
+    assert result.differences[0].index == 0
+    assert result.input_hash
 
 
 def test_replay_no_decide_method():
-    """Engine without decide() uses order as-is (always matches)."""
+    """Missing validation logic cannot be treated as a matching replay."""
     orders = [{"symbol": "AAPL", "qty": 10}]
 
     class NoDecideEngine:
         pass
 
-    result = replay_orders(orders, NoDecideEngine())
-    assert result.matches == 1
+    with pytest.raises(ValueError, match="decide"):
+        replay_orders(orders, NoDecideEngine())

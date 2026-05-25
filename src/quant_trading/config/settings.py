@@ -8,8 +8,6 @@ All secrets use SecretStr/SecretBytes per AGENTS.md §2.
 from __future__ import annotations
 
 from enum import Enum
-from pathlib import Path
-from typing import Annotated, Literal, Optional
 
 from pydantic import (
     BaseModel,
@@ -17,12 +15,9 @@ from pydantic import (
     Field,
     SecretBytes,
     SecretStr,
-    ValidationInfo,
     field_validator,
     model_validator,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 # ── Enums ────────────────────────────────────────────────────────────────────
 
@@ -66,15 +61,15 @@ class MarketRules(BaseModel):
     tick_size: float = Field(gt=0, description="最小变动价位")
     lot_size: int = Field(ge=1, description="每手数量")
     price_precision: int = Field(ge=0, le=8, description="价格精度")
-    funding_rate: Optional[float] = Field(None, description="资金费率 (crypto)")
-    settlement_time: Optional[str] = Field(None, description="结算时间 (HH:MM UTC)")
+    funding_rate: float | None = Field(None, description="资金费率 (crypto)")
+    settlement_time: str | None = Field(None, description="结算时间 (HH:MM UTC)")
 
 
 class ApiEndpointConfig(BaseModel):
     """单个交易所 API 端点配置。"""
     model_config = ConfigDict(frozen=True)
     base_url: str
-    ws_url: Optional[str] = None
+    ws_url: str | None = None
     timeout_seconds: int = Field(default=10, ge=1, le=60)
     max_retries: int = Field(default=3, ge=0, le=10)
     rate_limit_rps: int = Field(default=10, ge=1, le=1000)
@@ -88,8 +83,8 @@ class ApiCredentials(BaseModel):
     exchange: str
     api_key: SecretStr
     api_secret: SecretBytes  # bytes for binary signing keys
-    passphrase: Optional[SecretStr] = None
-    subaccount: Optional[str] = None
+    passphrase: SecretStr | None = None
+    subaccount: str | None = None
 
     @field_validator("api_key")
     @classmethod
@@ -185,7 +180,7 @@ class RiskSettings(BaseModel):
     max_fx_exposure_pct: float = Field(default=0.30, gt=0, le=1.0)
 
     @model_validator(mode="after")
-    def mdd_order_consistent(self) -> "RiskSettings":
+    def mdd_order_consistent(self) -> RiskSettings:
         if self.mdd_reduce_to_50pct >= self.mdd_liquidate_all:
             raise ValueError("mdd_reduce_to_50pct must be < mdd_liquidate_all")
         if self.circuit_breaker_daily_loss >= self.circuit_breaker_daily_loss_force:

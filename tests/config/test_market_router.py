@@ -2,9 +2,7 @@
 
 from datetime import date, datetime, timezone
 
-import pytest
-
-from quant_trading.config.market_calendar import Market, CalendarRegistry
+from quant_trading.config.market_calendar import Market
 from quant_trading.config.market_router import (
     ContractMonth,
     FuturesRolloverDetector,

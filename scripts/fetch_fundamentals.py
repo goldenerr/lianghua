@@ -9,9 +9,9 @@ import numpy as np
 from pathlib import Path
 import time, os
 
-PROJECT = Path("/home/hermes/.hermes/projects/lianghua")
-DATA_DIR = PROJECT / "data/parquet"
-FUND_DIR = PROJECT / "data/fundamentals"
+from _paths import PROJECT_DIR as PROJECT
+from _paths import DATA_DIR
+from _paths import FUNDAMENTALS_DIR as FUND_DIR
 FUND_DIR.mkdir(parents=True, exist_ok=True)
 
 # Get stock list from existing parquet files

@@ -7,8 +7,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Optional
-import numpy as np
+from typing import Any
+
 import pandas as pd
 
 UTC = timezone.utc
@@ -50,14 +50,32 @@ class Strategy(ABC):
         self.state = StrategyState.INIT
         self._bar_count = 0
         self._signals: list[Signal] = []
+        self._orders: list[dict] = []
+        self._fills: list[dict] = []
+        self._risk_events: list[dict] = []
 
     @abstractmethod
     def on_data(self, data: dict[str, pd.DataFrame]) -> list[Signal]:
         """Process new data and generate signals."""
 
-    def on_order(self, order: dict) -> None: pass
-    def on_fill(self, fill: dict) -> None: pass
-    def on_risk(self, risk_event: dict) -> None: pass
+    def on_order(self, order: dict) -> None:
+        self._orders.append({"timestamp": datetime.now(UTC), **order})
+
+    def on_fill(self, fill: dict) -> None:
+        self._fills.append({"timestamp": datetime.now(UTC), **fill})
+
+    def on_risk(self, risk_event: dict) -> None:
+        self._risk_events.append({"timestamp": datetime.now(UTC), **risk_event})
+        level = str(risk_event.get("level", "")).lower()
+        if level in {"critical", "emergency", "safe_mode"}:
+            self.pause()
+
+    def event_history(self) -> dict[str, list[dict]]:
+        return {
+            "orders": list(self._orders),
+            "fills": list(self._fills),
+            "risk_events": list(self._risk_events),
+        }
 
     def warmup_complete(self) -> bool:
         return self._bar_count >= self.config.warmup_bars

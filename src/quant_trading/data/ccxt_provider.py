@@ -7,16 +7,15 @@ AGENTS.md §2: 加密货币支持 24/7 交易。
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timezone
-from typing import Optional
+from datetime import datetime, timezone
 
 import pandas as pd
 
 from .provider import (
     DataProvider,
+    DataProviderError,
     DataRequest,
     DataResult,
-    DataProviderError,
     Frequency,
 )
 

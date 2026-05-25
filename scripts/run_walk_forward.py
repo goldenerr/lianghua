@@ -9,8 +9,8 @@ import json, time
 from pathlib import Path
 from datetime import datetime
 
-DATA_DIR = Path("/home/hermes/.hermes/projects/lianghua/data/parquet")
-OUT_DIR = Path("/home/hermes/.hermes/projects/lianghua/data/backtest_results")
+from _paths import DATA_DIR
+from _paths import RESULTS_DIR as OUT_DIR
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── SMA 策略 ──────────────────────────────────────────────

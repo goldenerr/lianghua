@@ -9,12 +9,17 @@ Components:
   4. LiveMonitor: Real-time P&L + risk dashboard data
 """
 from __future__ import annotations
-import json, time, logging, threading
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Optional, Callable
+
+import json
+import logging
+import threading
+import time
 from collections import deque
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+
 import numpy as np
 
 log = logging.getLogger("live_pipeline")
@@ -72,46 +77,46 @@ class LiveDataFeed:
     Uses akshare for A-share live quotes and ccxt for crypto order books.
     Falls back to HTTP polling when WebSocket unavailable.
     """
-    
+
     def __init__(self, symbols: list[str], market: str = "ashare",
                  use_websocket: bool = False):
         self.symbols = symbols
         self.market = market
         self.use_websocket = use_websocket
         self._running = False
-        self._thread: Optional[threading.Thread] = None
-        
+        self._thread: threading.Thread | None = None
+
         # Callback registry
         self.on_quote: list[Callable] = []
         self.on_trade: list[Callable] = []
         self.on_bar: list[Callable] = []
-        
+
         # Buffers
         self.quote_buffer: dict[str, Quote] = {}
         self.trade_buffer: deque[Trade] = deque(maxlen=10000)
         self.bar_buffers: dict[str, deque[Bar]] = {}  # {resolution: deque}
-        
+
         # Bar aggregation state
         self._bar_state: dict[str, dict] = {}  # {resolution: {symbol: current_bar}}
-    
+
     def start(self):
         """Start live data feed in background thread."""
         self._running = True
         self._thread = threading.Thread(target=self._run_loop, daemon=True)
         self._thread.start()
         log.info(f"Live feed started for {len(self.symbols)} symbols ({self.market})")
-    
+
     def stop(self):
         """Stop live data feed."""
         self._running = False
         if self._thread:
             self._thread.join(timeout=5)
         log.info("Live feed stopped")
-    
+
     def _run_loop(self):
         """Main feed loop with polling."""
         poll_interval = 3.0 if self.market == "ashare" else 1.0  # seconds
-        
+
         while self._running:
             try:
                 if self.market == "ashare":
@@ -122,26 +127,26 @@ class LiveDataFeed:
             except Exception as e:
                 log.error(f"Feed error: {e}")
                 time.sleep(5)
-    
+
     def _poll_ashare(self):
         """Poll A-share live quotes via akshare."""
         try:
             import akshare as ak
-            
+
             # Batch query for all symbols
             codes = ','.join(self.symbols)
             df = ak.stock_zh_a_spot_em()
-            
+
             if df is None or len(df) == 0:
                 return
-            
+
             now = time.time()
-            
+
             for _, row in df.iterrows():
                 code = str(row.get('代码', ''))
                 if code not in self.symbols:
                     continue
-                
+
                 quote = Quote(
                     symbol=code,
                     bid=float(row.get('买一', 0) or 0),
@@ -152,30 +157,30 @@ class LiveDataFeed:
                     source='akshare',
                 )
                 self.quote_buffer[code] = quote
-                
+
                 # Notify callbacks
                 for cb in self.on_quote:
                     cb(quote)
-                
+
                 # Aggregate bars
                 self._aggregate_bar(code, quote, '1m', 60)
                 self._aggregate_bar(code, quote, '5m', 300)
-                
+
         except ImportError:
-            pass  # akshare not available
+            log.info("akshare is not installed; A-share live polling is disabled")
         except Exception as e:
             log.warning(f"A-share poll failed: {e}")
-    
+
     def _poll_crypto(self):
         """Poll crypto via ccxt."""
         try:
             import ccxt
             exchange = ccxt.binance()
-            
+
             for symbol in self.symbols:
                 try:
                     ticker = exchange.fetch_ticker(symbol)
-                    
+
                     quote = Quote(
                         symbol=symbol,
                         bid=ticker.get('bid', 0),
@@ -186,26 +191,26 @@ class LiveDataFeed:
                         source='ccxt',
                     )
                     self.quote_buffer[symbol] = quote
-                    
+
                     for cb in self.on_quote:
                         cb(quote)
-                    
+
                     self._aggregate_bar(symbol, quote, '1m', 60)
-                    
+
                 except Exception as e:
                     log.debug(f"Crypto poll {symbol}: {e}")
         except ImportError:
-            pass
-    
+            log.info("ccxt is not installed; crypto live polling is disabled")
+
     def _aggregate_bar(self, symbol: str, quote: Quote, resolution: str, secs: int):
         """Aggregate quotes into OHLCV bars."""
         if resolution not in self._bar_state:
             self._bar_state[resolution] = {}
-        
+
         state = self._bar_state[resolution]
         now = quote.timestamp
         bar_start = int(now // secs) * secs
-        
+
         if symbol not in state or state[symbol].get('start') != bar_start:
             # Emit previous bar
             if symbol in state:
@@ -224,10 +229,10 @@ class LiveDataFeed:
                     if resolution not in self.bar_buffers:
                         self.bar_buffers[resolution] = deque(maxlen=5000)
                     self.bar_buffers[resolution].append(bar)
-                    
+
                     for cb in self.on_bar:
                         cb(bar)
-            
+
             # Start new bar
             state[symbol] = {
                 'start': bar_start,
@@ -238,7 +243,7 @@ class LiveDataFeed:
                 'volume': 0,
                 'count': 0,
             }
-        
+
         cur = state[symbol]
         cur['high'] = max(cur['high'], quote.price)
         cur['low'] = min(cur['low'], quote.price)
@@ -263,8 +268,8 @@ class RedisEventBus:
       order.new               — new order events
       order.fill              — order fill events
     """
-    
-    def __init__(self, host: str = "localhost", port: int = 6379, 
+
+    def __init__(self, host: str = "localhost", port: int = 6379,
                  use_redis: bool = False):
         self.host = host
         self.port = port
@@ -273,7 +278,7 @@ class RedisEventBus:
         self._pubsub = None
         self._subscribers: dict[str, list[Callable]] = {}
         self._event_queue: deque[dict] = deque(maxlen=50000)  # in-memory fallback
-        
+
         if use_redis:
             try:
                 import redis
@@ -283,7 +288,7 @@ class RedisEventBus:
             except Exception as e:
                 log.warning(f"Redis unavailable ({e}), using in-memory bus")
                 self.use_redis = False
-    
+
     def publish(self, channel: str, data: dict):
         """Publish event to channel."""
         event = {
@@ -291,16 +296,16 @@ class RedisEventBus:
             'data': data,
             'timestamp': datetime.now(timezone.utc).isoformat(),
         }
-        
+
         if self.use_redis and self._client:
             try:
                 self._client.publish(channel, json.dumps(event))
-            except Exception:
-                pass
-        
+            except Exception as exc:
+                log.warning("Redis publish failed for %s: %s; event retained in memory", channel, exc)
+
         # In-memory fallback
         self._event_queue.append(event)
-        
+
         # Notify local subscribers
         if channel in self._subscribers:
             for cb in self._subscribers[channel]:
@@ -308,32 +313,32 @@ class RedisEventBus:
                     cb(data)
                 except Exception as e:
                     log.error(f"Subscriber error: {e}")
-    
+
     def subscribe(self, channel: str, callback: Callable):
         """Subscribe to channel."""
         if channel not in self._subscribers:
             self._subscribers[channel] = []
         self._subscribers[channel].append(callback)
-    
+
     def get_events(self, channel: str = None, limit: int = 100) -> list[dict]:
         """Get recent events (in-memory fallback)."""
         events = list(self._event_queue)
         if channel:
             events = [e for e in events if e['channel'] == channel]
         return events[-limit:]
-    
+
     def publish_quote(self, quote: Quote):
         self.publish(f"market.quote.{quote.symbol}", {
             'symbol': quote.symbol, 'bid': quote.bid, 'ask': quote.ask,
             'price': quote.price, 'timestamp': quote.timestamp,
         })
-    
+
     def publish_signal(self, strategy: str, symbol: str, side: str, weight: float):
         self.publish(f"signal.{side}.{strategy}", {
             'strategy': strategy, 'symbol': symbol,
             'side': side, 'weight': weight,
         })
-    
+
     def publish_risk_alert(self, alert_type: str, message: str, severity: str = "WARNING"):
         self.publish("risk.alert", {
             'type': alert_type, 'message': message,
@@ -347,11 +352,11 @@ class RedisEventBus:
 
 class DataScheduler:
     """Cron-based daily data refresh + quality checks."""
-    
+
     def __init__(self, data_dir: Path):
         self.data_dir = data_dir
         self.jobs: dict[str, dict] = {}  # {name: {schedule, func, last_run}}
-    
+
     def add_job(self, name: str, func: Callable, schedule: str = "daily"):
         """Add a scheduled job.
         
@@ -362,12 +367,12 @@ class DataScheduler:
             'schedule': schedule,
             'last_run': None,
         }
-    
+
     def run_daily_refresh(self):
         """Run all daily refresh jobs (called after market close ~15:30 CST)."""
         log.info(f"Running daily refresh ({len(self.jobs)} jobs)")
         results = {}
-        
+
         for name, job in self.jobs.items():
             if job['schedule'] != 'daily':
                 continue
@@ -380,9 +385,9 @@ class DataScheduler:
             except Exception as e:
                 results[name] = {'status': 'error', 'error': str(e)}
                 log.error(f"  {name}: FAILED - {e}")
-        
+
         return results
-    
+
     def get_status(self) -> dict:
         """Get scheduler status."""
         return {
@@ -398,7 +403,7 @@ class DataScheduler:
 
 class LivePortfolioMonitor:
     """Real-time P&L and risk monitor."""
-    
+
     def __init__(self, initial_capital: float = 1.0):
         self.initial_capital = initial_capital
         self.positions: dict[str, dict] = {}  # {symbol: {shares, avg_cost}}
@@ -407,20 +412,20 @@ class LivePortfolioMonitor:
         self.pnl_history: deque[float] = deque(maxlen=5000)
         self.equity_history: deque[float] = deque([initial_capital], maxlen=5000)
         self.peak = initial_capital
-    
+
     @property
     def total_value(self) -> float:
         return self.cash + sum(
             p.get('shares', 0) * p.get('last_price', 0)
             for p in self.positions.values()
         )
-    
+
     @property
     def drawdown(self) -> float:
         eq = self.total_value
         self.peak = max(self.peak, eq)
         return (eq - self.peak) / self.peak
-    
+
     @property
     def sharpe_1m(self) -> float:
         if len(self.pnl_history) < 20:
@@ -429,12 +434,12 @@ class LivePortfolioMonitor:
         avg = np.mean(rets)
         std = np.std(rets, ddof=1)
         return avg / std * np.sqrt(252) if std > 1e-8 else 0.0
-    
+
     def on_quote(self, quote: Quote):
         """Update position values on each quote."""
         if quote.symbol in self.positions:
             self.positions[quote.symbol]['last_price'] = quote.price
-    
+
     def on_fill(self, symbol: str, side: str, shares: int, price: float):
         """Record trade fill."""
         if side == 'buy':
@@ -453,13 +458,13 @@ class LivePortfolioMonitor:
                 self.positions[symbol]['shares'] -= shares
                 if self.positions[symbol]['shares'] <= 0:
                     del self.positions[symbol]
-        
+
         self.trade_history.append({
             'time': datetime.now(timezone.utc).isoformat(),
             'symbol': symbol, 'side': side,
             'shares': shares, 'price': price,
         })
-    
+
     def get_status(self) -> dict:
         """Get current portfolio status."""
         return {

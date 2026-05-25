@@ -2,20 +2,20 @@
 Capital Impact Assessment — V5.9 Production Candidate
 AGENTS.md §7 & §11: Required before production deployment.
 """
+import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
-import json
+from pathlib import Path
 
 
 @dataclass
 class CapitalImpactAssessment:
     """V5.9 strategy capital impact assessment."""
-    
+
     strategy: str = "V5.9 MR Multi-Factor (n=35, 90d rebalance, sector cap=5)"
     date: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     prepared_by: str = "Quant Trading System AI Agent"
-    
+
     # Backtest metrics
     backtest_sharpe: float = 1.38
     backtest_annual_return: float = 0.126
@@ -25,49 +25,49 @@ class CapitalImpactAssessment:
     backtest_calmar: float = 0.93
     wf_oos_sharpe: float = 1.20
     wf_decay: float = 0.22
-    
+
     # Risk metrics
     max_position_pct: float = 0.20
     max_leverage: float = 1.0
     sector_cap: int = 5
     var_95_pct: float = 0.05
-    
+
     # MDD safeguards
     mdd_reduce_threshold: float = -0.10  # reduce to 50% at -10% DD
     mdd_stop_threshold: float = -0.18    # stop all trading at -18% DD
-    
+
     # Capital allocation
     recommended_initial_capital: float = 1_000_000  # 100万
     min_viable_capital: float = 500_000              # 50万
-    
+
     # Worst-case analysis
     worst_case_daily_loss_pct: float = 0.073  # 1-sigma daily vol
     worst_case_weekly_loss_pct: float = 0.163  # sqrt(5) * daily
     worst_case_monthly_loss_pct: float = 0.334  # sqrt(21) * daily
     stress_scenario_loss_pct: float = -0.18    # stops at -18% DD in worst case
-    
+
     # Liquidity risk
     max_single_position_value: float = 200_000   # 20% of 1M
     avg_daily_volume_pct: float = 0.10           # positions ≤10% of ADV
     max_portfolio_turnover: float = 1.82         # 182% per rebalance
-    
+
     # Market risk
     primary_market: str = "A股 (沪深全市场)"
     universe_size: int = 1196
     max_sector_concentration: int = 5  # max 5 stocks per industry
-    
+
     # Operational risk
     data_source: str = "akshare (Sina API)"
     rebalance_frequency_days: int = 90
     execution_model: str = "动态滑点模型 (0.05% base + sqrt(turnover)*0.10)"
     cost_model: str = "印花税 0.05% + 佣金 0.025%"
-    
+
     # Approval
     approved: bool = False
-    approved_by: Optional[str] = None
-    approved_at: Optional[str] = None
+    approved_by: str | None = None
+    approved_at: str | None = None
     risk_level: str = "中等"  # 低/中等/高/极高
-    
+
     def to_report(self) -> dict:
         return {
             "strategy": self.strategy,
@@ -129,20 +129,46 @@ class CapitalImpactAssessment:
         }
 
 
-def generate_v59_report():
+def _default_changelog_dir() -> Path:
+    """
+    Resolve changelog directory in a portable way.
+
+    Priority:
+    1) QTS_CHANGELOG_DIR environment variable
+    2) <repo_root>/docs/changelog
+    """
+    import os
+
+    configured = os.getenv("QTS_CHANGELOG_DIR")
+    if configured:
+        return Path(configured).expanduser().resolve()
+
+    # .../src/quant_trading/capital_impact_v59.py -> repo root
+    repo_root = Path(__file__).resolve().parents[2]
+    if repo_root.name == "src":
+        repo_root = repo_root.parent
+    return repo_root / "docs" / "changelog"
+
+
+def requires_risk_approval(assessment: CapitalImpactAssessment) -> bool:
+    """
+    AGENTS.md §11/§32: capital-impact report must be approved before promoting.
+    """
+    return not assessment.approved
+
+
+def generate_v59_report(output_dir: str | Path | None = None) -> dict:
     """Generate and save V5.9 capital impact assessment."""
     assessment = CapitalImpactAssessment()
     report = assessment.to_report()
-    
-    import json
-    from pathlib import Path
-    out = Path("/home/hermes/.hermes/projects/lianghua/docs/changelog")
+
+    out = Path(output_dir).expanduser().resolve() if output_dir else _default_changelog_dir()
     out.mkdir(parents=True, exist_ok=True)
-    
+
     path = out / "capital_impact_v5.9.json"
     with open(path, "w") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
-    
+
     path = out / "capital_impact_v5.9.md"
     with open(path, "w") as f:
         f.write(f"""# 资金影响评估报告 — V5.9 多因子均值回归策略
@@ -188,7 +214,7 @@ def generate_v59_report():
 ---
 *AGENTS.md §7 & §11 要求。由量化交易系统 AI Agent 自动生成。*
 """)
-    
+
     print(f"Capital impact assessment saved to {path}")
     return report
 

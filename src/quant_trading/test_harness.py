@@ -1,8 +1,11 @@
 
 """Complete test framework with Monte Carlo anomaly coverage (test-001).
 AGENTS.md §33: Monte Carlo 异常场景覆盖测试."""
+from collections.abc import Callable
+
 import numpy as np
-from typing import Callable
+
+
 def monte_carlo_test(fn: Callable, n_iter: int = 1000, seed: int = 42) -> dict:
     rng = np.random.RandomState(seed); results = []
     for _ in range(n_iter): results.append(fn(rng))

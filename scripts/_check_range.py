@@ -1,5 +1,7 @@
 import pandas as pd, numpy as np, os
-data_dir = '/home/hermes/.hermes/projects/lianghua/data/parquet'
+from _paths import DATA_DIR
+
+data_dir = str(DATA_DIR)
 lens = []
 for f in os.listdir(data_dir):
     if not f.endswith('.parquet'): continue

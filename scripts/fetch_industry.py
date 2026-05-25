@@ -18,7 +18,8 @@ df = pd.DataFrame(industries, columns=rs.fields)
 print(f"Total: {len(df)} stocks")
 print(df.head(10))
 
-out_path = "/home/hermes/.hermes/projects/lianghua/data/industry_fixed.parquet"
+from _paths import INDUSTRY_PATH
+out_path = INDUSTRY_PATH
 df.to_parquet(out_path)
 print(f"Saved to {out_path}")
 print(f"Top industries:\n{df['industry'].value_counts().head(15)}")

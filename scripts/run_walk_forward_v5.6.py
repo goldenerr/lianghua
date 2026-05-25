@@ -10,9 +10,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-PROJECT = Path("/home/hermes/.hermes/projects/lianghua")
-DATA_DIR = PROJECT / "data/parquet"
-OUT_DIR = PROJECT / "data/backtest_results"
+from _paths import PROJECT_DIR as PROJECT
+from _paths import DATA_DIR
+from _paths import RESULTS_DIR as OUT_DIR
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 sys.path.insert(0, str(PROJECT / "src"))
@@ -27,10 +27,10 @@ CONFIG = {
     "risk_free_rate": 0.025,
     "n_folds": 5, "oos_pct": 0.20, "purge_days": 10,
     # Market regime filter
-    ""regime_ma_period": 200,          # 200d MA for regime detection
-    ""regime_ma_threshold": 0.0,         # below MA = reduce
+    "regime_ma_period": 200,          # 200d MA for regime detection
+    "regime_ma_threshold": 0.0,       # below MA = reduce
     "regime_reduction": 0.50,        # halve positions in trending regime
-    ""regime_min_period": 200,         # need 200d before regime detection
+    "regime_min_period": 200,         # need 200d before regime detection
 }
 
 V35_WEIGHTS = {"rsi":0.25,"bollinger":0.25,"momentum":0.20,"macd":0.15,"vol_dev":0.10,"low_vol":0.05}

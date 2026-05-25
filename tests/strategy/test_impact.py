@@ -1,9 +1,14 @@
 """Tests for parameter change impact assessment."""
 import numpy as np
 from quant_trading.strategy.impact import (
-    evaluate_impact, ParameterChange, ImpactMetrics, ChangeReport,
-    RiskAssessment, _compute_impact_metrics, _assess_risk,
+    ChangeReport,
+    ImpactMetrics,
+    ParameterChange,
+    _assess_risk,
+    _compute_impact_metrics,
+    evaluate_impact,
 )
+
 
 class TestImpactMetrics:
     def test_compute(self):

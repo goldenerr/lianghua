@@ -1,15 +1,14 @@
 """Tests for event-driven engine — EventBus and event types."""
-import pytest
 import time
 
 from quant_trading.core.events import (
     Event,
-    EventType,
     EventBus,
-    TickEvent,
-    OrderEvent,
+    EventType,
     FillEvent,
+    OrderEvent,
     RiskEvent,
+    TickEvent,
     TimerEvent,
 )
 

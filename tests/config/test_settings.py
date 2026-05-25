@@ -2,18 +2,15 @@
 
 import pytest
 from pydantic import SecretBytes, SecretStr, ValidationError
-
 from quant_trading.config.settings import (
     AccountConfig,
     ApiCredentials,
-    ApiSettings,
     QuantSettings,
     RiskSettings,
     SystemSettings,
     VaRMethod,
     validate_config,
 )
-
 
 # ── SystemSettings ────────────────────────────────────────────────────────
 

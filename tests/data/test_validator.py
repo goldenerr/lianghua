@@ -2,9 +2,7 @@
 
 import numpy as np
 import pandas as pd
-import pytest
-
-from quant_trading.data.validator import DataValidator, ValidationResult, OHLCV_COLUMNS
+from quant_trading.data.validator import DataValidator, ValidationResult
 
 
 def _make_ohlcv_df(

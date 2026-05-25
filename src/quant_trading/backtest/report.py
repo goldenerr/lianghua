@@ -8,10 +8,8 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
-from typing import Optional
 
-from .engine import BacktestResult, PerformanceMetrics
-from .monte_carlo import MonteCarloSimulator, StressTestRunner
+from .engine import BacktestResult
 
 UTC = timezone.utc
 
@@ -22,8 +20,8 @@ class ReportGenerator:
     @staticmethod
     def generate(
         result: BacktestResult,
-        monte_carlo: Optional[dict] = None,
-        stress_test: Optional[dict[str, dict]] = None,
+        monte_carlo: dict | None = None,
+        stress_test: dict[str, dict] | None = None,
         include_trades: bool = False,
     ) -> dict:
         """
@@ -97,7 +95,7 @@ class ReportGenerator:
         ]
 
         qg = report["quality_gates"]
-        lines.append(f"║ Quality Gates:                            ║")
+        lines.append("║ Quality Gates:                            ║")
         for gate, passed in qg.items():
             status = "✅" if passed else "❌"
             lines.append(f"║   {gate}: {status}                              ║")

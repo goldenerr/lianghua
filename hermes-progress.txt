@@ -1,7 +1,19 @@
 # Quant Trading System — Progress Log
-# Last updated: 2026-05-20
+# Last updated: 2026-05-25
 
-## V5.9 Production Candidate — ALL GATES PASSED ✅
+## Safety Audit Status (2026-05-25) - PRODUCTION BLOCKED
+
+- Local verification: 572 tests passed; total source coverage 85.42% (80% gate passed).
+- Critical corrections completed: Safe Mode order blocking, reconciliation retry, immutable audit/event chains, deterministic execution, tick accounting, signed manifests, canary rollback decisions, security HMAC/RBAC/API key audit, authorized redacted audit query, recursive config drift checks.
+- Compliance and portfolio baselines completed: template-driven regulatory reports with local append-only integrity checks, validated Brinson/benchmark metrics, capital reservation/isolation firewall, and approval-gated strategy lifecycle.
+- Model/data validation baselines completed: PSI and regime/robustness ML gates, approval-gated model promotion with drift rollback, versioned factor parity hashes, and explicit historical replay mismatch reporting.
+- Documentation baseline completed: added `ARCHITECTURE.md` and `RISK_POLICY.md` with invariant contracts, NFR targets, approval gates, change-impact matrix and explicit unmeasured production capacity status.
+- `setup-001` hardening baseline completed: work moved to `feature/setup-001-safety-baseline`; CI security scans now fail closed, safety smoke runs explicitly, release builds require a signed and verified artifact manifest, Python support is aligned to `>=3.10`, and `./init.sh dev` no longer blocks on remote hook downloads.
+- `feature_list.json` correction: every feature is reset to `passes=false`; no feature has the required complete evidence package of capital-impact approval, production integration, and release authorization yet.
+- Dependency reproducibility: added required runtime/test dependencies and restored `poetry.lock` tracking so CI can install the verified dependency set.
+- Remaining audit risk: existing repository-wide `ruff`/`mypy` failures now correctly block CI; external WORM storage, production secret/approval integrations, Feast/model-registry integrations, monitoring UI, documentation approval/version enforcement, and production-like capacity/failover benchmarks remain production blockers.
+
+## Historical V5.9 Candidate Results (not production approval)
 
 ### Backtest (25yr full data, 1196 stocks)
 - Sharpe: 1.38 (≥1.2 ✅)
@@ -25,15 +37,15 @@
 - ⏳ 全资金实盘 (Gate 4): Need gate 2+3 + approval
 
 ### Deliverables
-- [x] feature_list.json (60/60 features complete)
+- [ ] feature_list.json audit in progress; unsupported completion claims are being corrected
 - [x] risk.yaml (V5.9 params)
 - [x] Capital Impact Assessment (docs/changelog/capital_impact_v5.9.md)
 - [x] Paper Trading Engine (src/quant_trading/paper_trading.py)
 - [x] Production Test Suite (scripts/run_production_tests.py)
-- [x] 468 unit tests + 5 production tests (all passing)
+- [x] 572 tests passing with 85.42% coverage as of 2026-05-25
 
-### Next Steps (for Gate 2: Paper Trading)
-1. Configure paper trading account (config/paper.yaml)
-2. Set up daily data feed (akshare cron)
-3. Run paper trading for ≥3 months
-4. Verify Sharpe ≥ 0.97 (70% of backtest 1.38)
+### Next Steps
+1. Obtain review/approval for the architecture, risk-policy and capital-impact documents; keep all release gates closed until approval evidence exists.
+2. Clear repository-wide `ruff` / `mypy` failures so the strengthened CI gates can pass; then integrate the remaining configuration drift and audit archival enforcement.
+3. Connect approved external WORM, secret manager, factor/model registry, benchmark feeds, and monitoring surfaces.
+4. Run paper trading for at least 3 months before considering small-capital live trading.

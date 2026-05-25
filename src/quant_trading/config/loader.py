@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 import os
 import signal
-from functools import lru_cache
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -23,7 +23,6 @@ import yaml
 from .settings import (
     AccountConfig,
     ApiCredentials,
-    ApiEndpointConfig,
     ApiSettings,
     Environment,
     QuantSettings,
@@ -60,10 +59,12 @@ class ConfigLoader:
         self,
         config_dir: Path | str = DEFAULT_CONFIG_DIR,
         env: Environment | None = None,
+        secret_resolver: Callable[[AccountConfig], ApiCredentials] | None = None,
     ):
         self.config_dir = Path(config_dir)
         self._settings: QuantSettings | None = None
         self._env = env
+        self._secret_resolver = secret_resolver
 
     # ── Public API ────────────────────────────────────────────────────────
 
@@ -149,7 +150,7 @@ class ConfigLoader:
     def _read_yaml(self, path: Path) -> dict[str, Any]:
         """读取 YAML 文件，返回字典。"""
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
             return data if isinstance(data, dict) else {}
         except FileNotFoundError:
@@ -203,31 +204,37 @@ class ConfigLoader:
         """
         从 Vault / AWS Secrets Manager 解析生产密钥。
         AGENTS.md §2: prod 配置必须从 Vault 读取。
-        当前为占位实现 — 实际部署时启用 Vault SDK。
+        The actual Vault or Secrets Manager client is supplied through
+        ``secret_resolver`` so this loader never silently authenticates with
+        credentials loaded from production files.
         """
         vault_addr = os.getenv("VAULT_ADDR")
-        if not vault_addr:
+        break_glass = os.getenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", "").lower() in {"1", "true", "yes"}
+        if break_glass:
             logger.warning(
-                "VAULT_ADDR not set — using config file credentials in prod "
-                "(NOT recommended per AGENTS.md §2)"
+                "QUANT_ALLOW_PLAINTEXT_PROD_SECRETS is enabled. "
+                "Using file credentials in prod (emergency-only path)."
             )
             return accounts
 
-        # Placeholder: 实际实现使用 hvac (Python Vault client)
-        # import hvac
-        # client = hvac.Client(url=vault_addr, token=os.getenv("VAULT_TOKEN"))
-        # for acct in accounts:
-        #     secret = client.secrets.kv.v2.read_secret_version(
-        #         path=f"quant/accounts/{acct.account_id}"
-        #     )
-        #     acct = acct.model_copy(update={"credentials": ApiCredentials(
-        #         exchange=acct.credentials.exchange,
-        #         api_key=secret["data"]["api_key"],
-        #         api_secret=secret["data"]["api_secret"],
-        #     )})
+        if not vault_addr:
+            raise ValueError(
+                "Production secret policy violation: VAULT_ADDR is required in prod. "
+                "Set QUANT_ALLOW_PLAINTEXT_PROD_SECRETS=true only for emergency break-glass use."
+            )
 
-        logger.info("Vault integration placeholder — using file credentials")
-        return accounts
+        if self._secret_resolver is None:
+            raise ValueError(
+                "Production secret policy violation: a Vault/AWS secret_resolver "
+                "must be configured when VAULT_ADDR is set."
+            )
+
+        resolved: list[AccountConfig] = []
+        for account in accounts:
+            credentials = self._secret_resolver(account)
+            resolved.append(account.model_copy(update={"credentials": credentials}))
+        logger.info("Production secrets resolved for %d account(s)", len(resolved))
+        return resolved
 
     def _apply_env_var_secrets(
         self, accounts: list[AccountConfig]
@@ -242,7 +249,7 @@ class ConfigLoader:
         if not env_key and not env_secret:
             return accounts
 
-        from pydantic import SecretStr, SecretBytes
+        from pydantic import SecretBytes, SecretStr
 
         updated: list[AccountConfig] = []
         for acct in accounts:

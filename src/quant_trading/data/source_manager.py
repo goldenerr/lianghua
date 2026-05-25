@@ -9,21 +9,17 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional
 
-from quant_trading.config.market_router import MarketRouter, Market
-from quant_trading.config.market_calendar import Market as CalendarMarket
-
+from .akshare_provider import AkshareProvider
+from .ccxt_provider import CcxtProvider
 from .provider import (
     DataProvider,
+    DataProviderError,
     DataRequest,
     DataResult,
-    DataProviderError,
     Frequency,
 )
 from .yfinance_provider import YfinanceProvider
-from .akshare_provider import AkshareProvider
-from .ccxt_provider import CcxtProvider
 
 logger = logging.getLogger(__name__)
 UTC = timezone.utc
@@ -101,8 +97,8 @@ class DataSourceManager:
         symbol: str,
         market: str,
         frequency: Frequency = Frequency.DAILY,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> DataResult:
         """
         Fetch data with automatic provider degradation.

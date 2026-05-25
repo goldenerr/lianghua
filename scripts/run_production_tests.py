@@ -8,7 +8,7 @@ import json, time, subprocess, sys
 from pathlib import Path
 import numpy as np
 
-PROJECT = Path("/home/hermes/.hermes/projects/lianghua")
+from _paths import PROJECT_DIR as PROJECT
 SCRIPTS = PROJECT / "scripts"
 
 def run_bt(script_name):

@@ -1,8 +1,11 @@
 
 """Model risk management (risk-005). AGENTS.md: drift monitoring, shadow testing, emergency fallback."""
-import numpy as np
 from dataclasses import dataclass
 from enum import Enum
+
+import numpy as np
+
+
 class ModelHealth(str, Enum): HEALTHY="healthy"; DEGRADED="degraded"; CRITICAL="critical"
 @dataclass
 class ModelSentinel:

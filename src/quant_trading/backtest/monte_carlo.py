@@ -8,17 +8,14 @@ AGENTS.md §6: Stress test scenarios (2020.3, 2015.8, 2022 bear)
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 import numpy as np
 import pandas as pd
 
 from .engine import (
     BacktestConfig,
-    BacktestResult,
-    PerformanceMetrics,
     MetricsCalculator,
-    BacktestMode,
+    PerformanceMetrics,
 )
 
 logger = logging.getLogger(__name__)

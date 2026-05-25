@@ -7,16 +7,15 @@ AGENTS.md §4: 数据交叉校验使用两个独立数据源 (e.g., yfinance + a
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timezone
-from typing import Optional
+from datetime import timezone
 
 import pandas as pd
 
 from .provider import (
     DataProvider,
+    DataProviderError,
     DataRequest,
     DataResult,
-    DataProviderError,
     Frequency,
 )
 

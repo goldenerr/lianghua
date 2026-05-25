@@ -1,16 +1,14 @@
 """Tests for counterfactual backtesting & stress tests (backtest-003)."""
 import numpy as np
 import pytest
-
 from quant_trading.backtest.counterfactual import (
     CounterfactualScenario,
-    ScenarioType,
     HistoricalScenarios,
-    StressTestEngine,
-    StressTestResult,
-    StressTestReport,
     ParameterPerturbation,
-    PerturbationResult,
+    ScenarioType,
+    StressTestEngine,
+    StressTestReport,
+    StressTestResult,
 )
 
 

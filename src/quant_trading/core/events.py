@@ -13,11 +13,11 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from abc import ABC
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 UTC = timezone.utc
@@ -135,14 +135,14 @@ class EventBus:
     Shared between backtest and live execution (AGENTS.md §14).
     """
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str | None = None):
         self.redis_url = redis_url
         self._handlers: dict[EventType, list[Handler]] = {
             et: [] for et in EventType
         }
         self._wildcard_handlers: list[Handler] = []
         self._event_count: dict[EventType, int] = {et: 0 for et in EventType}
-        self._start_time: Optional[float] = None
+        self._start_time: float | None = None
 
     def subscribe(self, event_type: EventType, handler: Handler) -> None:
         """Subscribe a handler to a specific event type."""

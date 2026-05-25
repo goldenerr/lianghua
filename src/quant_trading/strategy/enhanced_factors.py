@@ -8,7 +8,9 @@ New factors:
 These are added to the existing MR factors (rsi, bollinger, momentum, macd, vol_dev, low_vol).
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 # ── Fundamental Factors ──────────────────────────────────────
 def factor_pe_percentile(pe_value: float | None) -> float:
@@ -44,29 +46,29 @@ def factor_turnover_anomaly(turnover: np.ndarray, window: int = 20) -> float:
     return recent / base - 1.0
 
 
-def factor_money_flow(opens: np.ndarray, highs: np.ndarray, 
+def factor_money_flow(opens: np.ndarray, highs: np.ndarray,
                       lows: np.ndarray, closes: np.ndarray,
                       volumes: np.ndarray, window: int = 5) -> float:
     """Chaikin Money Flow: measures buying/selling pressure.
     Positive = accumulation (bullish), Negative = distribution (bearish)."""
     if len(closes) < window + 1:
         return np.nan
-    
+
     # Typical price
     high = highs[-window-1:]
     low = lows[-window-1:]
     close = closes[-window-1:]
     vol = volumes[-window-1:]
-    
+
     hl_diff = high - low
     # Avoid division by zero
     hl_diff = np.where(hl_diff < 1e-12, 1e-12, hl_diff)
-    
+
     # Money Flow Multiplier
     mfm = ((close - low) - (high - close)) / hl_diff
     # Money Flow Volume
     mfv = mfm * vol
-    
+
     # Chaikin Money Flow = sum(MFV over N) / sum(volume over N)
     cmf = np.sum(mfv[-window:]) / max(np.sum(vol[-window:]), 1e-12)
     return float(cmf)
@@ -78,13 +80,13 @@ def factor_volume_price_trend(closes: np.ndarray, volumes: np.ndarray,
     Rising = bullish confirmation (price up on volume)."""
     if len(closes) < window + 1:
         return np.nan
-    
+
     close = closes[-window-1:]
     vol = volumes[-window-1:]
-    
+
     pct_changes = np.diff(close) / close[:-1]
     vpt = np.sum(vol[1:] * pct_changes)
-    
+
     # Normalize by total volume
     total_vol = np.sum(vol[1:])
     if total_vol < 1e-12:
@@ -98,7 +100,7 @@ def factor_relative_strength(closes: np.ndarray, benchmark_closes: np.ndarray | 
     Higher = stronger recent momentum vs historical."""
     if len(closes) < window + 10:
         return np.nan
-    
+
     # Self-relative: recent 10d return / 63d return
     recent_ret = closes[-1] / closes[-10] - 1.0 if len(closes) >= 10 else 0.0
     long_ret = closes[-1] / closes[-window] - 1.0

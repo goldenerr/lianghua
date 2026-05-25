@@ -12,10 +12,10 @@ AGENTS.md §5 (strategy-002):
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from itertools import product
-from typing import Any, Callable, Optional
+from typing import Any
 
 import numpy as np
 
@@ -111,13 +111,13 @@ def grid_search(
     """Exhaustive grid search over parameter combinations."""
     keys = list(param_grid.keys())
     values = list(param_grid.values())
-    best: Optional[TrialResult] = None
+    best: TrialResult | None = None
     trials: list[TrialResult] = []
     scores = {Objective.MAX_SHARPE: "sharpe", Objective.MAX_CALMAR: "calmar",
               Objective.MIN_MDD: "max_drawdown", Objective.MAX_RETURN: "total_return"}
 
     for combo in product(*values):
-        params = dict(zip(keys, combo))
+        params = dict(zip(keys, combo, strict=False))
         trial = evaluate_params(params, returns, objective)
         trials.append(trial)
 

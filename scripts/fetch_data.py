@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-DATA_DIR = Path("/home/hermes/.hermes/projects/lianghua/data/parquet")
+from _paths import DATA_DIR
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 START_DATE = "20150101"  # 2015年起 — 覆盖完整牛熊周期

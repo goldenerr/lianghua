@@ -4,7 +4,7 @@
 # Stage 2: Production (minimal runtime)
 # =============================================================================
 
-FROM python:3.11-slim-bookworm AS builder
+FROM python:3.10-slim-bookworm AS builder
 
 # System build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -28,7 +28,7 @@ RUN poetry config virtualenvs.create false \
     && poetry install --only main --no-interaction --no-ansi --no-root
 
 # ── Production stage ─────────────────────────────────────────────────────────
-FROM python:3.11-slim-bookworm AS production
+FROM python:3.10-slim-bookworm AS production
 
 LABEL org.opencontainers.image.title="Quant Trading System"
 LABEL org.opencontainers.image.description="Production-grade multi-market quantitative trading system"
@@ -47,7 +47,7 @@ RUN useradd --create-home --shell /bin/bash quant
 WORKDIR /app
 
 # Copy installed deps from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code

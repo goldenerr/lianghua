@@ -1,7 +1,7 @@
 """Tests for audit bus (core-003)."""
 import pytest
 from quant_trading.core.audit import AuditBus
-from quant_trading.core.events import Event, EventType, EventBus
+from quant_trading.core.events import EventBus, EventType
 
 
 class TestAuditBus:
@@ -68,3 +68,16 @@ class TestAuditBus:
         bus.record("event", "src", {})
         ts = bus.query()[0]["timestamp"]
         assert "T" in ts  # ISO format
+
+    def test_hash_chain_integrity(self, bus):
+        bus.record("order", "exec", {"id": "o1"})
+        bus.record("fill", "exec", {"id": "o1", "qty": 10})
+        events = bus.query(limit=10)
+        assert events[0]["previous_hash"] == "GENESIS"
+        assert events[1]["previous_hash"] == events[0]["hash"]
+        assert bus.verify_integrity() is True
+
+    def test_tamper_detection(self, bus):
+        bus.record("risk_check", "risk", {"passed": True})
+        bus.query()[0]["payload"]["passed"] = False
+        assert bus.verify_integrity() is False

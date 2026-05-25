@@ -1,10 +1,12 @@
 """Tests for dynamic stress generator, model sentinel, and drift report."""
 import numpy as np
 from quant_trading.risk.dynamic_stress import (
-    detect_regime, generate_regime_scenarios, MarketRegime,
+    MarketRegime,
+    detect_regime,
+    generate_regime_scenarios,
 )
-from quant_trading.risk.model_sentinel import ModelSentinel, ModelHealth
 from quant_trading.risk.model_risk import DriftReport
+from quant_trading.risk.model_sentinel import ModelHealth, ModelSentinel
 
 
 class TestMarketRegime:
@@ -43,6 +45,17 @@ class TestDetectRegime:
         regime = detect_regime(returns, volumes)
         assert regime.liquidity > 0
 
+    def test_multi_asset_correlation(self):
+        rng = np.random.RandomState(42)
+        base = rng.normal(0, 0.01, 252)
+        returns = np.column_stack([
+            base,
+            base * 0.8 + rng.normal(0, 0.002, 252),
+            -base * 0.7 + rng.normal(0, 0.002, 252),
+        ])
+        regime = detect_regime(returns)
+        assert regime.correlation > 0.6
+
     def test_label_crisis(self):
         rng = np.random.RandomState(42)
         returns = rng.normal(-0.005, 0.04, 252)  # very high vol
@@ -68,6 +81,12 @@ class TestGenerateRegimeScenarios:
         scenarios = generate_regime_scenarios(regime, n_scenarios=5, n_days=10)
         # first scenario should have lower vol than last
         assert abs(scenarios[0]).mean() < abs(scenarios[-1]).mean()
+
+    def test_scenarios_are_deterministic_by_default(self):
+        regime = MarketRegime(volatility=0.2, correlation=0.7, liquidity=0.4)
+        a = generate_regime_scenarios(regime, n_scenarios=2, n_days=5)
+        b = generate_regime_scenarios(regime, n_scenarios=2, n_days=5)
+        assert np.allclose(a[0], b[0])
 
 
 class TestModelSentinel:

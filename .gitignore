@@ -74,10 +74,10 @@ dmypy.json
 .ruff_cache/
 
 # Poetry
-poetry.lock
 
 # Deployment artifacts (generated)
 deployment/charts/*.tgz
+deployment/artifact-manifest.json
 
 # ClickHouse data
 clickhouse-data/

@@ -1,20 +1,17 @@
 """Tests for ConfigLoader — layered loading, hot-reload, Vault, env vars."""
 
-import os
-import tempfile
 from pathlib import Path
 
 import pytest
 import yaml
-
+from pydantic import SecretBytes, SecretStr
 from quant_trading.config.loader import (
     ConfigLoader,
     get_global_loader,
     install_hotreload_handler,
     load_config,
 )
-from quant_trading.config.settings import Environment
-
+from quant_trading.config.settings import ApiCredentials, Environment
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -182,6 +179,91 @@ class TestEnvVarOverrides:
 
         assert settings.accounts[0].credentials.api_key.get_secret_value() == "real_key_from_env"
         assert settings.accounts[0].credentials.api_secret.get_secret_value() == b"real_secret_from_env"
+
+
+class TestProdSecretPolicy:
+    """Test strict prod secret policy."""
+
+    def test_prod_without_vault_fails(self, tmp_path: Path, monkeypatch):
+        _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
+        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
+            "account_id": "prod-001",
+            "name": "Prod",
+            "exchange": "binance",
+            "credentials": {
+                "exchange": "binance",
+                "api_key": "k",
+                "api_secret": "s",
+            },
+        })
+        monkeypatch.delenv("VAULT_ADDR", raising=False)
+        monkeypatch.delenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", raising=False)
+
+        with pytest.raises(ValueError, match="VAULT_ADDR is required in prod"):
+            ConfigLoader(config_dir=tmp_path).load(env=Environment.PROD)
+
+    def test_prod_break_glass_allows_plaintext(self, tmp_path: Path, monkeypatch):
+        _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
+        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
+            "account_id": "prod-001",
+            "name": "Prod",
+            "exchange": "binance",
+            "credentials": {
+                "exchange": "binance",
+                "api_key": "k",
+                "api_secret": "s",
+            },
+        })
+        monkeypatch.delenv("VAULT_ADDR", raising=False)
+        monkeypatch.setenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", "true")
+
+        settings = ConfigLoader(config_dir=tmp_path).load(env=Environment.PROD)
+        assert len(settings.accounts) == 1
+
+    def test_prod_vault_address_without_resolver_fails(self, tmp_path: Path, monkeypatch):
+        _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
+        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
+            "account_id": "prod-001",
+            "name": "Prod",
+            "exchange": "binance",
+            "credentials": {
+                "exchange": "binance",
+                "api_key": "plaintext",
+                "api_secret": "plaintext",
+            },
+        })
+        monkeypatch.setenv("VAULT_ADDR", "https://vault.example")
+        monkeypatch.delenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", raising=False)
+
+        with pytest.raises(ValueError, match="secret_resolver"):
+            ConfigLoader(config_dir=tmp_path).load(env=Environment.PROD)
+
+    def test_prod_uses_resolved_credentials(self, tmp_path: Path, monkeypatch):
+        _write_yaml(tmp_path / "system.yaml", {"env": "prod"})
+        _write_yaml(tmp_path / "accounts" / "prod.yaml", {
+            "account_id": "prod-001",
+            "name": "Prod",
+            "exchange": "binance",
+            "credentials": {
+                "exchange": "binance",
+                "api_key": "plaintext",
+                "api_secret": "plaintext",
+            },
+        })
+        monkeypatch.setenv("VAULT_ADDR", "https://vault.example")
+        monkeypatch.delenv("QUANT_ALLOW_PLAINTEXT_PROD_SECRETS", raising=False)
+
+        def resolver(_account):
+            return ApiCredentials(
+                exchange="binance",
+                api_key=SecretStr("vault-key"),
+                api_secret=SecretBytes(b"vault-secret"),
+            )
+
+        settings = ConfigLoader(config_dir=tmp_path, secret_resolver=resolver).load(env=Environment.PROD)
+        credentials = settings.accounts[0].credentials
+        assert credentials.api_key.get_secret_value() == "vault-key"
+        assert credentials.api_secret.get_secret_value() == b"vault-secret"
 
 
 class TestValidation:

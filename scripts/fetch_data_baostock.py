@@ -12,7 +12,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-DATA_DIR = Path("/home/hermes/.hermes/projects/lianghua/data/parquet")
+from _paths import DATA_DIR
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 START_DATE = "2015-01-01"

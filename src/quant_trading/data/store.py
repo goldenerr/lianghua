@@ -12,7 +12,7 @@ import hashlib
 import logging
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Protocol
 
 import pandas as pd
 
@@ -22,15 +22,21 @@ logger = logging.getLogger(__name__)
 UTC = timezone.utc
 
 
+class ClickHouseLike(Protocol):
+    def insert_dataframe(self, query: str, df: pd.DataFrame) -> object:
+        ...
+
+
 class DataStore:
     """
     Local Parquet data store with symbol/frequency partitioning.
     Also supports optional ClickHouse real-time sync.
     """
 
-    def __init__(self, base_dir: str = "data/"):
+    def __init__(self, base_dir: str = "data/", clickhouse_client: ClickHouseLike | None = None):
         self.base_dir = Path(base_dir)
         self._version_log: list[dict] = []
+        self._clickhouse_client = clickhouse_client
 
     # ── Path helpers ──────────────────────────────────────────────────────
 
@@ -119,8 +125,8 @@ class DataStore:
         self,
         symbol: str,
         frequency: Frequency,
-        start: Optional[date],
-        end: Optional[date],
+        start: date | None,
+        end: date | None,
         data_hash: str,
     ) -> None:
         entry = {
@@ -133,13 +139,13 @@ class DataStore:
         }
         self._version_log.append(entry)
 
-    def get_versions(self, symbol: Optional[str] = None) -> list[dict]:
+    def get_versions(self, symbol: str | None = None) -> list[dict]:
         """Get version history, optionally filtered by symbol."""
         if symbol:
             return [v for v in self._version_log if v["symbol"] == symbol]
         return self._version_log
 
-    def get_latest_version(self, symbol: str, frequency: Frequency) -> Optional[dict]:
+    def get_latest_version(self, symbol: str, frequency: Frequency) -> dict | None:
         """Get the most recent version entry for a symbol."""
         matching = [
             v for v in self._version_log
@@ -164,15 +170,29 @@ class DataStore:
         age = date.today() - last_end
         return age.days * 24 < max_age_hours
 
-    # ── ClickHouse sync placeholder ───────────────────────────────────────
+    # ── ClickHouse sync ───────────────────────────────────────────────────
 
-    def sync_to_clickhouse(self, symbol: str, df: pd.DataFrame) -> None:
+    def sync_to_clickhouse(self, symbol: str, df: pd.DataFrame) -> dict:
         """
-        Placeholder: sync data to ClickHouse for real-time queries.
+        Sync data to ClickHouse for real-time queries.
         AGENTS.md §2 (data-001): ClickHouse 实时数据
         """
-        logger.debug("ClickHouse sync placeholder — data for %s not synced", symbol)
-        # Actual implementation in monitor-001 phase:
-        # from clickhouse_driver import Client
-        # client = Client(host='clickhouse', database='quant')
-        # client.insert_dataframe('INSERT INTO market_data VALUES', df)
+        if df.empty:
+            return {"synced": True, "rows": 0, "symbol": symbol, "reason": "empty"}
+        if self._clickhouse_client is None:
+            return {
+                "synced": False,
+                "rows": 0,
+                "symbol": symbol,
+                "reason": "clickhouse_client_not_configured",
+            }
+
+        payload = df.copy()
+        payload = payload.reset_index(names="timestamp")
+        payload.insert(0, "symbol", symbol)
+        self._clickhouse_client.insert_dataframe(
+            "INSERT INTO market_data VALUES",
+            payload,
+        )
+        logger.info("Synced %d rows to ClickHouse for %s", len(payload), symbol)
+        return {"synced": True, "rows": len(payload), "symbol": symbol, "reason": "ok"}

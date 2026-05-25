@@ -4,6 +4,7 @@ AGENTS.md §26: Risk parity, Sharpe-based weighting, rebalancing.
 """
 import numpy as np
 
+
 class PortfolioOptimizer:
     @staticmethod
     def equal_weight(n_assets: int) -> np.ndarray:

@@ -11,9 +11,8 @@ AGENTS.md §5 (backtest-003):
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional
 
 import numpy as np
 
@@ -53,7 +52,7 @@ class CounterfactualScenario:
     # Metadata
     description: str = ""
 
-    def apply(self, returns: np.ndarray, volumes: Optional[np.ndarray] = None) -> np.ndarray:
+    def apply(self, returns: np.ndarray, volumes: np.ndarray | None = None) -> np.ndarray:
         """
         Apply scenario to a return series. Returns modified returns.
         Volume modifications are applied in-place if volumes provided.
@@ -223,7 +222,7 @@ class StressTestReport:
     generated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     @property
-    def worst_case(self) -> Optional[StressTestResult]:
+    def worst_case(self) -> StressTestResult | None:
         if not self.scenarios:
             return None
         return min(self.scenarios, key=lambda r: r.total_return)
@@ -279,7 +278,7 @@ class StressTestEngine:
     def compute_baseline(
         self,
         returns: np.ndarray,
-        volumes: Optional[np.ndarray] = None,
+        volumes: np.ndarray | None = None,
     ) -> StressTestResult:
         """Compute baseline metrics from the actual return series."""
         return self._compute_metrics("Baseline", returns, volumes, None)
@@ -288,7 +287,7 @@ class StressTestEngine:
         self,
         returns: np.ndarray,
         scenario: CounterfactualScenario,
-        volumes: Optional[np.ndarray] = None,
+        volumes: np.ndarray | None = None,
     ) -> StressTestResult:
         """Run a single counterfactual scenario."""
         modified_volumes = volumes.copy() if volumes is not None else None
@@ -300,8 +299,8 @@ class StressTestEngine:
     def run_all(
         self,
         returns: np.ndarray,
-        scenarios: Optional[list[CounterfactualScenario]] = None,
-        volumes: Optional[np.ndarray] = None,
+        scenarios: list[CounterfactualScenario] | None = None,
+        volumes: np.ndarray | None = None,
     ) -> StressTestReport:
         """Run all scenarios and generate report."""
         if scenarios is None:
@@ -318,8 +317,8 @@ class StressTestEngine:
         self,
         name: str,
         returns: np.ndarray,
-        volumes: Optional[np.ndarray],
-        baseline_returns: Optional[np.ndarray],
+        volumes: np.ndarray | None,
+        baseline_returns: np.ndarray | None,
     ) -> StressTestResult:
         """Compute all risk/return metrics from a return series."""
         r = np.asarray(returns, dtype=np.float64)

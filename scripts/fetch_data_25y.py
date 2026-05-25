@@ -11,9 +11,9 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-DATA_DIR = Path("/home/hermes/.hermes/projects/lianghua/data/parquet")
+from _paths import DATA_DIR
 DATA_DIR.mkdir(parents=True, exist_ok=True)
-STOCK_LIST = Path("/home/hermes/.hermes/projects/lianghua/data/stock_list.json")
+from _paths import STOCK_LIST
 
 START_DATE = "2000-01-01"
 END_DATE = "2026-05-18"

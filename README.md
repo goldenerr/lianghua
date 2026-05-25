@@ -1,10 +1,14 @@
 # Quant Trading System
 
 [![CI](https://github.com/goldenerr/quant-trading-system/actions/workflows/ci.yml/badge.svg)](https://github.com/goldenerr/quant-trading-system/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Production-grade multi-market quantitative trading system. Built for reliability, safety, and reproducibility.
+
+Production deployment is blocked unless signed release evidence, risk approval,
+and the required paper/small-live gates have been completed. See
+`ARCHITECTURE.md` and `RISK_POLICY.md`.
 
 ## Features
 
@@ -21,6 +25,9 @@ Production-grade multi-market quantitative trading system. Built for reliability
 # Initialize development environment
 ./init.sh dev
 
+# Optional: pre-download all local pre-commit hook environments
+pre-commit install-hooks
+
 # Activate virtual environment
 source .venv/bin/activate
 
@@ -29,6 +36,9 @@ quant-cli --help
 
 # Run tests
 pytest
+
+# Run the mandatory quick safety path
+pytest -q tests/integration/test_smoke.py
 
 # Docker
 docker compose -f deployment/docker/docker-compose.yml up -d

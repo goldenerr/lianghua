@@ -1,12 +1,10 @@
 """Tests for DataStore — Parquet persistence with version control."""
 
-import tempfile
-import pandas as pd
 from pathlib import Path
-import pytest
 
-from quant_trading.data.store import DataStore
+import pandas as pd
 from quant_trading.data.provider import Frequency
+from quant_trading.data.store import DataStore
 
 
 def _make_df(dates=None, values=None):
@@ -88,3 +86,29 @@ class TestDataStore:
         store.write_batch(results, append=False)
         assert not store.read("A").empty
         assert not store.read("B").empty
+
+    def test_clickhouse_sync_requires_client(self, tmp_path: Path):
+        store = DataStore(base_dir=str(tmp_path))
+        result = store.sync_to_clickhouse("TEST", _make_df())
+        assert result["synced"] is False
+        assert result["reason"] == "clickhouse_client_not_configured"
+
+    def test_clickhouse_sync_uses_injected_client(self, tmp_path: Path):
+        class FakeClient:
+            def __init__(self):
+                self.query = ""
+                self.df = None
+
+            def insert_dataframe(self, query: str, df: pd.DataFrame):
+                self.query = query
+                self.df = df
+
+        client = FakeClient()
+        store = DataStore(base_dir=str(tmp_path), clickhouse_client=client)
+        result = store.sync_to_clickhouse("TEST", _make_df())
+
+        assert result["synced"] is True
+        assert result["rows"] == 5
+        assert client.query == "INSERT INTO market_data VALUES"
+        assert "symbol" in client.df.columns
+        assert client.df["symbol"].iloc[0] == "TEST"

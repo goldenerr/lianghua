@@ -13,9 +13,9 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-PROJECT = Path("/home/hermes/.hermes/projects/lianghua")
-DATA_DIR = PROJECT / "data/parquet"
-OUT_DIR = PROJECT / "data/backtest_results"
+from _paths import PROJECT_DIR as PROJECT
+from _paths import DATA_DIR
+from _paths import RESULTS_DIR as OUT_DIR
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 sys.path.insert(0, str(PROJECT / "src"))

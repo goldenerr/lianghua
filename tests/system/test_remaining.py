@@ -1,12 +1,11 @@
 """Tests for remaining 0% coverage modules — risk advanced, ops, backtest, factor, impact."""
 import numpy as np
-from quant_trading.risk.advanced import GreeksCalculator, CrossMarketMargin, KillSwitch
+from quant_trading.backtest.optimized import vectorized_mdd, vectorized_sharpe, vectorized_trade_pnl
+from quant_trading.factor_store import FactorDefinition, FactorStore
+from quant_trading.impact_assessment import ImpactAssessment
 from quant_trading.operations import BackupManager
 from quant_trading.operations_mr import FailoverManager, Region
-from quant_trading.backtest.optimized import vectorized_sharpe, vectorized_mdd, vectorized_trade_pnl
-from quant_trading.factor_store import FactorStore, FactorDefinition
-from quant_trading.impact_assessment import ImpactAssessment
-
+from quant_trading.risk.advanced import CrossMarketMargin, GreeksCalculator, KillSwitch
 
 # ── Risk Advanced ───────────────────────────────────────────────────
 
@@ -20,8 +19,9 @@ class TestGreeksCalculator:
 
     def test_call_vs_put(self):
         call = GreeksCalculator.delta(100, 100, 0.5, 0.03, 0.2, is_call=True)
-        # both return same placeholder values
-        assert call["delta"] == 0.5
+        put = GreeksCalculator.delta(100, 100, 0.5, 0.03, 0.2, is_call=False)
+        assert call["delta"] > 0
+        assert put["delta"] < 0
 
 
 class TestCrossMarketMargin:
@@ -68,23 +68,26 @@ class TestKillSwitch:
         ks = KillSwitch()
         ks.activate("circuit breaker tripped")
         assert ks.is_active
+        assert ks.reason == "circuit breaker tripped"
+        assert ks.activated_at is not None
 
 
 # ── Operations ──────────────────────────────────────────────────────
 
 class TestBackupManager:
-    def test_backup(self):
-        bm = BackupManager()
+    def test_backup(self, tmp_path):
+        bm = BackupManager(storage_dir=tmp_path)
         ts = bm.backup("clickhouse")
         assert ts != ""
         assert bm.last_backup == ts
 
-    def test_restore(self):
-        bm = BackupManager()
-        assert bm.restore("backup_2026_05_18") is True
+    def test_restore(self, tmp_path):
+        bm = BackupManager(storage_dir=tmp_path)
+        backup_id = bm.backup("clickhouse")
+        assert bm.restore(backup_id) is True
 
-    def test_verify(self):
-        bm = BackupManager()
+    def test_verify(self, tmp_path):
+        bm = BackupManager(storage_dir=tmp_path)
         result = bm.verify()
         assert result["rto_minutes"] == 120
         assert result["rpo_minutes"] == 60

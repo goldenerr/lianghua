@@ -1,21 +1,25 @@
-"""Production smoke test — exercises full pipeline: data, backtest, risk, report.
+"""Production smoke test - exercises full pipeline: data, backtest, risk, report.
 
-AGENTS.md §会话开始: 快速回测 + 风险检查，确保环境正常.
-AGENTS.md §17: 回测-实盘一致性测试（差异 <5%）.
+AGENTS.md session gate: quick backtest plus risk check verifies health.
+AGENTS.md section 17: backtest/live consistency difference must be less than 5%.
 """
+
+from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
-from datetime import date, datetime, timezone
 
 from quant_trading.backtest.engine import (
-    BacktestEngine, BacktestConfig, BacktestResult, PerformanceMetrics,
-    BacktestRegistry, BacktestMode,
+    BacktestConfig,
+    BacktestEngine,
+    BacktestResult,
+    PerformanceMetrics,
 )
 from quant_trading.backtest.report import ReportGenerator
-from quant_trading.execution.order_manager import Order, OrderManager, OrderSide, OrderType
-from quant_trading.risk.advanced import KillSwitch
+from quant_trading.core.state_machine import SystemState, SystemStateMachine
+from quant_trading.execution.order_manager import Order, OrderManager, OrderSide
 from quant_trading.monitor.monitor import SystemMonitor
+from quant_trading.risk.advanced import KillSwitch
 
 
 @dataclass
@@ -35,13 +39,11 @@ class SimpleBacktestEngine(BacktestEngine):
         super().__init__("simple")
 
     def run(self, data, strategy, config=None):
-        import time
-        t0 = time.time()
         cfg = config or BacktestConfig(deterministic=True)
 
         # Use the first symbol's close prices
         prices = None
-        for sym, df in data.items():
+        for _symbol, df in data.items():
             if "close" in df.columns:
                 prices = df["close"].values
                 break
@@ -52,7 +54,7 @@ class SimpleBacktestEngine(BacktestEngine):
         prices_arr = np.asarray(prices, dtype=np.float64)
         signals = np.zeros(len(prices_arr), dtype=np.float64)
         for i in range(len(prices_arr)):
-            signals[i] = strategy(prices_arr[:i + 1]) if i > 0 else 0
+            signals[i] = strategy(prices_arr[: i + 1]) if i > 0 else 0
 
         daily_returns = np.diff(prices_arr) / prices_arr[:-1] * signals[:-1]
 
@@ -76,9 +78,14 @@ class SimpleBacktestEngine(BacktestEngine):
             win_rate=float(win_rate),
             var_95=float(np.percentile(daily_returns, 5)) if len(daily_returns) > 20 else 0,
             total_trades=int(np.sum(np.abs(np.diff(signals)) > 0)),
-            profit_factor=float(
-                daily_returns[daily_returns > 0].sum() / max(abs(daily_returns[daily_returns < 0].sum()), 1e-10)
-            ) if len(daily_returns) > 0 else 0,
+            profit_factor=(
+                float(
+                    daily_returns[daily_returns > 0].sum()
+                    / max(abs(daily_returns[daily_returns < 0].sum()), 1e-10)
+                )
+                if len(daily_returns) > 0
+                else 0
+            ),
         )
 
         result = BacktestResult(
@@ -105,12 +112,15 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     AGENTS.md §会话开始 step 6: 运行 Smoke Test.
     """
     import time
+
     t_start = time.time()
     steps = []
     all_passed = True
 
     # ── Step 1: Order Manager ──────────────────────────────────────
-    om = OrderManager()
+    fsm = SystemStateMachine()
+    fsm.transition(SystemState.RUNNING)
+    om = OrderManager(system_fsm=fsm)
     o = Order("smoke-1", "600519.SH", OrderSide.BUY, 100)
     om.submit(o)
     ok = o.status.value == "submitted" and om.get("smoke-1") is not None
@@ -139,11 +149,13 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
 
     result = engine.run(data, strategy, config)
     ok = isinstance(result, BacktestResult) and result.metrics.total_return != 0
-    steps.append({
-        "step": "backtest_engine",
-        "passed": ok,
-        "detail": f"Sharpe={result.metrics.sharpe_ratio:.2f}, MDD={abs(result.metrics.max_drawdown):.1%}",
-    })
+    steps.append(
+        {
+            "step": "backtest_engine",
+            "passed": ok,
+            "detail": f"Sharpe={result.metrics.sharpe_ratio:.2f}, MDD={abs(result.metrics.max_drawdown):.1%}",
+        }
+    )
     all_passed = all_passed and ok
 
     # ── Step 4: Report Generation ──────────────────────────────────
@@ -159,7 +171,9 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     df_check["signal"] = np.random.choice([-1, 0, 1], size=len(df_check))
     violations = engine.validate_no_forward_bias(df_check, signal_col="signal")
     ok = len(violations) == 0
-    steps.append({"step": "forward_bias_check", "passed": ok, "detail": f"{len(violations)} violations"})
+    steps.append(
+        {"step": "forward_bias_check", "passed": ok, "detail": f"{len(violations)} violations"}
+    )
     all_passed = all_passed and ok
 
     # ── Step 6: Monitor Health ─────────────────────────────────────
@@ -174,10 +188,12 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     # Re-run with same data; different fast param — results should be consistent
     rng3 = np.random.RandomState(seed)
     prices3 = 100 * np.cumprod(1 + rng3.normal(0.0005, 0.015, 500))
-    data3 = {"TEST": pd.DataFrame({"close": prices3}, index=pd.date_range("2020-01-01", periods=500))}
+    data3 = {
+        "TEST": pd.DataFrame({"close": prices3}, index=pd.date_range("2020-01-01", periods=500))
+    }
     result3 = engine.run(data3, strategy, config)
 
-    # Compare key metrics — should differ only by randomness, not systematically
+    # Deterministic inputs and parameters must reproduce the same key metrics.
     diffs = {}
     for attr in ["sharpe_ratio", "max_drawdown", "win_rate"]:
         v1 = abs(getattr(result.metrics, attr))
@@ -186,23 +202,27 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
 
     avg_diff = float(np.mean(list(diffs.values())))
     consistency_pct = 100.0 * (1.0 - avg_diff)
-    ok = avg_diff < 0.30  # 30% tolerance for random data
-    steps.append({
-        "step": "backtest_consistency",
-        "passed": ok,
-        "detail": f"avg_diff={avg_diff:.1%}, consistency={consistency_pct:.1f}% (target > 95% on real data)",
-    })
+    ok = avg_diff < 0.05
+    steps.append(
+        {
+            "step": "backtest_consistency",
+            "passed": ok,
+            "detail": f"avg_diff={avg_diff:.1%}, consistency={consistency_pct:.1f}% (required > 95%)",
+        }
+    )
 
     # ── Step 8: Configuration Integrity ────────────────────────────
     ok = config.risk_free_rate == 0.02 and config.min_sharpe == 1.2
-    steps.append({"step": "config_defaults", "passed": ok, "detail": "AGENTS.md gate defaults correct"})
+    steps.append(
+        {"step": "config_defaults", "passed": ok, "detail": "AGENTS.md gate defaults correct"}
+    )
 
     duration = time.time() - t_start
     return SmokeTestResult(
         passed=all_passed,
         steps=steps,
         coverage_pct=0,  # filled by caller
-        test_count=0,    # filled by caller
+        test_count=0,  # filled by caller
         duration_seconds=round(duration, 3),
         backtest_consistency_pct=round(consistency_pct, 1),
     )

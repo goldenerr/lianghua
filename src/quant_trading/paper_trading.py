@@ -3,11 +3,13 @@ V5.9 Paper Trading Engine — AGENTS.md §7 & §9 Gate 2.
 Simulates live trading with real market data, dynamic slippage, and MDD safeguards.
 """
 from __future__ import annotations
-import json, time, logging
+
+import logging
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+
 import numpy as np
 import pandas as pd
 
@@ -77,20 +79,20 @@ class PaperPosition:
     shares: int = 0
     avg_cost: float = 0.0
     market_value: float = 0.0
-    
-@dataclass 
+
+@dataclass
 class PaperOrder:
     symbol: str
     side: str  # "buy" or "sell"
     quantity: int
     order_type: str = "market"
-    limit_price: Optional[float] = None
+    limit_price: float | None = None
     status: str = "pending"
     filled_qty: int = 0
     filled_price: float = 0.0
     created_at: str = ""
     client_id: str = ""
-    
+
     def __post_init__(self):
         self.created_at = datetime.now(timezone.utc).isoformat()
         self.client_id = f"paper_{self.symbol}_{int(time.time()*1e6)}"
@@ -103,22 +105,22 @@ class PaperAccount:
     equity_history: list[float] = field(default_factory=list)
     trade_log: list[dict] = field(default_factory=list)
     peak_equity: float = 0.0
-    
+
     def __post_init__(self):
         self.peak_equity = self.cash
         self.equity_history.append(self.cash)
-    
+
     @property
     def total_equity(self) -> float:
         mv = sum(p.market_value for p in self.positions.values())
         return self.cash + mv
-    
+
     @property
     def current_drawdown(self) -> float:
         if self.peak_equity <= 0:
             return 0.0
         return (self.total_equity - self.peak_equity) / self.peak_equity
-    
+
     def update_market_values(self, prices: dict[str, float]):
         for sym, pos in self.positions.items():
             if sym in prices:
@@ -129,8 +131,13 @@ class PaperAccount:
 
 class PaperTradingEngine:
     """Paper trading engine for V5.9 strategy validation (AGENTS.md §9 Gate 2)."""
-    
-    def __init__(self, initial_capital: float = 1_000_000, config: dict = None):
+
+    def __init__(
+        self,
+        initial_capital: float = 1_000_000,
+        config: dict = None,
+        industry_data_path: str | Path | None = None,
+    ):
         self.config = config or V59_CONFIG
         self.account = PaperAccount(cash=initial_capital, initial_capital=initial_capital)
         self.orders: list[PaperOrder] = []
@@ -138,12 +145,15 @@ class PaperTradingEngine:
         self.last_rebalance_day = -999
         self.stopped = False
         self.industry_map: dict[str, str] = {}
+        self.industry_data_path = Path(industry_data_path) if industry_data_path else Path("data/industry_fixed.parquet")
         self._load_industries()
-    
+
     def _load_industries(self):
         """Load industry classification for sector caps."""
         try:
-            df = pd.read_parquet("/home/hermes/.hermes/projects/lianghua/data/industry_fixed.parquet")
+            if not self.industry_data_path.exists():
+                return
+            df = pd.read_parquet(self.industry_data_path)
             for _, row in df.iterrows():
                 code = str(row['code'])
                 ind = row.get('industry', '')
@@ -151,12 +161,12 @@ class PaperTradingEngine:
                     self.industry_map[code.split('.')[1]] = ind
         except Exception as e:
             log.warning(f"Industry data load failed: {e}")
-    
+
     def check_mdd_safeguards(self) -> str:
         """Check and apply MDD safeguards. Returns action taken."""
         dd = self.account.current_drawdown
         cfg = self.config
-        
+
         if dd < -cfg.get("mdd_stop_threshold", 0.18):
             # Stop all trading
             self.stopped = True
@@ -164,18 +174,17 @@ class PaperTradingEngine:
         elif dd < -cfg.get("mdd_reduce_threshold", 0.10):
             return f"REDUCED: DD={dd:.1%} exceeds reduce threshold {cfg['mdd_reduce_threshold']:.0%}"
         return "OK"
-    
+
     def compute_positions(self, snapshot: dict, current_date) -> dict[str, float]:
         """Compute target weights using V5.9 factor model."""
-        from quant_trading.strategy.factors import composite_score
         return self._compute_positions_inline(snapshot)
-    
+
     def _compute_positions_inline(self, snapshot: dict) -> dict[str, float]:
         """Inline factor computation (avoids import issues)."""
         cfg = self.config
         weights = V35_WEIGHTS
         factor_names = list(weights.keys())
-        
+
         raw = {}
         for sym, data in snapshot.items():
             fv = {}
@@ -185,9 +194,9 @@ class PaperTradingEngine:
                 fv[name] = fn(arr)
             if not all(np.isnan(v) for v in fv.values()):
                 raw[sym] = fv
-        
+
         if not raw: return {}
-        
+
         # Cross-sectional z-score
         cz = {}
         for name in factor_names:
@@ -195,7 +204,7 @@ class PaperTradingEngine:
             valid = [v for v in vals if not np.isnan(v)]
             if len(valid) >= 5:
                 cz[name] = (float(np.mean(valid)), float(np.std(valid, ddof=1)))
-        
+
         # Score and rank
         from quant_trading.strategy.factors import composite_score
         ranked = []
@@ -204,7 +213,7 @@ class PaperTradingEngine:
             if not np.isnan(cs):
                 ranked.append((sym, cs))
         ranked.sort(key=lambda x: x[1], reverse=True)
-        
+
         # Apply sector caps
         top_n = cfg["top_n"]
         max_sec = cfg.get("max_per_sector", 5)
@@ -217,56 +226,56 @@ class PaperTradingEngine:
                 sec_counts[ind] = sec_counts.get(ind, 0) + 1
             if len(selected) >= top_n:
                 break
-        
+
         if not selected:
             return {}
-        
+
         n = len(selected)
         w = min(1.0 / n, cfg["max_position_pct"])
         if w * n > 1.0:
             w = 1.0 / n
-        
+
         # Apply MDD safeguards
         dd = self.account.current_drawdown
         if dd < -cfg.get("mdd_stop_threshold", 0.18):
             return {}  # Stop all
         elif dd < -cfg.get("mdd_reduce_threshold", 0.10):
             w *= cfg.get("mdd_reduce_scale", 0.50)
-        
+
         return {s: w for s in selected}
-    
+
     def execute_rebalance(self, target_weights: dict[str, float], prices: dict[str, float], date_str: str):
         """Execute orders to reach target weights. Simulates slippage + costs."""
         cfg = self.config
-        
+
         # Calculate current weights
         total_eq = self.account.total_equity
         current_weights = {}
         for sym, pos in self.account.positions.items():
             if pos.market_value > 0:
                 current_weights[sym] = pos.market_value / total_eq
-        
+
         # Generate orders
         for sym, tw in target_weights.items():
             cw = current_weights.get(sym, 0.0)
             diff = tw - cw
-            
+
             if abs(diff) < 0.001:  # Skip tiny adjustments
                 continue
-            
+
             price = prices.get(sym, 0)
             if price <= 0:
                 continue
-            
+
             target_value = total_eq * tw
             current_value = cw * total_eq
-            
+
             if diff > 0:  # Buy
                 slippage = cfg["slippage_base"] * (1 + cfg["slippage_factor"] * abs(diff))
                 exec_price = price * (1 + slippage)
                 cost = target_value - current_value
                 cost_with_fees = cost * (1 + cfg["stamp_duty"] + cfg["commission"])
-                
+
                 if cost_with_fees <= self.account.cash:
                     shares = int(target_value / exec_price / 100) * 100  # Round to lots
                     if shares > 0:
@@ -278,36 +287,36 @@ class PaperTradingEngine:
                             pos = self.account.positions[sym]
                             pos.shares += shares
                             pos.avg_cost = ((pos.avg_cost * (pos.shares - shares)) + actual_cost) / pos.shares if pos.shares > 0 else exec_price
-                            
+
                             self.account.trade_log.append({
                                 "date": date_str, "symbol": sym, "side": "buy",
                                 "shares": shares, "price": round(exec_price, 2),
                                 "cost": round(actual_cost, 2), "slippage": round(slippage, 4)
                             })
-            
+
             elif diff < 0:  # Sell
                 pos = self.account.positions.get(sym)
                 if not pos or pos.shares <= 0:
                     continue
-                
+
                 slippage = cfg["slippage_base"] * (1 + cfg["slippage_factor"] * abs(diff))
                 exec_price = price * (1 - slippage)
                 sell_value = abs(current_value - target_value)
                 shares_to_sell = min(pos.shares, int(sell_value / exec_price / 100) * 100)
-                
+
                 if shares_to_sell > 0:
                     proceeds = shares_to_sell * exec_price * (1 - cfg["stamp_duty"] - cfg["commission"])
                     self.account.cash += proceeds
                     pos.shares -= shares_to_sell
                     if pos.shares <= 0:
                         del self.account.positions[sym]
-                    
+
                     self.account.trade_log.append({
                         "date": date_str, "symbol": sym, "side": "sell",
                         "shares": shares_to_sell, "price": round(exec_price, 2),
                         "proceeds": round(proceeds, 2), "slippage": round(slippage, 4)
                     })
-        
+
         # Sell positions not in targets
         for sym in list(self.account.positions.keys()):
             if sym not in target_weights:
@@ -326,7 +335,7 @@ class PaperTradingEngine:
                     "proceeds": round(proceeds, 2), "reason": "removed from portfolio"
                 })
                 del self.account.positions[sym]
-    
+
     def get_status(self) -> dict:
         """Get current paper trading status."""
         return {
@@ -341,20 +350,20 @@ class PaperTradingEngine:
             "total_trades": len(self.account.trade_log),
             "mdd_status": self.check_mdd_safeguards(),
         }
-    
+
     def generate_report(self) -> dict:
         """Generate paper trading performance report."""
         eq = np.array(self.account.equity_history)
         if len(eq) < 2:
             return {"error": "Not enough data"}
-        
+
         rets = np.diff(eq) / eq[:-1]
         ann_ret = float(np.mean(rets) * 252) if len(rets) > 0 else 0
         ann_vol = float(np.std(rets, ddof=1) * np.sqrt(252)) if len(rets) > 1 else 0
         sharpe = (ann_ret - 0.025) / ann_vol if ann_vol > 1e-8 else 0
         peak = np.maximum.accumulate(eq)
         mdd = float(np.min((eq - peak) / peak))
-        
+
         return {
             "sharpe_ratio": round(sharpe, 4),
             "annual_return": round(ann_ret, 4),

@@ -11,7 +11,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import Enum
-from typing import Optional
 
 import pandas as pd
 
@@ -28,8 +27,8 @@ class DataRequest:
     """Standardized data request."""
     symbol: str
     frequency: Frequency = Frequency.DAILY
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    start_date: date | None = None
+    end_date: date | None = None
     limit: int = 1000
     # Optional provider-specific params
     extra: dict = field(default_factory=dict)
@@ -43,7 +42,7 @@ class DataResult:
     data: pd.DataFrame
     source: str  # Provider name
     fetched_at: datetime = field(default_factory=datetime.utcnow)
-    data_range: Optional[tuple[date, date]] = None  # (start, end) of actual data
+    data_range: tuple[date, date] | None = None  # (start, end) of actual data
     row_count: int = 0
 
     def __post_init__(self):
@@ -77,7 +76,7 @@ class DataProvider(ABC):
     def __init__(self, name: str):
         self.name = name
         self._fail_count: int = 0
-        self._last_error: Optional[str] = None
+        self._last_error: str | None = None
 
     @property
     @abstractmethod
@@ -102,7 +101,7 @@ class DataProvider(ABC):
         """Fetch data for a given request. Must be implemented by subclasses."""
 
     async def fetch_daily(
-        self, symbol: str, start: Optional[date] = None, end: Optional[date] = None
+        self, symbol: str, start: date | None = None, end: date | None = None
     ) -> DataResult:
         """Convenience: fetch daily OHLCV data."""
         req = DataRequest(

@@ -1,15 +1,13 @@
 """Tests for backtest engine, metrics, and report."""
-import pytest
 import numpy as np
 import pandas as pd
-
+import pytest
 from quant_trading.backtest.engine import (
-    PerformanceMetrics,
-    MetricsCalculator,
     BacktestConfig,
-    BacktestResult,
     BacktestRegistry,
-    BacktestMode,
+    BacktestResult,
+    MetricsCalculator,
+    PerformanceMetrics,
 )
 from quant_trading.backtest.report import ReportGenerator
 
@@ -59,6 +57,12 @@ class TestMetricsCalculator:
     def test_empty_equity(self):
         metrics = MetricsCalculator.from_equity_curve(pd.Series(dtype=float))
         assert metrics.total_return == 0
+
+    def test_bankrupt_equity_caps_annualized_loss(self):
+        equity = pd.Series([100.0, 50.0, -10.0], index=pd.date_range("2024-01-01", periods=3))
+        metrics = MetricsCalculator.from_equity_curve(equity)
+        assert metrics.total_return < -1.0
+        assert metrics.annualized_return == -1.0
         assert metrics.total_trades == 0
 
     def test_deterministic_results(self):
