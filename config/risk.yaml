@@ -2,6 +2,7 @@
 # AGENTS.md §3: 所有参数统一在 config/risk.yaml 中配置
 # V5.9 Production: n=35, 90d, sector cap=5, MDD safeguards tightened
 # 2026-05-25 config-001: strict Pydantic validation enabled; no limit values changed.
+# 2026-05-25 config-002: market-session binding assessment recorded; no limit values changed.
 
 # Position limits
 max_position_pct: 0.20       # 单品种 ≤20%

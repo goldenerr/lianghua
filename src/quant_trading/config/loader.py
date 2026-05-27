@@ -139,6 +139,10 @@ class ConfigLoader:
         if target_env == Environment.PROD:
             settings = self._require_production_approval(settings)
 
+        from .market_router import MarketRouter
+
+        MarketRouter.configure(settings.system)
+
         logger.info(
             "Configuration loaded: env=%s markets=%s accounts=%d",
             target_env.value,

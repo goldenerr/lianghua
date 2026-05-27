@@ -8,6 +8,7 @@ All secrets use SecretStr/SecretBytes per AGENTS.md §2.
 from __future__ import annotations
 
 from enum import Enum
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import (
     BaseModel,
@@ -46,13 +47,48 @@ class VaRMethod(str, Enum):
 # ── Sub-models ───────────────────────────────────────────────────────────────
 
 
+def _clock_minute(value: str, *, allow_end_of_day: bool = False) -> int:
+    """Return a validated HH:MM clock value as minutes from midnight."""
+    if allow_end_of_day and value == "24:00":
+        return 24 * 60
+    parts = value.split(":")
+    if len(parts) != 2 or not all(part.isdigit() for part in parts):
+        raise ValueError(f"invalid HH:MM value: {value}")
+    hour, minute = (int(part) for part in parts)
+    if not 0 <= hour <= 23 or not 0 <= minute <= 59:
+        raise ValueError(f"invalid HH:MM value: {value}")
+    return hour * 60 + minute
+
+
 class TradingSession(BaseModel):
-    """单个市场交易时段配置。UTC 内部存储。"""
+    """Per-market local trading hours; runtime comparisons normalize to UTC."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
     market: Market
     sessions: list[tuple[str, str]]  # [(HH:MM, HH:MM), ...]
     timezone: str = "Asia/Shanghai"
+
+    @field_validator("timezone")
+    @classmethod
+    def valid_timezone(cls, value: str) -> str:
+        try:
+            ZoneInfo(value)
+        except ZoneInfoNotFoundError as exc:
+            raise ValueError(f"unknown IANA timezone: {value}") from exc
+        return value
+
+    @model_validator(mode="after")
+    def valid_sessions(self) -> TradingSession:
+        if not self.sessions:
+            raise ValueError("at least one trading session is required")
+        for opening, closing in self.sessions:
+            open_minute = _clock_minute(opening)
+            close_minute = _clock_minute(closing, allow_end_of_day=True)
+            if open_minute == close_minute:
+                raise ValueError("trading session must not have zero duration")
+        if self.market == Market.CRYPTO and self.sessions != [("00:00", "24:00")]:
+            raise ValueError("crypto market must declare its 24/7 session as 00:00-24:00")
+        return self
 
 
 class MarketRules(BaseModel):
@@ -64,7 +100,15 @@ class MarketRules(BaseModel):
     lot_size: int = Field(ge=1, description="每手数量")
     price_precision: int = Field(ge=0, le=8, description="价格精度")
     funding_rate: float | None = Field(None, description="资金费率 (crypto)")
-    settlement_time: str | None = Field(None, description="结算时间 (HH:MM UTC)")
+    settlement_time: str | None = Field(None, description="市场本地结算时间 (HH:MM)")
+    settlement_window_minutes: int = Field(default=30, ge=0, le=240)
+
+    @field_validator("settlement_time")
+    @classmethod
+    def valid_settlement_time(cls, value: str | None) -> str | None:
+        if value is not None:
+            _clock_minute(value)
+        return value
 
 
 class ApiEndpointConfig(BaseModel):
@@ -140,9 +184,28 @@ class SystemSettings(BaseModel):
         default=[Market.A_SHARES], min_length=1, description="主要交易市场列表"
     )
     trading_sessions: list[TradingSession] = Field(
-        default_factory=list, description="各市场交易时段"
+        default_factory=lambda: [
+            TradingSession(
+                market=Market.A_SHARES,
+                sessions=[("09:30", "11:30"), ("13:00", "15:00")],
+                timezone="Asia/Shanghai",
+            )
+        ],
+        description="各市场交易时段（市场本地时间）",
     )
-    market_rules: list[MarketRules] = Field(default_factory=list, description="各市场交易规则")
+    market_rules: list[MarketRules] = Field(
+        default_factory=lambda: [
+            MarketRules(
+                market=Market.A_SHARES,
+                tick_size=0.01,
+                lot_size=100,
+                price_precision=2,
+                funding_rate=None,
+                settlement_time="16:00",
+            )
+        ],
+        description="各市场交易规则",
+    )
     # Graceful shutdown
     close_positions_on_shutdown: bool = False
     shutdown_timeout_seconds: int = Field(default=30, ge=5, le=300)
@@ -158,6 +221,26 @@ class SystemSettings(BaseModel):
         if len(v) != len(set(v)):
             raise ValueError("primary_markets contains duplicates")
         return v
+
+    @model_validator(mode="after")
+    def active_markets_have_controls(self) -> SystemSettings:
+        session_markets = [session.market for session in self.trading_sessions]
+        rule_markets = [rule.market for rule in self.market_rules]
+        if len(session_markets) != len(set(session_markets)):
+            raise ValueError("trading_sessions contains duplicate markets")
+        if len(rule_markets) != len(set(rule_markets)):
+            raise ValueError("market_rules contains duplicate markets")
+        missing_sessions = set(self.primary_markets) - set(session_markets)
+        missing_rules = set(self.primary_markets) - set(rule_markets)
+        if missing_sessions:
+            raise ValueError(
+                f"missing trading_sessions for: {sorted(market.value for market in missing_sessions)}"
+            )
+        if missing_rules:
+            raise ValueError(
+                f"missing market_rules for: {sorted(market.value for market in missing_rules)}"
+            )
+        return self
 
 
 class RiskSettings(BaseModel):

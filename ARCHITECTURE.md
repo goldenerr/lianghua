@@ -18,7 +18,7 @@ This document records the safety architecture implemented in the repository and 
 ## Release Posture
 
 - `feature_list.json` intentionally has no `passes=true` entries as of 2026-05-25.
-- The current verified local baseline is `579` passing tests at `84.79%` source coverage, with Ruff, Black and strict mypy passing.
+- The current verified local baseline is `588` passing tests at `84.97%` source coverage, with Ruff, Black and strict mypy passing.
 - Production trading remains prohibited until paper-trading, small-live, approval, external archival, secrets and deployment gates are completed.
 - The core design rule is funds safety before strategy return and development speed.
 
@@ -118,6 +118,7 @@ sequenceDiagram
 | Compliance | Archive adapter | Template-derived export plus hash-chain verification | External WORM remains required for production |
 | Deployment | Runtime | Signed manifest, config drift decision, canary gate | Failed verification blocks rollout |
 | Configuration loader | Runtime | Strict validated fields, environment-scoped accounts, production `secret_ref` resolution and approval reference | Production startup fails closed without resolver/approval |
+| Market configuration | Router/calendar | Validated active markets, market-local sessions normalized to UTC and configured settlement windows | Inactive/unconfigured markets and unzoned timestamps fail closed |
 
 ## Invariants
 
@@ -144,7 +145,7 @@ These are target requirements, not yet production benchmark evidence.
 | Availability | `>= 99.9%` | Local disaster/failover tests only | Blocked |
 | Recovery time objective | `<= 2 hours` | Local recovery tests only | Blocked |
 | Recovery point objective | `<= 1 hour` | Local backup manifest tests only | Blocked |
-| Test coverage | Core modules `>= 80%` | `84.79%`, `579` tests passed locally on 2026-05-25; Ruff/Black/mypy clean | Met locally |
+| Test coverage | Core modules `>= 80%` | `84.97%`, `588` tests passed locally on 2026-05-25; Ruff/Black/mypy clean | Met locally |
 
 ## Capacity Planning
 
@@ -185,5 +186,6 @@ Capacity values must be measured under approved datasets and infrastructure befo
 - Approved external WORM/audit retention service is not integrated.
 - CI/CD does not yet enforce every signed artifact, config drift and capital-approval gate.
 - Production configuration now fails closed unless secret and approval validators are injected; real secret-manager/approval services, benchmark/feed adapters, model/factor registry and dashboard integrations still need approved environments.
+- Market schedule controls are configuration-driven locally, but final execution-path enforcement and approved production holiday/calendar evidence remain pending.
 - Capacity, latency and multi-region recovery targets have not been measured on production-like infrastructure.
 - Paper and small-live acceptance durations have not been completed.

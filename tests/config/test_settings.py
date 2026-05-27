@@ -6,10 +6,12 @@ from quant_trading.config.settings import (
     AccountConfig,
     ApiCredentials,
     Environment,
+    MarketRules,
     QuantSettings,
     RiskSettings,
     StrategyRiskSettings,
     SystemSettings,
+    TradingSession,
     VaRMethod,
     validate_config,
 )
@@ -36,6 +38,36 @@ class TestSystemSettings:
     def test_shutdown_timeout_range(self):
         with pytest.raises(ValidationError):
             SystemSettings(shutdown_timeout_seconds=0)
+
+    def test_active_market_requires_session_and_rule_controls(self):
+        with pytest.raises(ValidationError, match="missing trading_sessions"):
+            SystemSettings(primary_markets=["加密货币"])
+
+    def test_invalid_market_timezone_is_rejected(self):
+        with pytest.raises(ValidationError, match="unknown IANA timezone"):
+            TradingSession(
+                market="A股",
+                sessions=[("09:30", "11:30")],
+                timezone="Mars/Olympus",
+            )
+
+    def test_crypto_must_be_declared_as_full_day(self):
+        with pytest.raises(ValidationError, match="24/7"):
+            TradingSession(
+                market="加密货币",
+                sessions=[("09:30", "16:00")],
+                timezone="UTC",
+            )
+
+    def test_settlement_clock_is_validated(self):
+        with pytest.raises(ValidationError, match="invalid HH:MM"):
+            MarketRules(
+                market="A股",
+                tick_size=0.01,
+                lot_size=100,
+                price_precision=2,
+                settlement_time="25:30",
+            )
 
 
 # ── RiskSettings ──────────────────────────────────────────────────────────

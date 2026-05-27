@@ -2,15 +2,60 @@
 
 from datetime import date, datetime, timezone
 
+import pytest
 from quant_trading.config.market_calendar import (
     CalendarRegistry,
-    Market,
-    MarketCalendar,
     Session,
     SettlementWindow,
 )
+from quant_trading.config.settings import Market, MarketRules, SystemSettings, TradingSession
 
 UTC = timezone.utc
+
+
+@pytest.fixture(autouse=True)
+def configured_calendars() -> None:
+    CalendarRegistry.configure(
+        SystemSettings(
+            primary_markets=[Market.A_SHARES, Market.FUTURES, Market.CRYPTO, Market.US_STOCKS],
+            trading_sessions=[
+                TradingSession(
+                    market=Market.A_SHARES,
+                    sessions=[("09:30", "11:30"), ("13:00", "15:00")],
+                    timezone="Asia/Shanghai",
+                ),
+                TradingSession(
+                    market=Market.FUTURES,
+                    sessions=[("09:30", "11:30"), ("13:00", "15:00"), ("21:00", "02:30")],
+                    timezone="Asia/Shanghai",
+                ),
+                TradingSession(market=Market.CRYPTO, sessions=[("00:00", "24:00")], timezone="UTC"),
+                TradingSession(
+                    market=Market.US_STOCKS,
+                    sessions=[("09:30", "16:00")],
+                    timezone="America/New_York",
+                ),
+            ],
+            market_rules=[
+                MarketRules(
+                    market=Market.A_SHARES,
+                    tick_size=0.01,
+                    lot_size=100,
+                    price_precision=2,
+                    settlement_time="16:00",
+                ),
+                MarketRules(
+                    market=Market.FUTURES,
+                    tick_size=1,
+                    lot_size=1,
+                    price_precision=0,
+                    settlement_time="15:30",
+                ),
+                MarketRules(market=Market.CRYPTO, tick_size=0.01, lot_size=1, price_precision=2),
+                MarketRules(market=Market.US_STOCKS, tick_size=0.01, lot_size=1, price_precision=2),
+            ],
+        )
+    )
 
 
 # ── MarketCalendar ────────────────────────────────────────────────────────────
@@ -20,7 +65,7 @@ class TestMarketCalendar:
     """Test trading day and session detection."""
 
     def test_crypto_always_in_session(self):
-        cal = MarketCalendar(Market.CRYPTO)
+        cal = CalendarRegistry.get(Market.CRYPTO)
         # Saturday midnight UTC
         dt = datetime(2026, 5, 16, 2, 0, tzinfo=UTC)  # Saturday
         assert cal.is_in_session(dt) is True
@@ -28,7 +73,7 @@ class TestMarketCalendar:
         assert cal.is_24_7 is True
 
     def test_a_share_weekday_morning(self):
-        cal = MarketCalendar(Market.A_SHARES)
+        cal = CalendarRegistry.get(Market.A_SHARES)
         # Monday 10:00 CST = 2:00 UTC
         dt = datetime(2026, 5, 18, 2, 0, tzinfo=UTC)  # Monday
         # is_trading_day might fail if pandas_market_calendars is not installed
@@ -37,40 +82,53 @@ class TestMarketCalendar:
         assert cal.is_in_session(dt) is True  # In morning session
 
     def test_a_share_weekday_lunch_break(self):
-        cal = MarketCalendar(Market.A_SHARES)
+        cal = CalendarRegistry.get(Market.A_SHARES)
         # Monday 12:00 CST = 4:00 UTC (lunch break)
         dt = datetime(2026, 5, 18, 4, 0, tzinfo=UTC)
         assert cal.is_trading_day(dt.date()) is True
         assert cal.is_in_session(dt) is False  # Lunch break
 
     def test_a_share_weekend(self):
-        cal = MarketCalendar(Market.A_SHARES)
+        cal = CalendarRegistry.get(Market.A_SHARES)
         dt = datetime(2026, 5, 16, 2, 0, tzinfo=UTC)  # Saturday
         assert cal.is_trading_day(dt.date()) is False
         assert cal.is_in_session(dt) is False
 
     def test_futures_night_session(self):
-        cal = MarketCalendar(Market.FUTURES)
+        cal = CalendarRegistry.get(Market.FUTURES)
         # Monday night 22:00 CST = 14:00 UTC
         dt = datetime(2026, 5, 18, 14, 0, tzinfo=UTC)
         assert cal.is_trading_day(dt.date()) is True
         assert cal.is_in_session(dt) is True  # Night session active
 
     def test_futures_between_sessions(self):
-        cal = MarketCalendar(Market.FUTURES)
+        cal = CalendarRegistry.get(Market.FUTURES)
         # Between afternoon close (7:00 UTC) and night open (13:00 UTC)
         dt = datetime(2026, 5, 18, 10, 0, tzinfo=UTC)
         assert cal.is_in_session(dt) is False
 
     def test_us_stock_regular_hours(self):
-        cal = MarketCalendar(Market.US_STOCKS)
+        cal = CalendarRegistry.get(Market.US_STOCKS)
         # 10:00 EST = 15:00 UTC
         dt = datetime(2026, 5, 18, 15, 0, tzinfo=UTC)
         assert cal.is_trading_day(dt.date()) is True
         assert cal.is_in_session(dt) is True
 
+    def test_us_stock_dst_hours_are_derived_from_local_schedule(self):
+        cal = CalendarRegistry.get(Market.US_STOCKS)
+        summer_open = datetime(2026, 7, 6, 13, 30, tzinfo=UTC)
+        winter_open = datetime(2026, 1, 5, 14, 30, tzinfo=UTC)
+        assert cal.is_in_session(summer_open) is True
+        assert cal.is_in_session(winter_open) is True
+
+    def test_futures_overnight_session_uses_prior_trading_date(self):
+        cal = CalendarRegistry.get(Market.FUTURES)
+        # Tuesday 01:30 CST is the continuation of Monday's night session.
+        dt = datetime(2026, 5, 18, 17, 30, tzinfo=UTC)
+        assert cal.is_in_session(dt) is True
+
     def test_next_trading_day(self):
-        cal = MarketCalendar(Market.A_SHARES)
+        cal = CalendarRegistry.get(Market.A_SHARES)
         # Saturday → should return Monday
         sat = date(2026, 5, 16)
         next_td = cal.next_trading_day(sat)
@@ -78,7 +136,7 @@ class TestMarketCalendar:
         assert next_td > sat
 
     def test_time_to_next_open(self):
-        cal = MarketCalendar(Market.A_SHARES)
+        cal = CalendarRegistry.get(Market.A_SHARES)
         # Lunch break 12:00 CST = 4:00 UTC
         dt = datetime(2026, 5, 18, 4, 0, tzinfo=UTC)
         delta = cal.time_to_next_open(dt)
@@ -87,17 +145,18 @@ class TestMarketCalendar:
         assert delta.total_seconds() == 3600
 
     def test_time_to_close(self):
-        cal = MarketCalendar(Market.A_SHARES)
+        cal = CalendarRegistry.get(Market.A_SHARES)
         # Morning session, 30 min before close
         dt = datetime(2026, 5, 18, 3, 0, tzinfo=UTC)  # 11:00 CST
         delta = cal.time_to_close(dt)
         assert delta is not None
         assert delta.total_seconds() == 1800  # 30 min to 11:30 CST = 3:30 UTC
 
-    def test_naive_datetime_treated_as_utc(self):
-        cal = MarketCalendar(Market.A_SHARES)
+    def test_naive_datetime_is_rejected(self):
+        cal = CalendarRegistry.get(Market.A_SHARES)
         dt = datetime(2026, 5, 18, 2, 0)  # Naive
-        assert cal.is_in_session(dt) is True
+        with pytest.raises(ValueError, match="timezone-aware"):
+            cal.is_in_session(dt)
 
 
 # ── CalendarRegistry ──────────────────────────────────────────────────────────
@@ -149,28 +208,28 @@ class TestSettlementWindow:
         dt = datetime(2026, 5, 18, 7, 15, tzinfo=UTC)
         assert SettlementWindow.is_in_settlement_window(Market.FUTURES, dt) is True
 
+    def test_local_timezone_input_is_normalized_before_settlement_check(self):
+        from zoneinfo import ZoneInfo
+
+        local_dt = datetime(2026, 5, 18, 15, 45, tzinfo=ZoneInfo("Asia/Shanghai"))
+        assert SettlementWindow.is_in_settlement_window(Market.A_SHARES, local_dt) is True
+
 
 # ── Session ───────────────────────────────────────────────────────────────────
 
 
 class TestSession:
     def test_contains(self):
-        from datetime import time as dt_time
-
-        s = Session(dt_time(1, 30), dt_time(3, 30), "morning")
-        dt = datetime(2026, 5, 18, 2, 0, tzinfo=UTC)
+        s = Session.from_config(("09:30", "11:30"), "morning")
+        dt = datetime(2026, 5, 18, 10, 0, tzinfo=UTC)
         assert s.contains(dt) is True
 
     def test_not_contains_before(self):
-        from datetime import time as dt_time
-
-        s = Session(dt_time(1, 30), dt_time(3, 30), "morning")
-        dt = datetime(2026, 5, 18, 1, 0, tzinfo=UTC)
+        s = Session.from_config(("09:30", "11:30"), "morning")
+        dt = datetime(2026, 5, 18, 9, 0, tzinfo=UTC)
         assert s.contains(dt) is False
 
     def test_not_contains_after(self):
-        from datetime import time as dt_time
-
-        s = Session(dt_time(1, 30), dt_time(3, 30), "morning")
-        dt = datetime(2026, 5, 18, 4, 0, tzinfo=UTC)
+        s = Session.from_config(("09:30", "11:30"), "morning")
+        dt = datetime(2026, 5, 18, 12, 0, tzinfo=UTC)
         assert s.contains(dt) is False

@@ -6,23 +6,27 @@ env: dev
 primary_markets:
   - A股
 
-# Trading sessions (UTC)
+# Trading sessions are declared in each market's local timezone and normalized to UTC at runtime.
 trading_sessions:
   - market: A股
     sessions:
-      - ["01:30", "03:30"]   # 9:30-11:30 CST
-      - ["05:00", "07:00"]   # 13:00-15:00 CST
+      - ["09:30", "11:30"]
+      - ["13:00", "15:00"]
     timezone: Asia/Shanghai
   - market: 期货
     sessions:
-      - ["01:30", "03:30"]
-      - ["05:00", "07:00"]
-      - ["13:00", "18:30"]   # 夜盘 21:00-02:30 CST
+      - ["09:30", "11:30"]
+      - ["13:00", "15:00"]
+      - ["21:00", "02:30"]   # 跨午夜夜盘
     timezone: Asia/Shanghai
   - market: 加密货币
     sessions:
       - ["00:00", "24:00"]
     timezone: UTC
+  - market: 美股
+    sessions:
+      - ["09:30", "16:00"]   # DST is handled from America/New_York.
+    timezone: America/New_York
 
 # Market rules
 market_rules:
@@ -30,17 +34,23 @@ market_rules:
     tick_size: 0.01
     lot_size: 100
     price_precision: 2
-    settlement_time: "08:00"  # T+1 16:00 CST → 08:00 UTC
+    settlement_time: "16:00"  # Market local time; T+1 settlement policy.
+    settlement_window_minutes: 30
   - market: 期货
     tick_size: 1.0
     lot_size: 1
     price_precision: 0
-    settlement_time: "07:30"
+    settlement_time: "15:30"
+    settlement_window_minutes: 30
   - market: 加密货币
     tick_size: 0.01
     lot_size: 1
     price_precision: 2
     funding_rate: 0.0001
+  - market: 美股
+    tick_size: 0.01
+    lot_size: 1
+    price_precision: 2
 
 # Graceful shutdown
 close_positions_on_shutdown: false

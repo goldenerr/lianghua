@@ -13,8 +13,8 @@ primary_markets:                            # 主要交易市场
 trading_sessions:
   - market: A股
     sessions:
-      - ["01:30", "03:30"]                  # 9:30-11:30 CST → UTC
-      - ["05:00", "07:00"]                  # 13:00-15:00 CST → UTC
+      - ["09:30", "11:30"]                  # Market local time
+      - ["13:00", "15:00"]
     timezone: Asia/Shanghai
 
 market_rules:
@@ -22,7 +22,8 @@ market_rules:
     tick_size: 0.01
     lot_size: 100
     price_precision: 2
-    settlement_time: "08:00"
+    settlement_time: "16:00"                # Market local time
+    settlement_window_minutes: 30
 
 close_positions_on_shutdown: false
 shutdown_timeout_seconds: 30

@@ -2,15 +2,43 @@
 
 from datetime import date, datetime, timezone
 
-from quant_trading.config.market_calendar import Market
+import pytest
 from quant_trading.config.market_router import (
     ContractMonth,
     FuturesRolloverDetector,
     MarketRouter,
     MarketRuleSet,
 )
+from quant_trading.config.settings import Market, MarketRules, SystemSettings, TradingSession
 
 UTC = timezone.utc
+
+
+@pytest.fixture(autouse=True)
+def configured_router() -> None:
+    MarketRouter.configure(
+        SystemSettings(
+            primary_markets=[Market.A_SHARES, Market.CRYPTO],
+            trading_sessions=[
+                TradingSession(
+                    market=Market.A_SHARES,
+                    sessions=[("09:30", "11:30"), ("13:00", "15:00")],
+                    timezone="Asia/Shanghai",
+                ),
+                TradingSession(market=Market.CRYPTO, sessions=[("00:00", "24:00")], timezone="UTC"),
+            ],
+            market_rules=[
+                MarketRules(
+                    market=Market.A_SHARES,
+                    tick_size=0.01,
+                    lot_size=100,
+                    price_precision=2,
+                    settlement_time="16:00",
+                ),
+                MarketRules(market=Market.CRYPTO, tick_size=0.01, lot_size=1, price_precision=2),
+            ],
+        )
+    )
 
 
 # ── MarketRuleSet ─────────────────────────────────────────────────────────────
@@ -113,6 +141,36 @@ class TestMarketRouter:
         dt = datetime(2026, 5, 16, 2, 0, tzinfo=UTC)  # Saturday
         allowed, reason = MarketRouter.is_trading_allowed(Market.CRYPTO, dt)
         assert allowed is True
+
+    def test_unenabled_market_is_blocked(self):
+        allowed, reason = MarketRouter.is_trading_allowed(
+            Market.US_STOCKS, datetime(2026, 5, 18, 14, 0, tzinfo=UTC)
+        )
+        assert allowed is False
+        assert "primary_markets" in reason
+
+    def test_loaded_session_override_controls_permission(self):
+        MarketRouter.configure(
+            SystemSettings(
+                primary_markets=[Market.A_SHARES],
+                trading_sessions=[
+                    TradingSession(
+                        market=Market.A_SHARES,
+                        sessions=[("10:00", "10:30")],
+                        timezone="Asia/Shanghai",
+                    )
+                ],
+                market_rules=[
+                    MarketRules(
+                        market=Market.A_SHARES, tick_size=0.01, lot_size=100, price_precision=2
+                    )
+                ],
+            )
+        )
+        old_open = datetime(2026, 5, 18, 1, 45, tzinfo=UTC)  # 09:45 CST
+        configured_open = datetime(2026, 5, 18, 2, 15, tzinfo=UTC)  # 10:15 CST
+        assert MarketRouter.is_trading_allowed(Market.A_SHARES, old_open)[0] is False
+        assert MarketRouter.is_trading_allowed(Market.A_SHARES, configured_open)[0] is True
 
 
 # ── ContractMonth ─────────────────────────────────────────────────────────────

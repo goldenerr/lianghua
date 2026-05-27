@@ -63,6 +63,32 @@ class TestConfigLoader:
             {
                 "env": "dev",
                 "primary_markets": ["A股", "加密货币"],
+                "trading_sessions": [
+                    {
+                        "market": "A股",
+                        "sessions": [["09:30", "11:30"], ["13:00", "15:00"]],
+                        "timezone": "Asia/Shanghai",
+                    },
+                    {
+                        "market": "加密货币",
+                        "sessions": [["00:00", "24:00"]],
+                        "timezone": "UTC",
+                    },
+                ],
+                "market_rules": [
+                    {
+                        "market": "A股",
+                        "tick_size": 0.01,
+                        "lot_size": 100,
+                        "price_precision": 2,
+                    },
+                    {
+                        "market": "加密货币",
+                        "tick_size": 0.01,
+                        "lot_size": 1,
+                        "price_precision": 2,
+                    },
+                ],
             },
         )
         _write_yaml(
@@ -170,7 +196,27 @@ class TestConfigLoader:
         assert s1.system.primary_markets == ["A股"]
 
         # Modify file on disk
-        _write_yaml(tmp_path / "system.yaml", {"primary_markets": ["加密货币"]})
+        _write_yaml(
+            tmp_path / "system.yaml",
+            {
+                "primary_markets": ["加密货币"],
+                "trading_sessions": [
+                    {
+                        "market": "加密货币",
+                        "sessions": [["00:00", "24:00"]],
+                        "timezone": "UTC",
+                    }
+                ],
+                "market_rules": [
+                    {
+                        "market": "加密货币",
+                        "tick_size": 0.01,
+                        "lot_size": 1,
+                        "price_precision": 2,
+                    }
+                ],
+            },
+        )
 
         s2 = loader.reload()
         assert s2.system.primary_markets == ["加密货币"]

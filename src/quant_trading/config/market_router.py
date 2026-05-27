@@ -11,12 +11,14 @@ AGENTS.md §2 (config-002):
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import ClassVar
 
-from .market_calendar import CalendarRegistry, Market, MarketCalendar
+from .market_calendar import CalendarRegistry, MarketCalendar
+from .settings import Market, MarketRules, SystemSettings
 
 logger = logging.getLogger(__name__)
+UTC = timezone.utc
 
 
 # ── Market rules (validated from config) ──────────────────────────────────────
@@ -41,6 +43,17 @@ class MarketRuleSet:
         self.funding_rate = funding_rate
         self.settlement_time_utc = settlement_time_utc
 
+    @classmethod
+    def from_config(cls, configured: MarketRules) -> MarketRuleSet:
+        return cls(
+            market=configured.market,
+            tick_size=configured.tick_size,
+            lot_size=configured.lot_size,
+            price_precision=configured.price_precision,
+            funding_rate=configured.funding_rate,
+            settlement_time_utc=configured.settlement_time,
+        )
+
     def round_price(self, price: float) -> float:
         """Round price to market tick size. Uses decimal-safe rounding."""
         ticks = round(price / self.tick_size)
@@ -50,24 +63,6 @@ class MarketRuleSet:
         """Round quantity to lot size multiples."""
         return round(qty / self.lot_size) * self.lot_size
 
-
-# Default rule sets per market
-DEFAULT_RULES: dict[Market, MarketRuleSet] = {
-    Market.A_SHARES: MarketRuleSet(
-        Market.A_SHARES, tick_size=0.01, lot_size=100, price_precision=2
-    ),
-    Market.FUTURES: MarketRuleSet(Market.FUTURES, tick_size=1.0, lot_size=1, price_precision=0),
-    Market.CRYPTO: MarketRuleSet(
-        Market.CRYPTO, tick_size=0.01, lot_size=1, price_precision=2, funding_rate=0.0001
-    ),
-    Market.US_STOCKS: MarketRuleSet(
-        Market.US_STOCKS, tick_size=0.01, lot_size=1, price_precision=2
-    ),
-    Market.HK_STOCKS: MarketRuleSet(
-        Market.HK_STOCKS, tick_size=0.01, lot_size=100, price_precision=2
-    ),
-    Market.OPTIONS: MarketRuleSet(Market.OPTIONS, tick_size=0.01, lot_size=1, price_precision=2),
-}
 
 # Fee models (placeholder — expanded in compliance-001)
 FEE_MODELS: dict[Market, str] = {
@@ -241,6 +236,11 @@ class MarketRouter:
     }
 
     @classmethod
+    def configure(cls, settings: SystemSettings) -> None:
+        """Install validated market controls for runtime routing decisions."""
+        CalendarRegistry.configure(settings)
+
+    @classmethod
     def get_data_sources(cls, market: Market) -> list[str]:
         """Get ordered list of data source names for a market."""
         return cls.DATA_SOURCE_PRIORITY.get(market, ["yfinance"])
@@ -252,8 +252,8 @@ class MarketRouter:
 
     @classmethod
     def get_rules(cls, market: Market) -> MarketRuleSet:
-        """Get trading rules for a market."""
-        return DEFAULT_RULES.get(market, MarketRuleSet(market))
+        """Get configured trading rules for a market; never infer production rules."""
+        return MarketRuleSet.from_config(CalendarRegistry.get_rules(market))
 
     @classmethod
     def get_calendar(cls, market: Market) -> MarketCalendar:
@@ -274,8 +274,13 @@ class MarketRouter:
         Returns:
             (allowed, reason) tuple.
         """
-        cal = cls.get_calendar(market)
-        check_dt = dt or datetime.now()
+        if not CalendarRegistry.is_active(market):
+            return False, f"{market.value} is not enabled in primary_markets"
+        try:
+            cal = cls.get_calendar(market)
+        except ValueError as exc:
+            return False, str(exc)
+        check_dt = dt or datetime.now(UTC)
 
         if not cal.is_in_session(check_dt):
             return False, f"{market.value} is not in trading session"
