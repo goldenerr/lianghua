@@ -3,27 +3,44 @@
 from datetime import date, datetime, timezone
 
 import pytest
+from quant_trading.config.market_calendar import MarketCalendar
 from quant_trading.config.market_router import (
     ContractMonth,
     FuturesRolloverDetector,
     MarketRouter,
     MarketRuleSet,
 )
-from quant_trading.config.settings import Market, MarketRules, SystemSettings, TradingSession
+from quant_trading.config.settings import (
+    Environment,
+    FuturesRolloverPolicy,
+    Market,
+    MarketRules,
+    QuantSettings,
+    SystemSettings,
+    TradingSession,
+)
+from quant_trading.core.audit import AuditBus
 
 UTC = timezone.utc
 
 
 @pytest.fixture(autouse=True)
 def configured_router() -> None:
-    MarketRouter.configure(
+    MarketRouter._configure_for_testing(
         SystemSettings(
-            primary_markets=[Market.A_SHARES, Market.CRYPTO],
+            primary_markets=[Market.A_SHARES, Market.FUTURES, Market.CRYPTO],
             trading_sessions=[
                 TradingSession(
                     market=Market.A_SHARES,
                     sessions=[("09:30", "11:30"), ("13:00", "15:00")],
                     timezone="Asia/Shanghai",
+                    holiday_calendar="XSHG",
+                ),
+                TradingSession(
+                    market=Market.FUTURES,
+                    sessions=[("09:30", "11:30")],
+                    timezone="Asia/Shanghai",
+                    holiday_calendar="XSHG",
                 ),
                 TradingSession(market=Market.CRYPTO, sessions=[("00:00", "24:00")], timezone="UTC"),
             ],
@@ -33,10 +50,54 @@ def configured_router() -> None:
                     tick_size=0.01,
                     lot_size=100,
                     price_precision=2,
+                    data_sources=["tushare", "akshare"],
+                    fee_model="cn_stock",
                     settlement_time="16:00",
                 ),
-                MarketRules(market=Market.CRYPTO, tick_size=0.01, lot_size=1, price_precision=2),
+                MarketRules(
+                    market=Market.FUTURES,
+                    tick_size=1.0,
+                    lot_size=1,
+                    price_precision=0,
+                    data_sources=["tushare"],
+                    fee_model="cn_futures",
+                ),
+                MarketRules(
+                    market=Market.CRYPTO,
+                    tick_size=0.01,
+                    lot_size=1,
+                    price_precision=2,
+                    data_sources=["ccxt", "binance"],
+                    fee_model="crypto_maker_taker",
+                ),
             ],
+        )
+    )
+
+
+def configure_futures_rollover(policy: FuturesRolloverPolicy) -> None:
+    MarketRouter._configure_for_testing(
+        SystemSettings(
+            primary_markets=[Market.FUTURES],
+            trading_sessions=[
+                TradingSession(
+                    market=Market.FUTURES,
+                    sessions=[("09:30", "11:30")],
+                    timezone="Asia/Shanghai",
+                    holiday_calendar="XSHG",
+                )
+            ],
+            market_rules=[
+                MarketRules(
+                    market=Market.FUTURES,
+                    tick_size=1.0,
+                    lot_size=1,
+                    price_precision=0,
+                    data_sources=["tushare"],
+                    fee_model="cn_futures",
+                )
+            ],
+            futures_rollover=policy,
         )
     )
 
@@ -65,13 +126,26 @@ class TestMarketRuleSet:
     def test_round_quantity(self):
         rules = MarketRuleSet(Market.A_SHARES, lot_size=100)
         assert rules.round_quantity(250) == 200
-        assert rules.round_quantity(251) == 300  # round half up
-        assert rules.round_quantity(50) == 0  # below half lot → 0
+        assert rules.round_quantity(299) == 200  # sizing never rounds exposure upward
+        assert rules.round_quantity(-299) == -200  # reductions are also bounded toward zero
+        assert rules.round_quantity(50) == 0
 
     def test_round_quantity_crypto(self):
         rules = MarketRuleSet(Market.CRYPTO, lot_size=1)
-        assert rules.round_quantity(1.5) == 2
+        assert rules.round_quantity(1.5) == 1
         assert rules.round_quantity(0.4) == 0
+
+    def test_nonfinite_quantity_is_rejected(self):
+        rules = MarketRuleSet(Market.CRYPTO, lot_size=1)
+        with pytest.raises(ValueError, match="finite"):
+            rules.round_quantity(float("nan"))
+
+    def test_nonpositive_or_subtick_price_is_rejected(self):
+        rules = MarketRuleSet(Market.A_SHARES, tick_size=0.01)
+        with pytest.raises(ValueError, match="positive"):
+            rules.round_price(0)
+        with pytest.raises(ValueError, match="minimum executable tick"):
+            rules.round_price(0.004)
 
 
 # ── MarketRouter ──────────────────────────────────────────────────────────────
@@ -90,6 +164,24 @@ class TestMarketRouter:
     def test_get_fee_model(self):
         assert MarketRouter.get_fee_model(Market.A_SHARES) == "cn_stock"
         assert MarketRouter.get_fee_model(Market.CRYPTO) == "crypto_maker_taker"
+
+    def test_adapter_metadata_for_disabled_market_is_blocked(self):
+        with pytest.raises(ValueError, match="primary_markets"):
+            MarketRouter.get_data_sources(Market.US_STOCKS)
+        with pytest.raises(ValueError, match="primary_markets"):
+            MarketRouter.get_fee_model(Market.US_STOCKS)
+
+    def test_direct_runtime_publish_cannot_forge_hash_binding(self):
+        with pytest.raises(PermissionError, match="ConfigLoader"):
+            MarketRouter.configure(QuantSettings(system=SystemSettings(), config_hash="forged"))
+
+    def test_production_direct_runtime_publish_cannot_forge_approval_reference(self):
+        production = SystemSettings(env=Environment.PROD, require_manual_approval=True)
+        forged = QuantSettings(
+            system=production, config_hash="forged", config_approval_ref="forged-approval"
+        )
+        with pytest.raises(PermissionError, match="ConfigLoader"):
+            MarketRouter.configure(forged)
 
     def test_get_rules(self):
         rules = MarketRouter.get_rules(Market.A_SHARES)
@@ -142,6 +234,17 @@ class TestMarketRouter:
         allowed, reason = MarketRouter.is_trading_allowed(Market.CRYPTO, dt)
         assert allowed is True
 
+    def test_calendar_failure_blocks_market_decision(self, monkeypatch):
+        def unavailable_holidays(_self: MarketCalendar, _year: int) -> set[date]:
+            raise ValueError("holiday calendar unavailable")
+
+        monkeypatch.setattr(MarketCalendar, "_get_holidays", unavailable_holidays)
+        allowed, reason = MarketRouter.is_trading_allowed(
+            Market.A_SHARES, datetime(2031, 5, 19, 2, 0, tzinfo=UTC)
+        )
+        assert allowed is False
+        assert "holiday calendar unavailable" in reason
+
     def test_unenabled_market_is_blocked(self):
         allowed, reason = MarketRouter.is_trading_allowed(
             Market.US_STOCKS, datetime(2026, 5, 18, 14, 0, tzinfo=UTC)
@@ -150,7 +253,7 @@ class TestMarketRouter:
         assert "primary_markets" in reason
 
     def test_loaded_session_override_controls_permission(self):
-        MarketRouter.configure(
+        MarketRouter._configure_for_testing(
             SystemSettings(
                 primary_markets=[Market.A_SHARES],
                 trading_sessions=[
@@ -158,11 +261,17 @@ class TestMarketRouter:
                         market=Market.A_SHARES,
                         sessions=[("10:00", "10:30")],
                         timezone="Asia/Shanghai",
+                        holiday_calendar="XSHG",
                     )
                 ],
                 market_rules=[
                     MarketRules(
-                        market=Market.A_SHARES, tick_size=0.01, lot_size=100, price_precision=2
+                        market=Market.A_SHARES,
+                        tick_size=0.01,
+                        lot_size=100,
+                        price_precision=2,
+                        data_sources=["tushare"],
+                        fee_model="cn_stock",
                     )
                 ],
             )
@@ -203,23 +312,30 @@ class TestContractMonth:
         d = {cm: "test"}
         assert d[cm] == "test"
 
+    @pytest.mark.parametrize("symbol", ["IF", "IF24AA", "IF2413", "2406"])
+    def test_invalid_contract_codes_are_rejected(self, symbol):
+        with pytest.raises(ValueError, match="invalid futures contract"):
+            ContractMonth(symbol)
+
 
 # ── FuturesRolloverDetector ───────────────────────────────────────────────────
 
 
 class TestFuturesRolloverDetector:
     def test_no_rollover_initially(self):
-        detector = FuturesRolloverDetector("IF")
+        detector = MarketRouter.create_futures_rollover_detector("IF")
         assert detector.dominant_contract is None
 
     def test_first_contract_becomes_dominant(self):
-        detector = FuturesRolloverDetector("IF")
+        detector = MarketRouter.create_futures_rollover_detector("IF")
         cm = ContractMonth("IF2406")
         detector.update_volume(cm, 10000)
         assert detector.dominant_contract == cm
 
     def test_rollover_detected(self):
-        detector = FuturesRolloverDetector("IF", consecutive_days=2)
+        audit = AuditBus()
+        configure_futures_rollover(FuturesRolloverPolicy(consecutive_volume_days=2))
+        detector = MarketRouter.create_futures_rollover_detector("IF", audit_bus=audit)
 
         cm1 = ContractMonth("IF2406")
         cm2 = ContractMonth("IF2409")
@@ -240,13 +356,119 @@ class TestFuturesRolloverDetector:
         assert new.code == "IF2409"
         assert detector.dominant_contract is not None
         assert detector.dominant_contract.code == "IF2409"
+        events = audit.query(event_type="futures_rollover_intent_detected")
+        assert events[-1]["payload"]["execution_authorized"] is False
+        assert events[-1]["payload"]["requires_manual_approval"] is True
 
     def test_rollover_cost_estimate(self):
-        detector = FuturesRolloverDetector("IF")
+        audit = AuditBus()
+        configure_futures_rollover(
+            FuturesRolloverPolicy(spread_cost_bps=10.0, commission_bps_per_leg=2.0)
+        )
+        detector = MarketRouter.create_futures_rollover_detector("IF", audit_bus=audit)
         old = ContractMonth("IF2406")
         new = ContractMonth("IF2409")
         cost = detector.rollover_cost_estimate(old, new, position=10, current_price=3500)
-        assert "spread_cost" in cost
-        assert "commission" in cost
-        assert "total" in cost
-        assert cost["total"] > 0
+        assert cost == {"spread_cost": 35.0, "commission": 14.0, "total": 49.0}
+        events = audit.query(event_type="futures_rollover_cost_estimated")
+        assert events[-1]["payload"]["spread_cost_bps"] == 10.0
+        assert events[-1]["payload"]["commission_bps_per_leg"] == 2.0
+
+    def test_different_leading_contracts_do_not_form_consecutive_roll_signal(self):
+        configure_futures_rollover(FuturesRolloverPolicy(consecutive_volume_days=2))
+        detector = MarketRouter.create_futures_rollover_detector("IF")
+        dominant = ContractMonth("IF2406")
+        first_candidate = ContractMonth("IF2409")
+        second_candidate = ContractMonth("IF2412")
+        detector.update_volume(dominant, 10000)
+
+        assert (
+            detector.check_rollover([(dominant, 5000), (first_candidate, 6000)], date(2024, 5, 1))
+            is None
+        )
+        assert (
+            detector.check_rollover([(dominant, 5000), (second_candidate, 7000)], date(2024, 5, 2))
+            is None
+        )
+        assert detector.dominant_contract == dominant
+
+    def test_same_date_observations_cannot_satisfy_consecutive_day_threshold(self):
+        audit = AuditBus()
+        configure_futures_rollover(FuturesRolloverPolicy(consecutive_volume_days=2))
+        detector = MarketRouter.create_futures_rollover_detector("IF", audit_bus=audit)
+        dominant = ContractMonth("IF2406")
+        candidate = ContractMonth("IF2409")
+        detector.update_volume(dominant, 10000)
+
+        assert (
+            detector.check_rollover([(dominant, 5000), (candidate, 6000)], date(2024, 5, 1)) is None
+        )
+        with pytest.raises(ValueError, match="strictly increasing"):
+            detector.check_rollover([(dominant, 4000), (candidate, 7000)], date(2024, 5, 1))
+        assert detector.dominant_contract == dominant
+        assert audit.query(event_type="futures_rollover_observation_rejected")
+
+    def test_rollover_rejects_duplicate_or_unrelated_contract_observations(self):
+        detector = MarketRouter.create_futures_rollover_detector("IF")
+        dominant = ContractMonth("IF2406")
+        detector.update_volume(dominant, 10000)
+        with pytest.raises(ValueError, match="duplicate contracts"):
+            detector.check_rollover([(dominant, 1), (dominant, 2)], date(2024, 5, 1))
+        with pytest.raises(ValueError, match="underlying IF"):
+            detector.check_rollover([(dominant, 1), (ContractMonth("IC2409"), 2)], date(2024, 5, 2))
+
+    def test_rollover_observation_requires_current_contract_and_forward_expiry(self):
+        detector = MarketRouter.create_futures_rollover_detector("IF")
+        dominant = ContractMonth("IF2409")
+        detector.update_volume(dominant, 10000)
+        with pytest.raises(ValueError, match="current dominant"):
+            detector.check_rollover([(ContractMonth("IF2412"), 7000)], date(2024, 5, 1))
+        with pytest.raises(ValueError, match="expire after"):
+            detector.check_rollover(
+                [(dominant, 5000), (ContractMonth("IF2406"), 6000)], date(2024, 5, 2)
+            )
+        assert (
+            detector.check_rollover(
+                [(dominant, 5000), (ContractMonth("IF2412"), 6000)], date(2024, 5, 2)
+            )
+            is None
+        )
+
+    def test_rollover_rejects_invalid_volume(self):
+        detector = MarketRouter.create_futures_rollover_detector("IF")
+        dominant = ContractMonth("IF2406")
+        detector.update_volume(dominant, 10000)
+        with pytest.raises(ValueError, match="finite and non-negative"):
+            detector.check_rollover(
+                [(dominant, 1), (ContractMonth("IF2409"), float("nan"))],
+                date(2024, 5, 1),
+            )
+
+    def test_initial_volume_rejects_unrelated_contract_or_invalid_volume(self):
+        detector = MarketRouter.create_futures_rollover_detector("IF")
+        with pytest.raises(ValueError, match="underlying IF"):
+            detector.update_volume(ContractMonth("IC2406"), 100)
+        with pytest.raises(ValueError, match="finite and non-negative"):
+            detector.update_volume(ContractMonth("IF2406"), -1)
+        assert detector.dominant_contract is None
+
+    def test_rollover_rejects_nonpositive_current_price(self):
+        detector = MarketRouter.create_futures_rollover_detector("IF")
+        with pytest.raises(ValueError, match="positive"):
+            detector.rollover_cost_estimate(
+                ContractMonth("IF2406"), ContractMonth("IF2409"), position=10, current_price=0
+            )
+
+    def test_direct_detector_construction_cannot_bypass_loaded_policy(self):
+        with pytest.raises(ValueError, match="configured MarketRouter"):
+            FuturesRolloverDetector("IF", policy=FuturesRolloverPolicy())
+
+    def test_rollover_factory_rejects_disabled_futures_market(self):
+        MarketRouter._configure_for_testing(SystemSettings())
+        with pytest.raises(ValueError, match="futures market must be enabled"):
+            MarketRouter.create_futures_rollover_detector("IF")
+
+    def test_rollover_factory_rejects_unconfigured_runtime(self, monkeypatch):
+        monkeypatch.setattr(MarketRouter, "_rollover_policy", None)
+        with pytest.raises(ValueError, match="must be configured"):
+            MarketRouter.create_futures_rollover_detector("IF")

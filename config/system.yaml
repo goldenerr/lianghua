@@ -13,12 +13,14 @@ trading_sessions:
       - ["09:30", "11:30"]
       - ["13:00", "15:00"]
     timezone: Asia/Shanghai
+    holiday_calendar: XSHG
   - market: 期货
     sessions:
       - ["09:30", "11:30"]
       - ["13:00", "15:00"]
       - ["21:00", "02:30"]   # 跨午夜夜盘
     timezone: Asia/Shanghai
+    holiday_calendar: XSHG
   - market: 加密货币
     sessions:
       - ["00:00", "24:00"]
@@ -27,6 +29,7 @@ trading_sessions:
     sessions:
       - ["09:30", "16:00"]   # DST is handled from America/New_York.
     timezone: America/New_York
+    holiday_calendar: NYSE
 
 # Market rules
 market_rules:
@@ -34,23 +37,38 @@ market_rules:
     tick_size: 0.01
     lot_size: 100
     price_precision: 2
+    data_sources: [tushare, akshare, yfinance]
+    fee_model: cn_stock
     settlement_time: "16:00"  # Market local time; T+1 settlement policy.
     settlement_window_minutes: 30
   - market: 期货
     tick_size: 1.0
     lot_size: 1
     price_precision: 0
+    data_sources: [tushare, akshare]
+    fee_model: cn_futures
     settlement_time: "15:30"
     settlement_window_minutes: 30
   - market: 加密货币
     tick_size: 0.01
     lot_size: 1
     price_precision: 2
+    data_sources: [ccxt, binance]
+    fee_model: crypto_maker_taker
     funding_rate: 0.0001
   - market: 美股
     tick_size: 0.01
     lot_size: 1
     price_precision: 2
+    data_sources: [polygon, yfinance]
+    fee_model: us_stock
+
+# Rollover detection produces approval-gated intent only; it never auto-submits orders.
+futures_rollover:
+  consecutive_volume_days: 3
+  spread_cost_bps: 5.0
+  commission_bps_per_leg: 0.5
+  require_manual_approval: true
 
 # Graceful shutdown
 close_positions_on_shutdown: false

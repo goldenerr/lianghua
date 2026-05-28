@@ -2,8 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Document version | 2.13.0-baseline |
-| Updated | 2026-05-25 |
+| Document version | 2.13.1-dev |
+| Updated | 2026-05-27 |
 | Status | Production blocked pending approval and operational evidence |
 | Config authority | `config/risk.yaml` plus approved, audited amendments |
 
@@ -11,6 +11,7 @@
 
 | Version | Date | Author | Change |
 | --- | --- | --- | --- |
+| 2.13.1-dev | 2026-05-27 | Codex | Enforce market-time order submission checks in development; no approved threshold changes |
 | 2.13.0-baseline | 2026-05-25 | Codex | Document enforceable limits, Safe Mode rules and approval gates |
 
 This policy summarizes required controls and the current development configuration. It does not approve production use, alter existing approved thresholds or authorize automated trading.
@@ -107,15 +108,19 @@ Emergency mode is required for configured severe loss, kill-switch or unrecovera
 
 All authoritative operational events must pass through the hash-chained audit bus. Local append-only archives are useful validation adapters but are not substitutes for approved external immutable retention in production.
 
-Production configuration loading is fail-closed: account YAML documents may contain an approved `secret_ref` only, never credential material or environment-variable substitutions. Runtime must resolve the reference through an approved secret integration and return a configuration approval reference bound to the public configuration hash before startup can succeed.
+Production configuration loading is fail-closed: account YAML documents may contain an approved `secret_ref` only, never credential material or environment-variable substitutions. Runtime must resolve the reference through an approved secret integration and return a configuration approval reference containing the full current public configuration hash before startup can succeed; a prefix, stale hash or unbound reference is rejected and audited.
 
-Market scheduling is also fail-closed at the configuration/router boundary: an enabled market must declare validated local-time trading sessions and rules, timestamps must carry timezone information, and settlement-window checks normalize to UTC. This boundary is not a substitute for the still-required final execution-path integration.
+Hash-bound configuration snapshots are immutable after validation: strategy factor sequences and account snapshots are tuples, while strategy-weight and API-endpoint mappings are read-only proxies with deterministic serialization. Account identity is unique across a loaded snapshot; duplicate `account_id` declarations reject activation and are audited. Production enabled accounts must bind to configured exchange API endpoints, and those endpoints must use HTTPS/WSS without URL-embedded credentials. These controls prevent runtime collection mutation, ambiguous account ownership and obvious plaintext endpoint exposure after a risk/configuration hash has been accepted; they do not replace production approval, signing, egress controls or secret-manager controls.
+
+Configuration load and hot-reload decisions emit hash-bound, non-secret metadata to the audit bus; invalid initial activation records a denial event when the authoritative bus is available. Market scheduling is fail-closed in configuration loading, runtime publication, the built-in strategy framework and the order-submission boundary: an enabled market must declare validated local-time trading sessions and rules, and each non-24/7 session must explicitly declare an approved `holiday_calendar`. Only `ConfigLoader` may publish market controls after configuration-hash validation, all mandatory activation audit events and, for production, approval-reference validation; an unwritable audit bus or a direct router call rejects publication. Candidate external validation is completed before the audited commit, after which a prevalidated in-memory swap synchronizes runtime controls and the loader cache; subsequent direct `load()` calls on an active loader are classified as audited reloads. Market session/rule/source collections are immutable after validation, and failed hot reload leaves the prior verified snapshot active. Market-rule configuration also declares approved data-source priority and fee-model identifiers; these are hash-bound and are unavailable, together with rules/calendars/settlement decisions, for disabled markets. Timestamps must carry timezone information, and settlement-window checks normalize to UTC. Active non-24/7 markets must initialize their configured exchange holiday calendar before controls are atomically published; later failed holiday lookup blocks trade decisions instead of falling back to weekdays. Non-finite or precision-inconsistent market rule configuration is rejected. At final order submission, quantity must be positive and match the configured lot size without upward normalization, and price fields must match order type and configured tick size. Generic strategy signals are suppressed during restricted periods. During a settlement restriction, an order marked `reduce_only` is allowed only after an injected independent validator confirms it reduces exposure; no such production validator is yet approved or connected.
+
+Futures rollover is approval-gated and fail-closed: detectors must be created from the configured `MarketRouter` while `期货` is explicitly active, so disabled markets cannot create rollover intent and callers cannot substitute unapproved policy values outside the hash-bound configuration. Volume leadership detection may emit an audited rollover intent and configured cost estimate only. It accepts only strictly increasing daily observations containing the current dominant contract, finite non-negative volumes, matching underlyings and forward-expiry targets; rejected input is audited without altering roll state. The same candidate contract must lead for the configured number of consecutive observations; alternating candidate contracts or repeated same-day input cannot trigger a roll. `futures_rollover.require_manual_approval` is fixed to `true`, and no close/open rollover orders are authorized by this configuration baseline.
 
 ## Validation Gates
 
 | Stage | Minimum evidence | Status as of 2026-05-25 |
 | --- | --- | --- |
-| Local regression | Coverage `>=80%`, deterministic and safety tests | Met locally: `588` passing, `84.97%` coverage; Ruff/Black/mypy clean |
+| Local regression | Coverage `>=80%`, deterministic and safety tests | Met locally: `664` passing, `85.60%` coverage; Ruff/Black/mypy clean |
 | Backtest approval | Validated full dataset, overfit controls and capital report | Not approved |
 | Paper trading | At least 3 months, performance no less than 70% of accepted backtest | Not completed |
 | Small live | At most 1% capital for at least 1 month with limits satisfied | Not started |
@@ -124,8 +129,8 @@ Market scheduling is also fail-closed at the configuration/router boundary: an e
 ## Outstanding Blockers
 
 - No completed external immutable archive integration or retention attestation.
-- No complete CI enforcement of signatures, drift reports and approval evidence.
+- No complete CI enforcement of signatures, drift reports and approval evidence; Python-private loader/test publication capabilities must be excluded from untrusted production extensions or covered by equivalent code-integrity enforcement.
 - Runtime now requires secret-manager and configuration-approval adapters for production, but no approved production service integration, market feed, benchmark, factor-registry or model-registry is connected.
-- Configured market-session and settlement restrictions are not yet bound to the final live order submission path.
+- No approved production reconciled-position-backed validator is connected for settlement-window `reduce_only` orders; configured data-source and fee-model identifiers still require their downstream `data-001`/`compliance-001` approved integrations; plugin strategies require independent enforcement evidence; the local holiday-calendar adapter still requires approved production operational evidence; and futures rollover execution remains intentionally unconnected pending approval and reconciliation controls.
 - No measured production-like latency, capacity or cross-region failover evidence.
 - No completed paper-trading or small-live acceptance period.

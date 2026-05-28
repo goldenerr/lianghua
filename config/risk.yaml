@@ -3,6 +3,7 @@
 # V5.9 Production: n=35, 90d, sector cap=5, MDD safeguards tightened
 # 2026-05-25 config-001: strict Pydantic validation enabled; no limit values changed.
 # 2026-05-25 config-002: market-session binding assessment recorded; no limit values changed.
+# 2026-05-27 config-001: hash-bound risk snapshot made deeply immutable; no limit values changed.
 
 # Position limits
 max_position_pct: 0.20       # 单品种 ≤20%
@@ -50,3 +51,5 @@ gates:
   max_mdd: -0.15
   min_win_rate: 0.40
   max_decay: 0.30
+
+# 2026-05-27 config-001: atomic audited config activation hardened; no risk limits changed.

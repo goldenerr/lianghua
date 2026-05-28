@@ -18,12 +18,9 @@ from .settings import Market, MarketRules, SystemSettings, TradingSession
 
 UTC = timezone.utc
 
-_MARKET_TO_CALENDAR: dict[Market, str] = {
-    Market.A_SHARES: "XSHG",
-    Market.US_STOCKS: "NYSE",
-    Market.HK_STOCKS: "HKEX",
-    Market.FUTURES: "XSHG",
-}
+
+class CalendarUnavailableError(ValueError):
+    """A required exchange holiday calendar cannot be trusted for decisions."""
 
 
 def _require_utc(dt: datetime) -> datetime:
@@ -93,6 +90,7 @@ class MarketCalendar:
     def __init__(self, configured: TradingSession):
         self.market = configured.market
         self.timezone = ZoneInfo(configured.timezone)
+        self.holiday_calendar = configured.holiday_calendar
         self.sessions = [
             Session.from_config(hours, f"{configured.market.value}-{index}")
             for index, hours in enumerate(configured.sessions)
@@ -106,6 +104,24 @@ class MarketCalendar:
     def to_market_time(self, dt: datetime) -> datetime:
         """Convert an aware decision timestamp to the configured local display time."""
         return _require_utc(dt).astimezone(self.timezone)
+
+    def validate_holiday_calendar(self) -> None:
+        """Fail startup when an active exchange calendar cannot be instantiated."""
+        if self.is_24_7:
+            return
+        cal_code = self.holiday_calendar
+        if cal_code is None:
+            raise CalendarUnavailableError(
+                f"{self.market.value} has no approved holiday calendar configured"
+            )
+        try:
+            import pandas_market_calendars as mcal
+
+            mcal.get_calendar(cal_code)
+        except Exception as exc:
+            raise CalendarUnavailableError(
+                f"{self.market.value} holiday calendar cannot be initialized"
+            ) from exc
 
     def is_trading_day(self, trading_date: date) -> bool:
         if self.is_24_7:
@@ -167,10 +183,11 @@ class MarketCalendar:
     def _get_holidays(self, year: int) -> set[date]:
         if year in self._holidays_by_year:
             return self._holidays_by_year[year]
-        cal_code = _MARKET_TO_CALENDAR.get(self.market)
+        cal_code = self.holiday_calendar
         if cal_code is None:
-            self._holidays_by_year[year] = set()
-            return self._holidays_by_year[year]
+            raise CalendarUnavailableError(
+                f"{self.market.value} has no approved holiday calendar configured"
+            )
         try:
             import pandas_market_calendars as mcal
 
@@ -178,13 +195,19 @@ class MarketCalendar:
                 start_date=f"{year}-01-01",
                 end_date=f"{year}-12-31",
             )
+            if schedule.empty:
+                raise CalendarUnavailableError(
+                    f"{self.market.value} holiday calendar returned no sessions for {year}"
+                )
             all_dates = pd.bdate_range(f"{year}-01-01", f"{year}-12-31")
             trading_dates = set(schedule.index.date)
             holidays = {day.date() for day in all_dates if day.date() not in trading_dates}
-        except ImportError:
-            holidays = set()
-        except Exception:
-            holidays = set()
+        except CalendarUnavailableError:
+            raise
+        except Exception as exc:
+            raise CalendarUnavailableError(
+                f"{self.market.value} holiday calendar unavailable for {year}"
+            ) from exc
         self._holidays_by_year[year] = holidays
         return holidays
 
@@ -197,13 +220,41 @@ class CalendarRegistry:
     _active_markets: ClassVar[set[Market]] = set()
 
     @classmethod
-    def configure(cls, settings: SystemSettings) -> None:
-        cls._calendars = {
+    def _prepare_validated(
+        cls, settings: SystemSettings
+    ) -> tuple[dict[Market, MarketCalendar], dict[Market, MarketRules], set[Market]]:
+        """Build and validate candidate controls without changing runtime state."""
+        calendars = {
             configured.market: MarketCalendar(configured)
             for configured in settings.trading_sessions
         }
-        cls._rules = {configured.market: configured for configured in settings.market_rules}
-        cls._active_markets = set(settings.primary_markets)
+        rules = {configured.market: configured for configured in settings.market_rules}
+        active_markets = set(settings.primary_markets)
+        for market in active_markets:
+            calendars[market].validate_holiday_calendar()
+        return calendars, rules, active_markets
+
+    @classmethod
+    def _configure_validated(cls, settings: SystemSettings) -> None:
+        """Publish market controls only after the upper configuration gate approves them."""
+        cls._publish_prepared(cls._prepare_validated(settings))
+
+    @classmethod
+    def _publish_prepared(
+        cls,
+        prepared: tuple[dict[Market, MarketCalendar], dict[Market, MarketRules], set[Market]],
+    ) -> None:
+        """Install previously validated controls without a second external lookup."""
+        calendars, rules, active_markets = prepared
+        # Publish only a fully validated registry; a failed reload keeps prior controls live.
+        cls._calendars = calendars
+        cls._rules = rules
+        cls._active_markets = active_markets
+
+    @classmethod
+    def _configure_for_testing(cls, settings: SystemSettings) -> None:
+        """Install validated model instances for isolated unit tests only."""
+        cls._configure_validated(settings)
 
     @classmethod
     def is_active(cls, market: Market) -> bool:
@@ -211,6 +262,8 @@ class CalendarRegistry:
 
     @classmethod
     def get(cls, market: Market) -> MarketCalendar:
+        if not cls.is_active(market):
+            raise ValueError(f"{market.value} is not enabled in primary_markets")
         try:
             return cls._calendars[market]
         except KeyError as exc:
@@ -218,6 +271,8 @@ class CalendarRegistry:
 
     @classmethod
     def get_rules(cls, market: Market) -> MarketRules:
+        if not cls.is_active(market):
+            raise ValueError(f"{market.value} is not enabled in primary_markets")
         try:
             return cls._rules[market]
         except KeyError as exc:
@@ -226,7 +281,14 @@ class CalendarRegistry:
     @classmethod
     def is_any_market_open(cls, markets: list[Market], dt: datetime | None = None) -> bool:
         check_dt = dt or datetime.now(UTC)
-        return any(cls.get(market).is_in_session(check_dt) for market in markets)
+        for market in markets:
+            try:
+                if cls.get(market).is_in_session(check_dt):
+                    return True
+            except ValueError:
+                # Aggregated availability queries must never treat uncertainty as open.
+                continue
+        return False
 
     @classmethod
     def all_markets_closed(cls, markets: list[Market], dt: datetime | None = None) -> bool:

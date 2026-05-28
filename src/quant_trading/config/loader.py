@@ -16,12 +16,14 @@ import json
 import logging
 import os
 import signal
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, TypeVar
 
 import yaml
 from pydantic import BaseModel
+
+from quant_trading.core.audit import AuditBus
 
 from .settings import (
     AccountConfig,
@@ -67,12 +69,14 @@ class ConfigLoader:
         env: Environment | None = None,
         secret_resolver: SecretResolver | None = None,
         approval_validator: ApprovalValidator | None = None,
+        audit_bus: AuditBus | None = None,
     ) -> None:
         self.config_dir = Path(config_dir)
         self._settings: QuantSettings | None = None
         self._env = env
         self._secret_resolver = secret_resolver
         self._approval_validator = approval_validator
+        self._audit = audit_bus or AuditBus()
 
     # ── Public API ────────────────────────────────────────────────────────
 
@@ -80,11 +84,113 @@ class ConfigLoader:
     def settings(self) -> QuantSettings:
         """获取当前配置。首次调用时加载。"""
         if self._settings is None:
-            self._settings = self.load()
+            return self.load()
         return self._settings
 
     def load(self, env: Environment | None = None) -> QuantSettings:
-        """加载并验证完整配置。"""
+        """Load once, treating subsequent activation through this loader as reload."""
+        operation = "reload" if self._settings is not None else "load"
+        return self._activate(env=env, operation=operation)
+
+    def reload(self) -> QuantSettings:
+        """Atomically hot-reload; failed candidates never erase verified settings."""
+        logger.info("Hot-reloading configuration...")
+        return self._activate(env=None, operation="reload")
+
+    def _activate(self, env: Environment | None, operation: str) -> QuantSettings:
+        """Audit and publish one candidate without splitting cache from runtime state."""
+        previous_settings = self._settings
+        previous_env = self._env
+        try:
+            settings = self._build_candidate(env)
+
+            from .market_router import _RUNTIME_PUBLICATION_TOKEN, MarketRouter
+
+            prepared = MarketRouter._prepare_loaded_snapshot(
+                settings, _publication_token=_RUNTIME_PUBLICATION_TOKEN
+            )
+            audit_payload = {
+                "environment": settings.system.env.value,
+                "config_hash": settings.config_hash,
+                "active_markets": [market.value for market in settings.system.primary_markets],
+                "account_count": len(settings.accounts),
+                "approval_present": bool(settings.config_approval_ref),
+                "operation": operation,
+            }
+            self._audit.record(
+                "configuration_snapshot_authorized_for_publish",
+                "config_loader",
+                audit_payload,
+            )
+            # This commit event is persisted before the non-throwing in-memory swap.
+            self._audit.record(
+                "configuration_snapshot_published",
+                "config_loader",
+                audit_payload,
+            )
+            if operation == "reload":
+                self._audit.record(
+                    "configuration_reloaded",
+                    "config_loader",
+                    {
+                        "previous_config_hash": (
+                            previous_settings.config_hash if previous_settings is not None else ""
+                        ),
+                        "new_config_hash": settings.config_hash,
+                        "changed": (
+                            previous_settings is None
+                            or previous_settings.config_hash != settings.config_hash
+                        ),
+                        "approval_present": bool(settings.config_approval_ref),
+                    },
+                )
+            MarketRouter._publish_prepared_snapshot(
+                settings, prepared, _publication_token=_RUNTIME_PUBLICATION_TOKEN
+            )
+            self._settings = settings
+        except Exception as exc:
+            self._settings = previous_settings
+            self._env = previous_env
+            self._record_activation_rejection(operation, previous_settings, exc)
+            raise
+
+        logger.info(
+            "Configuration %s: env=%s markets=%s accounts=%d",
+            "reloaded" if operation == "reload" else "loaded",
+            settings.system.env.value,
+            [market.value for market in settings.system.primary_markets],
+            len(settings.accounts),
+        )
+        return settings
+
+    def _record_activation_rejection(
+        self,
+        operation: str,
+        previous_settings: QuantSettings | None,
+        error: Exception,
+    ) -> None:
+        """Attempt to preserve a non-sensitive denial trail without masking the cause."""
+        event_type = (
+            "configuration_reload_rejected"
+            if operation == "reload"
+            else "configuration_load_rejected"
+        )
+        try:
+            self._audit.record(
+                event_type,
+                "config_loader",
+                {
+                    "previous_config_hash": (
+                        previous_settings.config_hash if previous_settings is not None else ""
+                    ),
+                    "error_type": type(error).__name__,
+                },
+            )
+        except Exception:
+            logger.error("Unable to audit rejected configuration %s", operation, exc_info=True)
+
+    def _build_candidate(self, env: Environment | None = None) -> QuantSettings:
+        """Build and validate a candidate snapshot without publishing runtime controls."""
         target_env = env or self._env or self._detect_env()
         self._env = target_env
 
@@ -125,7 +231,7 @@ class ConfigLoader:
             system=system,
             risk=risk,
             api=api,
-            accounts=accounts,
+            accounts=tuple(accounts),
             config_hash=self._public_config_hash(system, risk, api, accounts),
         )
 
@@ -139,23 +245,7 @@ class ConfigLoader:
         if target_env == Environment.PROD:
             settings = self._require_production_approval(settings)
 
-        from .market_router import MarketRouter
-
-        MarketRouter.configure(settings.system)
-
-        logger.info(
-            "Configuration loaded: env=%s markets=%s accounts=%d",
-            target_env.value,
-            [m.value for m in system.primary_markets],
-            len(accounts),
-        )
         return settings
-
-    def reload(self) -> QuantSettings:
-        """热重载配置 (通过 SIGHUP 或 API 触发)。"""
-        logger.info("Hot-reloading configuration...")
-        self._settings = None
-        return self.load()
 
     # ── Internal ──────────────────────────────────────────────────────────
 
@@ -305,12 +395,36 @@ class ConfigLoader:
 
     def _require_production_approval(self, settings: QuantSettings) -> QuantSettings:
         if self._approval_validator is None:
+            self._audit.record(
+                "configuration_approval_rejected",
+                "config_loader",
+                {"config_hash": settings.config_hash, "reason": "approval_validator_missing"},
+            )
             raise ValueError(
                 "Production configuration approval is required: configure an approval_validator."
             )
         approval_ref = self._approval_validator(settings).strip()
         if not approval_ref:
+            self._audit.record(
+                "configuration_approval_rejected",
+                "config_loader",
+                {"config_hash": settings.config_hash, "reason": "approval_reference_empty"},
+            )
             raise ValueError("Production configuration approval reference must not be empty.")
+        if settings.config_hash not in approval_ref:
+            self._audit.record(
+                "configuration_approval_rejected",
+                "config_loader",
+                {"config_hash": settings.config_hash, "reason": "config_hash_not_bound"},
+            )
+            raise ValueError(
+                "Production configuration approval reference must be bound to the full config hash."
+            )
+        self._audit.record(
+            "configuration_approval_verified",
+            "config_loader",
+            {"config_hash": settings.config_hash, "approval_present": True},
+        )
         return settings.model_copy(update={"config_approval_ref": approval_ref})
 
     @staticmethod
@@ -318,7 +432,7 @@ class ConfigLoader:
         system: SystemSettings,
         risk: RiskSettings,
         api: ApiSettings,
-        accounts: list[AccountConfig],
+        accounts: Sequence[AccountConfig],
     ) -> str:
         """Hash deploy-relevant configuration without credential material."""
         account_metadata = [

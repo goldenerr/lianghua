@@ -5,6 +5,8 @@ from datetime import date, datetime, timezone
 import pytest
 from quant_trading.config.market_calendar import (
     CalendarRegistry,
+    CalendarUnavailableError,
+    MarketCalendar,
     Session,
     SettlementWindow,
 )
@@ -15,7 +17,7 @@ UTC = timezone.utc
 
 @pytest.fixture(autouse=True)
 def configured_calendars() -> None:
-    CalendarRegistry.configure(
+    CalendarRegistry._configure_for_testing(
         SystemSettings(
             primary_markets=[Market.A_SHARES, Market.FUTURES, Market.CRYPTO, Market.US_STOCKS],
             trading_sessions=[
@@ -23,17 +25,20 @@ def configured_calendars() -> None:
                     market=Market.A_SHARES,
                     sessions=[("09:30", "11:30"), ("13:00", "15:00")],
                     timezone="Asia/Shanghai",
+                    holiday_calendar="XSHG",
                 ),
                 TradingSession(
                     market=Market.FUTURES,
                     sessions=[("09:30", "11:30"), ("13:00", "15:00"), ("21:00", "02:30")],
                     timezone="Asia/Shanghai",
+                    holiday_calendar="XSHG",
                 ),
                 TradingSession(market=Market.CRYPTO, sessions=[("00:00", "24:00")], timezone="UTC"),
                 TradingSession(
                     market=Market.US_STOCKS,
                     sessions=[("09:30", "16:00")],
                     timezone="America/New_York",
+                    holiday_calendar="NYSE",
                 ),
             ],
             market_rules=[
@@ -42,6 +47,8 @@ def configured_calendars() -> None:
                     tick_size=0.01,
                     lot_size=100,
                     price_precision=2,
+                    data_sources=["tushare"],
+                    fee_model="cn_stock",
                     settlement_time="16:00",
                 ),
                 MarketRules(
@@ -49,10 +56,26 @@ def configured_calendars() -> None:
                     tick_size=1,
                     lot_size=1,
                     price_precision=0,
+                    data_sources=["tushare"],
+                    fee_model="cn_futures",
                     settlement_time="15:30",
                 ),
-                MarketRules(market=Market.CRYPTO, tick_size=0.01, lot_size=1, price_precision=2),
-                MarketRules(market=Market.US_STOCKS, tick_size=0.01, lot_size=1, price_precision=2),
+                MarketRules(
+                    market=Market.CRYPTO,
+                    tick_size=0.01,
+                    lot_size=1,
+                    price_precision=2,
+                    data_sources=["ccxt"],
+                    fee_model="crypto_maker_taker",
+                ),
+                MarketRules(
+                    market=Market.US_STOCKS,
+                    tick_size=0.01,
+                    lot_size=1,
+                    price_precision=2,
+                    data_sources=["polygon"],
+                    fee_model="us_stock",
+                ),
             ],
         )
     )
@@ -76,10 +99,42 @@ class TestMarketCalendar:
         cal = CalendarRegistry.get(Market.A_SHARES)
         # Monday 10:00 CST = 2:00 UTC
         dt = datetime(2026, 5, 18, 2, 0, tzinfo=UTC)  # Monday
-        # is_trading_day might fail if pandas_market_calendars is not installed
-        # but fallback should work for non-holiday weekdays
         assert cal.is_trading_day(dt.date()) is True
         assert cal.is_in_session(dt) is True  # In morning session
+
+    def test_a_share_exchange_holiday_is_closed(self):
+        cal = CalendarRegistry.get(Market.A_SHARES)
+        assert cal.is_trading_day(date(2026, 1, 1)) is False
+
+    def test_calendar_provider_failure_fails_closed(self, monkeypatch):
+        import pandas_market_calendars as mcal
+
+        def unavailable_calendar(_code: str):
+            raise RuntimeError("provider unavailable")
+
+        monkeypatch.setattr(mcal, "get_calendar", unavailable_calendar)
+        cal = MarketCalendar(
+            TradingSession(
+                market=Market.A_SHARES,
+                sessions=[("09:30", "11:30")],
+                timezone="Asia/Shanghai",
+                holiday_calendar="XSHG",
+            )
+        )
+        with pytest.raises(CalendarUnavailableError, match="holiday calendar unavailable"):
+            cal.is_trading_day(date(2031, 5, 19))
+
+    def test_market_without_approved_calendar_fails_closed(self):
+        cal = MarketCalendar(
+            TradingSession(
+                market=Market.OPTIONS,
+                sessions=[("09:30", "11:30")],
+                timezone="Asia/Shanghai",
+                holiday_calendar="UNKNOWN_CALENDAR",
+            )
+        )
+        with pytest.raises(CalendarUnavailableError, match="holiday calendar unavailable"):
+            cal.is_trading_day(date(2031, 5, 19))
 
     def test_a_share_weekday_lunch_break(self):
         cal = CalendarRegistry.get(Market.A_SHARES)
@@ -182,6 +237,66 @@ class TestCalendarRegistry:
         dt = datetime(2026, 5, 16, 2, 0, tzinfo=UTC)
         assert CalendarRegistry.is_any_market_open([Market.A_SHARES], dt) is False
         assert CalendarRegistry.all_markets_closed([Market.A_SHARES], dt) is True
+
+    def test_calendar_failure_is_never_aggregated_as_open(self, monkeypatch):
+        def unavailable_holidays(_self: MarketCalendar, _year: int) -> set[date]:
+            raise CalendarUnavailableError("holiday calendar unavailable")
+
+        monkeypatch.setattr(MarketCalendar, "_get_holidays", unavailable_holidays)
+        dt = datetime(2031, 5, 19, 2, 0, tzinfo=UTC)
+        assert CalendarRegistry.is_any_market_open([Market.A_SHARES], dt) is False
+        assert CalendarRegistry.all_markets_closed([Market.A_SHARES], dt) is True
+
+    def test_unregistered_configured_calendar_is_rejected_before_registry_publish(self):
+        with pytest.raises(CalendarUnavailableError, match="cannot be initialized"):
+            CalendarRegistry._configure_for_testing(
+                SystemSettings(
+                    primary_markets=[Market.OPTIONS],
+                    trading_sessions=[
+                        TradingSession(
+                            market=Market.OPTIONS,
+                            sessions=[("09:30", "11:30")],
+                            timezone="Asia/Shanghai",
+                            holiday_calendar="UNKNOWN_CALENDAR",
+                        )
+                    ],
+                    market_rules=[
+                        MarketRules(
+                            market=Market.OPTIONS,
+                            tick_size=0.01,
+                            lot_size=1,
+                            price_precision=2,
+                            data_sources=["approved_provider"],
+                            fee_model="approved_options",
+                        )
+                    ],
+                )
+            )
+        assert CalendarRegistry.is_active(Market.A_SHARES) is True
+        assert CalendarRegistry.is_active(Market.OPTIONS) is False
+
+    def test_calendar_library_initialization_failure_blocks_registry_publish(self, monkeypatch):
+        import pandas_market_calendars as mcal
+
+        def initialization_failed(_code: str):
+            raise RuntimeError("calendar registration missing")
+
+        monkeypatch.setattr(mcal, "get_calendar", initialization_failed)
+        with pytest.raises(CalendarUnavailableError, match="cannot be initialized"):
+            CalendarRegistry._configure_for_testing(SystemSettings())
+        assert CalendarRegistry.is_active(Market.A_SHARES) is True
+
+    def test_inactive_market_cannot_bypass_registry_or_settlement_gate(self):
+        CalendarRegistry._configure_for_testing(SystemSettings())
+        assert CalendarRegistry.is_active(Market.FUTURES) is False
+        with pytest.raises(ValueError, match="primary_markets"):
+            CalendarRegistry.get(Market.FUTURES)
+        with pytest.raises(ValueError, match="primary_markets"):
+            CalendarRegistry.get_rules(Market.FUTURES)
+        with pytest.raises(ValueError, match="primary_markets"):
+            SettlementWindow.is_in_settlement_window(
+                Market.FUTURES, datetime(2026, 5, 18, 7, 15, tzinfo=UTC)
+            )
 
 
 # ── SettlementWindow ──────────────────────────────────────────────────────────

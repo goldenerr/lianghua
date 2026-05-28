@@ -7,7 +7,13 @@ All secrets use SecretStr/SecretBytes per AGENTS.md §2.
 
 from __future__ import annotations
 
+import math
+from collections import Counter
+from collections.abc import Mapping
 from enum import Enum
+from types import MappingProxyType
+from typing import Literal
+from urllib.parse import urlparse
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import (
@@ -16,6 +22,7 @@ from pydantic import (
     Field,
     SecretBytes,
     SecretStr,
+    field_serializer,
     field_validator,
     model_validator,
 )
@@ -65,8 +72,14 @@ class TradingSession(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
     market: Market
-    sessions: list[tuple[str, str]]  # [(HH:MM, HH:MM), ...]
+    sessions: tuple[tuple[str, str], ...]  # ((HH:MM, HH:MM), ...)
     timezone: str = "Asia/Shanghai"
+    holiday_calendar: str | None = Field(
+        default=None,
+        min_length=1,
+        pattern=r"^[A-Za-z0-9_.:-]+$",
+        description="Approved pandas_market_calendars identifier for non-24/7 markets",
+    )
 
     @field_validator("timezone")
     @classmethod
@@ -86,8 +99,13 @@ class TradingSession(BaseModel):
             close_minute = _clock_minute(closing, allow_end_of_day=True)
             if open_minute == close_minute:
                 raise ValueError("trading session must not have zero duration")
-        if self.market == Market.CRYPTO and self.sessions != [("00:00", "24:00")]:
+        is_full_day = self.sessions == (("00:00", "24:00"),)
+        if self.market == Market.CRYPTO and not is_full_day:
             raise ValueError("crypto market must declare its 24/7 session as 00:00-24:00")
+        if is_full_day and self.holiday_calendar is not None:
+            raise ValueError("24/7 market must not declare a holiday_calendar")
+        if not is_full_day and self.holiday_calendar is None:
+            raise ValueError("non-24/7 market must declare a holiday_calendar")
         return self
 
 
@@ -96,10 +114,16 @@ class MarketRules(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
     market: Market
-    tick_size: float = Field(gt=0, description="最小变动价位")
+    tick_size: float = Field(gt=0, allow_inf_nan=False, description="最小变动价位")
     lot_size: int = Field(ge=1, description="每手数量")
     price_precision: int = Field(ge=0, le=8, description="价格精度")
-    funding_rate: float | None = Field(None, description="资金费率 (crypto)")
+    data_sources: tuple[str, ...] = Field(min_length=1, description="按优先级排列的市场数据源标识")
+    fee_model: str = Field(
+        min_length=1,
+        pattern=r"^[A-Za-z0-9_.:-]+$",
+        description="经审批的税费模型标识",
+    )
+    funding_rate: float | None = Field(None, allow_inf_nan=False, description="资金费率 (crypto)")
     settlement_time: str | None = Field(None, description="市场本地结算时间 (HH:MM)")
     settlement_window_minutes: int = Field(default=30, ge=0, le=240)
 
@@ -109,6 +133,33 @@ class MarketRules(BaseModel):
         if value is not None:
             _clock_minute(value)
         return value
+
+    @field_validator("data_sources")
+    @classmethod
+    def valid_data_sources(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        normalized = tuple(source.strip() for source in value)
+        if any(not source for source in normalized):
+            raise ValueError("data_sources must not contain empty identifiers")
+        if len(normalized) != len(set(normalized)):
+            raise ValueError("data_sources must not contain duplicates")
+        return normalized
+
+    @model_validator(mode="after")
+    def tick_size_matches_precision(self) -> MarketRules:
+        scaled_tick = self.tick_size * 10**self.price_precision
+        if not math.isclose(scaled_tick, round(scaled_tick), rel_tol=0.0, abs_tol=1e-9):
+            raise ValueError("tick_size cannot be represented at price_precision")
+        return self
+
+
+class FuturesRolloverPolicy(BaseModel):
+    """Audited futures rollover intent policy; execution always requires approval."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+    consecutive_volume_days: int = Field(default=3, ge=1, le=20)
+    spread_cost_bps: float = Field(default=5.0, ge=0.0, le=1000.0, allow_inf_nan=False)
+    commission_bps_per_leg: float = Field(default=0.5, ge=0.0, le=1000.0, allow_inf_nan=False)
+    require_manual_approval: Literal[True] = True
 
 
 class ApiEndpointConfig(BaseModel):
@@ -133,6 +184,14 @@ class ApiCredentials(BaseModel):
     api_secret: SecretBytes  # bytes for binary signing keys
     passphrase: SecretStr | None = None
     subaccount: str | None = None
+
+    @field_validator("exchange")
+    @classmethod
+    def exchange_not_blank(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("credential exchange must not be empty")
+        return normalized
 
     @field_validator("api_key")
     @classmethod
@@ -162,6 +221,24 @@ class AccountConfig(BaseModel):
     enabled: bool = True
     default_leverage: float = Field(default=1.0, ge=1.0, le=125.0)
 
+    @field_validator("account_id", "name", "exchange")
+    @classmethod
+    def identity_fields_not_blank(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("account identity fields must not be empty")
+        return normalized
+
+    @field_validator("secret_ref")
+    @classmethod
+    def normalize_secret_reference(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("secret_ref must not be empty")
+        return normalized
+
     @model_validator(mode="after")
     def credentials_or_reference_present(self) -> AccountConfig:
         if self.credentials is None and not (self.secret_ref and self.secret_ref.strip()):
@@ -180,32 +257,36 @@ class SystemSettings(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     env: Environment = Environment.DEV
-    primary_markets: list[Market] = Field(
-        default=[Market.A_SHARES], min_length=1, description="主要交易市场列表"
+    primary_markets: tuple[Market, ...] = Field(
+        default=(Market.A_SHARES,), min_length=1, description="主要交易市场列表"
     )
-    trading_sessions: list[TradingSession] = Field(
-        default_factory=lambda: [
+    trading_sessions: tuple[TradingSession, ...] = Field(
+        default_factory=lambda: (
             TradingSession(
                 market=Market.A_SHARES,
-                sessions=[("09:30", "11:30"), ("13:00", "15:00")],
+                sessions=(("09:30", "11:30"), ("13:00", "15:00")),
                 timezone="Asia/Shanghai",
-            )
-        ],
+                holiday_calendar="XSHG",
+            ),
+        ),
         description="各市场交易时段（市场本地时间）",
     )
-    market_rules: list[MarketRules] = Field(
-        default_factory=lambda: [
+    market_rules: tuple[MarketRules, ...] = Field(
+        default_factory=lambda: (
             MarketRules(
                 market=Market.A_SHARES,
                 tick_size=0.01,
                 lot_size=100,
                 price_precision=2,
+                data_sources=("tushare", "akshare", "yfinance"),
+                fee_model="cn_stock",
                 funding_rate=None,
                 settlement_time="16:00",
-            )
-        ],
+            ),
+        ),
         description="各市场交易规则",
     )
+    futures_rollover: FuturesRolloverPolicy = Field(default_factory=FuturesRolloverPolicy)
     # Graceful shutdown
     close_positions_on_shutdown: bool = False
     shutdown_timeout_seconds: int = Field(default=30, ge=5, le=300)
@@ -217,7 +298,7 @@ class SystemSettings(BaseModel):
 
     @field_validator("primary_markets")
     @classmethod
-    def no_duplicate_markets(cls, v: list[Market]) -> list[Market]:
+    def no_duplicate_markets(cls, v: tuple[Market, ...]) -> tuple[Market, ...]:
         if len(v) != len(set(v)):
             raise ValueError("primary_markets contains duplicates")
         return v
@@ -295,9 +376,18 @@ class StrategyRiskSettings(BaseModel):
 
     top_n: int = Field(ge=1)
     rebalance_freq_days: int = Field(ge=1)
-    factors: list[str] = Field(min_length=1)
-    weights: dict[str, float] = Field(min_length=1)
+    factors: tuple[str, ...] = Field(min_length=1)
+    weights: Mapping[str, float] = Field(min_length=1)
     sector_cap: int = Field(ge=1)
+
+    @field_validator("weights")
+    @classmethod
+    def immutable_weights(cls, value: Mapping[str, float]) -> Mapping[str, float]:
+        return MappingProxyType(dict(value))
+
+    @field_serializer("weights")
+    def serialize_weights(self, value: Mapping[str, float]) -> dict[str, float]:
+        return dict(value)
 
     @model_validator(mode="after")
     def factors_and_weights_consistent(self) -> StrategyRiskSettings:
@@ -331,7 +421,20 @@ class ApiSettings(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    exchanges: dict[str, ApiEndpointConfig] = Field(default_factory=dict)
+    exchanges: Mapping[str, ApiEndpointConfig] = Field(default_factory=lambda: MappingProxyType({}))
+
+    @field_validator("exchanges")
+    @classmethod
+    def immutable_exchanges(
+        cls, value: Mapping[str, ApiEndpointConfig]
+    ) -> Mapping[str, ApiEndpointConfig]:
+        return MappingProxyType(dict(value))
+
+    @field_serializer("exchanges")
+    def serialize_exchanges(
+        self, value: Mapping[str, ApiEndpointConfig]
+    ) -> dict[str, ApiEndpointConfig]:
+        return dict(value)
 
 
 class QuantSettings(BaseModel):
@@ -345,7 +448,7 @@ class QuantSettings(BaseModel):
     system: SystemSettings = Field(default_factory=SystemSettings)
     risk: RiskSettings = Field(default_factory=RiskSettings)
     api: ApiSettings = Field(default_factory=ApiSettings)
-    accounts: list[AccountConfig] = Field(default_factory=list)
+    accounts: tuple[AccountConfig, ...] = Field(default_factory=tuple)
     # 运行时的系统版本清单 (core-004 填充)
     version: str = "0.1.0"
     config_hash: str = ""
@@ -368,6 +471,8 @@ def validate_config(settings: QuantSettings) -> list[str]:
         errors.append("system.primary_markets must not be empty")
     if settings.system.env == Environment.PROD and not settings.system.require_manual_approval:
         errors.append("production requires manual approval for funds-impacting operations")
+    if settings.system.env == Environment.PROD:
+        errors.extend(_validate_production_api_endpoints(settings))
 
     try:
         RiskSettings.model_validate(settings.risk.model_dump())
@@ -385,9 +490,48 @@ def validate_config(settings: QuantSettings) -> list[str]:
         except Exception:
             errors.append(f"accounts[{i}].api_key is missing or invalid")
 
+    duplicated_accounts = sorted(
+        account_id
+        for account_id, count in Counter(
+            account.account_id for account in settings.accounts
+        ).items()
+        if count > 1
+    )
+    if duplicated_accounts:
+        errors.append(f"duplicate account_id values are prohibited: {duplicated_accounts}")
+
     if settings.system.auto_trade_enabled and not any(
         account.enabled and account.credentials is not None for account in settings.accounts
     ):
         errors.append("automatic trading requires an enabled account with resolved credentials")
 
+    return errors
+
+
+def _validate_production_api_endpoints(settings: QuantSettings) -> list[str]:
+    """Fail closed when production accounts are not bound to approved TLS endpoints."""
+    errors: list[str] = []
+    configured_exchanges = set(settings.api.exchanges)
+    for account in settings.accounts:
+        if account.enabled and account.exchange not in configured_exchanges:
+            errors.append(
+                f"production account {account.account_id} exchange {account.exchange} "
+                "has no configured API endpoint"
+            )
+    for exchange, endpoint in settings.api.exchanges.items():
+        base = urlparse(endpoint.base_url)
+        if base.scheme != "https" or not base.netloc:
+            errors.append(f"production API endpoint {exchange}.base_url must use HTTPS")
+        if base.username or base.password:
+            errors.append(
+                f"production API endpoint {exchange}.base_url must not contain credentials"
+            )
+        if endpoint.ws_url is not None:
+            websocket = urlparse(endpoint.ws_url)
+            if websocket.scheme != "wss" or not websocket.netloc:
+                errors.append(f"production API endpoint {exchange}.ws_url must use WSS")
+            if websocket.username or websocket.password:
+                errors.append(
+                    f"production API endpoint {exchange}.ws_url must not contain credentials"
+                )
     return errors

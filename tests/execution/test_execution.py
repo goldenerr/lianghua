@@ -2,9 +2,13 @@
 
 import asyncio
 import time
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pytest
+from quant_trading.config.market_calendar import MarketCalendar
+from quant_trading.config.market_router import MarketRouter
+from quant_trading.config.settings import Market, MarketRules, SystemSettings, TradingSession
 from quant_trading.core.audit import AuditBus
 from quant_trading.core.state_machine import SystemState, SystemStateMachine
 from quant_trading.execution.fast_path import FastPath, LatencyBudget
@@ -23,11 +27,18 @@ from quant_trading.execution.order_manager import (
 )
 from quant_trading.execution.reconciler import PositionReconciler
 
+UTC = timezone.utc
+
 
 def _running_order_manager(audit_bus=None):
     fsm = SystemStateMachine()
     fsm.transition(SystemState.RUNNING)
-    return OrderManager(audit_bus=audit_bus, system_fsm=fsm)
+    MarketRouter._configure_for_testing(SystemSettings())
+    return OrderManager(
+        audit_bus=audit_bus,
+        system_fsm=fsm,
+        decision_clock=lambda: datetime(2026, 5, 18, 2, 0, tzinfo=UTC),
+    )
 
 
 # ── Order Manager ──────────────────────────────────────────────────
@@ -63,7 +74,7 @@ class TestOrder:
 class TestOrderManager:
     def test_submit_order(self):
         om = _running_order_manager()
-        o = Order("id-1", "600519.SH", OrderSide.BUY, 100)
+        o = Order("id-1", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
         oid = om.submit(o)
         assert oid == "id-1"
         assert o.status == OrderStatus.SUBMITTED
@@ -72,18 +83,18 @@ class TestOrderManager:
     def test_submit_idempotent_client_id(self):
         """AGENTS.md §36: unique client_order_id, re-submit returns existing."""
         om = _running_order_manager()
-        o1 = Order("dup-id", "AAPL", OrderSide.BUY, 10)
-        o2 = Order("dup-id", "AAPL", OrderSide.BUY, 20)
+        o1 = Order("dup-id", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
+        o2 = Order("dup-id", "600519.SH", OrderSide.BUY, 200, market=Market.A_SHARES)
         om.submit(o1)
         om.submit(o2)
         result = om.get("dup-id")
         assert result is not None
-        assert result.quantity == 10  # idempotent replay keeps original
+        assert result.quantity == 100  # idempotent replay keeps original
 
     def test_order_manager_emits_audit_events(self):
         audit = AuditBus()
         om = _running_order_manager(audit_bus=audit)
-        o = Order("evt-1", "AAPL", OrderSide.BUY, 10)
+        o = Order("evt-1", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
         om.submit(o)
         om.cancel("evt-1")
         events = audit.query(limit=10)
@@ -93,7 +104,7 @@ class TestOrderManager:
 
     def test_cancel_order(self):
         om = _running_order_manager()
-        o = Order("c-1", "AAPL", OrderSide.SELL, 50)
+        o = Order("c-1", "600519.SH", OrderSide.SELL, 100, market=Market.A_SHARES)
         om.submit(o)
         assert om.cancel("c-1") is True
         assert o.status == OrderStatus.CANCELLED
@@ -108,8 +119,8 @@ class TestOrderManager:
 
     def test_get_active_filters_cancelled(self):
         om = _running_order_manager()
-        om.submit(Order("a-1", "AAPL", OrderSide.BUY, 10))
-        o2 = Order("a-2", "AAPL", OrderSide.BUY, 20)
+        om.submit(Order("a-1", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES))
+        o2 = Order("a-2", "600519.SH", OrderSide.BUY, 200, market=Market.A_SHARES)
         om.submit(o2)
         om.cancel("a-2")
         active = om.get_active()
@@ -118,13 +129,15 @@ class TestOrderManager:
 
     def test_get_active_includes_submitted_and_pending(self):
         om = _running_order_manager()
-        om.submit(Order("p-1", "AAPL", OrderSide.BUY, 10))  # goes to SUBMITTED
+        om.submit(
+            Order("p-1", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
+        )  # goes to SUBMITTED
         assert len(om.get_active()) == 1
 
     def test_multiple_orders(self):
         om = _running_order_manager()
         for i in range(5):
-            om.submit(Order(f"m-{i}", "AAPL", OrderSide.BUY, 10))
+            om.submit(Order(f"m-{i}", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES))
         assert len(om.get_active()) == 5
 
     def test_order_blocked_when_system_not_running(self):
@@ -139,9 +152,234 @@ class TestOrderManager:
     def test_order_allowed_when_system_running(self):
         fsm = SystemStateMachine()
         fsm.transition(SystemState.RUNNING)
-        om = OrderManager(system_fsm=fsm)
-        oid = om.submit(Order("run-1", "AAPL", OrderSide.BUY, 1))
+        MarketRouter._configure_for_testing(SystemSettings())
+        om = OrderManager(
+            system_fsm=fsm,
+            decision_clock=lambda: datetime(2026, 5, 18, 2, 0, tzinfo=UTC),
+        )
+        oid = om.submit(Order("run-1", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES))
         assert oid == "run-1"
+
+    def test_order_quantity_must_match_configured_lot_size(self):
+        audit = AuditBus()
+        om = _running_order_manager(audit_bus=audit)
+        with pytest.raises(RuntimeError, match="lot size 100"):
+            om.submit(Order("odd-lot", "600519.SH", OrderSide.BUY, 101, market=Market.A_SHARES))
+        events = audit.query(event_type="order_rejected_market_rule")
+        assert events[-1]["payload"]["client_order_id"] == "odd-lot"
+
+    @pytest.mark.parametrize(
+        ("order", "expected_reason"),
+        [
+            (
+                Order(
+                    "limit-missing",
+                    "600519.SH",
+                    OrderSide.BUY,
+                    100,
+                    OrderType.LIMIT,
+                    market=Market.A_SHARES,
+                ),
+                "requires price only",
+            ),
+            (
+                Order(
+                    "limit-tick",
+                    "600519.SH",
+                    OrderSide.BUY,
+                    100,
+                    OrderType.LIMIT,
+                    price=10.005,
+                    market=Market.A_SHARES,
+                ),
+                "tick size",
+            ),
+            (
+                Order(
+                    "market-price",
+                    "600519.SH",
+                    OrderSide.BUY,
+                    100,
+                    price=10.01,
+                    market=Market.A_SHARES,
+                ),
+                "must not contain price",
+            ),
+        ],
+    )
+    def test_invalid_price_fields_are_rejected_before_submission(self, order, expected_reason):
+        om = _running_order_manager()
+        with pytest.raises(RuntimeError, match=expected_reason):
+            om.submit(order)
+
+    def test_aligned_limit_and_stop_orders_pass_market_rule_gate(self):
+        om = _running_order_manager()
+        assert (
+            om.submit(
+                Order(
+                    "valid-limit",
+                    "600519.SH",
+                    OrderSide.BUY,
+                    100,
+                    OrderType.LIMIT,
+                    price=10.01,
+                    market=Market.A_SHARES,
+                )
+            )
+            == "valid-limit"
+        )
+        assert (
+            om.submit(
+                Order(
+                    "valid-stop",
+                    "600519.SH",
+                    OrderSide.SELL,
+                    100,
+                    OrderType.STOP,
+                    stop_price=9.99,
+                    market=Market.A_SHARES,
+                )
+            )
+            == "valid-stop"
+        )
+
+    def test_order_without_market_is_rejected_at_submission_boundary(self):
+        audit = AuditBus()
+        om = _running_order_manager(audit_bus=audit)
+        with pytest.raises(RuntimeError, match="market is required"):
+            om.submit(Order("no-market", "600519.SH", OrderSide.BUY, 1))
+        events = audit.query(event_type="order_rejected_market_schedule")
+        assert events[-1]["payload"]["market"] is None
+
+    def test_order_outside_session_is_rejected_and_audited(self):
+        audit = AuditBus()
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        MarketRouter._configure_for_testing(SystemSettings())
+        om = OrderManager(
+            audit_bus=audit,
+            system_fsm=fsm,
+            decision_clock=lambda: datetime(2026, 5, 18, 4, 0, tzinfo=UTC),
+        )
+        with pytest.raises(RuntimeError, match="not in trading session"):
+            om.submit(Order("lunch", "600519.SH", OrderSide.BUY, 1, market=Market.A_SHARES))
+        assert len(audit.query(event_type="order_rejected_market_schedule")) == 1
+
+    def test_unzoned_submission_time_is_rejected_and_audited(self):
+        audit = AuditBus()
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        MarketRouter._configure_for_testing(SystemSettings())
+        om = OrderManager(
+            audit_bus=audit,
+            system_fsm=fsm,
+            decision_clock=lambda: datetime(2026, 5, 18, 2, 0),
+        )
+        with pytest.raises(RuntimeError, match="timezone-aware"):
+            om.submit(Order("naive-ts", "600519.SH", OrderSide.BUY, 1, market=Market.A_SHARES))
+        assert len(audit.query(event_type="order_rejected_market_schedule")) == 1
+
+    def test_unavailable_holiday_calendar_rejects_order_and_is_audited(self, monkeypatch):
+        def unavailable_holidays(_self: MarketCalendar, _year: int) -> set[date]:
+            raise ValueError("holiday calendar unavailable")
+
+        monkeypatch.setattr(MarketCalendar, "_get_holidays", unavailable_holidays)
+        audit = AuditBus()
+        om = _running_order_manager(audit_bus=audit)
+        with pytest.raises(RuntimeError, match="holiday calendar unavailable"):
+            om.submit(Order("calendar-down", "600519.SH", OrderSide.BUY, 1, market=Market.A_SHARES))
+        events = audit.query(event_type="order_rejected_market_schedule")
+        assert events[-1]["payload"]["reason"] == "holiday calendar unavailable"
+
+    def test_settlement_window_only_allows_reduce_only_orders(self):
+        MarketRouter._configure_for_testing(
+            SystemSettings(
+                primary_markets=[Market.A_SHARES],
+                trading_sessions=[
+                    TradingSession(
+                        market=Market.A_SHARES,
+                        sessions=[("09:30", "16:00")],
+                        timezone="Asia/Shanghai",
+                        holiday_calendar="XSHG",
+                    )
+                ],
+                market_rules=[
+                    MarketRules(
+                        market=Market.A_SHARES,
+                        tick_size=0.01,
+                        lot_size=100,
+                        price_precision=2,
+                        data_sources=["tushare"],
+                        fee_model="cn_stock",
+                        settlement_time="16:00",
+                        settlement_window_minutes=30,
+                    )
+                ],
+            )
+        )
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        om = OrderManager(
+            system_fsm=fsm,
+            decision_clock=lambda: datetime(2026, 5, 18, 7, 45, tzinfo=UTC),
+            reduce_only_validator=lambda order: order.side == OrderSide.SELL,
+        )
+        with pytest.raises(RuntimeError, match="settlement window"):
+            om.submit(Order("open-risk", "600519.SH", OrderSide.BUY, 1, market=Market.A_SHARES))
+        oid = om.submit(
+            Order(
+                "reduce-risk",
+                "600519.SH",
+                OrderSide.SELL,
+                100,
+                market=Market.A_SHARES,
+                reduce_only=True,
+            )
+        )
+        assert oid == "reduce-risk"
+
+    def test_unverified_reduce_only_order_cannot_bypass_settlement_window(self):
+        MarketRouter._configure_for_testing(
+            SystemSettings(
+                primary_markets=[Market.A_SHARES],
+                trading_sessions=[
+                    TradingSession(
+                        market=Market.A_SHARES,
+                        sessions=[("09:30", "16:00")],
+                        timezone="Asia/Shanghai",
+                        holiday_calendar="XSHG",
+                    )
+                ],
+                market_rules=[
+                    MarketRules(
+                        market=Market.A_SHARES,
+                        tick_size=0.01,
+                        lot_size=100,
+                        price_precision=2,
+                        data_sources=["tushare"],
+                        fee_model="cn_stock",
+                        settlement_time="16:00",
+                    )
+                ],
+            )
+        )
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        om = OrderManager(
+            system_fsm=fsm,
+            decision_clock=lambda: datetime(2026, 5, 18, 7, 45, tzinfo=UTC),
+        )
+        with pytest.raises(RuntimeError, match="settlement window"):
+            om.submit(
+                Order(
+                    "forged-reduce",
+                    "600519.SH",
+                    OrderSide.SELL,
+                    1,
+                    market=Market.A_SHARES,
+                    reduce_only=True,
+                )
+            )
 
 
 # ── Position Reconciler ────────────────────────────────────────────

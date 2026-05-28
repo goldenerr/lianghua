@@ -16,14 +16,23 @@ trading_sessions:
       - ["09:30", "11:30"]                  # Market local time
       - ["13:00", "15:00"]
     timezone: Asia/Shanghai
+    holiday_calendar: XSHG
 
 market_rules:
   - market: A股
     tick_size: 0.01
     lot_size: 100
     price_precision: 2
+    data_sources: [tushare, akshare, yfinance]
+    fee_model: cn_stock
     settlement_time: "16:00"                # Market local time
     settlement_window_minutes: 30
+
+futures_rollover:
+  consecutive_volume_days: 3
+  spread_cost_bps: 5.0
+  commission_bps_per_leg: 0.5
+  require_manual_approval: true             # Intent only; no automatic rollover orders
 
 close_positions_on_shutdown: false
 shutdown_timeout_seconds: 30

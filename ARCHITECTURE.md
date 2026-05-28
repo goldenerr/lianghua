@@ -2,8 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Document version | 2.13.0-baseline |
-| Updated | 2026-05-25 |
+| Document version | 2.13.1-dev |
+| Updated | 2026-05-28 |
 | Status | Production blocked pending release evidence and approvals |
 | Authority | `AGENTS.md`, `feature_list.json`, approved configuration and audit events |
 
@@ -11,6 +11,7 @@
 
 | Version | Date | Author | Change |
 | --- | --- | --- | --- |
+| 2.13.1-dev | 2026-05-27 | Codex | Bind configured market-time gate to order submission in development, retaining production blockers |
 | 2.13.0-baseline | 2026-05-25 | Codex | Establish architecture, NFR, data-flow and gate baseline without asserting production approval |
 
 This document records the safety architecture implemented in the repository and the validation still required. It is not an authorization to trade. A feature may only be released when its capital-impact assessment, risk approval, signed artifact and required validation evidence have been archived.
@@ -18,7 +19,7 @@ This document records the safety architecture implemented in the repository and 
 ## Release Posture
 
 - `feature_list.json` intentionally has no `passes=true` entries as of 2026-05-25.
-- The current verified local baseline is `588` passing tests at `84.97%` source coverage, with Ruff, Black and strict mypy passing.
+- The current verified local baseline is `664` passing tests at `85.60%` source coverage, with Ruff, Black and strict mypy passing.
 - Production trading remains prohibited until paper-trading, small-live, approval, external archival, secrets and deployment gates are completed.
 - The core design rule is funds safety before strategy return and development speed.
 
@@ -117,8 +118,8 @@ sequenceDiagram
 | All components | Audit bus | Hash-chained structured event is authoritative | Integrity failure blocks release |
 | Compliance | Archive adapter | Template-derived export plus hash-chain verification | External WORM remains required for production |
 | Deployment | Runtime | Signed manifest, config drift decision, canary gate | Failed verification blocks rollout |
-| Configuration loader | Runtime | Strict validated fields, environment-scoped accounts, production `secret_ref` resolution and approval reference | Production startup fails closed without resolver/approval |
-| Market configuration | Router/calendar | Validated active markets, market-local sessions normalized to UTC and configured settlement windows | Inactive/unconfigured markets and unzoned timestamps fail closed |
+| Configuration loader | Runtime | Strict validated fields, immutable system/risk/API/account snapshots, unique account identities, audited atomic activation/reload/initial rejection decisions, environment-scoped accounts, production `secret_ref` resolution, TLS-only production endpoint binding and full-hash-bound approval reference | Production startup fails closed without resolver/approval; duplicate account identities, missing or non-TLS production endpoints, stale approval, unaudited activation and post-hash collection mutation are blocked |
+| Market configuration | Config loader/router/calendar/strategy/order manager/rollover detector | Prevalidated audit-authorized loader-only hash-bound runtime publication, synchronized loader/runtime snapshots, immutable validated market-control collections, market-local sessions, explicit `holiday_calendar`, configured data-source priority/fee-model identifiers, lot/tick submission controls and approval-gated futures rollover cost policy | Direct publication, unavailable mandatory audit writes, failed reload candidates and inactive market lookups fail closed; rollover is disabled unless futures is active and cannot auto-submit orders |
 
 ## Invariants
 
@@ -145,7 +146,7 @@ These are target requirements, not yet production benchmark evidence.
 | Availability | `>= 99.9%` | Local disaster/failover tests only | Blocked |
 | Recovery time objective | `<= 2 hours` | Local recovery tests only | Blocked |
 | Recovery point objective | `<= 1 hour` | Local backup manifest tests only | Blocked |
-| Test coverage | Core modules `>= 80%` | `84.97%`, `588` tests passed locally on 2026-05-25; Ruff/Black/mypy clean | Met locally |
+| Test coverage | Core modules `>= 80%` | `85.60%`, `664` tests passed locally on 2026-05-28; Ruff/Black/mypy clean | Met locally |
 
 ## Capacity Planning
 
@@ -186,6 +187,6 @@ Capacity values must be measured under approved datasets and infrastructure befo
 - Approved external WORM/audit retention service is not integrated.
 - CI/CD does not yet enforce every signed artifact, config drift and capital-approval gate.
 - Production configuration now fails closed unless secret and approval validators are injected; real secret-manager/approval services, benchmark/feed adapters, model/factor registry and dashboard integrations still need approved environments.
-- Market schedule controls are configuration-driven locally, but final execution-path enforcement and approved production holiday/calendar evidence remain pending.
+- Market schedule controls and configured lot/tick/price-field rules are bound to built-in strategy signal generation and `OrderManager.submit()` locally; hidden market-to-calendar, data-source-priority and fee-model routing constants have been externalized as strict configuration included in the public configuration hash. Only `ConfigLoader` can publish a runtime market-control snapshot after hash and production-approval checks; direct router publication is refused even if a caller fabricates hash or approval strings. Market-control collections are immutable after validation, and failed hot reload retains the prior verified snapshot. Disabled markets cannot provide routing metadata, rules, calendars or settlement-window decisions. Quantity normalization never rounds requested exposure upward, and invalid rule numerics fail configuration validation. Futures rollover detectors can now be created only by the configured `MarketRouter` while `期货` is active, emit an audited manual-approval-only intent with configured cost assumptions, and reject duplicate dates, invalid volumes, missing current contracts, unrelated contracts and backward-expiry targets before changing state; they deliberately do not generate closing/opening orders until execution, position-reconciliation and approval evidence are approved. Python-private loader/test installation capabilities remain protected by code review/signing governance rather than a process isolation boundary. A production reconciled-position-backed `reduce_only` validator, downstream data/compliance adapter integration evidence, plugin-strategy enforcement evidence and approved production holiday/calendar/rollover execution evidence remain pending.
 - Capacity, latency and multi-region recovery targets have not been measured on production-like infrastructure.
 - Paper and small-live acceptance durations have not been completed.

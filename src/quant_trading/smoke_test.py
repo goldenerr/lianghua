@@ -6,6 +6,7 @@ AGENTS.md section 17: backtest/live consistency difference must be less than 5%.
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any
 
 import numpy as np
@@ -18,6 +19,8 @@ from quant_trading.backtest.engine import (
     PerformanceMetrics,
 )
 from quant_trading.backtest.report import ReportGenerator
+from quant_trading.config.market_router import MarketRouter
+from quant_trading.config.settings import Market, SystemSettings
 from quant_trading.core.state_machine import SystemState, SystemStateMachine
 from quant_trading.execution.order_manager import Order, OrderManager, OrderSide
 from quant_trading.monitor.monitor import SystemMonitor
@@ -127,8 +130,13 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     # ── Step 1: Order Manager ──────────────────────────────────────
     fsm = SystemStateMachine()
     fsm.transition(SystemState.RUNNING)
-    om = OrderManager(system_fsm=fsm)
-    o = Order("smoke-1", "600519.SH", OrderSide.BUY, 100)
+    # Smoke uses an isolated validated-model fixture, never a live publication path.
+    MarketRouter._configure_for_testing(SystemSettings())
+    om = OrderManager(
+        system_fsm=fsm,
+        decision_clock=lambda: datetime(2026, 5, 18, 2, 0, tzinfo=timezone.utc),
+    )
+    o = Order("smoke-1", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
     om.submit(o)
     ok = o.status.value == "submitted" and om.get("smoke-1") is not None
     steps.append({"step": "order_manager", "passed": ok, "detail": "submit + get"})
