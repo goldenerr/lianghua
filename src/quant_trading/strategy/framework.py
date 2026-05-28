@@ -9,7 +9,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 
@@ -57,6 +57,25 @@ class StrategyConfig:
 
 class Strategy(ABC):
     """Abstract base for all strategies."""
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        original = cls.__dict__.get("on_data")
+        if original is None or getattr(original, "_market_schedule_guarded", False):
+            return
+        original_on_data = cast(
+            Callable[[Strategy, dict[str, pd.DataFrame]], list[Signal]], original
+        )
+
+        def guarded_on_data(self: Strategy, data: dict[str, pd.DataFrame]) -> list[Signal]:
+            if not self._signals_allowed_by_market_schedule():
+                return []
+            return original_on_data(self, data)
+
+        guarded_on_data.__name__ = original.__name__
+        guarded_on_data.__doc__ = original.__doc__
+        guarded_on_data._market_schedule_guarded = True  # type: ignore[attr-defined]
+        cls.on_data = guarded_on_data  # type: ignore[method-assign]
 
     def __init__(
         self,
@@ -154,8 +173,6 @@ class MovingAverageCrossStrategy(Strategy):
 
     def on_data(self, data: dict[str, pd.DataFrame]) -> list[Signal]:
         self._bar_count += 1
-        if not self._signals_allowed_by_market_schedule():
-            return []
         signals = []
         for sym, df in data.items():
             if len(df) < self.slow:
@@ -184,8 +201,6 @@ class RSIStrategy(Strategy):
 
     def on_data(self, data: dict[str, pd.DataFrame]) -> list[Signal]:
         self._bar_count += 1
-        if not self._signals_allowed_by_market_schedule():
-            return []
         signals = []
         period = self.config.parameters.get("period", 14)
         oversold = self.config.parameters.get("oversold", 30)

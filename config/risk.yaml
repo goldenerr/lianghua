@@ -53,3 +53,6 @@ gates:
   max_decay: 0.30
 
 # 2026-05-27 config-001: atomic audited config activation hardened; no risk limits changed.
+# 2026-05-28 config-002: settlement reduce-only requires fresh reconciled position proof; no risk limits changed.
+# 2026-05-28 strategy/config guard: plugin strategy signals inherit market-session guard; no risk limits changed.
+# 2026-05-28 config-002/data routing: data source selection now follows MarketRouter controls; no risk limits changed.

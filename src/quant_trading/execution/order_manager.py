@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import NoReturn
 
@@ -56,6 +56,50 @@ class Order:
     timeout_seconds: int = 30
     market: Market | None = None
     reduce_only: bool = False
+
+
+@dataclass(frozen=True)
+class ReconciledPositionSnapshot:
+    """Fresh exchange-reconciled position used to prove a reduce-only order."""
+
+    quantity: float
+    as_of: datetime
+
+
+class ReconciledReduceOnlyValidator:
+    """Validate reduce-only intent against a fresh reconciled position snapshot."""
+
+    def __init__(
+        self,
+        position_provider: Callable[[Order], ReconciledPositionSnapshot],
+        *,
+        max_age_seconds: int = 30,
+        clock: Callable[[], datetime] | None = None,
+    ) -> None:
+        if max_age_seconds <= 0:
+            raise ValueError("max_age_seconds must be positive")
+        self._position_provider = position_provider
+        self._max_age = timedelta(seconds=max_age_seconds)
+        self._clock = clock or (lambda: datetime.now(UTC))
+
+    def __call__(self, order: Order) -> bool:
+        snapshot = self._position_provider(order)
+        if snapshot.as_of.tzinfo is None or snapshot.as_of.utcoffset() is None:
+            raise ValueError("reconciled position timestamp must be timezone-aware")
+        now = self._clock()
+        if now.tzinfo is None or now.utcoffset() is None:
+            raise ValueError("reduce-only validation clock must be timezone-aware")
+        if now.astimezone(UTC) - snapshot.as_of.astimezone(UTC) > self._max_age:
+            raise ValueError("reconciled position snapshot is stale")
+        if not math.isfinite(snapshot.quantity):
+            raise ValueError("reconciled position quantity must be finite")
+        if snapshot.quantity == 0:
+            return False
+        if order.quantity > abs(snapshot.quantity):
+            return False
+        if snapshot.quantity > 0:
+            return order.side == OrderSide.SELL
+        return order.side == OrderSide.BUY
 
 
 class OrderManager:
@@ -111,13 +155,8 @@ class OrderManager:
             self._decision_clock(),
         )
 
-        if (
-            not allowed
-            and "settlement window" in reason
-            and order.reduce_only
-            and self._reduce_only_validator is not None
-            and self._reduce_only_validator(order)
-        ):
+        if not allowed and "settlement window" in reason and order.reduce_only:
+            self._validate_reduce_only_settlement_order(order)
             allowed, reason = MarketRouter.is_trading_allowed(
                 order.market,
                 self._decision_clock(),
@@ -132,6 +171,7 @@ class OrderManager:
                     "market": order.market.value,
                 },
             )
+
         if not allowed:
             self._reject_market_schedule(order, reason)
 
@@ -152,6 +192,40 @@ class OrderManager:
             },
         )
         return order.client_order_id
+
+    def _validate_reduce_only_settlement_order(self, order: Order) -> None:
+        if self._reduce_only_validator is None:
+            self._reject_reduce_only(order, "validator_missing")
+        try:
+            verified = self._reduce_only_validator(order)
+        except Exception as exc:
+            self._audit.record(
+                "order_reduce_only_settlement_rejected",
+                "order_manager",
+                {
+                    "client_order_id": order.client_order_id,
+                    "symbol": order.symbol,
+                    "market": order.market.value if order.market else None,
+                    "reason": "validator_error",
+                    "error_type": type(exc).__name__,
+                },
+            )
+            raise RuntimeError("Order submission blocked: reduce-only validator failed") from exc
+        if not verified:
+            self._reject_reduce_only(order, "not_reducing_reconciled_position")
+
+    def _reject_reduce_only(self, order: Order, reason: str) -> NoReturn:
+        self._audit.record(
+            "order_reduce_only_settlement_rejected",
+            "order_manager",
+            {
+                "client_order_id": order.client_order_id,
+                "symbol": order.symbol,
+                "market": order.market.value if order.market else None,
+                "reason": reason,
+            },
+        )
+        raise RuntimeError(f"Order submission blocked: reduce-only settlement validation {reason}")
 
     def _validate_market_rules(self, order: Order) -> None:
         """Reject orders that do not comply with configured lot and tick rules."""

@@ -2,7 +2,7 @@
 
 import asyncio
 import time
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import numpy as np
 import pytest
@@ -24,6 +24,8 @@ from quant_trading.execution.order_manager import (
     OrderSide,
     OrderStatus,
     OrderType,
+    ReconciledPositionSnapshot,
+    ReconciledReduceOnlyValidator,
 )
 from quant_trading.execution.reconciler import PositionReconciler
 
@@ -338,6 +340,138 @@ class TestOrderManager:
         )
         assert oid == "reduce-risk"
 
+    def test_settlement_reduce_only_uses_reconciled_position_validator(self):
+        MarketRouter._configure_for_testing(
+            SystemSettings(
+                primary_markets=[Market.A_SHARES],
+                trading_sessions=[
+                    TradingSession(
+                        market=Market.A_SHARES,
+                        sessions=[("09:30", "16:00")],
+                        timezone="Asia/Shanghai",
+                        holiday_calendar="XSHG",
+                    )
+                ],
+                market_rules=[
+                    MarketRules(
+                        market=Market.A_SHARES,
+                        tick_size=0.01,
+                        lot_size=100,
+                        price_precision=2,
+                        data_sources=["tushare"],
+                        fee_model="cn_stock",
+                        settlement_time="16:00",
+                        settlement_window_minutes=30,
+                    )
+                ],
+            )
+        )
+        decision_time = datetime(2026, 5, 18, 7, 45, tzinfo=UTC)
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        validator = ReconciledReduceOnlyValidator(
+            lambda _order: ReconciledPositionSnapshot(quantity=200, as_of=decision_time),
+            clock=lambda: decision_time,
+        )
+        om = OrderManager(
+            system_fsm=fsm,
+            decision_clock=lambda: decision_time,
+            reduce_only_validator=validator,
+        )
+
+        assert (
+            om.submit(
+                Order(
+                    "reduce-reconciled",
+                    "600519.SH",
+                    OrderSide.SELL,
+                    100,
+                    market=Market.A_SHARES,
+                    reduce_only=True,
+                )
+            )
+            == "reduce-reconciled"
+        )
+        with pytest.raises(RuntimeError, match="not_reducing_reconciled_position"):
+            om.submit(
+                Order(
+                    "would-increase",
+                    "600519.SH",
+                    OrderSide.BUY,
+                    100,
+                    market=Market.A_SHARES,
+                    reduce_only=True,
+                )
+            )
+        with pytest.raises(RuntimeError, match="not_reducing_reconciled_position"):
+            om.submit(
+                Order(
+                    "would-flip",
+                    "600519.SH",
+                    OrderSide.SELL,
+                    300,
+                    market=Market.A_SHARES,
+                    reduce_only=True,
+                )
+            )
+
+    def test_stale_reconciled_position_blocks_reduce_only_settlement_order(self):
+        MarketRouter._configure_for_testing(
+            SystemSettings(
+                primary_markets=[Market.A_SHARES],
+                trading_sessions=[
+                    TradingSession(
+                        market=Market.A_SHARES,
+                        sessions=[("09:30", "16:00")],
+                        timezone="Asia/Shanghai",
+                        holiday_calendar="XSHG",
+                    )
+                ],
+                market_rules=[
+                    MarketRules(
+                        market=Market.A_SHARES,
+                        tick_size=0.01,
+                        lot_size=100,
+                        price_precision=2,
+                        data_sources=["tushare"],
+                        fee_model="cn_stock",
+                        settlement_time="16:00",
+                    )
+                ],
+            )
+        )
+        decision_time = datetime(2026, 5, 18, 7, 45, tzinfo=UTC)
+        audit = AuditBus()
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        validator = ReconciledReduceOnlyValidator(
+            lambda _order: ReconciledPositionSnapshot(
+                quantity=100, as_of=decision_time - timedelta(seconds=31)
+            ),
+            clock=lambda: decision_time,
+        )
+        om = OrderManager(
+            audit_bus=audit,
+            system_fsm=fsm,
+            decision_clock=lambda: decision_time,
+            reduce_only_validator=validator,
+        )
+
+        with pytest.raises(RuntimeError, match="validator failed"):
+            om.submit(
+                Order(
+                    "stale-reduce",
+                    "600519.SH",
+                    OrderSide.SELL,
+                    100,
+                    market=Market.A_SHARES,
+                    reduce_only=True,
+                )
+            )
+        event = audit.query("order_reduce_only_settlement_rejected")[-1]["payload"]
+        assert event["reason"] == "validator_error"
+        assert event["error_type"] == "ValueError"
+
     def test_unverified_reduce_only_order_cannot_bypass_settlement_window(self):
         MarketRouter._configure_for_testing(
             SystemSettings(
@@ -365,11 +499,13 @@ class TestOrderManager:
         )
         fsm = SystemStateMachine()
         fsm.transition(SystemState.RUNNING)
+        audit = AuditBus()
         om = OrderManager(
+            audit_bus=audit,
             system_fsm=fsm,
             decision_clock=lambda: datetime(2026, 5, 18, 7, 45, tzinfo=UTC),
         )
-        with pytest.raises(RuntimeError, match="settlement window"):
+        with pytest.raises(RuntimeError, match="validator_missing"):
             om.submit(
                 Order(
                     "forged-reduce",
@@ -380,6 +516,8 @@ class TestOrderManager:
                     reduce_only=True,
                 )
             )
+        event = audit.query("order_reduce_only_settlement_rejected")[-1]["payload"]
+        assert event["reason"] == "validator_missing"
 
 
 # ── Position Reconciler ────────────────────────────────────────────

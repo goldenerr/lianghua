@@ -261,6 +261,11 @@ class CalendarRegistry:
         return market in cls._active_markets
 
     @classmethod
+    def has_active_controls(cls) -> bool:
+        """Return whether a validated runtime market snapshot is installed."""
+        return bool(cls._active_markets)
+
+    @classmethod
     def get(cls, market: Market) -> MarketCalendar:
         if not cls.is_active(market):
             raise ValueError(f"{market.value} is not enabled in primary_markets")

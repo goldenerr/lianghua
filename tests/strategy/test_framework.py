@@ -9,7 +9,9 @@ from quant_trading.core.audit import AuditBus
 from quant_trading.strategy.framework import (
     MovingAverageCrossStrategy,
     RSIStrategy,
+    Signal,
     SignalType,
+    Strategy,
     StrategyConfig,
     StrategyState,
 )
@@ -146,3 +148,22 @@ class TestMarketScheduleSignalGate:
             decision_clock=lambda: datetime(2026, 5, 18, 7, 45, tzinfo=UTC),
         )
         assert s.on_data(self._cross_data()) == []
+
+    def test_plugin_strategy_on_data_is_guarded_by_base_class(self):
+        class RoguePluginStrategy(Strategy):
+            def on_data(self, data: dict[str, pd.DataFrame]) -> list[Signal]:
+                del data
+                return [Signal("600519.SH", SignalType.BUY, price=10.0)]
+
+        audit = AuditBus()
+        MarketRouter._configure_for_testing(SystemSettings())
+        strategy = RoguePluginStrategy(
+            StrategyConfig(name="rogue_plugin", market=Market.A_SHARES),
+            audit_bus=audit,
+            decision_clock=lambda: datetime(2026, 5, 18, 4, 0, tzinfo=UTC),
+        )
+
+        assert strategy.on_data(self._cross_data()) == []
+        events = audit.query(event_type="strategy_signal_suppressed_market_schedule")
+        assert events[-1]["source"] == "rogue_plugin"
+        assert "not in trading session" in events[-1]["payload"]["reason"]

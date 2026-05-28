@@ -8,7 +8,12 @@ AGENTS.md §2 (data-001): 为每个市场配置数据源优先级列表，
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterable
 from datetime import datetime, timezone
+
+from quant_trading.config.market_calendar import CalendarRegistry
+from quant_trading.config.market_router import MarketRouter
+from quant_trading.config.settings import Market
 
 from .akshare_provider import AkshareProvider
 from .ccxt_provider import CcxtProvider
@@ -40,10 +45,18 @@ class DataSourceManager:
     MAX_FAILURES = 3
     LATENCY_THRESHOLD_SECONDS = 30.0
 
-    def __init__(self, data_dir: str = "data/"):
+    def __init__(
+        self,
+        data_dir: str = "data/",
+        *,
+        use_configured_routing: bool = True,
+    ):
         self.data_dir = data_dir
+        self.use_configured_routing = use_configured_routing
         self._providers: dict[str, DataProvider] = {}
         self._market_priority: dict[str, list[str]] = {}
+        self._source_aliases: dict[str, tuple[str, ...]] = {}
+        self._missing_configured_sources: dict[str, tuple[str, ...]] = {}
         self._switch_log: list[dict] = []
 
         self._register_defaults()
@@ -63,7 +76,21 @@ class DataSourceManager:
             ccxt_p = CcxtProvider(exchange_id=ex)
             self._providers[ccxt_p.name] = ccxt_p
 
-        # Market → priority-ordered provider names
+        # Provider aliases translate config/system.yaml source identifiers into
+        # concrete provider implementations without changing the approved order.
+        self._source_aliases = {
+            "akshare": ("akshare",),
+            "yfinance": ("yfinance",),
+            "ccxt": ("ccxt/binance", "ccxt/okx"),
+            "binance": ("ccxt/binance",),
+            "okx": ("ccxt/okx",),
+            # These identifiers are approved in config but require downstream
+            # provider integrations before they can be used locally.
+            "tushare": (),
+            "polygon": (),
+        }
+
+        # Legacy fallback used only before the configuration router is installed.
         self._market_priority = {
             "A股": ["akshare", "yfinance"],
             "期货": ["akshare"],
@@ -75,6 +102,7 @@ class DataSourceManager:
     def register(self, provider: DataProvider, market: str, priority: int = 99) -> None:
         """Register a custom provider."""
         self._providers[provider.name] = provider
+        self._source_aliases.setdefault(provider.name, (provider.name,))
         if market not in self._market_priority:
             self._market_priority[market] = []
         if priority >= len(self._market_priority[market]):
@@ -83,13 +111,63 @@ class DataSourceManager:
             self._market_priority[market].insert(priority, provider.name)
 
     def get_providers_for_market(self, market: str) -> list[DataProvider]:
-        """Get ordered list of providers for a market."""
-        names = self._market_priority.get(market, [])
+        """Get ordered providers using the active market routing configuration."""
+        names = self._configured_provider_names(market)
+        if names is None:
+            names = self._market_priority.get(market, [])
         providers = []
         for name in names:
             if name in self._providers:
                 providers.append(self._providers[name])
         return providers
+
+    def _configured_provider_names(self, market: str) -> list[str] | None:
+        """Resolve provider names from the hash-bound MarketRouter snapshot.
+
+        ``None`` means the router has not been installed yet and unit-level legacy
+        fallback may be used. An empty list means the market is configured but is
+        inactive or has no locally available provider, so fetch must fail closed.
+        """
+        if not self.use_configured_routing:
+            return None
+        if not CalendarRegistry.has_active_controls():
+            return None
+        try:
+            market_enum = Market(market)
+        except ValueError:
+            return []
+        try:
+            configured_sources = MarketRouter.get_data_sources(market_enum)
+        except ValueError as exc:
+            self._missing_configured_sources[market] = (str(exc),)
+            return []
+
+        names: list[str] = []
+        missing: list[str] = []
+        for source in configured_sources:
+            resolved = self._resolve_provider_alias(source)
+            if not resolved:
+                missing.append(source)
+                continue
+            for provider_name in resolved:
+                if provider_name not in names:
+                    names.append(provider_name)
+        self._missing_configured_sources[market] = tuple(missing)
+        return names
+
+    def _resolve_provider_alias(self, source: str) -> tuple[str, ...]:
+        candidates: Iterable[str] = self._source_aliases.get(source, (source,))
+        return tuple(name for name in candidates if name in self._providers)
+
+    def get_missing_configured_sources(
+        self, market: str | None = None
+    ) -> dict[str, tuple[str, ...]]:
+        """Return configured source IDs that currently lack provider bindings."""
+        if market is not None:
+            # Resolve once so callers get a fresh diagnostic snapshot.
+            self._configured_provider_names(market)
+            return {market: self._missing_configured_sources.get(market, ())}
+        return dict(self._missing_configured_sources)
 
     # ── Fetch with auto-degradation ───────────────────────────────────────
 

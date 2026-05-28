@@ -4,33 +4,66 @@ from unittest.mock import AsyncMock
 
 import pandas as pd
 import pytest
+from quant_trading.config.market_router import MarketRouter
+from quant_trading.config.settings import Market, MarketRules, SystemSettings, TradingSession
 from quant_trading.data.provider import DataProviderError, DataResult, Frequency
 from quant_trading.data.source_manager import DataSourceManager
 
 
 class TestDataSourceManager:
+    def setup_method(self):
+        MarketRouter._configure_for_testing(SystemSettings())
+
     def test_init_registers_defaults(self):
         mgr = DataSourceManager(data_dir="test_data/")
         providers = mgr.get_providers_for_market("A股")
         names = [p.name for p in providers]
         assert "akshare" in names
         assert "yfinance" in names
+        assert mgr.get_missing_configured_sources("A股") == {"A股": ("tushare",)}
 
     def test_crypto_market_providers(self):
+        MarketRouter._configure_for_testing(
+            SystemSettings(
+                primary_markets=(Market.CRYPTO,),
+                trading_sessions=(
+                    TradingSession(
+                        market=Market.CRYPTO,
+                        sessions=(("00:00", "24:00"),),
+                        timezone="UTC",
+                    ),
+                ),
+                market_rules=(
+                    MarketRules(
+                        market=Market.CRYPTO,
+                        tick_size=0.01,
+                        lot_size=1,
+                        price_precision=2,
+                        data_sources=("ccxt", "binance"),
+                        fee_model="crypto_maker_taker",
+                    ),
+                ),
+            )
+        )
         mgr = DataSourceManager(data_dir="test_data/")
         providers = mgr.get_providers_for_market("加密货币")
         names = [p.name for p in providers]
         assert any("ccxt" in n for n in names)
 
-    def test_unknown_market_returns_empty(self):
+    def test_inactive_market_does_not_use_legacy_fallback(self):
         mgr = DataSourceManager(data_dir="test_data/")
+        assert mgr.get_providers_for_market("加密货币") == []
+        assert "not enabled" in mgr.get_missing_configured_sources("加密货币")["加密货币"][0]
+
+    def test_unknown_market_returns_empty(self):
+        mgr = DataSourceManager(data_dir="test_data/", use_configured_routing=False)
         providers = mgr.get_providers_for_market("火星")
         assert providers == []
 
     def test_custom_provider_registration(self):
         from quant_trading.data.yfinance_provider import YfinanceProvider
 
-        mgr = DataSourceManager(data_dir="test_data/")
+        mgr = DataSourceManager(data_dir="test_data/", use_configured_routing=False)
         custom = YfinanceProvider()
         mgr.register(custom, "A股", priority=0)  # Highest priority
         providers = mgr.get_providers_for_market("A股")
