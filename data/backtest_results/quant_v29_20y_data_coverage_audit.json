@@ -1,0 +1,67 @@
+{
+  "ts": "2026-06-17T01:55:07.528469+00:00",
+  "version": "V29-20y-data-coverage-audit",
+  "research_only": true,
+  "requested_window": {
+    "start_date": "2006-01-01",
+    "end_date": "2026-05-29",
+    "warmup_days": 252,
+    "min_rows_per_year": 220
+  },
+  "universe": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
+  "universe_sha256": "dcc089db67747155fbf32c4a47db8461f8bd62902fc306b23971d831f6f5cc14",
+  "data_dir": "/Users/jacklondon/Documents/study/lianghua/data/parquet",
+  "summary": {
+    "universe_symbols": 2000,
+    "parquet_loaded_symbols": 1994,
+    "spans_requested_window_symbols": 566,
+    "strict_20y_quality_symbols": 519,
+    "strict_20y_quality_ratio": 0.2595,
+    "symbols_with_close_series": 1994,
+    "calendar_dates_in_window": 4954,
+    "cohorts_with_first_date_before_cutoff_and_last_after_end": {
+      "20060101": 566,
+      "20080101": 649,
+      "20100101": 726,
+      "20150101": 1072,
+      "20170101": 1209
+    },
+    "close_count_stats": {
+      "min": 434,
+      "p10": 597,
+      "median": 1056,
+      "mean": 1215.95,
+      "p90": 1990,
+      "max": 1994,
+      "first_date": "2006-01-04",
+      "last_date": "2026-05-29"
+    },
+    "warmup_eligible_count_stats": {
+      "min": 0,
+      "p10": 0,
+      "median": 551,
+      "mean": 732.01,
+      "p90": 1889,
+      "max": 1940,
+      "first_date": "2006-01-04",
+      "last_date": "2026-05-29"
+    },
+    "first_warmup_eligible_date_by_threshold": {
+      "100": "2013-04-25",
+      "300": "2013-05-27",
+      "500": "2013-07-02",
+      "1000": "2018-11-28",
+      "1500": "2021-12-20",
+      "2000": null
+    }
+  },
+  "assessment": {
+    "can_claim_20y_full_universe_production_validation": false,
+    "can_run_20y_diagnostic_backtest": true,
+    "diagnostic_start_after_warmup": "2013-07-02",
+    "production_full_universe_start_after_warmup": "2024-06-03",
+    "reason": "20-year run should be treated as a diagnostic unless PIT universe history and warmup cross-section coverage are expanded.",
+    "minimum_production_symbols": 1900,
+    "diagnostic_min_symbols": 500
+  }
+}

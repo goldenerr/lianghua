@@ -1,0 +1,128 @@
+{
+  "ts": "2026-06-18T02:50:41.305073+00:00",
+  "version": "V31-free-data-quality-gate",
+  "research_only": true,
+  "free_research_ready": true,
+  "production_data_ready": false,
+  "thresholds": {
+    "min_entities": 1900,
+    "min_dates": 4500,
+    "min_corporate_action_entities": 1900
+  },
+  "requirements": [
+    {
+      "requirement_id": "free_pit_security_master_approx",
+      "title": "免费源 PIT 股票池近似",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/pit_universe_v31.parquet",
+      "exists": true,
+      "columns_present": [
+        "date",
+        "code",
+        "source",
+        "asof_date",
+        "research_pit_approximation",
+        "production_reconciled",
+        "name",
+        "list_date",
+        "delist_date",
+        "is_listed",
+        "is_tradable",
+        "is_large_cap",
+        "large_cap_source",
+        "delist_inferred_from_last_local_bar",
+        "limitations"
+      ],
+      "missing_columns": [],
+      "research_ready": true,
+      "failures": [],
+      "rows": 6210405,
+      "unique_dates": 4954,
+      "unique_entities": 1994,
+      "date_start": "2006-01-04",
+      "date_end": "2026-05-29"
+    },
+    {
+      "requirement_id": "free_trading_status_approx",
+      "title": "免费源交易状态近似",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet",
+      "exists": true,
+      "columns_present": [
+        "date",
+        "code",
+        "source",
+        "asof_date",
+        "research_pit_approximation",
+        "production_reconciled",
+        "is_st",
+        "is_st_known",
+        "is_suspended",
+        "is_limit_up",
+        "is_limit_down",
+        "is_tradable",
+        "price_limit_pct",
+        "status_quality",
+        "limitations"
+      ],
+      "missing_columns": [],
+      "research_ready": true,
+      "failures": [],
+      "rows": 6210405,
+      "unique_dates": 4954,
+      "unique_entities": 1994,
+      "date_start": "2006-01-04",
+      "date_end": "2026-05-29"
+    },
+    {
+      "requirement_id": "free_corporate_action_column_audit",
+      "title": "免费源复权/公司行动列审计",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/corporate_actions/free_reconciliation_v31.parquet",
+      "exists": true,
+      "columns_present": [
+        "date",
+        "code",
+        "action_type",
+        "vendor_adjust_factor",
+        "local_adjust_factor",
+        "adjustment_diff_bps",
+        "source",
+        "evidence_ref",
+        "has_adjustment_columns",
+        "adjustment_columns_present",
+        "production_reconciled",
+        "limitations",
+        "asof_date"
+      ],
+      "missing_columns": [],
+      "research_ready": true,
+      "failures": [],
+      "rows": 1994,
+      "unique_dates": 1,
+      "unique_entities": 1994,
+      "date_start": "2026-06-18",
+      "date_end": "2026-06-18"
+    }
+  ],
+  "summary": {
+    "total_requirements": 3,
+    "research_ready_count": 3,
+    "research_blocker_count": 0,
+    "production_blocker_count": 5,
+    "build_symbols_loaded": 1994,
+    "build_unique_trading_dates": 4954,
+    "build_failure_count": 6
+  },
+  "build_report_path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v31_free_data_build_report.json",
+  "research_blockers": [],
+  "production_blockers": [
+    "V31 是免费源/本地日线推断，不含 vendor PIT security master evidence ref。",
+    "ST、退市、停牌、涨跌停和可成交状态仍含近似或未知字段，不能替代交易所/供应商历史状态表。",
+    "公司行动只完成本地列审计，没有真实供应商复权因子 reconciliation。",
+    "仍缺二十年真实 tick/minute、订单簿、券商订单/成交回放和 broker-backed borrow/position feed。",
+    "因此 V31 不解除 V30 production-data gate 和外部 evidence gate blocker。"
+  ],
+  "next_required_work": [
+    "将 V31 输出接入研究回测的交易状态过滤，重新评估成交约束后的收益质量。",
+    "为免费源每日快照增加 WORM 归档，逐日积累 future PIT 证据。",
+    "如果要解除生产 blocker，仍需导入真实 vendor/broker 文件和外部 refs。"
+  ]
+}

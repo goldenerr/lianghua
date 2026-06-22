@@ -1,0 +1,1140 @@
+{
+  "ts": "2026-06-09T01:51:13.461791+00:00",
+  "version": "V25-pit-backfill-plan",
+  "research_only": true,
+  "universe_size": 1200,
+  "coverage": {
+    "northbound_existing_target_symbols": 5,
+    "northbound_missing_target_symbols": 1195,
+    "intraday_existing_target_symbols": 0,
+    "intraday_missing_target_symbols": 1200,
+    "margin_existing_complete_dates": 1
+  },
+  "batch_counts": {
+    "northbound": 48,
+    "intraday": 48,
+    "margin": 32,
+    "daily_snapshot": 2
+  },
+  "parameters": {
+    "northbound_batch_size": 25,
+    "intraday_batch_size": 25,
+    "margin_start": "20240101",
+    "margin_end": "20260529",
+    "margin_batch_days": 20,
+    "max_batches": 0
+  },
+  "batches": {
+    "northbound": [
+      {
+        "panel": "flow",
+        "offset": 5,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000035",
+        "last_code": "000559",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=5 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 30,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000563",
+        "last_code": "000712",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=30 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 55,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000727",
+        "last_code": "000880",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=55 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 80,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000885",
+        "last_code": "000997",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=80 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 105,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "001213",
+        "last_code": "002041",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=105 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 130,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002043",
+        "last_code": "002123",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=130 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 155,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002125",
+        "last_code": "002204",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=155 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 180,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002212",
+        "last_code": "002299",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=180 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 205,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002312",
+        "last_code": "002409",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=205 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 230,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002416",
+        "last_code": "002534",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=230 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 255,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002536",
+        "last_code": "002668",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=255 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 280,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002670",
+        "last_code": "002831",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=280 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 305,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002832",
+        "last_code": "002946",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=305 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 330,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002947",
+        "last_code": "300035",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=330 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 355,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300036",
+        "last_code": "300140",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=355 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 380,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300142",
+        "last_code": "300327",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=380 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 405,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300337",
+        "last_code": "300457",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=405 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 430,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300458",
+        "last_code": "300633",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=430 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 455,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300634",
+        "last_code": "300762",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=455 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 480,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300768",
+        "last_code": "300926",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=480 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 505,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300953",
+        "last_code": "301217",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=505 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 530,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "301219",
+        "last_code": "301522",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=530 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 555,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "301536",
+        "last_code": "600021",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=555 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 580,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600022",
+        "last_code": "600123",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=580 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 605,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600125",
+        "last_code": "600216",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=605 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 630,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600217",
+        "last_code": "600339",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=630 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 655,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600348",
+        "last_code": "600456",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=655 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 680,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600458",
+        "last_code": "600546",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=680 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 705,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600549",
+        "last_code": "600618",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=705 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 730,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600621",
+        "last_code": "600718",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=730 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 755,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600720",
+        "last_code": "600812",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=755 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 780,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600816",
+        "last_code": "600908",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=780 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 805,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600909",
+        "last_code": "601016",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=805 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 830,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "601019",
+        "last_code": "601187",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=830 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 855,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "601198",
+        "last_code": "601611",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=855 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 880,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "601615",
+        "last_code": "601918",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=880 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 905,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "601921",
+        "last_code": "603072",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=905 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 930,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603077",
+        "last_code": "603228",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=930 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 955,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603233",
+        "last_code": "603393",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=955 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 980,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603395",
+        "last_code": "603659",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=980 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1005,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603667",
+        "last_code": "603899",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1005 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1030,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603915",
+        "last_code": "688005",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1030 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1055,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688006",
+        "last_code": "688110",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1055 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1080,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688114",
+        "last_code": "688200",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1080 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1105,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688206",
+        "last_code": "688332",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1105 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1130,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688333",
+        "last_code": "688469",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1130 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1155,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688475",
+        "last_code": "688630",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1155 QUANT_FLOW_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "flow",
+        "offset": 1180,
+        "max_symbols": 20,
+        "missing_symbols": 20,
+        "first_code": "688631",
+        "last_code": "688819",
+        "command": "env QUANT_FLOW_SKIP_EXISTING=1 QUANT_FLOW_COMBINE_ALL_EXISTING=1 QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=1 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SYMBOL_OFFSET=1180 QUANT_FLOW_MAX_SYMBOLS=20 .venv/bin/python scripts/fetch_flow_signals.py"
+      }
+    ],
+    "intraday": [
+      {
+        "panel": "intraday",
+        "offset": 0,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000009",
+        "last_code": "000537",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=0 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 25,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000543",
+        "last_code": "000685",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=25 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 50,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000686",
+        "last_code": "000833",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=50 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 75,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000848",
+        "last_code": "000966",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=75 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 100,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "000967",
+        "last_code": "002023",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=100 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 125,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002025",
+        "last_code": "002100",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=125 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 150,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002101",
+        "last_code": "002182",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=150 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 175,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002185",
+        "last_code": "002273",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=175 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 200,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002276",
+        "last_code": "002399",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=200 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 225,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002400",
+        "last_code": "002507",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=225 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 250,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002508",
+        "last_code": "002617",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=250 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 275,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002626",
+        "last_code": "002791",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=275 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 300,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002797",
+        "last_code": "002929",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=300 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 325,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "002936",
+        "last_code": "300009",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=325 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 350,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300017",
+        "last_code": "300130",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=350 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 375,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300131",
+        "last_code": "300294",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=375 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 400,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300296",
+        "last_code": "300450",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=400 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 425,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300451",
+        "last_code": "300604",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=425 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 450,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300607",
+        "last_code": "300748",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=450 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 475,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300751",
+        "last_code": "300910",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=475 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 500,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "300913",
+        "last_code": "301175",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=500 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 525,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "301200",
+        "last_code": "301392",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=525 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 550,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "301458",
+        "last_code": "600007",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=550 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 575,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600008",
+        "last_code": "600113",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=575 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 600,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600114",
+        "last_code": "600201",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=600 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 625,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600206",
+        "last_code": "600325",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=625 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 650,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600329",
+        "last_code": "600422",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=650 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 675,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600428",
+        "last_code": "600528",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=675 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 700,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600529",
+        "last_code": "600598",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=700 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 725,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600601",
+        "last_code": "600699",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=725 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 750,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600704",
+        "last_code": "600787",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=750 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 775,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600789",
+        "last_code": "600885",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=775 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 800,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600888",
+        "last_code": "600997",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=800 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 825,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "600998",
+        "last_code": "601139",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=825 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 850,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "601156",
+        "last_code": "601595",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=850 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 875,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "601598",
+        "last_code": "601880",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=875 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 900,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "601882",
+        "last_code": "603039",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=900 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 925,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603043",
+        "last_code": "603218",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=925 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 950,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603219",
+        "last_code": "603355",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=950 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 975,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603358",
+        "last_code": "603606",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=975 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1000,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603612",
+        "last_code": "603876",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1000 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1025,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "603881",
+        "last_code": "605507",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1025 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1050,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "605599",
+        "last_code": "688099",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1050 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1075,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688100",
+        "last_code": "688183",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1075 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1100,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688185",
+        "last_code": "688313",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1100 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1125,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688321",
+        "last_code": "688425",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1125 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1150,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688432",
+        "last_code": "688596",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1150 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      },
+      {
+        "panel": "intraday",
+        "offset": 1175,
+        "max_symbols": 25,
+        "missing_symbols": 25,
+        "first_code": "688599",
+        "last_code": "688819",
+        "command": "env QUANT_INTRADAY_SKIP_EXISTING=1 QUANT_INTRADAY_COMBINE_ALL_EXISTING=1 QUANT_INTRADAY_SYMBOL_OFFSET=1175 QUANT_INTRADAY_MAX_SYMBOLS=25 .venv/bin/python scripts/fetch_intraday_microstructure.py"
+      }
+    ],
+    "margin": [
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240101",
+        "end": "20240126",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240101 QUANT_FLOW_MARGIN_END=20240126 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240129",
+        "end": "20240223",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240129 QUANT_FLOW_MARGIN_END=20240223 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240226",
+        "end": "20240322",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240226 QUANT_FLOW_MARGIN_END=20240322 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240325",
+        "end": "20240419",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240325 QUANT_FLOW_MARGIN_END=20240419 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240422",
+        "end": "20240517",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240422 QUANT_FLOW_MARGIN_END=20240517 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240520",
+        "end": "20240614",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240520 QUANT_FLOW_MARGIN_END=20240614 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240617",
+        "end": "20240712",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240617 QUANT_FLOW_MARGIN_END=20240712 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240715",
+        "end": "20240809",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240715 QUANT_FLOW_MARGIN_END=20240809 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240812",
+        "end": "20240906",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240812 QUANT_FLOW_MARGIN_END=20240906 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20240909",
+        "end": "20241004",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20240909 QUANT_FLOW_MARGIN_END=20241004 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20241007",
+        "end": "20241101",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20241007 QUANT_FLOW_MARGIN_END=20241101 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20241104",
+        "end": "20241129",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20241104 QUANT_FLOW_MARGIN_END=20241129 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20241202",
+        "end": "20241227",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20241202 QUANT_FLOW_MARGIN_END=20241227 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20241230",
+        "end": "20250124",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20241230 QUANT_FLOW_MARGIN_END=20250124 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250127",
+        "end": "20250221",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250127 QUANT_FLOW_MARGIN_END=20250221 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250224",
+        "end": "20250321",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250224 QUANT_FLOW_MARGIN_END=20250321 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250324",
+        "end": "20250418",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250324 QUANT_FLOW_MARGIN_END=20250418 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250421",
+        "end": "20250516",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250421 QUANT_FLOW_MARGIN_END=20250516 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250519",
+        "end": "20250613",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250519 QUANT_FLOW_MARGIN_END=20250613 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250616",
+        "end": "20250711",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250616 QUANT_FLOW_MARGIN_END=20250711 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250714",
+        "end": "20250808",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250714 QUANT_FLOW_MARGIN_END=20250808 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250811",
+        "end": "20250905",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250811 QUANT_FLOW_MARGIN_END=20250905 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20250908",
+        "end": "20251003",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20250908 QUANT_FLOW_MARGIN_END=20251003 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20251006",
+        "end": "20251031",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20251006 QUANT_FLOW_MARGIN_END=20251031 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20251103",
+        "end": "20251128",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20251103 QUANT_FLOW_MARGIN_END=20251128 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20251201",
+        "end": "20251226",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20251201 QUANT_FLOW_MARGIN_END=20251226 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20251229",
+        "end": "20260123",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20251229 QUANT_FLOW_MARGIN_END=20260123 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20260126",
+        "end": "20260220",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20260126 QUANT_FLOW_MARGIN_END=20260220 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20260223",
+        "end": "20260320",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20260223 QUANT_FLOW_MARGIN_END=20260320 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20260323",
+        "end": "20260417",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20260323 QUANT_FLOW_MARGIN_END=20260417 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20260420",
+        "end": "20260515",
+        "missing_dates": 20,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20260420 QUANT_FLOW_MARGIN_END=20260515 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "margin_short_daily_history",
+        "start": "20260518",
+        "end": "20260528",
+        "missing_dates": 9,
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=0 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=0 QUANT_FLOW_FETCH_BIG_DEAL=0 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=0 QUANT_FLOW_FETCH_MARGIN_DETAILS=1 QUANT_FLOW_MARGIN_START=20260518 QUANT_FLOW_MARGIN_END=20260528 QUANT_FLOW_SKIP_EXISTING=1 .venv/bin/python scripts/fetch_flow_signals.py"
+      }
+    ],
+    "daily_snapshots": [
+      {
+        "panel": "daily_flow_snapshot",
+        "cadence": "daily_after_close",
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=1 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=1 QUANT_FLOW_FETCH_BIG_DEAL=1 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=1 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SKIP_EXISTING=0 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "daily_alt_archive_pipeline",
+        "cadence": "daily_after_all_snapshot_fetches",
+        "command": ".venv/bin/python scripts/run_alt_archive_daily_pipeline.py --archive-date $(date +%Y%m%d)"
+      }
+    ]
+  },
+  "production_blockers": [
+    "plan emits local research commands only; provider entitlement/WORM evidence is still required",
+    "snapshot commands must be run and archived daily before PIT history is sufficient",
+    "borrow availability remains absent and needs a broker-backed provider"
+  ]
+}

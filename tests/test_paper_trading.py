@@ -1,6 +1,8 @@
 """Tests for paper trading execution and risk safeguards."""
 
-from quant_trading.paper_trading import PaperTradingEngine
+import pandas as pd
+import pytest
+from quant_trading.paper_trading import V59_CONFIG, PaperTradingEngine
 
 
 def test_rebalance_buys_and_removes_position(tmp_path):
@@ -43,3 +45,53 @@ def test_status_and_report_use_marked_equity(tmp_path):
     assert status["positions"] == 1
     assert status["total_equity"] > 0
     assert "total_return" in report
+
+
+def test_paper_trading_uses_configured_fee_model_without_buy_stamp_duty(tmp_path):
+    engine = PaperTradingEngine(
+        initial_capital=100_000,
+        industry_data_path=tmp_path / "missing.parquet",
+    )
+
+    engine.execute_rebalance({"TEST": 0.20}, {"TEST": 100.0}, "2026-05-25")
+    buy = engine.account.trade_log[-1]
+    expected_buy_slippage = 0.0005 * (1 + 0.10 * 0.20)
+    expected_buy_price = 100.0 * (1 + expected_buy_slippage)
+    expected_buy_cost = buy["shares"] * expected_buy_price * (1 + 0.00025)
+    assert buy["cost"] == pytest.approx(round(expected_buy_cost, 2))
+
+    engine.execute_rebalance({}, {"TEST": 101.0}, "2026-05-26")
+    sell = engine.account.trade_log[-1]
+    expected_sell_price = 101.0 * (1 - 0.0005)
+    expected_sell_proceeds = sell["shares"] * expected_sell_price * (1 - 0.00075)
+    assert sell["proceeds"] == pytest.approx(round(expected_sell_proceeds, 2))
+
+
+def test_paper_trading_rejects_unapproved_fee_model(tmp_path):
+    engine = PaperTradingEngine(
+        initial_capital=100_000,
+        config={**V59_CONFIG, "fee_model": "unapproved"},
+        industry_data_path=tmp_path / "missing.parquet",
+    )
+
+    with pytest.raises(ValueError, match="unsupported execution fee model"):
+        engine.execute_rebalance({"TEST": 0.20}, {"TEST": 100.0}, "2026-05-25")
+
+
+def test_paper_trading_loads_industry_codes_with_or_without_exchange_suffix(tmp_path):
+    industry_path = tmp_path / "industry.parquet"
+    pd.DataFrame(
+        [
+            {"code": "000001", "industry": "bank"},
+            {"code": "600000.SH", "industry": "broker"},
+            {"code": "SZ000002", "industry": "property"},
+            {"code": "bad", "industry": "ignored"},
+        ]
+    ).to_parquet(industry_path)
+
+    engine = PaperTradingEngine(initial_capital=100_000, industry_data_path=industry_path)
+
+    assert engine.industry_map["000001"] == "bank"
+    assert engine.industry_map["600000"] == "broker"
+    assert engine.industry_map["000002"] == "property"
+    assert "bad" not in engine.industry_map

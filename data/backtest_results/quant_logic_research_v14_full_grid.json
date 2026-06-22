@@ -1,0 +1,91 @@
+[
+  {
+    "name": "rel_035",
+    "updates": {},
+    "full": {
+      "sharpe_ratio": 1.0242,
+      "annual_return": 0.0937,
+      "annual_volatility": 0.0671,
+      "max_drawdown": -0.1204,
+      "win_rate": 0.4783,
+      "total_return": 6.7332,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.2354,
+      "avg_hedge_turnover": 0.0086,
+      "avg_trend_turnover": 0.1174,
+      "avg_exposure": 0.2081,
+      "total_cost": 0.1393,
+      "n_days": 5639
+    },
+    "elapsed_s": 159.2
+  },
+  {
+    "name": "rel_020",
+    "updates": {
+      "industry_relative_weight": 0.2
+    },
+    "full": {
+      "sharpe_ratio": 1.0114,
+      "annual_return": 0.0924,
+      "annual_volatility": 0.0666,
+      "max_drawdown": -0.124,
+      "win_rate": 0.4779,
+      "total_return": 6.5181,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.2328,
+      "avg_hedge_turnover": 0.0086,
+      "avg_trend_turnover": 0.1174,
+      "avg_exposure": 0.2081,
+      "total_cost": 0.138,
+      "n_days": 5639
+    },
+    "elapsed_s": 159.7
+  },
+  {
+    "name": "rel_050",
+    "updates": {
+      "industry_relative_weight": 0.5
+    },
+    "full": {
+      "sharpe_ratio": 1.0072,
+      "annual_return": 0.0933,
+      "annual_volatility": 0.0678,
+      "max_drawdown": -0.1226,
+      "win_rate": 0.4763,
+      "total_return": 6.6525,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.2374,
+      "avg_hedge_turnover": 0.0086,
+      "avg_trend_turnover": 0.1174,
+      "avg_exposure": 0.2081,
+      "total_cost": 0.1404,
+      "n_days": 5639
+    },
+    "elapsed_s": 158.0
+  },
+  {
+    "name": "rel_020_more_exposure",
+    "updates": {
+      "industry_relative_weight": 0.2,
+      "target_vol": 0.16,
+      "gross_exposure": 0.85,
+      "max_position_pct": 0.03
+    },
+    "full": {
+      "sharpe_ratio": 1.0434,
+      "annual_return": 0.1191,
+      "annual_volatility": 0.0902,
+      "max_drawdown": -0.136,
+      "win_rate": 0.4758,
+      "total_return": 12.1075,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.3202,
+      "avg_hedge_turnover": 0.0113,
+      "avg_trend_turnover": 0.1409,
+      "avg_exposure": 0.2887,
+      "total_cost": 0.1876,
+      "n_days": 5639
+    },
+    "elapsed_s": 154.1
+  }
+]

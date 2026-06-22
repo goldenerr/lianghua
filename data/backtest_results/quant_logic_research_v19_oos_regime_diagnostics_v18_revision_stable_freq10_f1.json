@@ -1,0 +1,728 @@
+{
+  "ts": "2026-06-08T16:19:00.950373",
+  "version": "V19-oos-regime-diagnostics",
+  "research_only": true,
+  "candidate": "v18_revision_stable_freq10",
+  "focus_fold": 1,
+  "stock_alt_feature_file": "v18_stock_alt_features.parquet",
+  "fold_ranges": [
+    {
+      "fold": 0,
+      "train_end_idx": 5107,
+      "test_start_idx": 5117,
+      "test_end_idx": 5372,
+      "context_start_idx": 4361,
+      "train_end": "2021-01-27",
+      "test_start": "2021-02-18",
+      "test_end": "2022-03-07",
+      "context_start": "2018-01-04",
+      "days": 255
+    },
+    {
+      "fold": 1,
+      "train_end_idx": 5362,
+      "test_start_idx": 5372,
+      "test_end_idx": 5627,
+      "context_start_idx": 4616,
+      "train_end": "2022-02-21",
+      "test_start": "2022-03-08",
+      "test_end": "2023-03-23",
+      "context_start": "2019-01-22",
+      "days": 255
+    },
+    {
+      "fold": 2,
+      "train_end_idx": 5617,
+      "test_start_idx": 5627,
+      "test_end_idx": 5882,
+      "context_start_idx": 4871,
+      "train_end": "2023-03-09",
+      "test_start": "2023-03-24",
+      "test_end": "2024-04-12",
+      "context_start": "2020-02-14",
+      "days": 255
+    },
+    {
+      "fold": 3,
+      "train_end_idx": 5872,
+      "test_start_idx": 5882,
+      "test_end_idx": 6137,
+      "context_start_idx": 5126,
+      "train_end": "2024-03-27",
+      "test_start": "2024-04-15",
+      "test_end": "2025-05-06",
+      "context_start": "2021-03-03",
+      "days": 255
+    },
+    {
+      "fold": 4,
+      "train_end_idx": 6127,
+      "test_start_idx": 6137,
+      "test_end_idx": 6392,
+      "context_start_idx": 5381,
+      "train_end": "2025-04-17",
+      "test_start": "2025-05-07",
+      "test_end": "2026-05-25",
+      "context_start": "2022-03-21",
+      "days": 255
+    }
+  ],
+  "fold_market_summary": [
+    {
+      "fold": 0,
+      "train_end_idx": 5107,
+      "test_start_idx": 5117,
+      "test_end_idx": 5372,
+      "context_start_idx": 4361,
+      "train_end": "2021-01-27",
+      "test_start": "2021-02-18",
+      "test_end": "2022-03-07",
+      "context_start": "2018-01-04",
+      "days": 255,
+      "market_equal_weight": {
+        "sharpe_ratio": 1.2102,
+        "annual_return": 0.2279,
+        "annual_volatility": 0.1676,
+        "max_drawdown": -0.11,
+        "win_rate": 0.5748,
+        "total_return": 0.2404,
+        "n_days": 254,
+        "worst_days": [
+          {
+            "date": "2022-01-25",
+            "equal_weight_return": -0.037946
+          },
+          {
+            "date": "2021-09-29",
+            "equal_weight_return": -0.032106
+          },
+          {
+            "date": "2022-01-27",
+            "equal_weight_return": -0.028604
+          },
+          {
+            "date": "2021-03-09",
+            "equal_weight_return": -0.026623
+          },
+          {
+            "date": "2021-09-27",
+            "equal_weight_return": -0.025655
+          }
+        ],
+        "best_days": [
+          {
+            "date": "2021-07-29",
+            "equal_weight_return": 0.028191
+          },
+          {
+            "date": "2021-03-01",
+            "equal_weight_return": 0.02361
+          },
+          {
+            "date": "2021-03-11",
+            "equal_weight_return": 0.023177
+          },
+          {
+            "date": "2021-08-23",
+            "equal_weight_return": 0.022399
+          },
+          {
+            "date": "2021-02-19",
+            "equal_weight_return": 0.021727
+          }
+        ]
+      }
+    },
+    {
+      "fold": 1,
+      "train_end_idx": 5362,
+      "test_start_idx": 5372,
+      "test_end_idx": 5627,
+      "context_start_idx": 4616,
+      "train_end": "2022-02-21",
+      "test_start": "2022-03-08",
+      "test_end": "2023-03-23",
+      "context_start": "2019-01-22",
+      "days": 255,
+      "market_equal_weight": {
+        "sharpe_ratio": 0.5341,
+        "annual_return": 0.1434,
+        "annual_volatility": 0.2218,
+        "max_drawdown": -0.2163,
+        "win_rate": 0.5669,
+        "total_return": 0.1271,
+        "n_days": 254,
+        "worst_days": [
+          {
+            "date": "2022-04-25",
+            "equal_weight_return": -0.072353
+          },
+          {
+            "date": "2022-03-15",
+            "equal_weight_return": -0.052586
+          },
+          {
+            "date": "2022-05-24",
+            "equal_weight_return": -0.040702
+          },
+          {
+            "date": "2022-04-21",
+            "equal_weight_return": -0.036432
+          },
+          {
+            "date": "2022-04-11",
+            "equal_weight_return": -0.032817
+          }
+        ],
+        "best_days": [
+          {
+            "date": "2022-04-29",
+            "equal_weight_return": 0.043632
+          },
+          {
+            "date": "2022-04-27",
+            "equal_weight_return": 0.042269
+          },
+          {
+            "date": "2022-03-16",
+            "equal_weight_return": 0.030553
+          },
+          {
+            "date": "2022-10-12",
+            "equal_weight_return": 0.029513
+          },
+          {
+            "date": "2022-11-01",
+            "equal_weight_return": 0.025109
+          }
+        ]
+      }
+    },
+    {
+      "fold": 2,
+      "train_end_idx": 5617,
+      "test_start_idx": 5627,
+      "test_end_idx": 5882,
+      "context_start_idx": 4871,
+      "train_end": "2023-03-09",
+      "test_start": "2023-03-24",
+      "test_end": "2024-04-12",
+      "context_start": "2020-02-14",
+      "days": 255,
+      "market_equal_weight": {
+        "sharpe_ratio": -0.5878,
+        "annual_return": -0.1002,
+        "annual_volatility": 0.213,
+        "max_drawdown": -0.3131,
+        "win_rate": 0.5,
+        "total_return": -0.1164,
+        "n_days": 254,
+        "worst_days": [
+          {
+            "date": "2024-01-22",
+            "equal_weight_return": -0.054527
+          },
+          {
+            "date": "2024-02-05",
+            "equal_weight_return": -0.052912
+          },
+          {
+            "date": "2024-02-28",
+            "equal_weight_return": -0.039269
+          },
+          {
+            "date": "2024-02-02",
+            "equal_weight_return": -0.03563
+          },
+          {
+            "date": "2024-01-31",
+            "equal_weight_return": -0.034509
+          }
+        ],
+        "best_days": [
+          {
+            "date": "2024-02-06",
+            "equal_weight_return": 0.069055
+          },
+          {
+            "date": "2024-02-07",
+            "equal_weight_return": 0.042764
+          },
+          {
+            "date": "2024-02-08",
+            "equal_weight_return": 0.037178
+          },
+          {
+            "date": "2024-02-29",
+            "equal_weight_return": 0.035812
+          },
+          {
+            "date": "2024-01-25",
+            "equal_weight_return": 0.033048
+          }
+        ]
+      }
+    },
+    {
+      "fold": 3,
+      "train_end_idx": 5872,
+      "test_start_idx": 5882,
+      "test_end_idx": 6137,
+      "context_start_idx": 5126,
+      "train_end": "2024-03-27",
+      "test_start": "2024-04-15",
+      "test_end": "2025-05-06",
+      "context_start": "2021-03-03",
+      "days": 255,
+      "market_equal_weight": {
+        "sharpe_ratio": 0.8278,
+        "annual_return": 0.2762,
+        "annual_volatility": 0.3035,
+        "max_drawdown": -0.1895,
+        "win_rate": 0.5394,
+        "total_return": 0.2613,
+        "n_days": 254,
+        "worst_days": [
+          {
+            "date": "2025-04-07",
+            "equal_weight_return": -0.107513
+          },
+          {
+            "date": "2024-10-09",
+            "equal_weight_return": -0.077836
+          },
+          {
+            "date": "2024-10-11",
+            "equal_weight_return": -0.040614
+          },
+          {
+            "date": "2024-04-16",
+            "equal_weight_return": -0.039334
+          },
+          {
+            "date": "2024-11-22",
+            "equal_weight_return": -0.036775
+          }
+        ],
+        "best_days": [
+          {
+            "date": "2024-09-30",
+            "equal_weight_return": 0.113568
+          },
+          {
+            "date": "2024-10-08",
+            "equal_weight_return": 0.081794
+          },
+          {
+            "date": "2024-09-27",
+            "equal_weight_return": 0.054149
+          },
+          {
+            "date": "2024-04-17",
+            "equal_weight_return": 0.0428
+          },
+          {
+            "date": "2024-09-26",
+            "equal_weight_return": 0.041761
+          }
+        ]
+      }
+    },
+    {
+      "fold": 4,
+      "train_end_idx": 6127,
+      "test_start_idx": 6137,
+      "test_end_idx": 6392,
+      "context_start_idx": 5381,
+      "train_end": "2025-04-17",
+      "test_start": "2025-05-07",
+      "test_end": "2026-05-25",
+      "context_start": "2022-03-21",
+      "days": 255,
+      "market_equal_weight": {
+        "sharpe_ratio": 1.8095,
+        "annual_return": 0.3499,
+        "annual_volatility": 0.1795,
+        "max_drawdown": -0.128,
+        "win_rate": 0.5709,
+        "total_return": 0.3996,
+        "n_days": 254,
+        "worst_days": [
+          {
+            "date": "2026-03-23",
+            "equal_weight_return": -0.045335
+          },
+          {
+            "date": "2026-03-03",
+            "equal_weight_return": -0.034405
+          },
+          {
+            "date": "2025-11-21",
+            "equal_weight_return": -0.032739
+          },
+          {
+            "date": "2026-02-02",
+            "equal_weight_return": -0.032211
+          },
+          {
+            "date": "2025-10-17",
+            "equal_weight_return": -0.026234
+          }
+        ],
+        "best_days": [
+          {
+            "date": "2026-04-08",
+            "equal_weight_return": 0.041154
+          },
+          {
+            "date": "2025-09-05",
+            "equal_weight_return": 0.026496
+          },
+          {
+            "date": "2026-02-03",
+            "equal_weight_return": 0.026302
+          },
+          {
+            "date": "2026-03-24",
+            "equal_weight_return": 0.024638
+          },
+          {
+            "date": "2026-01-12",
+            "equal_weight_return": 0.021679
+          }
+        ]
+      }
+    }
+  ],
+  "focus_trace": {
+    "stats": {
+      "sharpe_ratio": -1.0059,
+      "annual_return": -0.0269,
+      "annual_volatility": 0.0516,
+      "max_drawdown": -0.0601,
+      "win_rate": 0.5472,
+      "total_return": -0.028,
+      "n_days": 254
+    },
+    "correlation_to_universe": 0.2622,
+    "total_cost": 0.006931,
+    "rebalance_summary": {
+      "n_rebalances": 26,
+      "bear_rebalance_ratio": 0.6154,
+      "avg_stock_exposure": 0.1807,
+      "avg_total_exposure": 0.4351,
+      "avg_alt_coverage": 0.0,
+      "max_alt_coverage": 0,
+      "avg_active_stocks": 15.4,
+      "top_selected_industries": [
+        [
+          "中成药",
+          17
+        ],
+        [
+          "焦煤",
+          16
+        ],
+        [
+          "教育出版",
+          15
+        ],
+        [
+          "农药",
+          14
+        ],
+        [
+          "其他生物制品",
+          13
+        ],
+        [
+          "城商行Ⅲ",
+          13
+        ],
+        [
+          "动力煤",
+          8
+        ],
+        [
+          "非运动服装",
+          7
+        ],
+        [
+          "金属制品",
+          6
+        ],
+        [
+          "港口",
+          5
+        ]
+      ]
+    },
+    "worst_days": [
+      {
+        "date": "2022-03-10",
+        "strategy_return": -0.014405,
+        "universe_return": 0.018502,
+        "stock_return": 0.0,
+        "overlay_return": -0.014405,
+        "hedge_return": -0.0,
+        "cost": 0.0,
+        "total_exposure": 0.45,
+        "overlay_weights": {
+          "cash": 0.55,
+          "gold": 0.45
+        }
+      },
+      {
+        "date": "2023-03-10",
+        "strategy_return": -0.012575,
+        "universe_return": -0.012567,
+        "stock_return": -0.013909,
+        "overlay_return": 0.000109,
+        "hedge_return": 0.001225,
+        "cost": 0.0,
+        "total_exposure": 1.06,
+        "overlay_weights": {
+          "cash": 0.035,
+          "gold": 0.015
+        }
+      },
+      {
+        "date": "2022-03-15",
+        "strategy_return": -0.009788,
+        "universe_return": -0.052586,
+        "stock_return": 0.0,
+        "overlay_return": -0.009788,
+        "hedge_return": 0.0,
+        "cost": 0.0,
+        "total_exposure": 0.45,
+        "overlay_weights": {
+          "cash": 0.55,
+          "gold": 0.45
+        }
+      },
+      {
+        "date": "2023-03-07",
+        "strategy_return": -0.009483,
+        "universe_return": -0.018968,
+        "stock_return": -0.011154,
+        "overlay_return": 2.4e-05,
+        "hedge_return": 0.001648,
+        "cost": 0.0,
+        "total_exposure": 1.06,
+        "overlay_weights": {
+          "cash": 0.035,
+          "gold": 0.015
+        }
+      },
+      {
+        "date": "2023-03-14",
+        "strategy_return": -0.009482,
+        "universe_return": -0.006987,
+        "stock_return": -0.010524,
+        "overlay_return": 0.000196,
+        "hedge_return": 0.000846,
+        "cost": 0.0,
+        "total_exposure": 1.06,
+        "overlay_weights": {
+          "cash": 0.035,
+          "gold": 0.015
+        }
+      },
+      {
+        "date": "2023-02-16",
+        "strategy_return": -0.008871,
+        "universe_return": -0.019168,
+        "stock_return": -0.010278,
+        "overlay_return": -4e-06,
+        "hedge_return": 0.001412,
+        "cost": 0.0,
+        "total_exposure": 1.06,
+        "overlay_weights": {
+          "cash": 0.035,
+          "gold": 0.015
+        }
+      },
+      {
+        "date": "2022-07-06",
+        "strategy_return": -0.008487,
+        "universe_return": -0.010576,
+        "stock_return": 0.0,
+        "overlay_return": -0.008487,
+        "hedge_return": 0.0,
+        "cost": 0.0,
+        "total_exposure": 0.45,
+        "overlay_weights": {
+          "cash": 0.55,
+          "gold": 0.45
+        }
+      },
+      {
+        "date": "2022-06-14",
+        "strategy_return": -0.008068,
+        "universe_return": 0.001485,
+        "stock_return": 0.0,
+        "overlay_return": -0.008068,
+        "hedge_return": -0.0,
+        "cost": 0.0,
+        "total_exposure": 0.45,
+        "overlay_weights": {
+          "cash": 0.55,
+          "gold": 0.45
+        }
+      },
+      {
+        "date": "2022-08-02",
+        "strategy_return": -0.00729,
+        "universe_return": -0.031231,
+        "stock_return": -0.007989,
+        "overlay_return": 0.0,
+        "hedge_return": 0.000699,
+        "cost": 0.0,
+        "total_exposure": 0.2752,
+        "overlay_weights": {
+          "cash": 0.749801
+        }
+      },
+      {
+        "date": "2022-07-07",
+        "strategy_return": -0.005954,
+        "universe_return": 0.009346,
+        "stock_return": 0.0,
+        "overlay_return": -0.005954,
+        "hedge_return": -0.0,
+        "cost": 0.0,
+        "total_exposure": 0.45,
+        "overlay_weights": {
+          "cash": 0.55,
+          "gold": 0.45
+        }
+      }
+    ],
+    "best_days": [
+      {
+        "date": "2023-02-09",
+        "strategy_return": 0.011414,
+        "universe_return": 0.017
+      },
+      {
+        "date": "2023-03-15",
+        "strategy_return": 0.010741,
+        "universe_return": 0.00614
+      },
+      {
+        "date": "2022-06-13",
+        "strategy_return": 0.0073,
+        "universe_return": 0.004168
+      },
+      {
+        "date": "2023-03-21",
+        "strategy_return": 0.006435,
+        "universe_return": 0.012169
+      },
+      {
+        "date": "2022-04-29",
+        "strategy_return": 0.006184,
+        "universe_return": 0.043632
+      }
+    ],
+    "monthly_returns": [
+      {
+        "month": "2022-03",
+        "strategy_return": -0.019804,
+        "universe_return": -0.017703,
+        "avg_stock_exposure": 0.0,
+        "avg_total_exposure": 0.45
+      },
+      {
+        "month": "2022-04",
+        "strategy_return": 0.013812,
+        "universe_return": -0.131937,
+        "avg_stock_exposure": 0.0,
+        "avg_total_exposure": 0.45
+      },
+      {
+        "month": "2022-05",
+        "strategy_return": -0.006719,
+        "universe_return": 0.113436,
+        "avg_stock_exposure": 0.0,
+        "avg_total_exposure": 0.45
+      },
+      {
+        "month": "2022-06",
+        "strategy_return": -0.005898,
+        "universe_return": 0.10071,
+        "avg_stock_exposure": 0.0,
+        "avg_total_exposure": 0.45
+      },
+      {
+        "month": "2022-07",
+        "strategy_return": -0.02747,
+        "universe_return": 0.020474,
+        "avg_stock_exposure": 0.0834,
+        "avg_total_exposure": 0.3917
+      },
+      {
+        "month": "2022-08",
+        "strategy_return": -0.007003,
+        "universe_return": -0.030269,
+        "avg_stock_exposure": 0.1557,
+        "avg_total_exposure": 0.3669
+      },
+      {
+        "month": "2022-09",
+        "strategy_return": 0.001352,
+        "universe_return": -0.079358,
+        "avg_stock_exposure": 0.0,
+        "avg_total_exposure": 0.0
+      },
+      {
+        "month": "2022-10",
+        "strategy_return": -0.00456,
+        "universe_return": 0.039754,
+        "avg_stock_exposure": 0.0865,
+        "avg_total_exposure": 0.0951
+      },
+      {
+        "month": "2022-11",
+        "strategy_return": 0.017251,
+        "universe_return": 0.061296,
+        "avg_stock_exposure": 0.2118,
+        "avg_total_exposure": 0.3274
+      },
+      {
+        "month": "2022-12",
+        "strategy_return": 0.003806,
+        "universe_return": -0.034308,
+        "avg_stock_exposure": 0.1638,
+        "avg_total_exposure": 0.5061
+      },
+      {
+        "month": "2023-01",
+        "strategy_return": 0.00981,
+        "universe_return": 0.086067,
+        "avg_stock_exposure": 0.0,
+        "avg_total_exposure": 0.45
+      },
+      {
+        "month": "2023-02",
+        "strategy_return": 0.011797,
+        "universe_return": 0.025237,
+        "avg_stock_exposure": 0.5975,
+        "avg_total_exposure": 0.8005
+      },
+      {
+        "month": "2023-03",
+        "strategy_return": -0.01367,
+        "universe_return": -0.002296,
+        "avg_stock_exposure": 0.8441,
+        "avg_total_exposure": 0.9753
+      }
+    ]
+  },
+  "production_blockers": [
+    "diagnostic evidence is not a production strategy",
+    "candidate still fails Sharpe>=1.2 production gate",
+    "negative OOS fold must be fixed before any production promotion"
+  ],
+  "elapsed_s": 18.7
+}

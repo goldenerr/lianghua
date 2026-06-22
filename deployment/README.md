@@ -1,32 +1,26 @@
-# Deployment Gate: `deploy-001`
+# 部署 Gate：`deploy-001`
 
-`deploy-001` is not approved for production rollout until every gate below is
-recorded and reviewed. The application must never use a rollout event to
-enable live trading automatically.
+在以下每个 gate 都完成记录和复核之前，`deploy-001` 不允许进入生产发布。应用程序绝不能通过一次发布事件自动开启实盘交易。
 
-## Canary Policy
+## Canary 策略
 
-- Deploy only 5% of instances at the first canary stage.
-- Observe each stage for at least 24 hours.
-- Advance stages in order: 5%, 10%, 50%, 100%.
-- Roll back immediately if error rate exceeds 5%, P99 latency exceeds 200 ms,
-  or strategy Sharpe declines by more than 30%.
-- Publish every decision to the audit event bus.
+- 首个 canary 阶段只部署 5% 实例。
+- 每个阶段至少观察 24 小时。
+- 按顺序推进阶段：5%、10%、50%、100%。
+- 如果错误率超过 5%、P99 延迟超过 200 ms，或策略 Sharpe 下降超过 30%，必须立即回滚。
+- 每一次发布决策都必须写入审计事件总线。
 
-## Blocking Gates
+## 阻塞 Gate
 
-- Verify the signed `core-004` system version manifest in every artifact.
-- Run full tests, smoke tests, backtest-to-paper consistency checks, and a DR drill.
-- Generate the capital impact assessment and obtain risk approval.
-- Configure production secrets through Vault or an approved secret manager.
-- Confirm monitoring, alert escalation, and rollback controls in the target environment.
+- 在每个 artifact 中校验已签名的 `core-004` 系统版本清单。
+- 运行全量测试、smoke test、回测到模拟盘一致性检查和灾备演练。
+- 生成资金影响评估，并取得风控审批。
+- 通过 Vault 或已批准的 Secret Manager 配置生产密钥。
+- 在目标环境确认监控、告警升级和回滚控制。
 
-The Docker assets provide a development/deployment baseline only. They do not
-constitute production approval.
+Docker 资产只提供开发/部署基线，不构成生产批准。
 
-The main-branch image workflow must generate the manifest from the exact
-configuration and source tree copied into the image, then verify it before
-calling `docker build`:
+主分支镜像工作流必须基于复制进镜像的精确配置和源码树生成 manifest，并在调用 `docker build` 前完成校验：
 
 ```bash
 export QUANT_MANIFEST_SIGNING_KEY='<secret-manager-injected-key>'
@@ -37,6 +31,4 @@ quant-cli build-manifest \
 quant-cli manifest deployment/artifact-manifest.json --verify
 ```
 
-The signing key is never stored in the repository or image. The generated
-manifest carries hashes and a signature only, and is part of the constructed
-artifact.
+签名密钥绝不能存储在仓库或镜像中。生成的 manifest 只携带 hash 和签名，并作为构建 artifact 的一部分。

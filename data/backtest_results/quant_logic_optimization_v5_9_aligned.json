@@ -1,0 +1,754 @@
+{
+  "ts": "2026-06-03T21:48:25.153916",
+  "version": "V5.9-aligned-parameter-optimization",
+  "research_only": true,
+  "data": {
+    "symbols": 1196,
+    "dates": 6396,
+    "start": "2000-01-04",
+    "end": "2026-05-29",
+    "industry_mapped": 0,
+    "industry_coverage": 0.0
+  },
+  "grid_size": 81,
+  "top_full_backtests": [
+    {
+      "rank_input": 8,
+      "top_n": 25,
+      "rebalance_freq": 60,
+      "large_cap_exclude_pct": 0.3,
+      "weights": "defensive_low_vol",
+      "objective": -0.0487,
+      "sharpe_ratio": 0.3029,
+      "max_drawdown": -0.2379,
+      "win_rate": 0.5416,
+      "annual_return": 0.0481,
+      "avg_turnover": 1.0355,
+      "avg_active_stocks": 25.0,
+      "full": {
+        "sharpe_ratio": 0.3029,
+        "annual_return": 0.0481,
+        "annual_volatility": 0.0763,
+        "max_drawdown": -0.2379,
+        "calmar_ratio": 0.2023,
+        "win_rate": 0.5416,
+        "total_return": 2.0091,
+        "n_rebalances": 103,
+        "n_days": 6143,
+        "avg_active_stocks": 25.0,
+        "avg_candidate_stocks": 648.0,
+        "avg_excluded_large_caps": 194.0,
+        "avg_turnover": 1.0355,
+        "total_rebalance_cost": 0.0877
+      }
+    },
+    {
+      "rank_input": 35,
+      "top_n": 35,
+      "rebalance_freq": 60,
+      "large_cap_exclude_pct": 0.3,
+      "weights": "defensive_low_vol",
+      "objective": -0.05,
+      "sharpe_ratio": 0.302,
+      "max_drawdown": -0.238,
+      "win_rate": 0.5501,
+      "annual_return": 0.0484,
+      "avg_turnover": 1.0329,
+      "avg_active_stocks": 35.0,
+      "full": {
+        "sharpe_ratio": 0.302,
+        "annual_return": 0.0484,
+        "annual_volatility": 0.0774,
+        "max_drawdown": -0.238,
+        "calmar_ratio": 0.2033,
+        "win_rate": 0.5501,
+        "total_return": 2.0215,
+        "n_rebalances": 103,
+        "n_days": 6143,
+        "avg_active_stocks": 35.0,
+        "avg_candidate_stocks": 648.0,
+        "avg_excluded_large_caps": 194.0,
+        "avg_turnover": 1.0329,
+        "total_rebalance_cost": 0.0875
+      }
+    },
+    {
+      "rank_input": 43,
+      "top_n": 35,
+      "rebalance_freq": 90,
+      "large_cap_exclude_pct": 0.3,
+      "weights": "v59_original",
+      "objective": -0.051,
+      "sharpe_ratio": 0.1338,
+      "max_drawdown": -0.1962,
+      "win_rate": 0.5418,
+      "annual_return": 0.0346,
+      "avg_turnover": 1.0129,
+      "avg_active_stocks": 35.0,
+      "full": {
+        "sharpe_ratio": 0.1338,
+        "annual_return": 0.0346,
+        "annual_volatility": 0.0714,
+        "max_drawdown": -0.1962,
+        "calmar_ratio": 0.1761,
+        "win_rate": 0.5418,
+        "total_return": 1.1807,
+        "n_rebalances": 69,
+        "n_days": 6143,
+        "avg_active_stocks": 35.0,
+        "avg_candidate_stocks": 648.5,
+        "avg_excluded_large_caps": 194.1,
+        "avg_turnover": 1.0129,
+        "total_rebalance_cost": 0.0564
+      }
+    },
+    {
+      "rank_input": 23,
+      "top_n": 25,
+      "rebalance_freq": 120,
+      "large_cap_exclude_pct": 0.2,
+      "weights": "defensive_low_vol",
+      "objective": -0.0868,
+      "sharpe_ratio": 0.3472,
+      "max_drawdown": -0.2585,
+      "win_rate": 0.5408,
+      "annual_return": 0.0501,
+      "avg_turnover": 1.0368,
+      "avg_active_stocks": 25.0,
+      "full": {
+        "sharpe_ratio": 0.3472,
+        "annual_return": 0.0501,
+        "annual_volatility": 0.0722,
+        "max_drawdown": -0.2585,
+        "calmar_ratio": 0.1936,
+        "win_rate": 0.5408,
+        "total_return": 2.178,
+        "n_rebalances": 52,
+        "n_days": 6143,
+        "avg_active_stocks": 25.0,
+        "avg_candidate_stocks": 649.7,
+        "avg_excluded_large_caps": 129.5,
+        "avg_turnover": 1.0368,
+        "total_rebalance_cost": 0.0443
+      }
+    },
+    {
+      "rank_input": 72,
+      "top_n": 50,
+      "rebalance_freq": 90,
+      "large_cap_exclude_pct": 0.3,
+      "weights": "mean_reversion_heavy",
+      "objective": -0.0957,
+      "sharpe_ratio": 0.1515,
+      "max_drawdown": -0.2118,
+      "win_rate": 0.5517,
+      "annual_return": 0.0352,
+      "avg_turnover": 1.0151,
+      "avg_active_stocks": 50.0,
+      "full": {
+        "sharpe_ratio": 0.1515,
+        "annual_return": 0.0352,
+        "annual_volatility": 0.0672,
+        "max_drawdown": -0.2118,
+        "calmar_ratio": 0.1661,
+        "win_rate": 0.5517,
+        "total_return": 1.2299,
+        "n_rebalances": 69,
+        "n_days": 6143,
+        "avg_active_stocks": 50.0,
+        "avg_candidate_stocks": 648.5,
+        "avg_excluded_large_caps": 194.1,
+        "avg_turnover": 1.0151,
+        "total_rebalance_cost": 0.0567
+      }
+    },
+    {
+      "rank_input": 25,
+      "top_n": 25,
+      "rebalance_freq": 120,
+      "large_cap_exclude_pct": 0.3,
+      "weights": "v59_original",
+      "objective": -0.1072,
+      "sharpe_ratio": 0.3448,
+      "max_drawdown": -0.263,
+      "win_rate": 0.5398,
+      "annual_return": 0.0516,
+      "avg_turnover": 1.0352,
+      "avg_active_stocks": 25.0,
+      "full": {
+        "sharpe_ratio": 0.3448,
+        "annual_return": 0.0516,
+        "annual_volatility": 0.0771,
+        "max_drawdown": -0.263,
+        "calmar_ratio": 0.1961,
+        "win_rate": 0.5398,
+        "total_return": 2.2694,
+        "n_rebalances": 52,
+        "n_days": 6143,
+        "avg_active_stocks": 25.0,
+        "avg_candidate_stocks": 649.7,
+        "avg_excluded_large_caps": 194.5,
+        "avg_turnover": 1.0352,
+        "total_rebalance_cost": 0.0442
+      }
+    },
+    {
+      "rank_input": 69,
+      "top_n": 50,
+      "rebalance_freq": 90,
+      "large_cap_exclude_pct": 0.2,
+      "weights": "mean_reversion_heavy",
+      "objective": -0.114,
+      "sharpe_ratio": 0.136,
+      "max_drawdown": -0.2125,
+      "win_rate": 0.5504,
+      "annual_return": 0.0345,
+      "avg_turnover": 1.0145,
+      "avg_active_stocks": 50.0,
+      "full": {
+        "sharpe_ratio": 0.136,
+        "annual_return": 0.0345,
+        "annual_volatility": 0.0696,
+        "max_drawdown": -0.2125,
+        "calmar_ratio": 0.1622,
+        "win_rate": 0.5504,
+        "total_return": 1.1826,
+        "n_rebalances": 69,
+        "n_days": 6143,
+        "avg_active_stocks": 50.0,
+        "avg_candidate_stocks": 648.5,
+        "avg_excluded_large_caps": 129.3,
+        "avg_turnover": 1.0145,
+        "total_rebalance_cost": 0.0567
+      }
+    },
+    {
+      "rank_input": 80,
+      "top_n": 50,
+      "rebalance_freq": 120,
+      "large_cap_exclude_pct": 0.3,
+      "weights": "defensive_low_vol",
+      "objective": -0.1148,
+      "sharpe_ratio": 0.3368,
+      "max_drawdown": -0.2629,
+      "win_rate": 0.5497,
+      "annual_return": 0.0493,
+      "avg_turnover": 1.0154,
+      "avg_active_stocks": 50.0,
+      "full": {
+        "sharpe_ratio": 0.3368,
+        "annual_return": 0.0493,
+        "annual_volatility": 0.0723,
+        "max_drawdown": -0.2629,
+        "calmar_ratio": 0.1877,
+        "win_rate": 0.5497,
+        "total_return": 2.1218,
+        "n_rebalances": 52,
+        "n_days": 6143,
+        "avg_active_stocks": 50.0,
+        "avg_candidate_stocks": 649.7,
+        "avg_excluded_large_caps": 194.5,
+        "avg_turnover": 1.0154,
+        "total_rebalance_cost": 0.043
+      }
+    },
+    {
+      "rank_input": 27,
+      "top_n": 25,
+      "rebalance_freq": 120,
+      "large_cap_exclude_pct": 0.3,
+      "weights": "mean_reversion_heavy",
+      "objective": -0.1157,
+      "sharpe_ratio": 0.3667,
+      "max_drawdown": -0.2706,
+      "win_rate": 0.5481,
+      "annual_return": 0.052,
+      "avg_turnover": 1.0337,
+      "avg_active_stocks": 25.0,
+      "full": {
+        "sharpe_ratio": 0.3667,
+        "annual_return": 0.052,
+        "annual_volatility": 0.0736,
+        "max_drawdown": -0.2706,
+        "calmar_ratio": 0.1922,
+        "win_rate": 0.5481,
+        "total_return": 2.3243,
+        "n_rebalances": 52,
+        "n_days": 6143,
+        "avg_active_stocks": 25.0,
+        "avg_candidate_stocks": 649.7,
+        "avg_excluded_large_caps": 194.5,
+        "avg_turnover": 1.0337,
+        "total_rebalance_cost": 0.0441
+      }
+    },
+    {
+      "rank_input": 6,
+      "top_n": 25,
+      "rebalance_freq": 60,
+      "large_cap_exclude_pct": 0.2,
+      "weights": "mean_reversion_heavy",
+      "objective": -0.116,
+      "sharpe_ratio": 0.2848,
+      "max_drawdown": -0.2502,
+      "win_rate": 0.5478,
+      "annual_return": 0.0476,
+      "avg_turnover": 1.0419,
+      "avg_active_stocks": 25.0,
+      "full": {
+        "sharpe_ratio": 0.2848,
+        "annual_return": 0.0476,
+        "annual_volatility": 0.0793,
+        "max_drawdown": -0.2502,
+        "calmar_ratio": 0.1901,
+        "win_rate": 0.5478,
+        "total_return": 1.9529,
+        "n_rebalances": 103,
+        "n_days": 6143,
+        "avg_active_stocks": 25.0,
+        "avg_candidate_stocks": 648.0,
+        "avg_excluded_large_caps": 129.2,
+        "avg_turnover": 1.0419,
+        "total_rebalance_cost": 0.0885
+      }
+    }
+  ],
+  "top_walk_forward": [
+    {
+      "rank": 1,
+      "candidate": {
+        "rank_input": 8,
+        "top_n": 25,
+        "rebalance_freq": 60,
+        "large_cap_exclude_pct": 0.3,
+        "weights": "defensive_low_vol",
+        "objective": -0.0487,
+        "sharpe_ratio": 0.3029,
+        "max_drawdown": -0.2379,
+        "win_rate": 0.5416,
+        "annual_return": 0.0481,
+        "avg_turnover": 1.0355,
+        "avg_active_stocks": 25.0,
+        "full": {
+          "sharpe_ratio": 0.3029,
+          "annual_return": 0.0481,
+          "annual_volatility": 0.0763,
+          "max_drawdown": -0.2379,
+          "calmar_ratio": 0.2023,
+          "win_rate": 0.5416,
+          "total_return": 2.0091,
+          "n_rebalances": 103,
+          "n_days": 6143,
+          "avg_active_stocks": 25.0,
+          "avg_candidate_stocks": 648.0,
+          "avg_excluded_large_caps": 194.0,
+          "avg_turnover": 1.0355,
+          "total_rebalance_cost": 0.0877
+        }
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "train_days": 5107,
+            "test_days": 255,
+            "is": 0.3681,
+            "oos": 0.9463,
+            "active": 25.0
+          },
+          {
+            "fold": 1,
+            "train_days": 5362,
+            "test_days": 255,
+            "is": 0.356,
+            "oos": 1.6335,
+            "active": 25.0
+          },
+          {
+            "fold": 2,
+            "train_days": 5617,
+            "test_days": 255,
+            "is": 0.3442,
+            "oos": 0.0354,
+            "active": 25.0
+          },
+          {
+            "fold": 3,
+            "train_days": 5872,
+            "test_days": 255,
+            "is": 0.291,
+            "oos": 0.7394,
+            "active": 25.0
+          },
+          {
+            "fold": 4,
+            "train_days": 6127,
+            "test_days": 255,
+            "is": 0.2755,
+            "oos": 0.5278,
+            "active": 25.0
+          }
+        ],
+        "avg_is_sharpe": 0.327,
+        "avg_oos_sharpe": 0.7765,
+        "sharpe_decay": -1.3748
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": true,
+        "W": true,
+        "A": false
+      }
+    },
+    {
+      "rank": 2,
+      "candidate": {
+        "rank_input": 35,
+        "top_n": 35,
+        "rebalance_freq": 60,
+        "large_cap_exclude_pct": 0.3,
+        "weights": "defensive_low_vol",
+        "objective": -0.05,
+        "sharpe_ratio": 0.302,
+        "max_drawdown": -0.238,
+        "win_rate": 0.5501,
+        "annual_return": 0.0484,
+        "avg_turnover": 1.0329,
+        "avg_active_stocks": 35.0,
+        "full": {
+          "sharpe_ratio": 0.302,
+          "annual_return": 0.0484,
+          "annual_volatility": 0.0774,
+          "max_drawdown": -0.238,
+          "calmar_ratio": 0.2033,
+          "win_rate": 0.5501,
+          "total_return": 2.0215,
+          "n_rebalances": 103,
+          "n_days": 6143,
+          "avg_active_stocks": 35.0,
+          "avg_candidate_stocks": 648.0,
+          "avg_excluded_large_caps": 194.0,
+          "avg_turnover": 1.0329,
+          "total_rebalance_cost": 0.0875
+        }
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "train_days": 5107,
+            "test_days": 255,
+            "is": 0.386,
+            "oos": 1.3403,
+            "active": 35.0
+          },
+          {
+            "fold": 1,
+            "train_days": 5362,
+            "test_days": 255,
+            "is": 0.3763,
+            "oos": 1.3333,
+            "active": 35.0
+          },
+          {
+            "fold": 2,
+            "train_days": 5617,
+            "test_days": 255,
+            "is": 0.381,
+            "oos": -0.3835,
+            "active": 35.0
+          },
+          {
+            "fold": 3,
+            "train_days": 5872,
+            "test_days": 255,
+            "is": 0.327,
+            "oos": 1.1423,
+            "active": 35.0
+          },
+          {
+            "fold": 4,
+            "train_days": 6127,
+            "test_days": 255,
+            "is": 0.3146,
+            "oos": 0.5168,
+            "active": 35.0
+          }
+        ],
+        "avg_is_sharpe": 0.357,
+        "avg_oos_sharpe": 0.7898,
+        "sharpe_decay": -1.2126
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": true,
+        "W": true,
+        "A": false
+      }
+    },
+    {
+      "rank": 3,
+      "candidate": {
+        "rank_input": 43,
+        "top_n": 35,
+        "rebalance_freq": 90,
+        "large_cap_exclude_pct": 0.3,
+        "weights": "v59_original",
+        "objective": -0.051,
+        "sharpe_ratio": 0.1338,
+        "max_drawdown": -0.1962,
+        "win_rate": 0.5418,
+        "annual_return": 0.0346,
+        "avg_turnover": 1.0129,
+        "avg_active_stocks": 35.0,
+        "full": {
+          "sharpe_ratio": 0.1338,
+          "annual_return": 0.0346,
+          "annual_volatility": 0.0714,
+          "max_drawdown": -0.1962,
+          "calmar_ratio": 0.1761,
+          "win_rate": 0.5418,
+          "total_return": 1.1807,
+          "n_rebalances": 69,
+          "n_days": 6143,
+          "avg_active_stocks": 35.0,
+          "avg_candidate_stocks": 648.5,
+          "avg_excluded_large_caps": 194.1,
+          "avg_turnover": 1.0129,
+          "total_rebalance_cost": 0.0564
+        }
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "train_days": 5107,
+            "test_days": 255,
+            "is": 0.142,
+            "oos": 0.5167,
+            "active": 35.0
+          },
+          {
+            "fold": 1,
+            "train_days": 5362,
+            "test_days": 255,
+            "is": 0.1369,
+            "oos": 1.8444,
+            "active": 35.0
+          },
+          {
+            "fold": 2,
+            "train_days": 5617,
+            "test_days": 255,
+            "is": 0.1106,
+            "oos": -0.3596,
+            "active": 35.0
+          },
+          {
+            "fold": 3,
+            "train_days": 5872,
+            "test_days": 255,
+            "is": 0.0928,
+            "oos": -1.834,
+            "active": 35.0
+          },
+          {
+            "fold": 4,
+            "train_days": 6127,
+            "test_days": 255,
+            "is": 0.0773,
+            "oos": 2.4744,
+            "active": 35.0
+          }
+        ],
+        "avg_is_sharpe": 0.1119,
+        "avg_oos_sharpe": 0.5284,
+        "sharpe_decay": -3.7211
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": true,
+        "W": true,
+        "A": false
+      }
+    },
+    {
+      "rank": 4,
+      "candidate": {
+        "rank_input": 23,
+        "top_n": 25,
+        "rebalance_freq": 120,
+        "large_cap_exclude_pct": 0.2,
+        "weights": "defensive_low_vol",
+        "objective": -0.0868,
+        "sharpe_ratio": 0.3472,
+        "max_drawdown": -0.2585,
+        "win_rate": 0.5408,
+        "annual_return": 0.0501,
+        "avg_turnover": 1.0368,
+        "avg_active_stocks": 25.0,
+        "full": {
+          "sharpe_ratio": 0.3472,
+          "annual_return": 0.0501,
+          "annual_volatility": 0.0722,
+          "max_drawdown": -0.2585,
+          "calmar_ratio": 0.1936,
+          "win_rate": 0.5408,
+          "total_return": 2.178,
+          "n_rebalances": 52,
+          "n_days": 6143,
+          "avg_active_stocks": 25.0,
+          "avg_candidate_stocks": 649.7,
+          "avg_excluded_large_caps": 129.5,
+          "avg_turnover": 1.0368,
+          "total_rebalance_cost": 0.0443
+        }
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "train_days": 5107,
+            "test_days": 255,
+            "is": 0.4195,
+            "oos": 0.5451,
+            "active": 25.0
+          },
+          {
+            "fold": 1,
+            "train_days": 5362,
+            "test_days": 255,
+            "is": 0.3988,
+            "oos": 1.415,
+            "active": 25.0
+          },
+          {
+            "fold": 2,
+            "train_days": 5617,
+            "test_days": 255,
+            "is": 0.373,
+            "oos": -0.61,
+            "active": 25.0
+          },
+          {
+            "fold": 3,
+            "train_days": 5872,
+            "test_days": 255,
+            "is": 0.359,
+            "oos": -1.3118,
+            "active": 25.0
+          },
+          {
+            "fold": 4,
+            "train_days": 6127,
+            "test_days": 255,
+            "is": 0.3641,
+            "oos": 1.1821,
+            "active": 25.0
+          }
+        ],
+        "avg_is_sharpe": 0.3829,
+        "avg_oos_sharpe": 0.2441,
+        "sharpe_decay": 0.3625
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": false,
+        "W": true,
+        "A": false
+      }
+    },
+    {
+      "rank": 5,
+      "candidate": {
+        "rank_input": 72,
+        "top_n": 50,
+        "rebalance_freq": 90,
+        "large_cap_exclude_pct": 0.3,
+        "weights": "mean_reversion_heavy",
+        "objective": -0.0957,
+        "sharpe_ratio": 0.1515,
+        "max_drawdown": -0.2118,
+        "win_rate": 0.5517,
+        "annual_return": 0.0352,
+        "avg_turnover": 1.0151,
+        "avg_active_stocks": 50.0,
+        "full": {
+          "sharpe_ratio": 0.1515,
+          "annual_return": 0.0352,
+          "annual_volatility": 0.0672,
+          "max_drawdown": -0.2118,
+          "calmar_ratio": 0.1661,
+          "win_rate": 0.5517,
+          "total_return": 1.2299,
+          "n_rebalances": 69,
+          "n_days": 6143,
+          "avg_active_stocks": 50.0,
+          "avg_candidate_stocks": 648.5,
+          "avg_excluded_large_caps": 194.1,
+          "avg_turnover": 1.0151,
+          "total_rebalance_cost": 0.0567
+        }
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "train_days": 5107,
+            "test_days": 255,
+            "is": 0.1129,
+            "oos": 0.9255,
+            "active": 50.0
+          },
+          {
+            "fold": 1,
+            "train_days": 5362,
+            "test_days": 255,
+            "is": 0.1107,
+            "oos": 1.7708,
+            "active": 50.0
+          },
+          {
+            "fold": 2,
+            "train_days": 5617,
+            "test_days": 255,
+            "is": 0.0904,
+            "oos": -0.3483,
+            "active": 50.0
+          },
+          {
+            "fold": 3,
+            "train_days": 5872,
+            "test_days": 255,
+            "is": 0.0931,
+            "oos": -1.646,
+            "active": 50.0
+          },
+          {
+            "fold": 4,
+            "train_days": 6127,
+            "test_days": 255,
+            "is": 0.0789,
+            "oos": 2.3046,
+            "active": 50.0
+          }
+        ],
+        "avg_is_sharpe": 0.0972,
+        "avg_oos_sharpe": 0.6013,
+        "sharpe_decay": -5.1864
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": true,
+        "W": true,
+        "A": false
+      }
+    }
+  ],
+  "elapsed_s": 686.6
+}

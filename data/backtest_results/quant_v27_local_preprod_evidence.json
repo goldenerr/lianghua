@@ -1,0 +1,73 @@
+{
+  "ts": "2026-06-15T03:28:17.019847+00:00",
+  "version": "V27-local-preprod-evidence",
+  "research_only": true,
+  "production_ready": false,
+  "universe": {
+    "path": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
+    "size": 2000,
+    "sha256": "dcc089db67747155fbf32c4a47db8461f8bd62902fc306b23971d831f6f5cc14"
+  },
+  "capacity_benchmark_local": {
+    "event_count": 50000,
+    "elapsed_s": 0.156038,
+    "events_per_second": 320433.83,
+    "target_events_per_second_local_min": 10000,
+    "passes_local_minimum": true,
+    "production_like": false
+  },
+  "failover_drill_local": {
+    "secondary_failover_ok": true,
+    "unhealthy_region_rejected": true,
+    "active_region": "ap-southeast",
+    "local_rto_ms": 0.0025,
+    "reported_replication_lag_seconds": 0.5,
+    "rto_target_seconds": 7200,
+    "rpo_target_seconds": 3600,
+    "passes_local_drill": true,
+    "production_like": false
+  },
+  "paper_trading_dry_run_local": {
+    "sharpe_ratio": -1.2524,
+    "annual_return": -0.2915,
+    "annual_volatility": 0.2527,
+    "max_drawdown": -0.163,
+    "total_return": -0.109,
+    "days_traded": 90,
+    "total_trades": 184,
+    "paper_window_start": "2026-01-12",
+    "paper_window_end": "2026-05-29",
+    "requested_days": 90,
+    "completed_days": 90,
+    "rebalance_days": 5,
+    "target_universe_size": 2000,
+    "price_frame_symbols": 1994,
+    "eligible_high_coverage_dates": 600,
+    "requested_min_symbol_coverage": 1600,
+    "min_symbol_coverage_required": 1894,
+    "avg_price_coverage": 1991.73,
+    "min_price_coverage": 1986,
+    "research_price_frame_target": 1900,
+    "price_frame_coverage_passes_research": true,
+    "data_coverage_blockers": [],
+    "production_like": false,
+    "production_blocker": "local historical dry-run is not a real 90-day paper-trading service"
+  },
+  "local_audit_archive": {
+    "archive_date": "2026-06-15",
+    "event_count": 4,
+    "log_path": "/Users/jacklondon/Documents/study/lianghua/data/local_preprod_audit_archive_3/2026-06-15/audit.jsonl",
+    "manifest_path": "/Users/jacklondon/Documents/study/lianghua/data/local_preprod_audit_archive_3/2026-06-15/audit-manifest.json",
+    "log_sha256": "99911877e77f18d0575650ca8824d8ffe31fa28ff8ea976dedbf9f86001f5a5f",
+    "manifest_hash": "a8a4d860ef25ebd45f601fc97abd6ff7a0b703008c06a26662430c417991bd6a",
+    "attestation_ref": "worm://audit-file/2026-06-15/a8a4d860ef25ebd45f601fc97abd6ff7a0b703008c06a26662430c417991bd6a",
+    "verified": true,
+    "production_like": false
+  },
+  "production_blockers": [
+    "local reports are not accepted as external production evidence",
+    "real WORM, Secret Manager, Approval Service, provider entitlement, broker position and borrow feeds remain required",
+    "paper_trading_90d requires a continuously running approved paper service for at least 90 calendar/trading days"
+  ],
+  "elapsed_s": 22.302
+}

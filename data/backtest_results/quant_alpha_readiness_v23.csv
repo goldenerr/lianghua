@@ -1,0 +1,9 @@
+category,label,source_section,source_rows,factors_tested,ic_rows,max_n_dates,max_avg_coverage,qualified_count,best_factor,best_horizon,best_rank_ic_mean,best_rank_ic_t,best_qualified,archive_score,history_score,coverage_score,signal_score,portfolio_contribution_score,readiness_score,readiness_class
+analyst_revision_rolling,Rolling analyst revision signal,analyst_revision,104801,8,32,578,1187.3,1,analyst_rating_score_mean_60d,20.0,0.017645,7.8407,True,15.0,20.0,15.0,17.11,10.0,77.11,research_component_not_production
+analyst_revision,Dated analyst rating/revision events,analyst_revision,104801,6,24,366,139.6,0,analyst_upgrade_count,20.0,0.079856,2.9775,False,15.0,14.64,4.19,0.0,0.0,33.83,rejected_unstable_or_leaky_signal
+analyst_consensus,Analyst consensus snapshot,analyst_snapshot,2370,5,20,0,0.0,0,,,,,False,15.0,0.0,0.0,0.0,0.0,15.0,data_gap_insufficient_pit_history
+fund_flow,Main/fund-flow rank,fund_flow_rank,3709,6,24,0,0.0,0,,,,,False,15.0,0.0,0.0,0.0,0.0,15.0,data_gap_insufficient_pit_history
+intraday_microstructure,Intraday liquidity/reversal,intraday,129,7,28,0,0.0,0,,,,,False,15.0,0.0,0.0,0.0,0.0,15.0,data_gap_insufficient_pit_history
+margin_short,Margin/short availability proxy,margin,1981,4,16,0,0.0,0,,,,,False,15.0,0.0,0.0,0.0,0.0,15.0,data_gap_insufficient_pit_history
+northbound,Northbound holding/flow,northbound,4655,3,12,0,0.0,0,,,,,False,15.0,0.0,0.0,0.0,0.0,15.0,data_gap_insufficient_pit_history
+order_flow,Big-deal/order-flow snapshot,big_deal,572,3,12,0,0.0,0,,,,,False,15.0,0.0,0.0,0.0,0.0,15.0,data_gap_insufficient_pit_history

@@ -1,0 +1,115 @@
+{
+  "ts": "2026-06-04T14:52:38.209883",
+  "version": "V7-fundamental-quality-value",
+  "research_only": true,
+  "data": {
+    "symbols": 1196,
+    "dates": 6396,
+    "start": "2000-01-04",
+    "end": "2026-05-29",
+    "industry_mapped": 1200,
+    "fundamental_mapped": 1177
+  },
+  "config": {
+    "top_n": 60,
+    "rebalance_freq": 60,
+    "warmup_days": 504,
+    "test_warmup_days": 504,
+    "report_lag_days": 90,
+    "min_stocks": 100,
+    "max_per_industry": 5,
+    "max_position_pct": 0.03,
+    "gross_exposure": 1.0,
+    "defensive_exposure": 0.35,
+    "cash_exposure": 0.05,
+    "market_momentum_days": 120,
+    "breadth_threshold": 0.5,
+    "target_vol": 0.16,
+    "dd_reduce_threshold": 0.15,
+    "dd_reduce_scale": 0.5,
+    "dd_stop_threshold": 0.25,
+    "dd_stop_scale": 0.2,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0004,
+    "slippage_factor": 0.08,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 10
+  },
+  "factor_weights": {
+    "roe": 0.18,
+    "gross_margin": 0.12,
+    "debt_asset_ratio": -0.12,
+    "revenue_yoy": 0.12,
+    "net_profit_yoy": 0.1,
+    "book_to_price": 0.18,
+    "earnings_to_price": 0.1,
+    "cashflow_quality": 0.1
+  },
+  "full": {
+    "sharpe_ratio": 0.5628,
+    "annual_return": 0.0827,
+    "annual_volatility": 0.1025,
+    "max_drawdown": -0.281,
+    "win_rate": 0.5493,
+    "total_return": 5.1078,
+    "avg_active_stocks": 60.0,
+    "avg_candidate_stocks": 622.1,
+    "avg_turnover": 0.3054,
+    "avg_exposure": 0.2429,
+    "total_cost": 0.0279,
+    "n_days": 5891
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "is": 0.6753,
+        "oos": 0.4193,
+        "mdd": -0.11,
+        "active": 60.0
+      },
+      {
+        "fold": 1,
+        "is": 0.6656,
+        "oos": -1.409,
+        "mdd": -0.0576,
+        "active": 60.0
+      },
+      {
+        "fold": 2,
+        "is": 0.6309,
+        "oos": -1.4252,
+        "mdd": -0.1051,
+        "active": 60.0
+      },
+      {
+        "fold": 3,
+        "is": 0.5963,
+        "oos": -0.1211,
+        "mdd": -0.0705,
+        "active": 60.0
+      },
+      {
+        "fold": 4,
+        "is": 0.5582,
+        "oos": 0.8934,
+        "mdd": -0.0858,
+        "active": 60.0
+      }
+    ],
+    "avg_is_sharpe": 0.6253,
+    "avg_oos_sharpe": -0.3285,
+    "sharpe_decay": 1.5254
+  },
+  "gates": {
+    "S": false,
+    "M": false,
+    "D": false,
+    "W": true,
+    "A": false
+  },
+  "elapsed_s": 43.1
+}

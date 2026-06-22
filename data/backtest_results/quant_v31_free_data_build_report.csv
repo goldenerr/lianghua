@@ -1,0 +1,2 @@
+version,symbols_requested,symbols_loaded,unique_trading_dates,pit_rows,trading_status_rows,corporate_action_rows,research_pit_approximation,production_data_ready,failure_count
+V31-free-data-pit-approximation,2000,1994,4954,6210405,6210405,1994,True,False,6

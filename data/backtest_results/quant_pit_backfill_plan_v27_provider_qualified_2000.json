@@ -1,0 +1,69 @@
+{
+  "ts": "2026-06-15T02:23:48.978841+00:00",
+  "version": "V25-pit-backfill-plan",
+  "research_only": true,
+  "universe_size": 2000,
+  "target_universe": {
+    "path": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
+    "size": 2000,
+    "sha256": "7b29c7c70d65ad59c5a26d32cf117f86ed5dbb6a6d915969f4b5901421cf90f7",
+    "minimum_required_symbols": 2000,
+    "passes_minimum_size": true
+  },
+  "coverage": {
+    "northbound_existing_target_symbols": 2000,
+    "northbound_provider_unavailable_target_symbols": 0,
+    "northbound_missing_target_symbols": 0,
+    "northbound_fetchable_missing_target_symbols": 0,
+    "intraday_existing_target_symbols": 2000,
+    "intraday_missing_target_symbols": 0,
+    "margin_existing_complete_dates": 580,
+    "margin_expected_trading_dates": 580
+  },
+  "batch_counts": {
+    "northbound": 0,
+    "intraday": 0,
+    "margin": 0,
+    "daily_snapshot": 2
+  },
+  "parameters": {
+    "northbound_batch_size": 100,
+    "northbound_workers": 4,
+    "intraday_batch_size": 100,
+    "intraday_workers": 4,
+    "margin_start": "20240101",
+    "margin_end": "20260529",
+    "margin_batch_days": 100,
+    "margin_workers": 6,
+    "margin_task_timeout_seconds": 45.0,
+    "margin_calendar_source": "/Users/jacklondon/Documents/study/lianghua/data/benchmarks/idx_000300.parquet",
+    "northbound_unavailable_file": "/Users/jacklondon/Documents/study/lianghua/data/flow_signals/northbound_unavailable_symbols_v26.json",
+    "max_batches": 0
+  },
+  "provider_unavailable": {
+    "northbound_stock_holding_symbols": [],
+    "note": "These symbols are not counted as covered. They are excluded from batch commands only because repeated public-provider calls returned no usable panel."
+  },
+  "batches": {
+    "northbound": [],
+    "intraday": [],
+    "margin": [],
+    "daily_snapshots": [
+      {
+        "panel": "daily_flow_snapshot",
+        "cadence": "daily_after_close",
+        "command": "env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=1 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=1 QUANT_FLOW_FETCH_BIG_DEAL=1 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=1 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SKIP_EXISTING=0 .venv/bin/python scripts/fetch_flow_signals.py"
+      },
+      {
+        "panel": "daily_alt_archive_pipeline",
+        "cadence": "daily_after_all_snapshot_fetches",
+        "command": ".venv/bin/python scripts/run_alt_archive_daily_pipeline.py --archive-date $(date +%Y%m%d)"
+      }
+    ]
+  },
+  "production_blockers": [
+    "plan emits local research commands only; provider entitlement/WORM evidence is still required",
+    "snapshot commands must be run and archived daily before PIT history is sufficient",
+    "borrow availability remains absent and needs a broker-backed provider"
+  ]
+}

@@ -1,0 +1,13 @@
+name,production_comparable,sharpe_ratio,annual_return,annual_volatility,max_drawdown,win_rate,total_return,avg_oos_sharpe,sharpe_decay,avg_stock_exposure,avg_crisis_weight,avg_carry_weight
+v29_price_meta_balanced_carry_floor,True,2.1286,0.1802,0.0729,-0.0856,0.5625,22.9904,2.462,-0.0898,0.3321,0.2004,0.4675
+v29_price_meta_lowvol_carry_floor,True,2.0983,0.1533,0.0611,-0.0624,0.5644,14.6047,2.5054,-0.1074,0.2781,0.1805,0.5414
+v29_price_meta_balanced_blended_floor,True,2.0958,0.2041,0.0855,-0.0957,0.5636,35.1474,2.3782,-0.0495,0.3739,0.5009,0.1252
+v29_price_meta_balanced_crisis,True,2.0685,0.2065,0.0877,-0.1048,0.5638,36.5663,2.3504,-0.0388,0.3738,0.6262,0.0
+v29_price_meta_lowvol_blended_floor,True,2.0323,0.1681,0.0704,-0.0877,0.5652,19.1952,2.3903,-0.0598,0.2956,0.5776,0.1268
+v29_price_meta_lowvol_small_carry_floor,True,2.0102,0.1695,0.0719,-0.0962,0.5659,19.6784,2.3716,-0.0539,0.2956,0.648,0.0564
+v29_price_meta_aggressive_guarded,True,2.0059,0.2347,0.1045,-0.1133,0.5639,63.0623,2.2777,-0.0405,0.4523,0.5477,0.0
+v29_price_meta_lowvol_micro_carry_floor,True,2.0054,0.1698,0.0722,-0.0979,0.5659,19.7749,2.3679,-0.0528,0.2956,0.6621,0.0423
+v29_price_meta_lowvol_crisis,True,1.9905,0.1706,0.0731,-0.103,0.5659,20.0662,2.357,-0.0496,0.2956,0.7044,0.0
+v29_price_meta_lowvol_recent_guard,True,1.9686,0.1525,0.0647,-0.0949,0.5659,14.3188,2.3979,-0.0659,0.2551,0.6704,0.0745
+v29_price_meta_ultradefensive,True,1.8045,0.1279,0.057,-0.1085,0.568,8.2879,2.3165,-0.0517,0.1972,0.8028,0.0
+v29_alt_meta_research_only,False,2.001,0.1847,0.0798,-0.104,0.5655,25.9429,2.3079,-0.0699,0.3329,0.6671,0.0

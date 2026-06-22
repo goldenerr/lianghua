@@ -14,6 +14,9 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from quant_trading.config.market_router import MarketRouter
+from quant_trading.config.settings import Market
+
 
 @dataclass
 class MarketImpactParams:
@@ -38,6 +41,54 @@ class ExecutionSchedule:
     expected_cost: float  # expected implementation shortfall
     expected_cost_pct: float  # as % of order value
     risk: float  # execution risk (std of cost)
+
+
+@dataclass(frozen=True)
+class ExecutionFeeModel:
+    """Execution fee rates selected by approved market fee-model identifier."""
+
+    commission_rate: float = 0.0
+    sell_stamp_duty_rate: float = 0.0
+    maker_fee_rate: float = 0.0
+    taker_fee_rate: float = 0.0
+
+    def fee_rate(self, side: str, liquidity: str) -> float:
+        if liquidity not in {"maker", "taker"}:
+            raise ValueError("liquidity must be maker or taker")
+        if side not in {"buy", "sell"}:
+            raise ValueError("side must be buy or sell")
+        execution_rate = (
+            self.maker_fee_rate
+            if liquidity == "maker" and self.maker_fee_rate > 0
+            else self.taker_fee_rate
+        )
+        return (
+            self.commission_rate
+            + execution_rate
+            + (self.sell_stamp_duty_rate if side == "sell" else 0.0)
+        )
+
+
+_EXECUTION_FEE_MODELS = {
+    "cn_stock": ExecutionFeeModel(commission_rate=0.00025, sell_stamp_duty_rate=0.0005),
+    "cn_futures": ExecutionFeeModel(commission_rate=0.00005),
+    "crypto_maker_taker": ExecutionFeeModel(maker_fee_rate=0.0002, taker_fee_rate=0.0005),
+    "us_stock": ExecutionFeeModel(commission_rate=0.0001),
+}
+
+
+def resolve_execution_fee_model_by_id(fee_model_id: str) -> ExecutionFeeModel:
+    """Resolve an approved execution fee-model identifier; unknown IDs fail closed."""
+    try:
+        return _EXECUTION_FEE_MODELS[fee_model_id]
+    except KeyError as exc:
+        raise ValueError(f"unsupported execution fee model: {fee_model_id}") from exc
+
+
+def resolve_execution_fee_model(market: Market | None) -> ExecutionFeeModel:
+    """Resolve the fee model from market routing; unknown models fail closed."""
+    fee_model_id = "cn_stock" if market is None else MarketRouter.get_fee_model(market)
+    return resolve_execution_fee_model_by_id(fee_model_id)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -225,6 +276,8 @@ def estimate_implementation_shortfall(
     daily_volume: int,
     volatility: float,
     side: str = "buy",
+    market: Market | None = None,
+    liquidity: str = "taker",
     urgency: float = 0.5,  # 0=passive, 1=aggressive
     params: MarketImpactParams | None = None,
 ) -> dict[str, float]:
@@ -258,18 +311,17 @@ def estimate_implementation_shortfall(
     # 3. Delay cost (risk of adverse selection during execution)
     delay_cost = volatility * np.sqrt(urgency / 252) * 0.5  # half of daily vol
 
-    # 4. Commission
-    commission = 0.00025  # 0.025%
-    stamp_duty = 0.0005 if side == "sell" else 0.0  # 0.05% only on sells
+    # 4. Fees selected by the market's approved fee model.
+    fee_rate = resolve_execution_fee_model(market).fee_rate(side, liquidity)
 
-    total_pct = spread_cost + impact_pct + delay_cost + commission + stamp_duty
+    total_pct = spread_cost + impact_pct + delay_cost + fee_rate
 
     return {
         "total_cost_pct": round(total_pct * 100, 4),
         "spread_bps": round(spread_cost * 10000, 1),
         "impact_bps": round(impact_pct * 10000, 1),
         "delay_bps": round(delay_cost * 10000, 1),
-        "commission_bps": round((commission + stamp_duty) * 10000, 1),
+        "commission_bps": round(fee_rate * 10000, 1),
         "participation_rate": round(participation_rate * 100, 1),
     }
 

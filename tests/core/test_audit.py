@@ -1,7 +1,15 @@
 """Tests for audit bus (core-003)."""
 
+import json
+from datetime import date
+
 import pytest
-from quant_trading.core.audit import AuditBus
+from quant_trading.core.audit import (
+    AuditBus,
+    EnvLocalSecretProvider,
+    InMemorySecretManager,
+    LocalAuditWormArchive,
+)
 from quant_trading.core.events import EventBus, EventType
 
 
@@ -82,3 +90,63 @@ class TestAuditBus:
         bus.record("risk_check", "risk", {"passed": True})
         bus.query()[0]["payload"]["passed"] = False
         assert bus.verify_integrity() is False
+
+
+def test_local_audit_worm_archive_writes_daily_redacted_log_and_hash(tmp_path) -> None:
+    audit = AuditBus()
+    audit.record(
+        "api_call",
+        "exchange",
+        {
+            "symbol": "600519.SH",
+            "api_key": "raw-key",
+            "nested": {"api_secret": "raw-secret", "safe": "visible"},
+        },
+    )
+    archive = LocalAuditWormArchive(
+        tmp_path,
+        secret_provider=InMemorySecretManager({"test-sm://audit-key": "signing-secret"}),
+        key_ref="test-sm://audit-key",
+    )
+
+    result = archive.archive_day(audit, date(2026, 5, 29))
+
+    assert result.event_count == 1
+    assert result.attestation_ref.startswith("worm://audit-file/2026-05-29/")
+    assert archive.verify_day(date(2026, 5, 29)) is True
+    assert "raw-key" not in result.log_path.read_text(encoding="utf-8")
+    assert "raw-secret" not in result.log_path.read_text(encoding="utf-8")
+    assert "[REDACTED]" in result.log_path.read_text(encoding="utf-8")
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["log_sha256"] == result.log_sha256
+    assert manifest["manifest_hash"] == result.manifest_hash
+    assert manifest["key_ref"] == "test-sm://audit-key"
+    with pytest.raises(FileExistsError, match="write-once"):
+        archive.archive_day(audit, date(2026, 5, 29))
+
+
+def test_local_audit_worm_archive_detects_tampering(tmp_path) -> None:
+    audit = AuditBus()
+    audit.record("order", "strategy", {"symbol": "AAPL", "qty": 1})
+    archive = LocalAuditWormArchive(
+        tmp_path,
+        secret_provider=InMemorySecretManager({"test-sm://audit-key": "signing-secret"}),
+        key_ref="test-sm://audit-key",
+    )
+    result = archive.archive_day(audit, date(2026, 5, 29))
+
+    result.log_path.write_text('{"tampered":true}\n', encoding="utf-8")
+
+    assert archive.verify_day(date(2026, 5, 29)) is False
+
+
+def test_env_local_secret_provider_loads_key_without_hardcoding(tmp_path) -> None:
+    env_path = tmp_path / ".env.local"
+    env_path.write_text(
+        "# dev/test only\nAUDIT_ARCHIVE_HMAC_KEY='from-env-local'\n",
+        encoding="utf-8",
+    )
+
+    provider = EnvLocalSecretProvider(env_path)
+
+    assert provider.get_secret("env-local://AUDIT_ARCHIVE_HMAC_KEY") == "from-env-local"

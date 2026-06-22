@@ -1,0 +1,82 @@
+[
+  {
+    "score": 0.9338,
+    "normal": 0.15,
+    "bear": 0.45,
+    "full": {
+      "sharpe_ratio": 0.9338,
+      "annual_return": 0.0852,
+      "annual_volatility": 0.0645,
+      "max_drawdown": -0.1047,
+      "win_rate": 0.579,
+      "total_return": 5.4269,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.245,
+      "avg_hedge_turnover": 0.0078,
+      "avg_trend_turnover": 0.1142,
+      "avg_exposure": 0.2272,
+      "total_cost": 0.1437,
+      "n_days": 5639
+    }
+  },
+  {
+    "score": 0.9117,
+    "normal": 0.15,
+    "bear": 0.7,
+    "full": {
+      "sharpe_ratio": 0.9117,
+      "annual_return": 0.0894,
+      "annual_volatility": 0.0706,
+      "max_drawdown": -0.1047,
+      "win_rate": 0.5772,
+      "total_return": 5.9831,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.245,
+      "avg_hedge_turnover": 0.0078,
+      "avg_trend_turnover": 0.1445,
+      "avg_exposure": 0.2272,
+      "total_cost": 0.148,
+      "n_days": 5639
+    }
+  },
+  {
+    "score": 0.9485,
+    "normal": 0.3,
+    "bear": 0.45,
+    "full": {
+      "sharpe_ratio": 0.9485,
+      "annual_return": 0.0876,
+      "annual_volatility": 0.066,
+      "max_drawdown": -0.1047,
+      "win_rate": 0.5808,
+      "total_return": 5.7554,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.245,
+      "avg_hedge_turnover": 0.0078,
+      "avg_trend_turnover": 0.1133,
+      "avg_exposure": 0.2272,
+      "total_cost": 0.1436,
+      "n_days": 5639
+    }
+  },
+  {
+    "score": 0.9274,
+    "normal": 0.3,
+    "bear": 0.7,
+    "full": {
+      "sharpe_ratio": 0.9274,
+      "annual_return": 0.0917,
+      "annual_volatility": 0.0719,
+      "max_drawdown": -0.1047,
+      "win_rate": 0.579,
+      "total_return": 6.3423,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.245,
+      "avg_hedge_turnover": 0.0078,
+      "avg_trend_turnover": 0.1415,
+      "avg_exposure": 0.2272,
+      "total_cost": 0.1476,
+      "n_days": 5639
+    }
+  }
+]

@@ -1,0 +1,139 @@
+{
+  "ts": "2026-06-05T10:24:07.647635",
+  "version": "V14-industry-relative-alpha-more-exposure-finalist",
+  "research_only": true,
+  "grid_updates": {
+    "industry_relative_weight": 0.2,
+    "target_vol": 0.16,
+    "gross_exposure": 0.85,
+    "max_position_pct": 0.03
+  },
+  "trend_asset_mode": "defensive",
+  "trend_assets": {
+    "cash": "etf_511880",
+    "gold": "etf_518880"
+  },
+  "production_blockers": [
+    "full-sample Sharpe remains below production gate unless final WF proves otherwise",
+    "requires point-in-time production industry provider evidence",
+    "requires exchange-backed futures provider",
+    "requires futures margin and rollover approval evidence",
+    "requires position reconciliation for hedge leg",
+    "requires approved ETF execution and liquidity/capacity evidence",
+    "requires paper-trading and small-live evidence before production"
+  ],
+  "config": {
+    "top_n": 40,
+    "rebalance_freq": 10,
+    "warmup_days": 756,
+    "report_lag_days": 90,
+    "min_stocks": 120,
+    "max_per_industry": 4,
+    "max_position_pct": 0.03,
+    "gross_exposure": 0.85,
+    "defensive_exposure": 0.35,
+    "cash_exposure": 0.05,
+    "market_momentum_days": 120,
+    "breadth_threshold": 0.52,
+    "target_vol": 0.16,
+    "ic_window": 180,
+    "ic_min_obs": 40,
+    "ic_horizon": 5,
+    "technical_weight": 0.55,
+    "fundamental_weight": 0.45,
+    "bear_gold_weight": 0.3,
+    "normal_gold_weight": 0.05,
+    "dd_reduce_threshold": 0.12,
+    "dd_reduce_scale": 0.5,
+    "dd_stop_threshold": 0.2,
+    "dd_stop_scale": 0.2,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0004,
+    "slippage_factor": 0.08,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 10,
+    "hedge_asset": "idx_000905",
+    "normal_hedge_weight": 0.1,
+    "bear_hedge_weight": 0.35,
+    "hedge_cost": 8e-05,
+    "trend_lookback": 120,
+    "trend_vol_lookback": 60,
+    "trend_sleeve_weight": 0.3,
+    "bear_trend_sleeve_weight": 0.45,
+    "trend_cost": 0.00025,
+    "industry_lookback": 120,
+    "industry_vol_lookback": 60,
+    "industry_rotation_weight": 0.2,
+    "industry_bear_rotation_weight": 0.4,
+    "industry_top_normal": 24,
+    "industry_top_bear": 8,
+    "industry_min_members": 3,
+    "industry_min_score": 0.0,
+    "industry_filter_min_symbols": 80,
+    "industry_risk_off_scale": 0.0,
+    "industry_relative_weight": 0.2
+  },
+  "full": {
+    "sharpe_ratio": 1.0434,
+    "annual_return": 0.1191,
+    "annual_volatility": 0.0902,
+    "max_drawdown": -0.136,
+    "win_rate": 0.4758,
+    "total_return": 12.1075,
+    "avg_active_stocks": 21.3,
+    "avg_turnover": 0.3202,
+    "avg_hedge_turnover": 0.0113,
+    "avg_trend_turnover": 0.1409,
+    "avg_exposure": 0.2887,
+    "total_cost": 0.1876,
+    "n_days": 5639
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "is": 1.1051,
+        "oos": 0.9415,
+        "mdd": -0.0575
+      },
+      {
+        "fold": 1,
+        "is": 1.098,
+        "oos": -0.8235,
+        "mdd": -0.0621
+      },
+      {
+        "fold": 2,
+        "is": 1.0785,
+        "oos": 2.7269,
+        "mdd": -0.0236
+      },
+      {
+        "fold": 3,
+        "is": 1.0751,
+        "oos": 0.3469,
+        "mdd": -0.0996
+      },
+      {
+        "fold": 4,
+        "is": 1.0693,
+        "oos": 0.42,
+        "mdd": -0.0793
+      }
+    ],
+    "avg_is_sharpe": 1.0852,
+    "avg_oos_sharpe": 0.7224,
+    "sharpe_decay": 0.3344
+  },
+  "gates": {
+    "S": false,
+    "M": true,
+    "D": false,
+    "W": true,
+    "A": false
+  },
+  "elapsed_s": 847.9
+}

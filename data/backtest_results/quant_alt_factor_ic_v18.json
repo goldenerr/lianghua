@@ -1,0 +1,1581 @@
+{
+  "ts": "2026-06-08T13:40:34.235604",
+  "version": "V18-alt-factor-ic-diagnostics",
+  "research_only": true,
+  "start_date": "2024-01-01",
+  "split_date": "2025-07-01",
+  "signal_lag_days": 1,
+  "min_cross_section": 30,
+  "min_dates": 60,
+  "horizons": [
+    1,
+    5,
+    10,
+    20
+  ],
+  "feature_rows": 696418,
+  "feature_symbols": 1196,
+  "feature_dates": 627,
+  "qualified_count": 1,
+  "category_summary": [
+    {
+      "category": "analyst_consensus",
+      "horizon": 1,
+      "factors": 5,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "analyst_consensus",
+      "horizon": 5,
+      "factors": 5,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "analyst_consensus",
+      "horizon": 10,
+      "factors": 5,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "analyst_consensus",
+      "horizon": 20,
+      "factors": 5,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "analyst_revision",
+      "horizon": 1,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": "analyst_rating_events",
+      "best_abs_ic": 0.014717,
+      "best_ic_mean": -0.014717,
+      "best_t_stat": -1.883
+    },
+    {
+      "category": "analyst_revision",
+      "horizon": 5,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": "analyst_upgrade_count",
+      "best_abs_ic": 0.017451,
+      "best_ic_mean": 0.017451,
+      "best_t_stat": 0.6674
+    },
+    {
+      "category": "analyst_revision",
+      "horizon": 10,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": "analyst_upgrade_count",
+      "best_abs_ic": 0.035001,
+      "best_ic_mean": 0.035001,
+      "best_t_stat": 14.6677
+    },
+    {
+      "category": "analyst_revision",
+      "horizon": 20,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": "analyst_upgrade_count",
+      "best_abs_ic": 0.079856,
+      "best_ic_mean": 0.079856,
+      "best_t_stat": 2.9775
+    },
+    {
+      "category": "analyst_revision_rolling",
+      "horizon": 1,
+      "factors": 8,
+      "qualified": 0,
+      "best_factor": "analyst_event_count_20d",
+      "best_abs_ic": 0.008045,
+      "best_ic_mean": -0.008045,
+      "best_t_stat": -2.0577
+    },
+    {
+      "category": "analyst_revision_rolling",
+      "horizon": 5,
+      "factors": 8,
+      "qualified": 0,
+      "best_factor": "analyst_event_count_20d",
+      "best_abs_ic": 0.009806,
+      "best_ic_mean": -0.009806,
+      "best_t_stat": -2.5657
+    },
+    {
+      "category": "analyst_revision_rolling",
+      "horizon": 10,
+      "factors": 8,
+      "qualified": 0,
+      "best_factor": "analyst_event_count_20d",
+      "best_abs_ic": 0.012957,
+      "best_ic_mean": -0.012957,
+      "best_t_stat": -3.5245
+    },
+    {
+      "category": "analyst_revision_rolling",
+      "horizon": 20,
+      "factors": 8,
+      "qualified": 1,
+      "best_factor": "analyst_rating_score_mean_60d",
+      "best_abs_ic": 0.017645,
+      "best_ic_mean": 0.017645,
+      "best_t_stat": 7.8407
+    },
+    {
+      "category": "fund_flow",
+      "horizon": 1,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "fund_flow",
+      "horizon": 5,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "fund_flow",
+      "horizon": 10,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "fund_flow",
+      "horizon": 20,
+      "factors": 6,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "intraday_microstructure",
+      "horizon": 1,
+      "factors": 7,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "intraday_microstructure",
+      "horizon": 5,
+      "factors": 7,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "intraday_microstructure",
+      "horizon": 10,
+      "factors": 7,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "intraday_microstructure",
+      "horizon": 20,
+      "factors": 7,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "margin_short",
+      "horizon": 1,
+      "factors": 4,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "margin_short",
+      "horizon": 5,
+      "factors": 4,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "margin_short",
+      "horizon": 10,
+      "factors": 4,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "margin_short",
+      "horizon": 20,
+      "factors": 4,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "northbound",
+      "horizon": 1,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "northbound",
+      "horizon": 5,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "northbound",
+      "horizon": 10,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "northbound",
+      "horizon": 20,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "order_flow",
+      "horizon": 1,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "order_flow",
+      "horizon": 5,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "order_flow",
+      "horizon": 10,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    },
+    {
+      "category": "order_flow",
+      "horizon": 20,
+      "factors": 3,
+      "qualified": 0,
+      "best_factor": null,
+      "best_abs_ic": null,
+      "best_ic_mean": null,
+      "best_t_stat": null
+    }
+  ],
+  "top_results": [
+    {
+      "factor": "analyst_rating_score_mean_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day rating score mean for covered names",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 827.9,
+      "rank_ic": {
+        "n_dates": 559,
+        "mean": 0.017645,
+        "std": 0.053208,
+        "ir": 0.3316,
+        "t_stat": 7.8407,
+        "positive_rate": 0.6225,
+        "train_mean": 0.002564,
+        "test_mean": 0.044717
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": 0.003424,
+        "std": 0.017213,
+        "ir": 0.1989,
+        "t_stat": 4.7029,
+        "positive_rate": 0.6082,
+        "train_mean": 0.000149,
+        "test_mean": 0.009302
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": 0.003424,
+        "std": 0.017213,
+        "ir": 0.1989,
+        "t_stat": 4.7029,
+        "positive_rate": 0.6082,
+        "train_mean": 0.000149,
+        "test_mean": 0.009302
+      },
+      "stability_pass": true,
+      "qualified_for_research": true
+    },
+    {
+      "factor": "analyst_upgrade_count",
+      "category": "analyst_revision",
+      "description": "rating upgrade count",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 114.3,
+      "rank_ic": {
+        "n_dates": 3,
+        "mean": 0.079856,
+        "std": 0.046453,
+        "ir": 1.7191,
+        "t_stat": 2.9775,
+        "positive_rate": 1.0,
+        "train_mean": 0.079856,
+        "test_mean": null
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.004546,
+        "std": 0.032029,
+        "ir": -0.1419,
+        "t_stat": -0.2458,
+        "positive_rate": 0.6667,
+        "train_mean": -0.004546,
+        "test_mean": null
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.004546,
+        "std": 0.032029,
+        "ir": -0.1419,
+        "t_stat": -0.2458,
+        "positive_rate": 0.6667,
+        "train_mean": -0.004546,
+        "test_mean": null
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_upgrade_count",
+      "category": "analyst_revision",
+      "description": "rating upgrade count",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 114.3,
+      "rank_ic": {
+        "n_dates": 3,
+        "mean": 0.035001,
+        "std": 0.004133,
+        "ir": 8.4684,
+        "t_stat": 14.6677,
+        "positive_rate": 1.0,
+        "train_mean": 0.035001,
+        "test_mean": null
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.053385,
+        "std": 0.023466,
+        "ir": -2.275,
+        "t_stat": -3.9405,
+        "positive_rate": 0.0,
+        "train_mean": -0.053385,
+        "test_mean": null
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.053385,
+        "std": 0.023466,
+        "ir": -2.275,
+        "t_stat": -3.9405,
+        "positive_rate": 0.0,
+        "train_mean": -0.053385,
+        "test_mean": null
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_upgrade_count",
+      "category": "analyst_revision",
+      "description": "rating upgrade count",
+      "horizon": 5,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 114.3,
+      "rank_ic": {
+        "n_dates": 3,
+        "mean": 0.017451,
+        "std": 0.04529,
+        "ir": 0.3853,
+        "t_stat": 0.6674,
+        "positive_rate": 0.3333,
+        "train_mean": 0.017451,
+        "test_mean": null
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.044265,
+        "std": 0.020489,
+        "ir": -2.1604,
+        "t_stat": -3.742,
+        "positive_rate": 0.0,
+        "train_mean": -0.044265,
+        "test_mean": null
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.044265,
+        "std": 0.020489,
+        "ir": -2.1604,
+        "t_stat": -3.742,
+        "positive_rate": 0.0,
+        "train_mean": -0.044265,
+        "test_mean": null
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day analyst event count",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1186.1,
+      "rank_ic": {
+        "n_dates": 559,
+        "mean": -0.017192,
+        "std": 0.094439,
+        "ir": -0.182,
+        "t_stat": -4.3041,
+        "positive_rate": 0.4347,
+        "train_mean": -0.043983,
+        "test_mean": 0.030898
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": -0.009806,
+        "std": 0.028798,
+        "ir": -0.3405,
+        "t_stat": -8.0507,
+        "positive_rate": 0.3792,
+        "train_mean": -0.018781,
+        "test_mean": 0.006304
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": 0.009806,
+        "std": 0.028798,
+        "ir": 0.3405,
+        "t_stat": 8.0507,
+        "positive_rate": 0.6208,
+        "train_mean": 0.018781,
+        "test_mean": -0.006304
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day analyst event count",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1186.1,
+      "rank_ic": {
+        "n_dates": 559,
+        "mean": -0.015742,
+        "std": 0.119289,
+        "ir": -0.132,
+        "t_stat": -3.12,
+        "positive_rate": 0.449,
+        "train_mean": -0.047487,
+        "test_mean": 0.041242
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": -0.010173,
+        "std": 0.036305,
+        "ir": -0.2802,
+        "t_stat": -6.6249,
+        "positive_rate": 0.3918,
+        "train_mean": -0.020572,
+        "test_mean": 0.008494
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": 0.010173,
+        "std": 0.036305,
+        "ir": 0.2802,
+        "t_stat": 6.6249,
+        "positive_rate": 0.6082,
+        "train_mean": 0.020572,
+        "test_mean": -0.008494
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_events",
+      "category": "analyst_revision",
+      "description": "daily rating event count",
+      "horizon": 5,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 98.9,
+      "rank_ic": {
+        "n_dates": 307,
+        "mean": -0.015498,
+        "std": 0.139517,
+        "ir": -0.1111,
+        "t_stat": -1.9463,
+        "positive_rate": 0.4723,
+        "train_mean": -0.015826,
+        "test_mean": -0.014839
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 307,
+        "mean": -0.002228,
+        "std": 0.026158,
+        "ir": -0.0852,
+        "t_stat": -1.4922,
+        "positive_rate": 0.4984,
+        "train_mean": -0.00228,
+        "test_mean": -0.002124
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 307,
+        "mean": 0.002228,
+        "std": 0.026158,
+        "ir": 0.0852,
+        "t_stat": 1.4922,
+        "positive_rate": 0.5016,
+        "train_mean": 0.00228,
+        "test_mean": 0.002124
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_events",
+      "category": "analyst_revision",
+      "description": "daily rating event count",
+      "horizon": 1,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 98.8,
+      "rank_ic": {
+        "n_dates": 308,
+        "mean": -0.014717,
+        "std": 0.137166,
+        "ir": -0.1073,
+        "t_stat": -1.883,
+        "positive_rate": 0.4416,
+        "train_mean": -0.023194,
+        "test_mean": 0.002155
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 308,
+        "mean": -0.001257,
+        "std": 0.011079,
+        "ir": -0.1135,
+        "t_stat": -1.9911,
+        "positive_rate": 0.4708,
+        "train_mean": -0.00167,
+        "test_mean": -0.000434
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 308,
+        "mean": 0.001257,
+        "std": 0.011079,
+        "ir": 0.1135,
+        "t_stat": 1.9911,
+        "positive_rate": 0.5292,
+        "train_mean": 0.00167,
+        "test_mean": 0.000434
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day analyst event count",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1186.3,
+      "rank_ic": {
+        "n_dates": 569,
+        "mean": -0.012957,
+        "std": 0.087696,
+        "ir": -0.1478,
+        "t_stat": -3.5245,
+        "positive_rate": 0.4482,
+        "train_mean": -0.029914,
+        "test_mean": 0.01603
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": -0.005079,
+        "std": 0.018405,
+        "ir": -0.276,
+        "t_stat": -6.5829,
+        "positive_rate": 0.413,
+        "train_mean": -0.009255,
+        "test_mean": 0.002059
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": 0.005079,
+        "std": 0.018405,
+        "ir": 0.276,
+        "t_stat": 6.5829,
+        "positive_rate": 0.587,
+        "train_mean": 0.009255,
+        "test_mean": -0.002059
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_events",
+      "category": "analyst_revision",
+      "description": "daily rating event count",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 98.9,
+      "rank_ic": {
+        "n_dates": 307,
+        "mean": -0.012426,
+        "std": 0.134123,
+        "ir": -0.0926,
+        "t_stat": -1.6233,
+        "positive_rate": 0.4723,
+        "train_mean": -0.00771,
+        "test_mean": -0.021905
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 307,
+        "mean": -0.000947,
+        "std": 0.03638,
+        "ir": -0.026,
+        "t_stat": -0.456,
+        "positive_rate": 0.5114,
+        "train_mean": -0.001062,
+        "test_mean": -0.000715
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 307,
+        "mean": 0.000947,
+        "std": 0.03638,
+        "ir": 0.026,
+        "t_stat": 0.456,
+        "positive_rate": 0.4886,
+        "train_mean": 0.001062,
+        "test_mean": 0.000715
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_events",
+      "category": "analyst_revision",
+      "description": "daily rating event count",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 96.4,
+      "rank_ic": {
+        "n_dates": 297,
+        "mean": -0.01212,
+        "std": 0.130995,
+        "ir": -0.0925,
+        "t_stat": -1.5945,
+        "positive_rate": 0.4444,
+        "train_mean": -0.005808,
+        "test_mean": -0.026183
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 297,
+        "mean": 0.00182,
+        "std": 0.051805,
+        "ir": 0.0351,
+        "t_stat": 0.6055,
+        "positive_rate": 0.4916,
+        "train_mean": 0.00374,
+        "test_mean": -0.002457
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 297,
+        "mean": -0.00182,
+        "std": 0.051805,
+        "ir": -0.0351,
+        "t_stat": -0.6055,
+        "positive_rate": 0.5084,
+        "train_mean": -0.00374,
+        "test_mean": 0.002457
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_score_mean",
+      "category": "analyst_revision",
+      "description": "mean rating score",
+      "horizon": 1,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 88.2,
+      "rank_ic": {
+        "n_dates": 366,
+        "mean": 0.010359,
+        "std": 0.142415,
+        "ir": 0.0727,
+        "t_stat": 1.3915,
+        "positive_rate": 0.5273,
+        "train_mean": 0.013529,
+        "test_mean": 0.00394
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 366,
+        "mean": 0.000783,
+        "std": 0.012169,
+        "ir": 0.0643,
+        "t_stat": 1.2307,
+        "positive_rate": 0.5492,
+        "train_mean": 0.000881,
+        "test_mean": 0.000583
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 366,
+        "mean": 0.000783,
+        "std": 0.012169,
+        "ir": 0.0643,
+        "t_stat": 1.2307,
+        "positive_rate": 0.5492,
+        "train_mean": 0.000881,
+        "test_mean": 0.000583
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day analyst event count",
+      "horizon": 5,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1186.8,
+      "rank_ic": {
+        "n_dates": 574,
+        "mean": -0.009806,
+        "std": 0.091571,
+        "ir": -0.1071,
+        "t_stat": -2.5657,
+        "positive_rate": 0.4756,
+        "train_mean": -0.021726,
+        "test_mean": 0.010097
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": -0.002297,
+        "std": 0.013705,
+        "ir": -0.1676,
+        "t_stat": -4.0153,
+        "positive_rate": 0.446,
+        "train_mean": -0.004197,
+        "test_mean": 0.000876
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": 0.002297,
+        "std": 0.013705,
+        "ir": 0.1676,
+        "t_stat": 4.0153,
+        "positive_rate": 0.554,
+        "train_mean": 0.004197,
+        "test_mean": -0.000876
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_score_mean_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day rating score mean for covered names",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 828.6,
+      "rank_ic": {
+        "n_dates": 569,
+        "mean": 0.00906,
+        "std": 0.054381,
+        "ir": 0.1666,
+        "t_stat": 3.9743,
+        "positive_rate": 0.5518,
+        "train_mean": -0.00015,
+        "test_mean": 0.024805
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": 0.000931,
+        "std": 0.012619,
+        "ir": 0.0738,
+        "t_stat": 1.7599,
+        "positive_rate": 0.5272,
+        "train_mean": 0.000241,
+        "test_mean": 0.002111
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": 0.000931,
+        "std": 0.012619,
+        "ir": 0.0738,
+        "t_stat": 1.7599,
+        "positive_rate": 0.5272,
+        "train_mean": 0.000241,
+        "test_mean": 0.002111
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_score_mean_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day rating score mean for covered names",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 545.5,
+      "rank_ic": {
+        "n_dates": 559,
+        "mean": 0.008372,
+        "std": 0.062508,
+        "ir": 0.1339,
+        "t_stat": 3.1668,
+        "positive_rate": 0.5617,
+        "train_mean": 0.000631,
+        "test_mean": 0.022268
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": -0.002193,
+        "std": 0.023543,
+        "ir": -0.0931,
+        "t_stat": -2.2021,
+        "positive_rate": 0.5027,
+        "train_mean": -0.001901,
+        "test_mean": -0.002716
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 559,
+        "mean": -0.002193,
+        "std": 0.023543,
+        "ir": -0.0931,
+        "t_stat": -2.2021,
+        "positive_rate": 0.5027,
+        "train_mean": -0.001901,
+        "test_mean": -0.002716
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_score_mean_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day rating score mean for covered names",
+      "horizon": 5,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 829.4,
+      "rank_ic": {
+        "n_dates": 574,
+        "mean": 0.008303,
+        "std": 0.052445,
+        "ir": 0.1583,
+        "t_stat": 3.7932,
+        "positive_rate": 0.5592,
+        "train_mean": 0.003077,
+        "test_mean": 0.01703
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": 0.000578,
+        "std": 0.008748,
+        "ir": 0.0661,
+        "t_stat": 1.5828,
+        "positive_rate": 0.5383,
+        "train_mean": 0.000439,
+        "test_mean": 0.00081
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": 0.000578,
+        "std": 0.008748,
+        "ir": 0.0661,
+        "t_stat": 1.5828,
+        "positive_rate": 0.5383,
+        "train_mean": 0.000439,
+        "test_mean": 0.00081
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day analyst event count",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1186.3,
+      "rank_ic": {
+        "n_dates": 569,
+        "mean": -0.008298,
+        "std": 0.109328,
+        "ir": -0.0759,
+        "t_stat": -1.8105,
+        "positive_rate": 0.4622,
+        "train_mean": -0.030444,
+        "test_mean": 0.029562
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": -0.005092,
+        "std": 0.022161,
+        "ir": -0.2298,
+        "t_stat": -5.4808,
+        "positive_rate": 0.4288,
+        "train_mean": -0.009878,
+        "test_mean": 0.00309
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": 0.005092,
+        "std": 0.022161,
+        "ir": 0.2298,
+        "t_stat": 5.4808,
+        "positive_rate": 0.5712,
+        "train_mean": 0.009878,
+        "test_mean": -0.00309
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day analyst event count",
+      "horizon": 1,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1187.3,
+      "rank_ic": {
+        "n_dates": 578,
+        "mean": -0.008045,
+        "std": 0.093996,
+        "ir": -0.0856,
+        "t_stat": -2.0577,
+        "positive_rate": 0.4567,
+        "train_mean": -0.012001,
+        "test_mean": -0.001559
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 578,
+        "mean": -0.0004,
+        "std": 0.005866,
+        "ir": -0.0682,
+        "t_stat": -1.6408,
+        "positive_rate": 0.4602,
+        "train_mean": -0.000771,
+        "test_mean": 0.000208
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 578,
+        "mean": 0.0004,
+        "std": 0.005866,
+        "ir": 0.0682,
+        "t_stat": 1.6408,
+        "positive_rate": 0.5398,
+        "train_mean": 0.000771,
+        "test_mean": -0.000208
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_revision_sum_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day analyst revision sum",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 1186.1,
+      "rank_ic": {
+        "n_dates": 558,
+        "mean": 0.007533,
+        "std": 0.039131,
+        "ir": 0.1925,
+        "t_stat": 4.5475,
+        "positive_rate": 0.6165,
+        "train_mean": 0.003511,
+        "test_mean": 0.014733
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 558,
+        "mean": 0.00876,
+        "std": 0.04293,
+        "ir": 0.2041,
+        "t_stat": 4.8203,
+        "positive_rate": 0.5627,
+        "train_mean": 0.009811,
+        "test_mean": 0.006879
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 558,
+        "mean": 0.00876,
+        "std": 0.04293,
+        "ir": 0.2041,
+        "t_stat": 4.8203,
+        "positive_rate": 0.5627,
+        "train_mean": 0.009811,
+        "test_mean": 0.006879
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_upgrade_minus_downgrade_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day upgrade minus downgrade",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 1186.1,
+      "rank_ic": {
+        "n_dates": 558,
+        "mean": 0.007533,
+        "std": 0.039131,
+        "ir": 0.1925,
+        "t_stat": 4.5475,
+        "positive_rate": 0.6165,
+        "train_mean": 0.003511,
+        "test_mean": 0.014733
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 558,
+        "mean": 0.00876,
+        "std": 0.04293,
+        "ir": 0.2041,
+        "t_stat": 4.8203,
+        "positive_rate": 0.5627,
+        "train_mean": 0.009811,
+        "test_mean": 0.006879
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 558,
+        "mean": 0.00876,
+        "std": 0.04293,
+        "ir": 0.2041,
+        "t_stat": 4.8203,
+        "positive_rate": 0.5627,
+        "train_mean": 0.009811,
+        "test_mean": 0.006879
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_score_mean",
+      "category": "analyst_revision",
+      "description": "mean rating score",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 88.9,
+      "rank_ic": {
+        "n_dates": 360,
+        "mean": 0.006469,
+        "std": 0.14038,
+        "ir": 0.0461,
+        "t_stat": 0.8743,
+        "positive_rate": 0.5278,
+        "train_mean": 0.001214,
+        "test_mean": 0.017664
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 360,
+        "mean": -3e-05,
+        "std": 0.040343,
+        "ir": -0.0007,
+        "t_stat": -0.0141,
+        "positive_rate": 0.5056,
+        "train_mean": -0.00141,
+        "test_mean": 0.00291
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 360,
+        "mean": -3e-05,
+        "std": 0.040343,
+        "ir": -0.0007,
+        "t_stat": -0.0141,
+        "positive_rate": 0.5056,
+        "train_mean": -0.00141,
+        "test_mean": 0.00291
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day analyst event count",
+      "horizon": 5,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1186.8,
+      "rank_ic": {
+        "n_dates": 574,
+        "mean": -0.006311,
+        "std": 0.109778,
+        "ir": -0.0575,
+        "t_stat": -1.3773,
+        "positive_rate": 0.4895,
+        "train_mean": -0.021565,
+        "test_mean": 0.01916
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": -0.002465,
+        "std": 0.015761,
+        "ir": -0.1564,
+        "t_stat": -3.7477,
+        "positive_rate": 0.4443,
+        "train_mean": -0.004654,
+        "test_mean": 0.001189
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": 0.002465,
+        "std": 0.015761,
+        "ir": 0.1564,
+        "t_stat": 3.7477,
+        "positive_rate": 0.5557,
+        "train_mean": 0.004654,
+        "test_mean": -0.001189
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_event_count_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day analyst event count",
+      "horizon": 1,
+      "signal_lag_days": 1,
+      "recommended_direction": -1,
+      "avg_coverage": 1187.3,
+      "rank_ic": {
+        "n_dates": 578,
+        "mean": -0.006207,
+        "std": 0.113073,
+        "ir": -0.0549,
+        "t_stat": -1.3198,
+        "positive_rate": 0.481,
+        "train_mean": -0.012248,
+        "test_mean": 0.003696
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 578,
+        "mean": -0.000476,
+        "std": 0.006769,
+        "ir": -0.0703,
+        "t_stat": -1.6891,
+        "positive_rate": 0.4585,
+        "train_mean": -0.000871,
+        "test_mean": 0.000172
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 578,
+        "mean": 0.000476,
+        "std": 0.006769,
+        "ir": 0.0703,
+        "t_stat": 1.6891,
+        "positive_rate": 0.5415,
+        "train_mean": 0.000871,
+        "test_mean": -0.000172
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_score_mean_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day rating score mean for covered names",
+      "horizon": 5,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 552.3,
+      "rank_ic": {
+        "n_dates": 574,
+        "mean": 0.005931,
+        "std": 0.061163,
+        "ir": 0.097,
+        "t_stat": 2.3233,
+        "positive_rate": 0.5488,
+        "train_mean": -0.000445,
+        "test_mean": 0.016578
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": 0.000962,
+        "std": 0.010553,
+        "ir": 0.0911,
+        "t_stat": 2.1837,
+        "positive_rate": 0.5767,
+        "train_mean": 0.000747,
+        "test_mean": 0.001321
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 574,
+        "mean": 0.000962,
+        "std": 0.010553,
+        "ir": 0.0911,
+        "t_stat": 2.1837,
+        "positive_rate": 0.5767,
+        "train_mean": 0.000747,
+        "test_mean": 0.001321
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_revision_sum_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day analyst revision sum",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 1186.3,
+      "rank_ic": {
+        "n_dates": 568,
+        "mean": 0.005614,
+        "std": 0.038541,
+        "ir": 0.1457,
+        "t_stat": 3.4714,
+        "positive_rate": 0.5475,
+        "train_mean": 0.003649,
+        "test_mean": 0.008963
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 568,
+        "mean": 0.004202,
+        "std": 0.030148,
+        "ir": 0.1394,
+        "t_stat": 3.3216,
+        "positive_rate": 0.5599,
+        "train_mean": 0.004338,
+        "test_mean": 0.00397
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 568,
+        "mean": 0.004202,
+        "std": 0.030148,
+        "ir": 0.1394,
+        "t_stat": 3.3216,
+        "positive_rate": 0.5599,
+        "train_mean": 0.004338,
+        "test_mean": 0.00397
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_upgrade_minus_downgrade_60d",
+      "category": "analyst_revision_rolling",
+      "description": "60-day upgrade minus downgrade",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 1186.3,
+      "rank_ic": {
+        "n_dates": 568,
+        "mean": 0.005614,
+        "std": 0.038541,
+        "ir": 0.1457,
+        "t_stat": 3.4714,
+        "positive_rate": 0.5475,
+        "train_mean": 0.003649,
+        "test_mean": 0.008963
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 568,
+        "mean": 0.004202,
+        "std": 0.030148,
+        "ir": 0.1394,
+        "t_stat": 3.3216,
+        "positive_rate": 0.5599,
+        "train_mean": 0.004338,
+        "test_mean": 0.00397
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 568,
+        "mean": 0.004202,
+        "std": 0.030148,
+        "ir": 0.1394,
+        "t_stat": 3.3216,
+        "positive_rate": 0.5599,
+        "train_mean": 0.004338,
+        "test_mean": 0.00397
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_rating_score_mean_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day rating score mean for covered names",
+      "horizon": 10,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 549.9,
+      "rank_ic": {
+        "n_dates": 569,
+        "mean": 0.005568,
+        "std": 0.065422,
+        "ir": 0.0851,
+        "t_stat": 2.0302,
+        "positive_rate": 0.5132,
+        "train_mean": -0.002692,
+        "test_mean": 0.019688
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": 0.000195,
+        "std": 0.015692,
+        "ir": 0.0124,
+        "t_stat": 0.2964,
+        "positive_rate": 0.4938,
+        "train_mean": 7.1e-05,
+        "test_mean": 0.000407
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 569,
+        "mean": 0.000195,
+        "std": 0.015692,
+        "ir": 0.0124,
+        "t_stat": 0.2964,
+        "positive_rate": 0.4938,
+        "train_mean": 7.1e-05,
+        "test_mean": 0.000407
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_upgrade_count",
+      "category": "analyst_revision",
+      "description": "rating upgrade count",
+      "horizon": 1,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 114.3,
+      "rank_ic": {
+        "n_dates": 3,
+        "mean": 0.00513,
+        "std": 0.041902,
+        "ir": 0.1224,
+        "t_stat": 0.2121,
+        "positive_rate": 0.3333,
+        "train_mean": 0.00513,
+        "test_mean": null
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.009874,
+        "std": 0.013122,
+        "ir": -0.7525,
+        "t_stat": -1.3033,
+        "positive_rate": 0.3333,
+        "train_mean": -0.009874,
+        "test_mean": null
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 3,
+        "mean": -0.009874,
+        "std": 0.013122,
+        "ir": -0.7525,
+        "t_stat": -1.3033,
+        "positive_rate": 0.3333,
+        "train_mean": -0.009874,
+        "test_mean": null
+      },
+      "stability_pass": false,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_revision_sum_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day analyst revision sum",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 1186.1,
+      "rank_ic": {
+        "n_dates": 556,
+        "mean": 0.005012,
+        "std": 0.029226,
+        "ir": 0.1715,
+        "t_stat": 4.0435,
+        "positive_rate": 0.5719,
+        "train_mean": 0.004734,
+        "test_mean": 0.005514
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 556,
+        "mean": 0.010371,
+        "std": 0.043377,
+        "ir": 0.2391,
+        "t_stat": 5.6379,
+        "positive_rate": 0.5701,
+        "train_mean": 0.01199,
+        "test_mean": 0.007445
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 556,
+        "mean": 0.010371,
+        "std": 0.043377,
+        "ir": 0.2391,
+        "t_stat": 5.6379,
+        "positive_rate": 0.5701,
+        "train_mean": 0.01199,
+        "test_mean": 0.007445
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    },
+    {
+      "factor": "analyst_upgrade_minus_downgrade_20d",
+      "category": "analyst_revision_rolling",
+      "description": "20-day upgrade minus downgrade",
+      "horizon": 20,
+      "signal_lag_days": 1,
+      "recommended_direction": 1,
+      "avg_coverage": 1186.1,
+      "rank_ic": {
+        "n_dates": 556,
+        "mean": 0.005012,
+        "std": 0.029226,
+        "ir": 0.1715,
+        "t_stat": 4.0435,
+        "positive_rate": 0.5719,
+        "train_mean": 0.004734,
+        "test_mean": 0.005514
+      },
+      "top_minus_bottom_return": {
+        "n_dates": 556,
+        "mean": 0.010371,
+        "std": 0.043377,
+        "ir": 0.2391,
+        "t_stat": 5.6379,
+        "positive_rate": 0.5701,
+        "train_mean": 0.01199,
+        "test_mean": 0.007445
+      },
+      "oriented_top_minus_bottom_return": {
+        "n_dates": 556,
+        "mean": 0.010371,
+        "std": 0.043377,
+        "ir": 0.2391,
+        "t_stat": 5.6379,
+        "positive_rate": 0.5701,
+        "train_mean": 0.01199,
+        "test_mean": 0.007445
+      },
+      "stability_pass": true,
+      "qualified_for_research": false
+    }
+  ],
+  "csv": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_alt_factor_ic_v18.csv",
+  "production_blockers": [
+    "IC diagnostics are not a production strategy",
+    "current order-flow/intraday sources still need daily archives before full historical PIT validation",
+    "qualified factors require out-of-sample portfolio construction, WF and capacity tests before use"
+  ],
+  "elapsed_s": 38.6
+}

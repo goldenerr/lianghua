@@ -1,0 +1,147 @@
+[
+  {
+    "name": "base_v13",
+    "updates": {},
+    "full": {
+      "sharpe_ratio": 0.9854,
+      "annual_return": 0.09,
+      "annual_volatility": 0.066,
+      "max_drawdown": -0.1273,
+      "win_rate": 0.4751,
+      "total_return": 6.1381,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.2301,
+      "avg_hedge_turnover": 0.0086,
+      "avg_trend_turnover": 0.1174,
+      "avg_exposure": 0.2081,
+      "total_cost": 0.1366,
+      "n_days": 5639
+    },
+    "elapsed_s": 67.9
+  },
+  {
+    "name": "target_vol_016",
+    "updates": {
+      "target_vol": 0.16,
+      "gross_exposure": 0.85,
+      "max_position_pct": 0.03
+    },
+    "full": {
+      "sharpe_ratio": 1.014,
+      "annual_return": 0.1152,
+      "annual_volatility": 0.089,
+      "max_drawdown": -0.1419,
+      "win_rate": 0.4715,
+      "total_return": 11.0502,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.3144,
+      "avg_hedge_turnover": 0.0113,
+      "avg_trend_turnover": 0.1404,
+      "avg_exposure": 0.2868,
+      "total_cost": 0.1844,
+      "n_days": 5639
+    },
+    "elapsed_s": 63.6
+  },
+  {
+    "name": "target_vol_014",
+    "updates": {
+      "target_vol": 0.14,
+      "gross_exposure": 0.85,
+      "max_position_pct": 0.03
+    },
+    "full": {
+      "sharpe_ratio": 1.0051,
+      "annual_return": 0.1063,
+      "annual_volatility": 0.0809,
+      "max_drawdown": -0.135,
+      "win_rate": 0.474,
+      "total_return": 9.0205,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.2876,
+      "avg_hedge_turnover": 0.0106,
+      "avg_trend_turnover": 0.1353,
+      "avg_exposure": 0.2607,
+      "total_cost": 0.1695,
+      "n_days": 5639
+    },
+    "elapsed_s": 63.8
+  },
+  {
+    "name": "less_normal_hedge",
+    "updates": {
+      "normal_hedge_weight": 0.0,
+      "target_vol": 0.14,
+      "gross_exposure": 0.85,
+      "max_position_pct": 0.03
+    },
+    "full": {
+      "sharpe_ratio": 0.9738,
+      "annual_return": 0.1098,
+      "annual_volatility": 0.0871,
+      "max_drawdown": -0.135,
+      "win_rate": 0.474,
+      "total_return": 9.7184,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.2856,
+      "avg_hedge_turnover": 0.0,
+      "avg_trend_turnover": 0.1342,
+      "avg_exposure": 0.2356,
+      "total_cost": 0.1678,
+      "n_days": 5639
+    },
+    "elapsed_s": 67.1
+  },
+  {
+    "name": "more_names",
+    "updates": {
+      "top_n": 50,
+      "max_per_industry": 5,
+      "target_vol": 0.16,
+      "gross_exposure": 0.9,
+      "max_position_pct": 0.025
+    },
+    "full": {
+      "sharpe_ratio": 1.0228,
+      "annual_return": 0.1202,
+      "annual_volatility": 0.0931,
+      "max_drawdown": -0.1435,
+      "win_rate": 0.4733,
+      "total_return": 12.3523,
+      "avg_active_stocks": 26.6,
+      "avg_turnover": 0.3166,
+      "avg_hedge_turnover": 0.0119,
+      "avg_trend_turnover": 0.1461,
+      "avg_exposure": 0.2999,
+      "total_cost": 0.1864,
+      "n_days": 5639
+    },
+    "elapsed_s": 67.4
+  },
+  {
+    "name": "higher_fundamental",
+    "updates": {
+      "technical_weight": 0.45,
+      "fundamental_weight": 0.55,
+      "target_vol": 0.16,
+      "gross_exposure": 0.85,
+      "max_position_pct": 0.03
+    },
+    "full": {
+      "sharpe_ratio": 1.0026,
+      "annual_return": 0.1152,
+      "annual_volatility": 0.09,
+      "max_drawdown": -0.1423,
+      "win_rate": 0.4719,
+      "total_return": 11.0302,
+      "avg_active_stocks": 21.3,
+      "avg_turnover": 0.2873,
+      "avg_hedge_turnover": 0.0114,
+      "avg_trend_turnover": 0.1414,
+      "avg_exposure": 0.2883,
+      "total_cost": 0.1702,
+      "n_days": 5639
+    },
+    "elapsed_s": 67.8
+  }
+]

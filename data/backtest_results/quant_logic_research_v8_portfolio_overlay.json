@@ -1,0 +1,446 @@
+{
+  "ts": "2026-06-04T15:04:57.372756",
+  "version": "V8-portfolio-overlay-search",
+  "research_only": true,
+  "data": {
+    "symbols": 1196,
+    "dates": 6396,
+    "start": "2000-01-04",
+    "end": "2026-05-29",
+    "industry_mapped": 1200,
+    "fundamental_mapped": 1177
+  },
+  "factor_weights": {
+    "roe": 0.18,
+    "gross_margin": 0.12,
+    "debt_asset_ratio": -0.12,
+    "revenue_yoy": 0.12,
+    "net_profit_yoy": 0.1,
+    "book_to_price": 0.18,
+    "earnings_to_price": 0.1,
+    "cashflow_quality": 0.1
+  },
+  "screened_count": 64,
+  "top_full": [
+    {
+      "rank_score": 0.3854,
+      "full": {
+        "sharpe_ratio": 0.5536,
+        "annual_return": 0.0781,
+        "annual_volatility": 0.0959,
+        "max_drawdown": -0.2018,
+        "win_rate": 0.5439,
+        "total_return": 4.5783,
+        "avg_active_stocks": 40.0,
+        "avg_candidate_stocks": 622.3,
+        "avg_turnover": 0.2808,
+        "avg_exposure": 0.2377,
+        "total_cost": 0.0383,
+        "n_days": 5891
+      },
+      "config": {
+        "top_n": 40,
+        "rebalance_freq": 40,
+        "warmup_days": 504,
+        "test_warmup_days": 504,
+        "report_lag_days": 90,
+        "min_stocks": 100,
+        "max_per_industry": 4,
+        "max_position_pct": 0.025,
+        "gross_exposure": 1.0,
+        "defensive_exposure": 0.25,
+        "cash_exposure": 0.05,
+        "market_momentum_days": 120,
+        "breadth_threshold": 0.5,
+        "target_vol": 0.12,
+        "dd_reduce_threshold": 0.15,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.25,
+        "dd_stop_scale": 0.2,
+        "stamp_duty": 0.0005,
+        "commission": 0.00025,
+        "slippage_base": 0.0004,
+        "slippage_factor": 0.08,
+        "risk_free_rate": 0.025,
+        "n_folds": 5,
+        "oos_pct": 0.2,
+        "purge_days": 10
+      }
+    },
+    {
+      "rank_score": 0.377,
+      "full": {
+        "sharpe_ratio": 0.5514,
+        "annual_return": 0.0784,
+        "annual_volatility": 0.0969,
+        "max_drawdown": -0.2034,
+        "win_rate": 0.5434,
+        "total_return": 4.6106,
+        "avg_active_stocks": 40.0,
+        "avg_candidate_stocks": 622.3,
+        "avg_turnover": 0.2922,
+        "avg_exposure": 0.2483,
+        "total_cost": 0.0399,
+        "n_days": 5891
+      },
+      "config": {
+        "top_n": 40,
+        "rebalance_freq": 40,
+        "warmup_days": 504,
+        "test_warmup_days": 504,
+        "report_lag_days": 90,
+        "min_stocks": 100,
+        "max_per_industry": 4,
+        "max_position_pct": 0.025,
+        "gross_exposure": 1.0,
+        "defensive_exposure": 0.35,
+        "cash_exposure": 0.05,
+        "market_momentum_days": 120,
+        "breadth_threshold": 0.5,
+        "target_vol": 0.12,
+        "dd_reduce_threshold": 0.15,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.25,
+        "dd_stop_scale": 0.2,
+        "stamp_duty": 0.0005,
+        "commission": 0.00025,
+        "slippage_base": 0.0004,
+        "slippage_factor": 0.08,
+        "risk_free_rate": 0.025,
+        "n_folds": 5,
+        "oos_pct": 0.2,
+        "purge_days": 10
+      }
+    },
+    {
+      "rank_score": 0.3701,
+      "full": {
+        "sharpe_ratio": 0.5426,
+        "annual_return": 0.0767,
+        "annual_volatility": 0.0952,
+        "max_drawdown": -0.2027,
+        "win_rate": 0.5434,
+        "total_return": 4.4068,
+        "avg_active_stocks": 40.0,
+        "avg_candidate_stocks": 622.3,
+        "avg_turnover": 0.2735,
+        "avg_exposure": 0.229,
+        "total_cost": 0.0373,
+        "n_days": 5891
+      },
+      "config": {
+        "top_n": 40,
+        "rebalance_freq": 40,
+        "warmup_days": 504,
+        "test_warmup_days": 504,
+        "report_lag_days": 90,
+        "min_stocks": 100,
+        "max_per_industry": 4,
+        "max_position_pct": 0.025,
+        "gross_exposure": 1.0,
+        "defensive_exposure": 0.25,
+        "cash_exposure": 0.03,
+        "market_momentum_days": 120,
+        "breadth_threshold": 0.5,
+        "target_vol": 0.12,
+        "dd_reduce_threshold": 0.15,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.25,
+        "dd_stop_scale": 0.2,
+        "stamp_duty": 0.0005,
+        "commission": 0.00025,
+        "slippage_base": 0.0004,
+        "slippage_factor": 0.08,
+        "risk_free_rate": 0.025,
+        "n_folds": 5,
+        "oos_pct": 0.2,
+        "purge_days": 10
+      }
+    }
+  ],
+  "finalists": [
+    {
+      "rank_score": 0.3854,
+      "full": {
+        "sharpe_ratio": 0.5536,
+        "annual_return": 0.0781,
+        "annual_volatility": 0.0959,
+        "max_drawdown": -0.2018,
+        "win_rate": 0.5439,
+        "total_return": 4.5783,
+        "avg_active_stocks": 40.0,
+        "avg_candidate_stocks": 622.3,
+        "avg_turnover": 0.2808,
+        "avg_exposure": 0.2377,
+        "total_cost": 0.0383,
+        "n_days": 5891
+      },
+      "config": {
+        "top_n": 40,
+        "rebalance_freq": 40,
+        "warmup_days": 504,
+        "test_warmup_days": 504,
+        "report_lag_days": 90,
+        "min_stocks": 100,
+        "max_per_industry": 4,
+        "max_position_pct": 0.025,
+        "gross_exposure": 1.0,
+        "defensive_exposure": 0.25,
+        "cash_exposure": 0.05,
+        "market_momentum_days": 120,
+        "breadth_threshold": 0.5,
+        "target_vol": 0.12,
+        "dd_reduce_threshold": 0.15,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.25,
+        "dd_stop_scale": 0.2,
+        "stamp_duty": 0.0005,
+        "commission": 0.00025,
+        "slippage_base": 0.0004,
+        "slippage_factor": 0.08,
+        "risk_free_rate": 0.025,
+        "n_folds": 5,
+        "oos_pct": 0.2,
+        "purge_days": 10
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "is": 0.6292,
+            "oos": -0.0202,
+            "mdd": -0.1321,
+            "active": 40.0
+          },
+          {
+            "fold": 1,
+            "is": 0.645,
+            "oos": -2.1186,
+            "mdd": -0.071,
+            "active": 40.0
+          },
+          {
+            "fold": 2,
+            "is": 0.6129,
+            "oos": -1.4453,
+            "mdd": -0.0756,
+            "active": 40.0
+          },
+          {
+            "fold": 3,
+            "is": 0.5625,
+            "oos": -0.5714,
+            "mdd": -0.0647,
+            "active": 40.0
+          },
+          {
+            "fold": 4,
+            "is": 0.5026,
+            "oos": 0.9258,
+            "mdd": -0.0601,
+            "active": 40.0
+          }
+        ],
+        "avg_is_sharpe": 0.5904,
+        "avg_oos_sharpe": -0.6459,
+        "sharpe_decay": 2.094
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": false,
+        "W": true,
+        "A": false
+      }
+    },
+    {
+      "rank_score": 0.377,
+      "full": {
+        "sharpe_ratio": 0.5514,
+        "annual_return": 0.0784,
+        "annual_volatility": 0.0969,
+        "max_drawdown": -0.2034,
+        "win_rate": 0.5434,
+        "total_return": 4.6106,
+        "avg_active_stocks": 40.0,
+        "avg_candidate_stocks": 622.3,
+        "avg_turnover": 0.2922,
+        "avg_exposure": 0.2483,
+        "total_cost": 0.0399,
+        "n_days": 5891
+      },
+      "config": {
+        "top_n": 40,
+        "rebalance_freq": 40,
+        "warmup_days": 504,
+        "test_warmup_days": 504,
+        "report_lag_days": 90,
+        "min_stocks": 100,
+        "max_per_industry": 4,
+        "max_position_pct": 0.025,
+        "gross_exposure": 1.0,
+        "defensive_exposure": 0.35,
+        "cash_exposure": 0.05,
+        "market_momentum_days": 120,
+        "breadth_threshold": 0.5,
+        "target_vol": 0.12,
+        "dd_reduce_threshold": 0.15,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.25,
+        "dd_stop_scale": 0.2,
+        "stamp_duty": 0.0005,
+        "commission": 0.00025,
+        "slippage_base": 0.0004,
+        "slippage_factor": 0.08,
+        "risk_free_rate": 0.025,
+        "n_folds": 5,
+        "oos_pct": 0.2,
+        "purge_days": 10
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "is": 0.6337,
+            "oos": -0.0042,
+            "mdd": -0.1321,
+            "active": 40.0
+          },
+          {
+            "fold": 1,
+            "is": 0.6491,
+            "oos": -2.1107,
+            "mdd": -0.0752,
+            "active": 40.0
+          },
+          {
+            "fold": 2,
+            "is": 0.6148,
+            "oos": -1.4386,
+            "mdd": -0.0806,
+            "active": 40.0
+          },
+          {
+            "fold": 3,
+            "is": 0.5627,
+            "oos": -0.5593,
+            "mdd": -0.0647,
+            "active": 40.0
+          },
+          {
+            "fold": 4,
+            "is": 0.5008,
+            "oos": 0.9258,
+            "mdd": -0.0601,
+            "active": 40.0
+          }
+        ],
+        "avg_is_sharpe": 0.5922,
+        "avg_oos_sharpe": -0.6374,
+        "sharpe_decay": 2.0763
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": false,
+        "W": true,
+        "A": false
+      }
+    },
+    {
+      "rank_score": 0.3701,
+      "full": {
+        "sharpe_ratio": 0.5426,
+        "annual_return": 0.0767,
+        "annual_volatility": 0.0952,
+        "max_drawdown": -0.2027,
+        "win_rate": 0.5434,
+        "total_return": 4.4068,
+        "avg_active_stocks": 40.0,
+        "avg_candidate_stocks": 622.3,
+        "avg_turnover": 0.2735,
+        "avg_exposure": 0.229,
+        "total_cost": 0.0373,
+        "n_days": 5891
+      },
+      "config": {
+        "top_n": 40,
+        "rebalance_freq": 40,
+        "warmup_days": 504,
+        "test_warmup_days": 504,
+        "report_lag_days": 90,
+        "min_stocks": 100,
+        "max_per_industry": 4,
+        "max_position_pct": 0.025,
+        "gross_exposure": 1.0,
+        "defensive_exposure": 0.25,
+        "cash_exposure": 0.03,
+        "market_momentum_days": 120,
+        "breadth_threshold": 0.5,
+        "target_vol": 0.12,
+        "dd_reduce_threshold": 0.15,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.25,
+        "dd_stop_scale": 0.2,
+        "stamp_duty": 0.0005,
+        "commission": 0.00025,
+        "slippage_base": 0.0004,
+        "slippage_factor": 0.08,
+        "risk_free_rate": 0.025,
+        "n_folds": 5,
+        "oos_pct": 0.2,
+        "purge_days": 10
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "is": 0.6195,
+            "oos": -0.0311,
+            "mdd": -0.1321,
+            "active": 40.0
+          },
+          {
+            "fold": 1,
+            "is": 0.6356,
+            "oos": -2.1717,
+            "mdd": -0.0725,
+            "active": 40.0
+          },
+          {
+            "fold": 2,
+            "is": 0.6032,
+            "oos": -1.4628,
+            "mdd": -0.0756,
+            "active": 40.0
+          },
+          {
+            "fold": 3,
+            "is": 0.5528,
+            "oos": -0.5764,
+            "mdd": -0.0647,
+            "active": 40.0
+          },
+          {
+            "fold": 4,
+            "is": 0.4911,
+            "oos": 0.9244,
+            "mdd": -0.0601,
+            "active": 40.0
+          }
+        ],
+        "avg_is_sharpe": 0.5804,
+        "avg_oos_sharpe": -0.6635,
+        "sharpe_decay": 2.1431
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": false,
+        "W": true,
+        "A": false
+      }
+    }
+  ],
+  "elapsed_s": 660.0
+}

@@ -1,5 +1,5 @@
 {
-  "ts": "2026-05-20T16:33:33.989906",
+  "ts": "2026-06-03T09:46:50.191264",
   "version": "V5.9",
   "desc": "n=35 90d + sector cap (max 5 per industry)",
   "cfg": {
@@ -25,17 +25,17 @@
     "mdd_stop_scale": 0.25
   },
   "full": {
-    "sharpe_ratio": 1.3777,
-    "annual_return": 0.1262,
-    "annual_volatility": 0.0735,
-    "max_drawdown": -0.1361,
-    "calmar_ratio": 0.9272,
-    "win_rate": 0.5403,
-    "total_return": 18.7204,
+    "sharpe_ratio": 0.1651,
+    "annual_return": 0.0411,
+    "annual_volatility": 0.0976,
+    "max_drawdown": -0.2981,
+    "calmar_ratio": 0.1379,
+    "win_rate": 0.4894,
+    "total_return": 1.4055,
     "n_rebalances": 67,
     "n_days": 6085,
     "avg_active_stocks": 629.0,
-    "avg_turnover": 1.3814
+    "avg_turnover": 1.0463
   },
   "wf": {
     "folds": [
@@ -43,53 +43,53 @@
         "fold": 0,
         "train": 5061,
         "test": 253,
-        "is": 1.6356,
-        "oos": -0.0755,
+        "is": 0.2196,
+        "oos": -1.1712,
         "act": 328.3
       },
       {
         "fold": 1,
         "train": 5314,
         "test": 253,
-        "is": 1.5816,
-        "oos": -0.5893,
+        "is": 0.2077,
+        "oos": -0.8241,
         "act": 295.3
       },
       {
         "fold": 2,
         "train": 5567,
         "test": 253,
-        "is": 1.5341,
-        "oos": 2.4394,
+        "is": 0.1804,
+        "oos": -1.519,
         "act": 262.0
       },
       {
         "fold": 3,
         "train": 5820,
         "test": 253,
-        "is": 1.4724,
-        "oos": 2.0679,
+        "is": 0.1967,
+        "oos": 0.217,
         "act": 210.3
       },
       {
         "fold": 4,
         "train": 6073,
         "test": 253,
-        "is": 1.4221,
-        "oos": 2.1327,
+        "is": 0.1787,
+        "oos": 1.5448,
         "act": 87.7
       }
     ],
-    "avg_is_sharpe": 1.5292,
-    "avg_oos_sharpe": 1.195,
-    "sharpe_decay": 0.2185
+    "avg_is_sharpe": 0.1966,
+    "avg_oos_sharpe": -0.3505,
+    "sharpe_decay": 2.7826
   },
   "gates": {
-    "S": true,
-    "M": true,
-    "D": true,
+    "S": false,
+    "M": false,
+    "D": false,
     "W": true,
-    "A": true
+    "A": false
   },
-  "elapsed": 53.3
+  "elapsed": 25.8
 }

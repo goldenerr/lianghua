@@ -1,0 +1,22 @@
+label,candidate,leading_passes,sharpe_ratio,avg_oos_sharpe,min_oos_sharpe,max_drawdown,win_rate,sharpe_decay,annual_return,annual_volatility,total_return,failures
+base,v29_price_meta_longhorizon_guard,True,2.0285,2.4013,0.198,-0.0833,0.5652,-0.072,0.1595,0.0663,16.379,
+param_base_gross_0.90x,v29_price_meta_longhorizon_guard,True,2.0285,2.4013,0.198,-0.0833,0.5652,-0.072,0.1595,0.0663,16.379,
+param_base_gross_1.10x,v29_price_meta_longhorizon_guard,True,2.0285,2.4013,0.198,-0.0833,0.5652,-0.072,0.1595,0.0663,16.379,
+param_bull_gross_0.90x,v29_price_meta_longhorizon_guard,False,1.91,2.3113,0.182,-0.0839,0.5652,-0.0902,0.1459,0.0633,12.6297,full_sharpe:1.91 >= 2.0 failed
+param_bull_gross_1.10x,v29_price_meta_longhorizon_guard,True,2.1204,2.4757,0.2133,-0.0835,0.5655,-0.0564,0.1723,0.0695,20.8428,
+param_neutral_gross_0.90x,v29_price_meta_longhorizon_guard,True,2.0492,2.4352,0.1942,-0.0834,0.5655,-0.0645,0.1569,0.0644,15.6068,
+param_neutral_gross_1.10x,v29_price_meta_longhorizon_guard,False,1.9872,2.3626,0.2008,-0.0839,0.565,-0.0838,0.1606,0.0682,16.6761,full_sharpe:1.9872 >= 2.0 failed
+param_risk_off_gross_0.90x,v29_price_meta_longhorizon_guard,True,2.0495,2.4292,0.2524,-0.0831,0.5655,-0.073,0.1606,0.0662,16.7226,
+param_risk_off_gross_1.10x,v29_price_meta_longhorizon_guard,False,1.9897,2.3733,0.1439,-0.0834,0.5657,-0.0798,0.1572,0.0664,15.65,full_sharpe:1.9897 >= 2.0 failed
+param_vol_target_0.90x,v29_price_meta_longhorizon_guard,False,1.9776,2.3936,0.2407,-0.0831,0.5648,-0.08,0.1463,0.0614,12.7572,full_sharpe:1.9776 >= 2.0 failed
+param_vol_target_1.10x,v29_price_meta_longhorizon_guard,True,2.0581,2.4009,0.1318,-0.0836,0.5646,-0.0688,0.1709,0.0709,20.2289,
+carry_fraction_0.04,v29_price_meta_longhorizon_guard,False,1.9765,2.3581,0.2759,-0.101,0.5648,-0.0585,0.1625,0.0696,17.2821,full_sharpe:1.9765 >= 2.0 failed;max_drawdown:-0.101 >= -0.1 failed
+carry_fraction_0.06,v29_price_meta_longhorizon_guard,False,1.9821,2.3621,0.2689,-0.0997,0.565,-0.0595,0.1622,0.0692,17.19,full_sharpe:1.9821 >= 2.0 failed
+carry_fraction_0.08,v29_price_meta_longhorizon_guard,False,1.9874,2.3659,0.2619,-0.0983,0.5648,-0.0606,0.1619,0.0689,17.0984,full_sharpe:1.9874 >= 2.0 failed
+carry_fraction_0.10,v29_price_meta_longhorizon_guard,False,1.9922,2.3686,0.2547,-0.0965,0.5644,-0.0614,0.1616,0.0686,16.9967,full_sharpe:1.9922 >= 2.0 failed
+carry_fraction_0.12,v29_price_meta_longhorizon_guard,False,1.9974,2.3728,0.2475,-0.0948,0.5642,-0.0627,0.1613,0.0682,16.9122,full_sharpe:1.9974 >= 2.0 failed
+meta_cost_bps_5,v29_price_meta_longhorizon_guard,False,1.935,2.32,0.0893,-0.084,0.5646,-0.0872,0.1529,0.0661,14.4119,full_sharpe:1.935 >= 2.0 failed
+meta_cost_bps_10,v29_price_meta_longhorizon_guard,False,1.8063,2.1841,-0.092,-0.0852,0.5624,-0.0939,0.1444,0.0661,12.2228,full_sharpe:1.8063 >= 2.0 failed;min_oos_sharpe:-0.092 >= 0.0 failed
+meta_cost_bps_20,v29_price_meta_longhorizon_guard,False,1.5184,1.9193,-0.4183,-0.0876,0.5587,-0.1708,0.125,0.0659,8.2973,full_sharpe:1.5184 >= 2.0 failed;min_oos_sharpe:-0.4183 >= 0.0 failed
+stock_sleeve_cost_2.0x,v29_price_meta_longhorizon_guard,False,1.9208,2.3037,0.1132,-0.0841,0.5624,-0.0904,0.152,0.0661,14.1537,full_sharpe:1.9208 >= 2.0 failed
+stock_sleeve_cost_3.0x,v29_price_meta_longhorizon_guard,False,1.8446,2.209,0.0371,-0.0848,0.5615,-0.0902,0.1465,0.0659,12.7215,full_sharpe:1.8446 >= 2.0 failed

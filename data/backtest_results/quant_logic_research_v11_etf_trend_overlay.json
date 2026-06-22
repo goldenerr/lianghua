@@ -1,0 +1,114 @@
+{
+  "ts": "2026-06-04T18:01:31.853997",
+  "version": "V11-etf-trend-overlay",
+  "research_only": true,
+  "production_blockers": [
+    "requires exchange-backed futures provider",
+    "requires futures margin and rollover approval evidence",
+    "requires position reconciliation for hedge leg",
+    "requires approved ETF execution and liquidity/capacity evidence"
+  ],
+  "config": {
+    "top_n": 40,
+    "rebalance_freq": 10,
+    "warmup_days": 756,
+    "report_lag_days": 90,
+    "min_stocks": 120,
+    "max_per_industry": 4,
+    "max_position_pct": 0.025,
+    "gross_exposure": 0.75,
+    "defensive_exposure": 0.35,
+    "cash_exposure": 0.05,
+    "market_momentum_days": 120,
+    "breadth_threshold": 0.52,
+    "target_vol": 0.12,
+    "ic_window": 180,
+    "ic_min_obs": 40,
+    "ic_horizon": 5,
+    "technical_weight": 0.55,
+    "fundamental_weight": 0.45,
+    "bear_gold_weight": 0.3,
+    "normal_gold_weight": 0.05,
+    "dd_reduce_threshold": 0.12,
+    "dd_reduce_scale": 0.5,
+    "dd_stop_threshold": 0.2,
+    "dd_stop_scale": 0.2,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0004,
+    "slippage_factor": 0.08,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 10,
+    "hedge_asset": "idx_000905",
+    "normal_hedge_weight": 0.1,
+    "bear_hedge_weight": 0.35,
+    "hedge_cost": 8e-05,
+    "trend_lookback": 120,
+    "trend_vol_lookback": 60,
+    "trend_sleeve_weight": 0.7,
+    "bear_trend_sleeve_weight": 0.45,
+    "trend_cost": 0.00025
+  },
+  "full": {
+    "sharpe_ratio": 0.6032,
+    "annual_return": 0.1013,
+    "annual_volatility": 0.1265,
+    "max_drawdown": -0.4599,
+    "win_rate": 0.5671,
+    "total_return": 7.0566,
+    "avg_active_stocks": 40.0,
+    "avg_turnover": 0.2096,
+    "avg_hedge_turnover": 0.0067,
+    "avg_trend_turnover": 0.2077,
+    "avg_exposure": 0.1932,
+    "total_cost": 0.1384,
+    "n_days": 5639
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "is": 0.6733,
+        "oos": 0.5955,
+        "mdd": -0.0786
+      },
+      {
+        "fold": 1,
+        "is": 0.6764,
+        "oos": -1.2169,
+        "mdd": -0.1136
+      },
+      {
+        "fold": 2,
+        "is": 0.6481,
+        "oos": 1.0067,
+        "mdd": -0.0399
+      },
+      {
+        "fold": 3,
+        "is": 0.6252,
+        "oos": 0.4419,
+        "mdd": -0.0821
+      },
+      {
+        "fold": 4,
+        "is": 0.5986,
+        "oos": 0.4885,
+        "mdd": -0.1374
+      }
+    ],
+    "avg_is_sharpe": 0.6443,
+    "avg_oos_sharpe": 0.2631,
+    "sharpe_decay": 0.5916
+  },
+  "gates": {
+    "S": false,
+    "M": false,
+    "D": false,
+    "W": true,
+    "A": false
+  },
+  "elapsed_s": 2462.2
+}

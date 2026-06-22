@@ -36,16 +36,31 @@ Thumbs.db
 *.crt
 secrets/
 vault/
+config/production_evidence*.local.json
+config/production_data_evidence*.local.json
 
 # Logs
 logs/*.log
 *.log
 
-# Data (except tracked samples)
+# Data (except tracked samples and compact research evidence)
 data/raw/
 data/processed/
 data/interim/
 data/*.parquet
+data/alt_archives/
+data/alt_features/
+data/analyst_expectations/
+data/benchmarks/
+data/earnings_events/
+data/flow_signals/
+data/fundamentals/
+data/hedge_assets/
+data/intraday/
+data/parquet/
+data/security_master/
+data/local_preprod_audit_archive*/
+data/backups/
 !data/.gitkeep
 
 # Cache

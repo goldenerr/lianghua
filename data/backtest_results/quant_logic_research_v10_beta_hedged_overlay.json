@@ -1,0 +1,107 @@
+{
+  "ts": "2026-06-04T17:11:22.636155",
+  "version": "V10-beta-hedged-overlay",
+  "research_only": true,
+  "production_blockers": [
+    "requires exchange-backed futures provider",
+    "requires futures margin and rollover approval evidence",
+    "requires position reconciliation for hedge leg"
+  ],
+  "config": {
+    "top_n": 40,
+    "rebalance_freq": 10,
+    "warmup_days": 756,
+    "report_lag_days": 90,
+    "min_stocks": 120,
+    "max_per_industry": 4,
+    "max_position_pct": 0.025,
+    "gross_exposure": 0.75,
+    "defensive_exposure": 0.35,
+    "cash_exposure": 0.05,
+    "market_momentum_days": 120,
+    "breadth_threshold": 0.52,
+    "target_vol": 0.12,
+    "ic_window": 180,
+    "ic_min_obs": 40,
+    "ic_horizon": 5,
+    "technical_weight": 0.55,
+    "fundamental_weight": 0.45,
+    "bear_gold_weight": 0.3,
+    "normal_gold_weight": 0.05,
+    "dd_reduce_threshold": 0.12,
+    "dd_reduce_scale": 0.5,
+    "dd_stop_threshold": 0.2,
+    "dd_stop_scale": 0.2,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0004,
+    "slippage_factor": 0.08,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 10,
+    "hedge_asset": "idx_000905",
+    "normal_hedge_weight": 0.1,
+    "bear_hedge_weight": 0.35,
+    "hedge_cost": 8e-05
+  },
+  "full": {
+    "sharpe_ratio": 0.926,
+    "annual_return": 0.0826,
+    "annual_volatility": 0.0622,
+    "max_drawdown": -0.1039,
+    "win_rate": 0.565,
+    "total_return": 5.0821,
+    "avg_active_stocks": 40.0,
+    "avg_turnover": 0.245,
+    "avg_hedge_turnover": 0.0078,
+    "avg_exposure": 0.2272,
+    "total_cost": 0.1276,
+    "n_days": 5639
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "is": 1.0425,
+        "oos": 0.9272,
+        "mdd": -0.0396
+      },
+      {
+        "fold": 1,
+        "is": 1.0275,
+        "oos": -1.3842,
+        "mdd": -0.0392
+      },
+      {
+        "fold": 2,
+        "is": 1.009,
+        "oos": 1.0724,
+        "mdd": -0.0294
+      },
+      {
+        "fold": 3,
+        "is": 0.9622,
+        "oos": 0.1258,
+        "mdd": -0.0508
+      },
+      {
+        "fold": 4,
+        "is": 0.9555,
+        "oos": 0.0658,
+        "mdd": -0.0337
+      }
+    ],
+    "avg_is_sharpe": 0.9993,
+    "avg_oos_sharpe": 0.1614,
+    "sharpe_decay": 0.8385
+  },
+  "gates": {
+    "S": false,
+    "M": true,
+    "D": false,
+    "W": true,
+    "A": false
+  },
+  "elapsed_s": 299.0
+}

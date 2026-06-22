@@ -1,0 +1,115 @@
+{
+  "version": "V9-finalist-dynamic-ic-overlay",
+  "research_only": true,
+  "config": {
+    "top_n": 40,
+    "rebalance_freq": 10,
+    "warmup_days": 756,
+    "report_lag_days": 90,
+    "min_stocks": 120,
+    "max_per_industry": 4,
+    "max_position_pct": 0.025,
+    "gross_exposure": 0.75,
+    "defensive_exposure": 0.35,
+    "cash_exposure": 0.05,
+    "market_momentum_days": 120,
+    "breadth_threshold": 0.52,
+    "target_vol": 0.12,
+    "ic_window": 180,
+    "ic_min_obs": 40,
+    "ic_horizon": 5,
+    "technical_weight": 0.55,
+    "fundamental_weight": 0.45,
+    "bear_gold_weight": 0.3,
+    "normal_gold_weight": 0.05,
+    "dd_reduce_threshold": 0.12,
+    "dd_reduce_scale": 0.5,
+    "dd_stop_threshold": 0.2,
+    "dd_stop_scale": 0.2,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0004,
+    "slippage_factor": 0.08,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 10
+  },
+  "full": {
+    "sharpe_ratio": 0.9038,
+    "annual_return": 0.0856,
+    "annual_volatility": 0.067,
+    "max_drawdown": -0.1168,
+    "win_rate": 0.5641,
+    "total_return": 5.4533,
+    "avg_active_stocks": 40.0,
+    "avg_turnover": 0.245,
+    "avg_exposure": 0.2038,
+    "total_cost": 0.1272,
+    "last_ic_weights": {
+      "amihud_low": 0.1425,
+      "bollinger_mr": 0.0,
+      "idio_vol_60": 0.1241,
+      "low_vol_60": 0.0124,
+      "macd_hist": 0.0,
+      "mom_120": 0.0,
+      "mom_20": 0.0,
+      "mom_60": 0.0,
+      "reversal_5": 0.2154,
+      "turnover_change": 0.0,
+      "turnover_low": 0.0753,
+      "vol_dev": 0.4303
+    },
+    "n_days": 5639
+  },
+  "wf": {
+    "folds": [
+      {
+        "fold": 0,
+        "is": 1.0136,
+        "oos": 0.8584,
+        "mdd": -0.0432,
+        "active": 40.0
+      },
+      {
+        "fold": 1,
+        "is": 0.996,
+        "oos": -1.364,
+        "mdd": -0.0432,
+        "active": 40.0
+      },
+      {
+        "fold": 2,
+        "is": 0.976,
+        "oos": 0.8862,
+        "mdd": -0.0321,
+        "active": 40.0
+      },
+      {
+        "fold": 3,
+        "is": 0.928,
+        "oos": 0.0756,
+        "mdd": -0.0571,
+        "active": 40.0
+      },
+      {
+        "fold": 4,
+        "is": 0.9192,
+        "oos": 0.3766,
+        "mdd": -0.0357,
+        "active": 40.0
+      }
+    ],
+    "avg_is_sharpe": 0.9666,
+    "avg_oos_sharpe": 0.1666,
+    "sharpe_decay": 0.8277
+  },
+  "gates": {
+    "S": false,
+    "M": true,
+    "D": false,
+    "W": true,
+    "A": false
+  },
+  "elapsed_s": 293.8
+}

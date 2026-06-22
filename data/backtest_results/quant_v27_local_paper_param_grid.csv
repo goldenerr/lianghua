@@ -1,0 +1,16 @@
+name,sharpe_ratio,annual_return,annual_volatility,max_drawdown,total_return,total_trades,avg_active_positions,max_active_positions,passes_production_minimum_probe,elapsed_s
+freq5_top20_sector3,0.0189,0.0314,0.3404,-0.1589,-0.0093,316,14.33,19,False,12.151
+freq20_top20_sector3,-0.031,0.0145,0.3393,-0.1435,-0.0148,103,13.22,19,False,8.865
+freq20_top50_sector8,-0.3657,-0.0677,0.2536,-0.1615,-0.035,276,33.78,46,False,9.072
+freq5_top50_sector8,-0.3806,-0.0661,0.2393,-0.1529,-0.0332,781,31.94,46,False,12.119
+freq5_top35_sector5,-0.6551,-0.1457,0.2605,-0.1626,-0.0621,591,23.44,34,False,11.823
+freq20_top35_sector5_half_gross,-0.7846,-0.0806,0.1346,-0.106,-0.0315,196,23.0,30,False,9.573
+freq20_top35_sector5,-1.2524,-0.2915,0.2527,-0.163,-0.109,184,22.0,34,False,9.874
+freq10_top35_sector5,-1.2775,-0.2891,0.2459,-0.1794,-0.1077,325,22.44,34,False,10.098
+freq20_top80_sector10,-1.6721,-0.2442,0.161,-0.1357,-0.0878,383,46.78,56,False,9.521
+freq10_top50_sector8_defensive_mdd,-1.7897,-0.2883,0.175,-0.1071,-0.1028,194,12.0,46,False,10.149
+freq10_top20_sector3,-1.9792,-0.566,0.2986,-0.2164,-0.1958,121,8.56,19,False,10.57
+freq5_top80_sector10,-2.0063,-0.2959,0.1599,-0.1517,-0.1044,1183,43.22,64,False,11.828
+freq10_top80_sector10,-2.2834,-0.3625,0.1697,-0.1642,-0.126,684,46.22,64,False,9.867
+freq10_top35_sector5_half_gross,-2.464,-0.2864,0.1264,-0.1266,-0.0998,308,20.44,30,False,9.988
+freq10_top50_sector8,-2.928,-0.5722,0.2039,-0.2012,-0.191,304,20.0,46,False,10.594

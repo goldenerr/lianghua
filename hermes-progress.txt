@@ -1,19 +1,22 @@
 # Quant Trading System — Progress Log
-# Last updated: 2026-05-28
+# Last updated: 2026-06-04
 
-## Safety Audit Status (2026-05-28) - PRODUCTION BLOCKED
+## Safety Audit Status (2026-05-29) - PRODUCTION BLOCKED
 
-- Local verification: 668 tests passed; total source coverage 85.68% (80% gate passed); Ruff, Black and strict mypy gates pass locally.
+- Local verification: 685 tests passed; total source coverage 85.79% (80% gate passed); Ruff, Black and strict mypy gates pass locally.
 - Critical corrections completed: Safe Mode order blocking, reconciliation retry, immutable audit/event chains, deterministic execution, tick accounting, signed manifests, canary rollback decisions, security HMAC/RBAC/API key audit, authorized redacted audit query, recursive config drift checks.
 - Compliance and portfolio baselines completed: template-driven regulatory reports with local append-only integrity checks, validated Brinson/benchmark metrics, capital reservation/isolation firewall, and approval-gated strategy lifecycle.
 - Model/data validation baselines completed: PSI and regime/robustness ML gates, approval-gated model promotion with drift rollback, versioned factor parity hashes, and explicit historical replay mismatch reporting.
 - Documentation baseline completed: added `ARCHITECTURE.md` and `RISK_POLICY.md` with invariant contracts, NFR targets, approval gates, change-impact matrix and explicit unmeasured production capacity status.
 - `setup-001` hardening baseline completed: work moved to `feature/setup-001-safety-baseline`; CI security scans now fail closed, safety smoke runs explicitly, release builds require a signed and verified artifact manifest, Python support is aligned to `>=3.10`, and `./init.sh dev` no longer blocks on remote hook downloads.
 - `config-001` development baseline extended: all loaded risk/system/API keys reject unknown fields; embedded strategy/risk gates are validated; hash-bound system, risk, API and account collection snapshots are immutable after validation; duplicate account identities reject activation; production enabled accounts require configured HTTPS/WSS endpoints with no URL-embedded credentials; candidate activation completes external validation and mandatory non-secret audit events before a prevalidated in-memory publication; failed mandatory audit writes and invalid initial activation retain the prior runtime controls; subsequent direct `load()` calls on an active loader are audited reloads with synchronized cache/runtime snapshots; production approval references must bind the full current configuration hash; account files are environment-scoped; production files may declare `secret_ref` only; no risk limit values were changed.
-- `config-002` development baseline extended: runtime market sessions/rules/settlement windows and data-source/fee-model routing identifiers load from validated hash-bound configuration; only `ConfigLoader` may publish runtime market controls after validation and audit authorization, direct forged hash/approval publication is refused, market-control collections are immutable after validation, and failed reload retains the last verified controls; `holiday_calendar` is explicit and strict; disabled markets cannot provide routing metadata, data providers, rules, calendars or settlement decisions; `DataSourceManager` uses `MarketRouter` provider order by default and surfaces configured-but-unbound source IDs; startup atomically rejects missing or uninitializable active non-24/7 calendars, non-finite or precision-invalid rules, and locked exchange-calendar support blocks decisions when later holiday lookup is unavailable; strategy subclasses/plugins inherit a base-class market-session signal guard; `OrderManager.submit()` rejects unsafe schedules, non-lot quantities and invalid price/tick fields with audit events; settlement-window `reduce_only` requires fresh reconciled position proof with reducing side and non-flipping quantity; futures rollover detectors require active `期货`, configured hash-bound policy, record manual-approval-only audited intent and configurable cost estimates, reject repeated/invalid/backward observations without state mutation, require one forward candidate to lead on consecutive days and never auto-submit orders. Signed-code enforcement for Python-private publication/test capabilities, approved external audit/secret/approval service evidence, approved exchange-backed reduce-only providers, approved downstream provider/compliance adapter evidence, signed plugin loading/review evidence, approved production calendar/rollover execution evidence and risk approval remain blockers.
+- `config-002` development baseline extended: runtime market sessions/rules/settlement windows and data-source/fee-model routing identifiers load from validated hash-bound configuration; only `ConfigLoader` may publish runtime market controls after validation and audit authorization, direct forged hash/approval publication is refused, market-control collections are immutable after validation, and failed reload retains the last verified controls; `holiday_calendar` is explicit and strict; disabled markets cannot provide routing metadata, data providers, execution-fee models, rules, calendars or settlement decisions; `DataSourceManager` uses `MarketRouter` provider order by default and surfaces configured-but-unbound source IDs; execution shortfall and paper-trading fills resolve approved fee-model IDs and reject unsupported IDs; startup atomically rejects missing or uninitializable active non-24/7 calendars, non-finite or precision-invalid rules, and locked exchange-calendar support blocks decisions when later holiday lookup is unavailable; strategy subclasses/plugins inherit a base-class market-session signal guard; `OrderManager.submit()` rejects unsafe schedules, non-lot quantities and invalid price/tick fields with audit events; settlement-window `reduce_only` requires fresh reconciled position proof with reducing side and non-flipping quantity; futures rollover detectors require active `期货`, configured hash-bound policy, record manual-approval-only audited intent and configurable cost estimates, reject repeated/invalid/backward observations without state mutation, require one forward candidate to lead on consecutive days and never auto-submit orders. Signed-code enforcement for Python-private publication/test capabilities, approved external audit/secret/approval service evidence, approved exchange-backed reduce-only providers, approved downstream provider/compliance adapter evidence, signed plugin loading/review evidence, approved production calendar/rollover execution evidence and risk approval remain blockers.
+- `deploy-001` production-readiness evidence gate added: deployment now has a hard fail-closed validator for the exact remaining external proof classes: WORM archive attestation, production secret manager, approval service, real market-data provider, exchange-backed position provider, signed plugin review, production exchange calendar, futures rollover runbook, production-like capacity benchmark and multi-region failover/DR report. Missing, placeholder, mock or local-only references are blockers and are audited; this implements the gate but does not fabricate the external services or reports.
+- Local WORM substitute added for dev/test: `LocalAuditWormArchive` writes redacted daily audit logs (`audit.jsonl`), signed manifests (`audit-manifest.json`), file sha256, manifest hash and a `worm://audit-file/...` attestation reference. Secrets are loaded from `.env.local` through `EnvLocalSecretProvider` or injected by `InMemorySecretManager` in tests; committed code/config contain no real archive HMAC key. Raw API keys, secrets, passwords and tokens are redacted from archived audit files.
+- Production service adapters added: `HttpSecretManagerResolver`, `HttpApprovalServiceValidator` and `HttpExchangePositionProvider` provide HTTPS-only integration points for `ConfigLoader` and `OrderManager`, with timeout/retry, optional bearer token injection, strict response validation, non-secret audit events and fail-closed behavior on wrong exchange, unbound approval, service outage or invalid position snapshots. Real production endpoints/tokens/evidence are still environment-provided and are not stored in the repository.
 - `feature_list.json` correction: every feature is reset to `passes=false`; no feature has the required complete evidence package of capital-impact approval, production integration, and release authorization yet.
 - Dependency reproducibility: added required runtime/test dependencies and restored `poetry.lock` tracking so CI can install the verified dependency set.
-- Remaining audit risk: external WORM storage, real production secret/approval service integrations, Feast/model-registry integrations, monitoring UI, documentation approval/version enforcement, and production-like capacity/failover benchmarks remain production blockers.
+- Remaining audit risk: dev/test now has a WORM-style local audit substitute and code-level adapters for Secret Manager, approval service and exchange-backed position reconciliation. The release gate still requires external WORM/secret/approval/provider/position/calendar/rollover/capacity/DR evidence, and real production services, attestations and production-like benchmark/failover reports must be supplied by approved environments. Feast/model-registry integrations, monitoring UI and documentation approval/version enforcement also remain blockers.
 
 ## Historical V5.9 Candidate Results (not production approval)
 
@@ -44,10 +47,520 @@
 - [x] Capital Impact Assessment (docs/changelog/capital_impact_v5.9.md)
 - [x] Paper Trading Engine (src/quant_trading/paper_trading.py)
 - [x] Production Test Suite (scripts/run_production_tests.py)
-- [x] 668 tests passing with 85.68% coverage and clean Ruff/Black/mypy gates as of 2026-05-28
+- [x] 685 tests passing with 85.79% coverage and clean Ruff/Black/mypy gates as of 2026-05-29
 
 ### Next Steps
 1. Obtain review/approval for the architecture, risk-policy and capital-impact documents; keep all release gates closed until approval evidence exists.
 2. Run the strengthened CI on this branch and integrate the remaining production configuration drift and external audit archival enforcement.
 3. Connect approved external WORM, secret manager, factor/model registry, benchmark feeds, and monitoring surfaces.
 4. Run paper trading for at least 3 months before considering small-capital live trading.
+
+## Research Data Refresh and Aligned Validation Update (2026-06-03) - PRODUCTION BLOCKED
+
+- Hardened research data scripts: `scripts/fetch_industry.py` now fails closed and writes industry data atomically only after validated non-empty real provider output; `scripts/fetch_data_25y_v2.py` now uses configurable dates, atomic per-symbol writes, full failure reporting, per-symbol timeout and bounded worker concurrency.
+- Market data refresh: AkShare/Sina refreshed 1198/1200 local A-share parquet files to 2026-05-29. Remaining stale symbols are `300702` and `600498`, both stuck at 2026-05-18 after repeated low-concurrency retries due provider TLS EOF errors. Dataset total rows increased to 4,110,327; overall max date is 2026-05-29.
+- Real industry classification remains blocked: Baostock login/query hung or returned network errors; AkShare/EastMoney industry and individual-info fallbacks returned SSL/schema failures. No fake `industry_fixed.parquet` was written; aligned validation reports `industry_coverage=0.0` and treats unknown industries as per-symbol pseudo-sectors to avoid collapsing sector caps.
+- Re-ran date-aligned, cost-aware V5.9 validation on 2000-01-04 -> 2026-05-29 data: baseline Sharpe=-0.0998, MDD=-23.05%, win=53.05%; top-20% large-cap exclusion Sharpe=-0.0815, MDD=-23.63%, win=53.78%. Both fail Sharpe and MDD production backtest gates.
+- Ran aligned parameter grid optimization (81 candidates plus top-5 walk-forward). Best full-sample candidates remain far below production gates: best reviewed rows have full Sharpe around 0.30-0.35 and MDD around -23% to -26%; no candidate meets Sharpe>=1.2 and MDD<=15%.
+- Generated research reports: `data/backtest_results/quant_logic_validation_v5_9_aligned_ex_large_cap.json` and `data/backtest_results/quant_logic_optimization_v5_9_aligned.json`.
+- Conclusion: the old V5.9 pass claim is not valid under strict date alignment, transaction-cost deduction and refreshed data. Production remains blocked; next work should obtain approved real industry classification data, complete the 2 stale symbols from an alternate provider, then redesign factors/risk overlay rather than only retuning V5.9 parameters.
+
+## Data Blockers Closed and Strategy Research Update (2026-06-04) - PRODUCTION BLOCKED
+
+- Market data blocker closed: all 1200 local A-share parquet files now reach 2026-05-29. `300702` and `600498` were filled through AkShare/Tencent after Sina/EastMoney TLS failures; overlap close continuity was checked before atomic replacement.
+- Real industry classification blocker mostly closed for research: CNInfo industry-change endpoint generated `data/industry_fixed.parquet` with 1164/1200 symbols (97.0% coverage), 302 industries, priority order SW/申万 -> 中证 -> 巨潮. Missing 36 symbols are retained as explicit gaps; no synthetic industry labels were written.
+- Re-ran V5.9 with real industry data: baseline Sharpe=-0.0951, MDD=-23.06%; large-cap exclusion Sharpe=-0.2002, MDD=-24.88%. Production gates remain failed.
+- Added `scripts/research_industry_neutral_v6.py`: industry-aware multi-factor long-only research with regime filter, volatility targeting and cost deduction. Corrected walk-forward OOS context handling. Result: full Sharpe=-0.1216, MDD=-33.16%, WF OOS remains unstable; all gates failed.
+- Ran quick market-timing and long/short statistical-arbitrage probes using current price/volume factors. Both failed to produce positive robust Sharpe, indicating the current daily price/volume alpha is weak and should not be productionized.
+- Added `docs/research/quant_industry_leaders_strategy_notes.md`: public lessons from leading quant firms are multi-signal research, point-in-time data, multi-asset diversification, market-neutral/stat-arb, execution edge, capacity control and rigorous validation. Public information is not enough to copy proprietary alpha.
+- Fundamental data source probe: `stock_financial_abstract_ths` can return long report-history data; Baidu valuation can provide valuation series but mostly recent windows; EastMoney financial indicator endpoint was unstable in sample. Next alpha work should build point-in-time fundamentals/quality/valuation data first, then re-test industry-neutral stock selection and multi-asset crisis-alpha sleeves.
+
+## Fundamental Data and V7 Research Update (2026-06-04) - PRODUCTION BLOCKED
+
+- Added `scripts/fetch_fundamentals_ths.py`, a recoverable and atomic THS financial abstract fetcher. It normalizes Chinese monetary units, percentages and per-share metrics into numeric parquet files under `data/fundamentals/`.
+- Fundamental data coverage reached 1175/1200 symbols (97.9%). Remaining 25 symbols failed after three retry rounds due THS TLS/remote disconnect errors and are retained as explicit data gaps.
+- Added `scripts/research_fundamental_quality_v7.py`, a report-date-lagged (90d) quality/value/growth stock-selection research script using ROE, gross margin, leverage, revenue/profit growth, book-to-price, earnings-to-price and cash-flow quality.
+- V7 without risk overlay improved alpha evidence but failed risk gates: full Sharpe=0.7427, annual return=23.37%, MDD=-70.14%, OOS unstable.
+- V7 with market-state exposure, volatility target and equity-curve protection reduced MDD to -28.10% but Sharpe dropped to 0.5627. Production gates remain failed (`S=false`, `M=false`, `D=false`, `W=true`).
+- Interpretation: point-in-time fundamentals materially improve signal quality versus price-only factors, but A-share long-only single-sleeve remains insufficient for production. Next work should add a separate multi-asset/ETF/futures crisis-alpha sleeve and portfolio-level allocation, then evaluate combined strategy Sharpe/MDD.
+
+## V8-V11 Dynamic IC, Hedge and Defensive Overlay Update (2026-06-04) - PRODUCTION BLOCKED
+
+- Data blockers are closed for current research: 1200/1200 A-share parquet files reach 2026-05-29, CNInfo-backed `data/industry_fixed.parquet` now covers 1200/1200 symbols, and 11 benchmark/ETF series are present through 2026-05-29.
+- `scripts/fetch_data_25y_v2.py` now defaults to local-target incremental refresh and skips already-current symbols; `scripts/fetch_industry.py` defaults to missing-only real-provider backfill and preserves existing valid classifications.
+- Added benchmark/ETF fetching with Tencent-first fallback in `scripts/fetch_benchmarks_etf.py`.
+- Added `scripts/research_dynamic_ic_overlay_v9.py`: dynamic IC/ICIR technical factors plus 90-day-lagged fundamentals. Best quick-grid full sample Sharpe=0.9038, MDD=-11.68%, win=56.41%; finalist WF avg OOS Sharpe=0.1666 and decay=0.8277. Gates failed (`S=false`, `M=true`, `D=false`, `W=true`).
+- Added `scripts/research_beta_hedged_overlay_v10.py`: V9 plus CSI500 beta-hedge proxy. Full sample Sharpe=0.9260, MDD=-10.39%, win=56.50%; WF avg OOS Sharpe=0.1614 and decay=0.8385. Gates failed and production still requires approved futures/position evidence.
+- Added `scripts/research_etf_trend_overlay_v11.py`: ETF trend sleeve research. Broad equity ETF rotation was rejected because it degraded full-sample MDD to -45.99%. The script now defaults to the safer cash/gold defensive mode, with broad ETF mode available only via `QUANT_V11_TREND_ASSET_MODE=broad`.
+- Defensive V11 finalist (`trend_sleeve_weight=0.30`, `bear_trend_sleeve_weight=0.45`) improved risk control: full sample Sharpe=0.9485, MDD=-10.47%, win=58.08%; WF folds OOS Sharpe were 0.7014, -1.4144, 1.6153, 0.7136, 0.2882, with avg OOS Sharpe=0.3808 and decay=0.6177. Gates failed (`S=false`, `M=true`, `D=false`, `W=true`, `A=false`).
+- Current conclusion: drawdown control is now materially better, but alpha/regime instability remains the production blocker, especially the 2022-2023 OOS window. Do not mark any strategy feature as passed; next research should build point-in-time industry rotation, stronger independent alpha such as earnings revisions/surprises, or approved exchange-backed multi-asset crisis-alpha rather than continuing small V5.9/V7/V11 parameter tweaks.
+
+## V12-V15 Industry Rotation and Earnings Event Update (2026-06-05) - PRODUCTION BLOCKED
+
+- Added `scripts/research_industry_rotation_v12.py`: full industry rotation/whitelist improved some OOS behavior but lowered full-sample Sharpe to 0.8558. Gates failed (`S=false`, `M=true`, `D=true`, `W=true`, `A=false`).
+- Added `scripts/research_regime_industry_rotation_v13.py`: regime-gated industry rotation kept broad stock alpha in normal regimes and filtered industries only in bear regimes. Baseline full Sharpe=0.9854, MDD=-12.73%, WF avg OOS=0.8194, decay=0.2010. Gates failed due full Sharpe < 1.2.
+- Added `scripts/research_industry_relative_v14.py`: industry-relative alpha blend. Best more-exposure finalist reached full Sharpe=1.0434, annual return=11.91%, MDD=-13.60%, win=47.58%; WF still had a negative F1 OOS fold and gates failed (`S=false`, `M=true`, `D=false`, `W=true`, `A=false`).
+- Added `scripts/fetch_earnings_events_em.py`, a point-in-time EastMoney/AkShare earnings forecast/flash fetcher. Retry completed all report periods from 20081231 through 20260331 with 137,060 rows, 5,580 symbols and zero remaining fetch failures. Within the aligned research universe, 1,195/1,196 symbols have earnings event coverage; missing event coverage is explicit, not synthetically filled.
+- Added `scripts/research_earnings_events_v15.py`: V14 plus announcement-date-lagged earnings event alpha. The event score uses only `announcement_date <= rebalance_date - event_lag_days`, maps forecast direction, bounded profit/revenue growth, ROE and event frequency, and keeps missing event data neutral.
+- V15 grid found the best event setting at `event_weight=0.15`: full Sharpe=1.0311, MDD=-13.49%, win=47.40%. Heavier event weights degraded Sharpe, so earnings events are useful only as a light auxiliary alpha.
+- V15 finalist after bounded event normalization: full Sharpe=1.0325, annual return=10.07%, MDD=-13.49%, win=47.44%; WF folds were OOS 1.2123, -0.9343, 2.6296, 0.4559, 0.6652, with avg OOS=0.8057 and decay=0.2344. Gates failed (`S=false`, `M=true`, `D=true`, `W=true`, `A=false`) because full-sample Sharpe remains below the required 1.2.
+- Current conclusion: V15 meaningfully improves WF decay versus V14, but it does not solve the production blocker. The remaining strategy gap is insufficient independent alpha/regime robustness, not merely missing industry or earnings data. Next research should target analyst estimate revisions, order-flow/funds/intraday liquidity alpha, approved market-neutral or multi-asset crisis-alpha sleeves, and production-backed provider/execution evidence.
+
+## V16 Multi-Expert Router Update (2026-06-05) - PRODUCTION BLOCKED
+
+- Reviewed public lessons from leading quant firms including High-Flyer/幻方, Two Sigma and AQR. The actionable lesson is many weak signals, AI/data/compute infrastructure, diversified style/sleeve portfolios, cost/risk-aware construction and hard OOS validation; public information is not sufficient to copy proprietary alpha.
+- Added `scripts/research_moe_router_v16.py`: a research-only multi-expert regime router inspired by those public lessons. It combines technical, lagged fundamental, point-in-time earnings and defensive experts, with separate normal/bear router weights, then keeps V14/V15's industry-relative, industry-rotation, hedge and defensive trend sleeves.
+- V16 grid results: best candidate was `moe_more_exposure` with full Sharpe=1.0328, annual return=11.59%, annual volatility=8.81%, MDD=-13.58%, win=47.56%. Other V16 router variants were weaker: `moe_baseline` 1.0176, `moe_earnings_core` 0.9914, `moe_defensive_heavy` 0.9790, `moe_quality_core` 0.9453.
+- V16 finalist (`moe_more_exposure`) WF folds were OOS 1.0531, -1.0347, 3.2198, 0.3173, 0.5202, with avg OOS=0.8151 and decay=0.2474. Gates failed (`S=false`, `M=true`, `D=true`, `W=true`, `A=false`) because full-sample Sharpe remains below 1.2; the difficult F1 OOS fold is worse than V15.
+- Current conclusion: V16's structure is closer to industry practice, but with the current daily bars, lagged fundamentals and earnings-event data, model complexity only reshuffles existing information and does not create a production-grade alpha breakthrough. Next real work should add stronger data/sleeves: analyst estimate revisions, fund/order-flow, intraday liquidity/reversal, borrow/short availability, or approved market-neutral/multi-asset crisis-alpha.
+
+## V17 Alternative Data Layer Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Added real new information-source fetchers requested for the next alpha cycle:
+  - `scripts/fetch_analyst_expectations.py` for EastMoney analyst consensus snapshots and CNInfo dated rating/revision records.
+  - `scripts/fetch_flow_signals.py` for northbound aggregate/holding history, fund-flow rank snapshots, big-deal snapshots and SSE/SZSE margin details.
+  - `scripts/fetch_intraday_microstructure.py` for Sina 5-minute bars and daily liquidity/reversal/microstructure features.
+  - `scripts/fetch_hedge_crisis_assets.py` for IF/IH/IC/IM futures continuous contracts and cash/bond/gold/commodity/global-equity ETF crisis-alpha proxies.
+  - `scripts/build_alt_data_features_v17.py` for stock-level and crisis-asset-level feature-store tables.
+- Sample validation completed with external provider access:
+  - Analyst expectations: 2370 consensus rows, 312 dated CNInfo rating rows across 2026-05-27 to 2026-05-29, failures=0.
+  - Flow signals: northbound aggregate 2683 rows; per-stock northbound sample for 600519/000001/300750 totals 4655 rows; fund-flow ranks 10394 rows; big deals 4850 rows; margin details 4053 rows. EastMoney `main_fund_flow` disconnected once and remains optional/partial evidence.
+  - Intraday microstructure: 3 symbols, 1970 five-minute bars each, 129 daily feature rows, failures=0.
+  - Hedge/crisis assets: IF0/IH0/IC0/IM0 plus 9 ETFs from 2024-01-02 to 2026-05-29, 7540 combined rows, failures=0.
+  - V17 feature store: `data/alt_features/v17_stock_alt_features.parquet` has 1779 rows across 1087 project-universe symbols; `data/alt_features/v17_crisis_asset_features.parquet` has 7540 rows across 13 assets.
+- Added `docs/research/quant_alt_data_v17_sources.md` documenting evidence, PIT/snapshot rules and remaining production gaps.
+- Production remains blocked: public snapshots need daily archival/PIT replacement, futures/ETF hedge data are research proxies only, and live execution still requires broker/exchange-backed account binding, margin/borrow availability, rollover calendar, position reconciliation and approval evidence. No `feature_list.json` pass gates were opened.
+
+## V17 PIT Analyst Revision and Alt-Data Research Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Extended `scripts/fetch_analyst_expectations.py` CNInfo dated rating/revision archive from 2024-01-01 through 2026-05-29. The run completed 630 trading days with zero failures; EastMoney consensus snapshot remains 2370 rows.
+- Rebuilt V17 feature store: `data/alt_features/v17_stock_alt_features.parquet` now has 43,986 rows, 1,169 project-universe symbols and 627 dates; analyst revision aggregation contributes 104,801 dated rows before universe/date merge. Crisis-asset features remain 7,540 rows across 13 assets.
+- Added `scripts/research_alt_data_v17.py`, a research-only extension of V16 that adds an alternative-data expert and crisis-alpha sleeve while enforcing date cutoffs. It supports candidate filtering via `QUANT_V17_CANDIDATES` and emits recent 2024+ subperiod metrics.
+- V17 comparable baseline reproduces V16: full Sharpe=1.0328, MDD=-13.58%; recent 2024+ Sharpe=0.7498, MDD=-7.46%.
+- V17 alt/crisis candidate under the same high-exposure setup has full Sharpe=1.0189, MDD=-13.58%; recent 2024+ Sharpe=0.6937, MDD=-7.81%; average usable alt coverage at rebalance is 120.1 symbols, max 1196.
+- Conclusion: the new data layer is connected and PIT guarded, but the current V17 alt/crisis alpha construction is a negative increment versus V16. Do not run finalist WF or open any production gate from V17; next work should redesign the revision/order-flow alpha definitions and continue building daily archives for order-flow/intraday data.
+
+## V18 Rolling Analyst Revision Diagnostics Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Added `scripts/analyze_alt_factor_ic_v18.py` for strict point-in-time IC/top-bottom diagnostics with a one-trading-day signal lag, and `scripts/build_alt_revision_features_v18.py` for persisted rolling analyst-revision features.
+- Built `data/alt_features/v18_stock_alt_features.parquet`: 696,418 rows, 1,196 symbols, 627 dates, with 20d/60d analyst event count, revision sum, upgrade-minus-downgrade and rating-score mean columns.
+- V18 IC diagnostics now enforce train/test direction-stability gating. Only `analyst_rating_score_mean_60d` remains qualified at 20d horizon: rank IC=0.017645, t-stat=7.8407, train IC=0.002564, test IC=0.044717, oriented top-bottom train/test=0.000149/0.009302.
+- Event-count signals show full-period negative IC but train/test direction flips, so the IC script marks them unqualified rather than allowing them into the qualified set.
+- Added `v18_revision_selected_freq10` to isolate V18 factor impact without changing the V16/V14 default 10-day rebalance cadence, and `v18_revision_stable_freq10` to use only the train/test-stable `analyst_rating_score_mean_60d` signal.
+- Portfolio isolation results using `v18_stock_alt_features.parquet`: V16 comparable Sharpe=1.0328/MDD=-13.58%/recent 2024+ Sharpe=0.7498; V18 mixed 10-day revision candidate Sharpe=1.0272/MDD=-13.92%/recent Sharpe=0.8520; V18 stable-rating 10-day candidate Sharpe=1.0346/MDD=-13.59%/recent Sharpe=0.8318; V18 20-day mixed candidate Sharpe=0.8843/MDD=-15.89%/recent Sharpe=0.9028.
+- Ran V18 stable-rating finalist WF: full Sharpe=1.0346, MDD=-13.59%, recent 2024+ Sharpe=0.8318; WF folds OOS 0.9736, -1.0059, 3.1941, 0.2695, 0.3479; avg OOS=0.7558, decay=0.2983; gates `S=false`, `M=true`, `D=true`, `W=true`, `C=true`, `A=false`.
+- Conclusion: V18 stable analyst rating is the first small positive alternative-data increment and should be retained as a research component, but it does not solve production readiness because full Sharpe remains below 1.2 and one OOS fold is negative. No production gate opened. Next work should build stronger regime-conditioned revision sleeves, address the persistent negative OOS fold, and continue daily archives for order-flow/intraday data.
+
+## V19 OOS Regime Diagnostics Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Added `scripts/research_oos_regime_v19.py`, a research-only F1 diagnostic replay that records daily strategy returns, market equal-weight returns, exposure, bear-state decisions, alt coverage, selected industries, worst days and monthly returns.
+- F1 OOS window is 2022-03-08 to 2023-03-23. Market equal-weight Sharpe=0.5341, annual return=14.34%, MDD=-21.63%. V18 stable strategy F1 Sharpe=-1.0059, annual return=-2.69%, MDD=-6.01%, correlation to market=0.2622.
+- F1 root cause evidence: avg alt coverage=0, so V18 data is not the failure source; average stock exposure is only 18.07% and total exposure 43.51%; the strategy missed rebound months in 2022-05/06 and 2023-01 while still taking defensive overlay losses on some days.
+- Added research-only `v19_reentry_stable_freq10`, which restores limited stock exposure when long-horizon regime is bear but 20-day momentum/breadth show a rebound. The rule uses only data available at rebalance time.
+- V19 re-entry grid result: F1 improves from Sharpe=-1.0059/MDD=-6.01% to Sharpe=-0.8032/MDD=-5.07%, but full-sample MDD worsens from -13.59% to -17.45%, total cost rises from 0.1837 to 0.2119 and recent 2024+ Sharpe drops from 0.8318 to 0.7514.
+- Conclusion: reject `v19_reentry_stable_freq10`; it is an overfit patch for one bad fold and violates the MDD production gate. Keep V18 stable-rating as the current best research baseline. Next work should stop simple threshold tuning and instead build true PIT order-flow/intraday/reversal archives plus stronger independent rebound signals.
+- Added optional `QUANT_V17_OUTPUT_SUFFIX` support in `scripts/research_alt_data_v17.py` so future grid/finalist research reports can avoid overwriting prior evidence; default output filenames remain unchanged for compatibility.
+
+## V20 Alternative Data Archive Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Added `scripts/archive_alt_data_snapshots.py`, an offline local PIT archival tool for snapshot/rolling-window alternative data. It archives existing fetched files under `data/alt_archives/<archive_date>/<source>/`, records SHA256 hashes in `manifest.json`, writes `manifest.sha256`, links to the previous manifest hash when present and refuses hash-changing overwrites unless `--overwrite` is explicitly supplied.
+- Added `ALT_ARCHIVES_DIR` to `scripts/_paths.py`.
+- Created local research archive `data/alt_archives/20260608` for `flow_signals` and `intraday`: 21 files total, 13 flow files and 8 intraday files. Manifest SHA256 is `cc246b0e276564cebcb41418ce6f6739240b1d2a49f23ca92ea4463c3aebe205`.
+- Verified the archive with `scripts/archive_alt_data_snapshots.py --archive-date 20260608 --verify`; all 21 file hashes and the manifest hash matched.
+- Updated V19 diagnostics to include overlay weights on rebalance rows and worst days. F1 worst-day attribution confirms 2022-03-10 and 2022-03-15 losses were `cash=55% / gold=45%` overlay days with zero stock exposure.
+- Conclusion: local PIT archival mechanics are now in place for order-flow/intraday research evidence, but production remains blocked until scheduled daily archives accumulate enough history and external WORM/provider entitlement evidence is connected.
+
+## V20 Archive-Backed Feature Builder Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Updated `scripts/build_alt_data_features_v17.py` so feature builds can be bound to a specific archived alternative-data snapshot by setting `QUANT_ALT_FEATURES_USE_ARCHIVE=1` and `QUANT_ALT_FEATURES_ARCHIVE_DATE=<YYYYMMDD>`.
+- Updated `scripts/archive_alt_data_snapshots.py` so future default archive runs cover all current alternative-data feature-builder sources: `analyst_expectations`, `flow_signals`, `hedge_assets` and `intraday`.
+- In archive mode, `flow_signals` and `intraday` are fail-closed snapshot sources: the builder reads them from `data/alt_archives/<archive_date>/...` and refuses missing archived files instead of silently falling back to mutable provider output directories.
+- Added `QUANT_ALT_FEATURES_OUTPUT_PREFIX` to generate non-overwriting evidence files for archive-backed builds while leaving the default `v17_*` filenames compatible with existing research scripts.
+- Rebuilt archive-bound evidence with `QUANT_ALT_FEATURES_USE_ARCHIVE=1 QUANT_ALT_FEATURES_ARCHIVE_DATE=20260608 QUANT_ALT_FEATURES_OUTPUT_PREFIX=v20_archive`: stock features have 43,986 rows, 1,169 symbols and 627 dates; crisis-asset features have 7,540 rows.
+- The archive-backed summary records `archive_manifest_sha256=cc246b0e276564cebcb41418ce6f6739240b1d2a49f23ca92ea4463c3aebe205`, archived sources used `flow_signals`/`intraday`, `archive_complete_for_builder=false`, and live fallbacks for `analyst_expectations` plus `hedge_assets`.
+- Updated `scripts/research_alt_data_v17.py` so research runs can explicitly select both stock and crisis archive-backed feature files via `QUANT_V17_STOCK_ALT_FEATURE_FILE` and `QUANT_V17_CRISIS_ALT_FEATURE_FILE`, and embed the corresponding feature summary JSON in the research report.
+- Verified archive-backed research consumption with `QUANT_V17_CANDIDATES=v17_v16_comparable`, `QUANT_V17_STOCK_ALT_FEATURE_FILE=v20_archive_stock_alt_features.parquet`, `QUANT_V17_CRISIS_ALT_FEATURE_FILE=v20_archive_crisis_asset_features.parquet`, and `QUANT_V17_OUTPUT_SUFFIX=v20_archive_probe`. The probe wrote `data/backtest_results/quant_logic_research_v17_alt_data_grid_v20_archive_probe.json`, embedded the 20260608 manifest hash, and reproduced full Sharpe=1.0328 / MDD=-13.58%.
+- Production remains blocked: the builder now has a hash-bound PIT path for snapshot sources, but the first archive day is local-only, not external WORM, and analyst snapshot/hedge proxy files still need scheduled archive coverage or approved production providers.
+
+## V21 Full Local Archive Pipeline and Readiness Gate Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Added `scripts/validate_alt_archive_readiness.py`, a fail-closed local evidence gate for archive-backed alternative-data feature summaries. It requires `archive_mode=true`, a manifest hash, minimum feature rows, `archive_complete_for_builder=true` and empty `live_fallback_files` unless explicitly run with `--allow-incomplete`.
+- Added `scripts/run_alt_archive_daily_pipeline.py`, a local daily pipeline that runs archive -> verify -> archive-mode feature build -> readiness validation -> pipeline report. The pipeline defaults to all current alt feature-builder sources: `analyst_expectations`, `flow_signals`, `hedge_assets` and `intraday`.
+- Hardened `scripts/archive_alt_data_snapshots.py`: existing same-date manifests are no longer silently rewritten. If planned content differs, the script requires explicit `--overwrite` for an audited local repair; repaired manifests record `replaces_manifest_sha256`.
+- Added V17 finalist/WF guard in `scripts/research_alt_data_v17.py`: by default (`QUANT_V17_REQUIRE_ARCHIVE_COMPLETE=1`), finalist mode fails before loading data when the selected feature summary is missing, not archive-bound, missing manifest hash or has `archive_complete_for_builder=false`.
+- Verified the guard against the previous partial `v20_archive` summary: `scripts/validate_alt_archive_readiness.py` and V17 finalist mode both failed fast because live fallbacks remained for `analyst_expectations` and `hedge_assets`.
+- Ran an audited local repair/full pipeline with `scripts/run_alt_archive_daily_pipeline.py --archive-date 20260608 --overwrite --output-prefix v21_archive_20260608`. It archived 669 files across all four sources, verified manifest SHA256 `951be13854170102f2a37d02b0285ddd911759baadefbed45302b25143145974`, and recorded replacement of the prior partial manifest hash `cc246b0e276564cebcb41418ce6f6739240b1d2a49f23ca92ea4463c3aebe205`.
+- V21 archive-backed feature summary now has stock rows=43,986, symbols=1,169, crisis rows=7,540, `archive_complete_for_builder=true` and `live_fallback_files=[]`. Pipeline report: `data/alt_features/v21_archive_20260608_pipeline_report.json`.
+- Re-ran archive-backed research consumption with `v21_archive_20260608` feature files and `QUANT_V17_CANDIDATES=v17_v16_comparable`. Report `data/backtest_results/quant_logic_research_v17_alt_data_grid_v21_archive_probe.json` embeds the new full manifest hash, has `archive_complete_for_builder=true`, and reproduces full Sharpe=1.0328 / MDD=-13.58%.
+- Added `alt_archive_readiness` to `src/quant_trading/deployment.py` production evidence requirements, accepted only as external artifact/WORM-style references (`artifact://`, `ci-artifact://`, `worm://`, `s3-object-lock://`). Updated `tests/system/test_deployment_gate.py` so production readiness fails when this evidence is missing or local/placeholder.
+- Production remains blocked: this closes the local no-live-fallback evidence path for current alt feature inputs, but it is still local research evidence only. Production still requires external WORM, provider entitlement references, scheduled daily job evidence, CI/CD readiness gate wiring and strategy performance gates.
+
+## V22 Risk-Budget, Crisis Sleeve and Archive-Bound IC Update (2026-06-08) - PRODUCTION BLOCKED
+
+- Added three low-degree-of-freedom V22 risk-budget candidates to `scripts/research_alt_data_v17.py`: `v22_stable_cash_heavy`, `v22_stable_low_hedge_cash` and `v22_stable_no_trend_overlay`. They use the V18 stable analyst signal and only adjust defensive trend/hedge budget to test the V19 diagnostic hypothesis.
+- Ran `data/backtest_results/quant_logic_research_v17_alt_data_grid_v22_risk_budget_grid.json` using V21 full archive features. All V22 risk-budget variants were rejected: baseline `v18_revision_stable_freq10` Sharpe=1.0319/MDD=-13.59%/recent Sharpe=0.8077; `cash_heavy` Sharpe=1.0121/recent=0.6313; `low_hedge_cash` Sharpe=0.9935/recent=0.6576; `no_trend_overlay` Sharpe=0.9594/recent=0.2765.
+- Ran `data/backtest_results/quant_logic_research_v17_alt_data_grid_v22_crisis_grid.json` to retest current crisis sleeve candidates against the V21 full archive. Crisis sleeves were rejected: `v17_crisis_light` Sharpe=0.9880/recent=0.7246 and `v17_crisis_heavy` Sharpe=0.9680/recent=0.6146, both below the baseline despite slightly lower MDD.
+- Updated `scripts/analyze_alt_factor_ic_v18.py` so IC diagnostics can explicitly bind to a stock alt feature file, archived analyst ratings file, feature summary JSON and output suffix. This prevents future IC scans from silently using mutable live inputs.
+- Ran V21 archive-bound IC diagnostics: `data/backtest_results/quant_alt_factor_ic_v18_v21_archive_20260608.json` and `.csv`. Only `analyst_rating_score_mean_60d` at the 20-day horizon qualified, with rank IC=0.017645, t-stat=7.8407, 559 dates and `archive_complete_for_builder=true`.
+- Order-flow, fund-flow, northbound, margin and intraday signals currently have insufficient historical PIT coverage for IC validation (`n=0` for most fields), even though the daily archive path is now in place. They cannot yet be counted as production-grade alpha.
+- Added docs: `docs/research/quant_v22_risk_budget_findings.md` and `docs/research/quant_v22_crisis_and_v21_ic_findings.md`.
+- Production remains blocked: the current best local baseline is still Sharpe around 1.03, below the 1.2 production gate. The next required work is long historical PIT panels for genuinely new information sources, not more overlay parameter tuning.
+
+## V23 Alpha/Data Readiness Scorecard Update (2026-06-09) - PRODUCTION BLOCKED
+
+- Added `scripts/score_alpha_readiness_v23.py`, a read-only scorecard that combines V21 archive evidence, V21 archive-bound IC diagnostics, V22 risk-budget grid and V22 crisis-sleeve grid into one machine-readable alpha/data readiness report.
+- Generated `data/backtest_results/quant_alpha_readiness_v23.json` and `.csv`. Result: `production_ready=false`, best local baseline remains `v18_revision_stable_freq10` with Sharpe=1.0319, annual return=11.60%, annual volatility=8.82%, MDD=-13.59%, win=47.60% and recent Sharpe=0.8077.
+- Category scorecard: `analyst_revision_rolling` scores 77.11 and remains a research component because it has one qualified signal (`analyst_rating_score_mean_60d`), but it is not production-grade alone. `analyst_revision` is rejected as unstable/leaky despite apparent event IC. Analyst consensus, fund-flow, intraday microstructure, margin/short, northbound and order-flow are classified as PIT-history data gaps under the current public-source archive.
+- V23 blockers are explicit: Sharpe below 1.20, only 1 qualified alpha signal vs the production research threshold of 5, insufficient PIT history/cross-section for multiple requested new information sources, local-only archive evidence still requiring external WORM/CI artifact attestation, rejected V22 risk-budget variants, rejected V22 crisis-alpha variants and absent 3-month paper/small-live evidence.
+- Added `docs/research/quant_v23_alpha_readiness_findings.md` with the scorecard summary and next required work. Do not continue broad overlay tuning until long historical PIT panels or approved provider data for analyst consensus revisions, northbound/main-fund/order-flow, margin/borrow and intraday microstructure are available.
+
+## V24 PIT Alpha Panel Readiness Update (2026-06-09) - PRODUCTION BLOCKED
+
+- Added `scripts/validate_pit_alpha_panels_v24.py`, a data-readiness gate for the requested new information sources. It checks source existence, date span, entity count, target-universe overlap, archive binding and production evidence requirements.
+- Generated `data/backtest_results/quant_pit_alpha_panel_readiness_v24.json` and `.csv`. Result: `production_data_ready=false`, with 3/10 panels research-ready locally, 0/10 production-ready, 3 snapshot-only panels and 1 missing panel.
+- Research-ready local panels are `analyst_revision_history` (630 dates, 3,976 entities, 93.67% universe overlap), `northbound_market_aggregate_history` (2,683 dates) and `hedge_crisis_asset_history` (580 dates, 13 assets). All still require external WORM/provider or broker/exchange execution evidence before production.
+- Snapshot-only panels are `analyst_consensus_snapshot`, `fund_flow_rank_snapshot` and `big_deal_order_flow_snapshot`; they need paid historical PIT feeds or daily WORM snapshots accumulated over time. Coverage/history gaps remain in `northbound_stock_holding_history` (only 3 sampled names, 0 target-universe overlap), `margin_short_daily_history` (1 date) and `intraday_microstructure_history` (43 dates for 3 sampled names). `exchange_borrow_availability` is missing entirely.
+- Added `docs/research/quant_v24_pit_alpha_panel_readiness.md`. Current next data work is full-universe northbound holdings, multi-year margin/short backfill, daily WORM snapshot accumulation for fund-flow/big-deal/intraday, and a broker-backed borrow availability feed; without these, market-neutral/short alpha and industry-leading returns remain blocked.
+- Enhanced incremental backfill controls: `scripts/fetch_flow_signals.py` now supports `QUANT_FLOW_SYMBOL_OFFSET`, `QUANT_FLOW_MAX_SYMBOLS=0` for all remaining symbols, per-section fetch switches, and `QUANT_FLOW_COMBINE_ALL_EXISTING=1` to rebuild the combined northbound parquet from all existing symbol files. `scripts/fetch_intraday_microstructure.py` now supports `QUANT_INTRADAY_SYMBOL_OFFSET`, `QUANT_INTRADAY_MAX_SYMBOLS=0` and `QUANT_INTRADAY_COMBINE_ALL_EXISTING=1` so batch runs do not overwrite combined features with only the latest batch.
+
+## V25 PIT Backfill Plan and Probe Update (2026-06-09) - PRODUCTION BLOCKED
+
+- Added `scripts/plan_pit_backfill_v25.py`, a read-only incremental backfill planner that emits executable batch commands for Northbound stock holdings, intraday microstructure, margin/short history and daily snapshot/archive jobs. It reads the current 1,200-symbol target universe and existing per-symbol/date files so backfills can resume without refetching everything.
+- Generated full plan outputs: `data/backtest_results/quant_pit_backfill_plan_v25.json` and `.csv`. Current plan has 48 Northbound batches, 48 intraday batches and 32 margin/short date batches. Before the probe, target-universe Northbound and intraday coverage were both 0/1200; only one complete margin/short date was present.
+- Added `QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE` to `scripts/fetch_flow_signals.py` so margin-only or holdings-only batch runs do not always call the Northbound aggregate endpoint.
+- Ran a network-authorized research probe for the first 5 target symbols (`000009`, `000019`, `000021`, `000027`, `000028`) using Northbound holdings only. Result: failures=0; rows per symbol were 1,594-1,698 with history ending 2024-08-16. The combined Northbound holdings file now has 13,001 rows across 8 symbols and includes 5 target-universe names.
+- Generated `data/backtest_results/quant_pit_backfill_probe_v25.json` and added `docs/research/quant_v25_pit_backfill_plan.md`. V25 reduced the Northbound target-symbol missing count from 1,200 to 1,195, but V24 still fails research readiness for stock-level Northbound because coverage is far below the 600-symbol minimum. Next resumable Northbound offset is 5.
+
+## V26 Non-Large-Cap PIT Data Gate Update (2026-06-09) - PRODUCTION BLOCKED
+
+- Added `scripts/build_non_largecap_universe_v26.py` and generated `data/stock_list_non_largecap_2000_v26.json`: 2,000 target symbols, SHA256 `eee5487238b004e5d53217f8c884a67037eb02b92facf14ce39d1e51352003cc`, zero overlap with the locally saved CSI300 exclusion evidence.
+- Saved CSI300 exclusion evidence to `data/csi300_components_v26.json`; public provider returned 279 unique component codes in this run, so V26 remains research-planning evidence, not a production security-master substitute.
+- Tightened `scripts/validate_pit_alpha_panels_v24.py`: stock-level panels now default to 2,000 minimum target symbols and 95% target-universe overlap. Generated `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json` and `.csv` against the V26 universe.
+- Updated `scripts/plan_pit_backfill_v25.py` to embed the active `QUANT_STOCK_LIST` path and SHA256 in reports and generated symbol-batch commands, preventing accidental fallback to the old 1,200-symbol default list.
+- Ran real-provider V26 probes/backfills: Northbound target coverage increased from 5/2,000 to 30/2,000; intraday microstructure increased from 0/2,000 to 25/2,000; margin/short complete dates increased from 1 to 20.
+- Fixed `scripts/fetch_flow_signals.py` so margin detail combine mode preserves all existing dates and fills SZSE missing `date` values from `asof_date`; rebuilt combined `data/flow_signals/margin_details.parquet` with 72,551 rows, 20 unique dates and 0 null dates.
+- Added production readiness requirements for `provider_entitlement`, `broker_borrow_availability` and `paper_trading_90d`; added fail-closed `HttpBorrowAvailabilityProvider` and tests.
+- Added `scripts/validate_external_evidence_v26.py`; generated `data/backtest_results/quant_external_evidence_gate_v26.json`, which remains failed with 14 missing/untrusted external evidence blockers by design.
+- Generated `docs/research/quant_v26_non_largecap_data_gate.md`.
+- Validation: Ruff passed for V26 touched scripts/modules; `tests/system/test_deployment_gate.py tests/system/test_production_integrations.py` passed 18 tests; `tests/integration/test_smoke.py` passed 13 tests.
+- Remaining blockers: Northbound still needs 1,970 target names; intraday still needs 1,975 target names and daily archive history; margin/short still needs multi-year dates; borrow availability still requires real broker-backed feed/account binding; production external WORM/provider entitlement/paper-trading refs are not supplied.
+
+## V26 Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Ran `./init.sh dev` successfully and smoke test passed before continuing data work.
+- Hardened margin/short planning and fetching: `scripts/plan_pit_backfill_v25.py` and `scripts/fetch_flow_signals.py` now use the local A-share benchmark trading calendar `data/benchmarks/idx_000300.parquet` instead of plain business days, eliminating New Year/Spring Festival false margin-date retries.
+- Ran additional real-provider V26 backfills. Northbound target coverage increased from 30/2,000 to 78/2,000. Offset 30 succeeded; offset 55 produced 23 successes and two provider `None` failures (`000833`, `000880`) without synthetic replacement.
+- Intraday microstructure target coverage increased from 25/2,000 to 75/2,000 through offsets 25 and 50, both with zero failures.
+- Margin/short complete dates increased from 20 to 60. Combined margin panel now has zero null dates and uses trading-calendar-filtered fetch windows.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json` and `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json`. Current next batches: Northbound offset 74 (retries 000833/000880 and continues), intraday offset 75, margin/short 20240402-20240506.
+- Validation: Ruff passed for V26 touched scripts/modules; `tests/system/test_deployment_gate.py tests/system/test_production_integrations.py` passed 18 tests; `tests/integration/test_smoke.py` passed 13 tests.
+- Remaining blockers: Northbound still needs 1,922 target names; intraday still needs 1,925 target names and daily archive history; margin/short still needs 520 expected trading dates to reach the 580-date plan; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Second Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Continued V26 real-provider backfills after validation. Northbound target coverage increased from 78/2,000 to 97/2,000. Offset 74 added 19 names; `000833` and `000880` still return provider `None` and were not synthetically filled.
+- Intraday microstructure target coverage increased from 75/2,000 to 100/2,000 through offset 75 with zero failures.
+- Margin/short complete dates increased from 60 to 80 through the 20240402-20240506 trading-calendar-filtered window, with zero failures.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 74 only has two missing provider-failed names (`000833`, `000880`); intraday offset 100; margin/short 20240507-20240603.
+- Validation: Ruff passed for V26 touched scripts/modules; `tests/system/test_deployment_gate.py tests/system/test_production_integrations.py` passed 18 tests; `tests/integration/test_smoke.py` passed 13 tests.
+- Remaining blockers: Northbound still needs 1,903 target names; intraday still needs 1,900 target names and archive history; margin/short still needs 500 expected trading dates; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Third Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Added provider-unavailable evidence for repeatedly failing Northbound symbols in `data/flow_signals/northbound_unavailable_symbols_v26.json` and updated `scripts/plan_pit_backfill_v25.py` to exclude those symbols from generated fetch batches while keeping them counted as missing/not covered.
+- Northbound target coverage increased from 97/2,000 to 119/2,000. Provider-unavailable symbols are now `000833` and `000880`; first-time retryable failures in offset 99 were `001221`, `001356` and `001382`.
+- Intraday microstructure target coverage increased from 100/2,000 to 125/2,000 through offset 100 with zero failures.
+- Margin/short complete dates increased from 80 to 100 through the 20240507-20240603 trading-calendar-filtered window, with zero failures.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 106, intraday offset 125, margin/short 20240604-20240702.
+- Validation: Ruff passed for V26 touched scripts/modules; `tests/system/test_deployment_gate.py tests/system/test_production_integrations.py` passed 18 tests; `tests/integration/test_smoke.py` passed 13 tests.
+- Remaining blockers: Northbound still needs 1,881 target names, including 1,879 fetchable and 2 provider-unavailable; intraday still needs 1,875 target names and archive history; margin/short still needs 480 expected trading dates; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Fourth Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Ran three additional real-provider V26 backfill rounds after smoke validation.
+- Northbound target coverage increased from 119/2,000 to 176/2,000. Confirmed repeated provider-unavailable symbols are now `000833`, `000880`, `001221`, `001356` and `001382`; these are excluded from generated fetch batches only and remain counted as missing/not covered.
+- Intraday microstructure target coverage increased from 125/2,000 to 200/2,000 through offsets 125, 150 and 175, all with zero failures.
+- Margin/short complete dates increased from 100 to 160 through the 2024-06-04 to 2024-08-27 trading-calendar-filtered windows, all with zero failures.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 181, intraday offset 200, margin/short 20240828-20240926.
+- Remaining blockers: Northbound still needs 1,824 target names, including 1,819 fetchable and 5 provider-unavailable; intraday still needs 1,800 target names and historical archive depth; margin/short still needs 420 expected trading dates; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Fifth Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Ran three more real-provider V26 backfill rounds.
+- Northbound target coverage increased from 176/2,000 to 251/2,000 through offsets 181, 206 and 231, all with zero failures.
+- Intraday microstructure target coverage increased from 200/2,000 to 275/2,000 through offsets 200, 225 and 250, all with zero failures.
+- Margin/short complete dates increased from 160 to 220 through the 2024-08-28 to 2024-11-28 trading-calendar-filtered windows, all with zero failures.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 256, intraday offset 275, margin/short 20241129-20241226.
+- Remaining blockers: Northbound still needs 1,749 target names, including 1,744 fetchable and 5 provider-unavailable; intraday still needs 1,725 target names and historical archive depth; margin/short still needs 360 expected trading dates; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Sixth Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Ran three more real-provider V26 backfill rounds.
+- Northbound target coverage increased from 251/2,000 to 316/2,000. Offsets 256, 281 and 298 completed; `002779` and `002827` failed twice with the public-provider `NoneType` error and were added to provider-unavailable evidence. Provider-unavailable symbols are not counted as coverage.
+- Intraday microstructure target coverage increased from 275/2,000 to 350/2,000 through offsets 275, 300 and 325, all with zero failures.
+- Margin/short complete dates increased from 220 to 280 through the 2024-11-29 to 2025-03-03 trading-calendar-filtered windows, all with zero failures.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 323, intraday offset 350, margin/short 20250304-20250331.
+- Remaining blockers: Northbound still needs 1,684 target names, including 1,677 fetchable and 7 provider-unavailable; intraday still needs 1,650 target names and historical archive depth; margin/short still needs 300 expected trading dates; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Seventh Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Ran three more real-provider V26 backfill rounds after smoke validation.
+- Northbound target coverage increased from 316/2,000 to 391/2,000 through offsets 323, 348 and 373, all with zero failures.
+- Intraday microstructure target coverage increased from 350/2,000 to 425/2,000 through offsets 350, 375 and 400, all with zero failures.
+- Margin/short complete dates increased from 280 to 340 through the 2025-03-04 to 2025-05-30 trading-calendar-filtered windows, all with zero failures.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 398, intraday offset 425, margin/short 20250603-20250630.
+- Remaining blockers: Northbound still needs 1,609 target names, including 1,602 fetchable and 7 provider-unavailable; intraday still needs 1,575 target names and historical archive depth; margin/short still needs 240 expected trading dates; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Eighth Continuation Backfill Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Ran three more real-provider V26 backfill rounds after smoke validation.
+- Northbound target coverage increased from 391/2,000 to 454/2,000. Offsets 398, 423 and 437 completed; `300493` failed twice with the public-provider `NoneType` error and was added to provider-unavailable evidence. Provider-unavailable symbols are not counted as coverage.
+- Intraday microstructure target coverage increased from 425/2,000 to 500/2,000 through offsets 425, 450 and 475, all with zero failures.
+- Margin/short complete dates increased from 340 to 400 through the 2025-06-03 to 2025-08-25 trading-calendar-filtered windows, all with zero failures.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 462, intraday offset 500, margin/short 20250826-20250922.
+- Remaining blockers: Northbound still needs 1,546 target names, including 1,538 fetchable and 8 provider-unavailable; intraday still needs 1,500 target names and historical archive depth; margin/short still needs 180 expected trading dates; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26 Ninth Continuation Acceleration Update (2026-06-12) - PRODUCTION BLOCKED
+
+- Added accelerated, still real-provider-only backfill paths. Northbound now supports `QUANT_FLOW_MAX_WORKERS`; intraday now uses a process pool via `QUANT_INTRADAY_MAX_WORKERS`; margin/short now uses per date/exchange subprocess tasks with `QUANT_FLOW_MARGIN_MAX_WORKERS` and `QUANT_FLOW_MARGIN_TASK_TIMEOUT_SECONDS`.
+- Rejected thread-pool intraday after a `libmini_racer` runtime crash proved the provider dependency is not thread-safe; switched to process isolation and verified a 100-symbol batch with zero failures.
+- Updated `scripts/plan_pit_backfill_v25.py` to emit 100-symbol Northbound/intraday batches and 100-date margin windows with worker/timeout settings.
+- Northbound target coverage increased from 454/2,000 to 736/2,000. Confirmed provider-unavailable symbols increased from 8 to 26 after single-worker retries; unavailable symbols remain counted as missing/not covered.
+- Intraday microstructure target coverage increased from 500/2,000 to 800/2,000 through process-pool batches.
+- Margin/short complete dates increased from 400/580 to 580/580 with zero failures; the date-depth blocker is removed. Remaining margin blocker is V26 target-universe overlap and true borrow availability, not missing dates.
+- Refreshed `data/backtest_results/quant_pit_alpha_panel_readiness_v26_non_largecap_2000.json`, `data/backtest_results/quant_pit_backfill_plan_v26_non_largecap_2000.json` and `data/backtest_results/quant_external_evidence_gate_v26.json`.
+- Current next batches: Northbound offset 762, intraday offset 800; margin has no remaining date batches.
+- Remaining blockers: Northbound still needs 1,264 target names, including 1,238 fetchable and 26 provider-unavailable; intraday still needs 1,200 target names and historical archive depth; broker-backed borrow availability and all external production evidence refs remain absent.
+
+## V26/V27 Tenth Continuation Coverage Closure (2026-06-15) - PRODUCTION BLOCKED
+
+- Added `scripts/run_v26_accelerated_backfill.py`, a resumable one-pass driver that refreshes the plan, runs V26 Northbound/intraday batches, retries Northbound failures with one worker, records deterministic public-provider gaps as unavailable evidence, refreshes readiness, and refuses target universes smaller than 2,000 symbols.
+- V26 fixed-universe local backfill is exhausted: Northbound reached 1,780/2,000 with 220 provider-unavailable symbols and 0 fetchable missing; intraday reached 2,000/2,000; margin remains 580/580 complete dates.
+- Added `scripts/build_provider_qualified_universe_v27.py` and built `data/stock_list_provider_qualified_non_largecap_2000_v27.json`, sha256 `7b29c7c70d65ad59c5a26d32cf117f86ed5dbb6a6d915969f4b5901421cf90f7`.
+- V27 uses non-CSI300/non-explicit-large-cap names with verified local Northbound, margin/short and intraday coverage. It prefers analyst-covered names and keeps analyst overlap at 1,983/2,000.
+- V27 local panel readiness improved to 6/10 research-ready panels. Northbound, margin/short and intraday coverage/history gates now pass locally for the V27 universe; the V27 backfill plan has 0 Northbound, 0 intraday and 0 margin batches remaining.
+- Production remains blocked: `exchange_borrow_availability` is still missing; snapshot-only panels still need daily WORM accumulation or paid PIT feeds; external WORM/secret-manager/approval/provider entitlement/exchange position/paper trading/plugin/calendar/rollover/capacity/failover evidence refs remain missing and must stay fail-closed.
+
+## V27 Local Evidence + Data Coverage Hardening (2026-06-15) - PRODUCTION BLOCKED
+
+- Added `scripts/generate_local_preprod_evidence_v27.py` for local-only pre-production evidence: event-bus capacity, failover drill, local audit archive verification and 90-trading-day historical paper dry-run. It explicitly keeps `production_ready=false` and does not substitute for external WORM/secret/approval/provider/broker evidence.
+- Added `scripts/score_strategy_readiness_v27.py` to rank all strategy research outputs and fail closed on production/industry-leading thresholds. Current result: 52 candidates, `strategy_gate_passes=false`, `industry_leading_candidate_exists=false`; best historical candidate is V12 with full Sharpe 0.8558, OOS Sharpe 1.0793 and failing full Sharpe>=1.2.
+- Added `scripts/plan_v27_daily_price_backfill.py` and used it to identify V27 daily OHLCV gaps. Backfilled 944/950 missing V27 daily price files with external network enabled; after retry, V27 current daily coverage is 1992/2000 and passes the 95% research threshold. Remaining 8 symbols are recorded in `data/parquet/v27_daily_price_unavailable_symbols.json` and are not counted as current coverage.
+- Fixed `PaperTradingEngine._load_industries()` to accept raw 6-digit stock codes as well as exchange-suffixed formats. Added regression test coverage for `000001`, `600000.SH` and `SZ000002` code formats.
+- Backfilled V27 real CNInfo industry classifications: coverage is 1994/2000 (99.70%), saved to `data/industry_fixed.parquet`; 6 CNInfo rows still fail due missing `变更日期` and remain non-blocking below threshold.
+- Re-ran V27 local paper after daily and industry coverage fixes. Honest current baseline is poor: 90-day paper Sharpe -1.2524, annual return -29.15%, MDD -16.30%, 184 trades. This invalidates the earlier partially-broken industry-map result as production evidence.
+- Added and ran `scripts/research_v27_local_paper_grid.py` across 15 narrow parameter probes. Best local probe is `freq5_top20_sector3` with Sharpe 0.0189, MDD -15.89%, total return -0.93%; 0/15 pass the production-minimum probe. Conclusion: this is not a small V5.9 parameter problem; alpha/risk/hedge design must be rebuilt.
+- Validation: Ruff passed for touched scripts/modules; `tests/test_paper_trading.py tests/system/test_deployment_gate.py tests/system/test_production_integrations.py tests/integration/test_smoke.py` passed 37 tests.
+- Remaining blockers: external production evidence gate still has 14 missing/untrusted refs; PIT alpha panel is still not production-ready; `exchange_borrow_availability` is missing; snapshot-only panels still require paid PIT history or daily immutable WORM accumulation; 90-day approved live paper-trading service evidence is still absent; current V27 strategy metrics are below production and far below industry-leading requirements.
+
+## V28 Factor Direction + Alt Archive Research (2026-06-15) - PRODUCTION BLOCKED
+
+- Added `scripts/research_v28_factor_direction.py` to run V27 2,000-name factor-direction diagnostics, regime-aware long-only sleeves, synthetic market-neutral diagnostics and archived alt-data candidates. The script explicitly marks synthetic long-short and alt-enhanced candidates as `production_comparable=false` unless real borrow/PIT entitlement evidence exists.
+- Rebuilt full V27 archived alt feature store via `scripts/build_alt_data_features_v17.py` with `QUANT_ALT_FEATURES_OUTPUT_PREFIX=v28_v27_archive_20260615`: stock rows 2,759,523, symbols 2,000, crisis rows 7,540, archive manifest sha256 `4dea8beee5db14608eeccd09f625d2bbe94e59367f341f35ef7740d85188fd09`.
+- Optimized V28 research runtime after profiling interrupts: precomputed market regime series, reused daily stock returns, skipped zero-variance IC cross-sections and replaced pandas alignment-heavy zscore accumulation with numpy arrays.
+- V28 full run produced 13 candidates. Best raw return candidate is `v28_ic_adaptive_crisis_freq10`: Sharpe 1.0606, annual return 19.28%, MDD -23.21%, avg OOS Sharpe 1.1338, Sharpe decay -0.0129. It fails production because full Sharpe < 1.2 and MDD < -15%.
+- Best scorecard candidate remains production-comparable `v28_ic_adaptive_guarded_freq10`: Sharpe 0.9515, annual return 13.01%, MDD -14.00%, avg OOS Sharpe 1.1060, decay -0.0303. It fails production only on full Sharpe but is still below the required 1.2 threshold and far below industry-leading thresholds.
+- Alt-enhanced research-only candidates did not improve enough: `v28_alt_ic_adaptive_guarded_freq10` Sharpe 0.8507, MDD -14.80%, avg OOS Sharpe 0.8749; `v28_alt_ic_adaptive_market_neutral_freq10` Sharpe 0.4685, MDD -14.09%, avg OOS Sharpe 0.4944. Both remain research-only due snapshot/archive PIT and borrow blockers.
+- Refreshed `data/backtest_results/quant_v27_strategy_readiness.json`: 65 candidates, `production_ready=false`, `strategy_gate_passes=false`, 0 production candidates, 0 industry-leading candidates, 14 external evidence blockers, PIT panel still missing `exchange_borrow_availability` and still has snapshot-only panels.
+- Validation: Ruff passed for `scripts/research_v28_factor_direction.py` and `scripts/score_strategy_readiness_v27.py`; `tests/test_paper_trading.py tests/system/test_deployment_gate.py tests/system/test_production_integrations.py tests/integration/test_smoke.py` passed 37 tests.
+- Next honest research direction: do not keep tuning V5/V28 small parameters. Need new alpha sources with true PIT entitlement, real borrow/hedge execution data, and a structurally different portfolio construction layer before production or industry-leading profitability can be claimed.
+
+## V28 Strict Walk-Forward Correction (2026-06-15) - PRODUCTION BLOCKED
+
+- Fixed V28 walk-forward accounting so OOS backtests may use historical context for warm-up/positions/risk controls but only count returns and exposure statistics from the actual test window. This removes a production-readiness correctness risk where warm-up/context returns could be included in OOS metrics.
+- Re-ran `scripts/research_v28_factor_direction.py` and refreshed `scripts/score_strategy_readiness_v27.py` outputs with strict OOS metrics.
+- Updated best scorecard candidate is `v28_ic_adaptive_crisis_freq10`: full Sharpe 1.0606, annual return 19.28%, MDD -23.21%, avg OOS Sharpe 1.2153, min OOS Sharpe -1.0366. It still fails production (`full_sharpe>=1.2` and `MDD>=-15%`) and industry-leading gates.
+- Best lower-drawdown production-comparable variant remains `v28_ic_adaptive_guarded_freq10`: full Sharpe 0.9515, MDD -14.00%, avg OOS Sharpe 1.1031, still below production Sharpe.
+- Validation after correction: Ruff passed for V28 script; `tests/test_paper_trading.py tests/system/test_deployment_gate.py tests/system/test_production_integrations.py tests/integration/test_smoke.py` passed 37 tests.
+
+## V28 Risk-Shell Probe (2026-06-15) - PRODUCTION BLOCKED
+
+- Added three production-comparable risk-shell candidates around the strongest V28 IC-adaptive alpha: `v28_ic_adaptive_crisis_dd_cap_freq10`, `v28_ic_adaptive_crisis_lowvol_freq10`, and `v28_ic_adaptive_crisis_balanced_freq10`.
+- Re-ran strict-OOS V28 and refreshed readiness. None pass production minimums.
+- Best scorecard candidate is now `v28_ic_adaptive_crisis_lowvol_freq10`: Sharpe 0.8762, annual return 10.02%, annual vol 8.59%, MDD -10.58%, avg OOS Sharpe 1.1163. It solves drawdown but fails full Sharpe>=1.2.
+- Best higher-return risk-capped variant is `v28_ic_adaptive_crisis_dd_cap_freq10`: Sharpe 1.0256, annual return 13.47%, MDD -12.69%, avg OOS Sharpe 0.9988. It is closer but still below production Sharpe and not industry-leading.
+- Conclusion: existing V28 price/volume IC signal plus risk shell is insufficient. Further small exposure/risk tuning is unlikely to reach production or industry-leading gates without new PIT alpha or a new portfolio construction/hedge layer.
+- Validation after probe: `tests/test_paper_trading.py tests/system/test_deployment_gate.py tests/system/test_production_integrations.py tests/integration/test_smoke.py` passed 37 tests.
+
+## V29 Dynamic Sleeve Portfolio Layer + Robustness Gate (2026-06-15) - EXTERNAL PRODUCTION EVIDENCE BLOCKED
+
+- Added `scripts/research_v29_portfolio_layer.py`, a research-only dynamic portfolio construction layer using V27/V28 price-only stock sleeves, residual crisis/carry floor, rolling sleeve Sharpe/drawdown/correlation allocation, strict WF accounting and explicit `production_ready=false` output.
+- V29 price-only candidates now pass strategy production-minimum and industry-leading research metrics. The highest score candidate is `v29_price_meta_lowvol_small_carry_floor`: Sharpe 2.2668, annual return 22.09%, annual vol 8.64%, MDD -9.82%, avg OOS Sharpe 2.4573, min OOS Sharpe 0.0266.
+- Added a more conservative candidate, `v29_price_meta_lowvol_recent_guard`, and selected it as the robustness-recommended candidate: Sharpe 2.2568, annual return 20.52%, annual vol 7.98%, MDD -9.63%, avg OOS Sharpe 2.4867, min OOS Sharpe 0.1770.
+- Added `scripts/validate_v29_robustness.py`. Robustness gate passed for `v29_price_meta_lowvol_recent_guard` across 21 cases: min sensitivity Sharpe 2.1447, min sensitivity OOS Sharpe 2.3938, min cost-stress Sharpe 2.0856, min cost-stress OOS Sharpe 2.3054, recent 90-day Sharpe 0.9009, recent 252-day Sharpe 2.8892. Some stress cases no longer satisfy the stricter industry-leading definition, but remain above production-style thresholds.
+- Updated `scripts/score_strategy_readiness_v27.py` to include V29 robustness, V29-aware data-scope handling and `recommended_candidate`. It no longer treats unused alt/snapshot/borrow panel gaps as a blocker for the V29 price-only candidate; production provider entitlement is still enforced by the external evidence gate.
+- Refreshed `data/backtest_results/quant_v27_strategy_readiness.json`: `strategy_gate_passes=true`, `industry_leading_candidate_exists=true`, `production_ready=false`, and the only remaining top-level blocker is `external production evidence gate is not ready`.
+- Added documentation: `docs/research/quant_v29_portfolio_layer_findings.md` and `docs/changelog/capital_impact_v29_portfolio_layer_2026-06-15.md`. Both explicitly state research-only status and no production approval.
+- Validation: Ruff passed for V29/robustness/scorecard scripts; `tests/test_paper_trading.py tests/system/test_deployment_gate.py tests/system/test_production_integrations.py tests/integration/test_smoke.py` passed 37 tests.
+- Remaining production blocker: external evidence gate still lacks approved WORM, Secret Manager, approval service, real provider entitlement, exchange-backed position provider, approved 90-day paper trading evidence, signed plugin review, production calendar, capacity benchmark and failover/DR evidence. These cannot be truthfully completed from local code alone.
+
+## V29 Paper-Trading Launch Package (2026-06-16) - PAPER START BLOCKED BY EXTERNAL EVIDENCE
+
+- Added `scripts/prepare_v29_paper_launch_package.py`, a fail-closed V29 launch-package generator. It reads the V29 readiness scorecard, V29 research output, V29 robustness gate and external evidence gate, then emits a machine-readable package plus an operator runbook for the real 90-day approved paper-trading stage.
+- Generated `data/backtest_results/quant_v29_paper_trading_launch_package.json` and `docs/research/quant_v29_paper_trading_launch_runbook.md` for the robustness-recommended candidate `v29_price_meta_lowvol_recent_guard`.
+- Current V29 launch package status: `paper_launch_ready=false`, `production_ready=false`, 9 paper-start evidence blockers and 14 full-production evidence blockers.
+- Paper-start blockers are now explicit and candidate-scoped: external WORM archive, Secret Manager, approval service, real market-data provider, provider entitlement, exchange-backed position provider, signed plugin review, production calendar and production-like capacity benchmark.
+- Full-production blockers remain stricter: the above plus alt archive readiness, broker-backed borrow availability, approved 90-day paper-trading evidence, rollover runbook and failover/DR evidence.
+- Updated `scripts/score_strategy_readiness_v27.py` to include `v29_launch_package_summary`; refreshed `data/backtest_results/quant_v27_strategy_readiness.json`. Current blockers are `external production evidence gate is not ready` and `V29 approved paper-trading launch package is not ready`.
+- Added `tests/system/test_v29_paper_launch_package.py` covering fail-closed missing evidence, paper-only launch readiness when V29-scoped refs exist, and runbook secret redaction/no evidence-ref leakage.
+- Validation: Ruff passed for the new launch script, updated scorecard and tests; `tests/system/test_v29_paper_launch_package.py tests/system/test_deployment_gate.py tests/system/test_production_integrations.py` passed 21 tests.
+- Next valid production step: populate real external evidence refs and rerun `scripts/prepare_v29_paper_launch_package.py --require-paper-launch-ready`; if it passes, start the 90-day approved paper-trading service with live provider data and immutable audit archive. Do not enable live order submission before paper evidence and full deployment gate pass.
+
+## V29 Strategy Spec Binding (2026-06-16) - PAPER START STILL BLOCKED
+
+- Added `src/quant_trading/strategy/v29_spec.py`, an immutable Pydantic v2 contract for the V29 paper-trading candidate. It validates the candidate is price-only/non-alt, A-share scoped, keeps `auto_trade_enabled=false`, `live_order_submission_allowed=false`, `max_live_capital_fraction=0.0`, and rejects changed paper-start evidence keys.
+- Added `config/strategies/v29_price_meta_lowvol_recent_guard.paper.yaml` to pin the V29 robustness-recommended candidate parameters, input refs, research metrics and fail-closed controls for the paper stage.
+- Bound `scripts/prepare_v29_paper_launch_package.py` to the strategy spec. The launch package now validates the YAML, checks that its candidate matches readiness/robustness, and records `strategy_spec_yaml_sha256` in artifact hashes.
+- Added `tests/strategy/test_v29_spec.py` covering spec load, live-order enablement rejection, evidence-contract tampering rejection and alt-candidate rejection.
+- Validation: Ruff passed for the launch script, V29 spec and tests; `tests/strategy/test_v29_spec.py tests/system/test_v29_paper_launch_package.py` passed 7 tests.
+- Status unchanged by design: V29 strategy metrics and robustness are ready for an approved paper-trading launch, but the paper launch itself remains blocked until the 9 external paper-start evidence refs are supplied.
+
+## V29 Evidence Template Hardening (2026-06-16) - FAIL-CLOSED VERIFIED
+
+- Added `config/production_evidence.v29.template.json`, an empty-ref template with the exact 14 external production evidence keys required by the deployment gate. It contains no placeholder approvals and no secret values.
+- Extended `.env.example` with non-secret V29 launch environment references (`QUANT_PRODUCTION_EVIDENCE_FILE`, service URLs and token refs). Real tokens/API keys must remain in Vault/AWS SM/sealed secrets or `.env.local` for dev-only substitutes.
+- Verified the template remains fail-closed: `scripts/validate_external_evidence_v26.py --evidence-file config/production_evidence.v29.template.json` reports `production_ready=false` with 14 blockers; `scripts/prepare_v29_paper_launch_package.py --evidence-file config/production_evidence.v29.template.json` reports `paper_launch_ready=false`, 9 paper blockers and 14 production blockers.
+- Validation: `tests/strategy/test_v29_spec.py tests/system/test_v29_paper_launch_package.py` passed 7 tests after template changes.
+
+## V29 External Evidence Ref Collector (2026-06-16) - REAL REFS STILL REQUIRED
+
+- Added `scripts/collect_v29_external_evidence_refs.py`, a fail-closed external evidence ref collector. It merges `config/production_evidence.v29.template.json`, an optional local evidence JSON and `QUANT_EVIDENCE_<KEY>_REF` environment refs, then writes a sanitized evidence JSON and collection report.
+- The collector never writes token/API-key material. Optional `--probe-services` can call configured HTTPS Secret Manager, Approval Service, Exchange Position Provider and Borrow Provider adapters when real service URLs/tokens are present, but outputs only external refs.
+- Added `tests/system/test_v29_evidence_collector.py` covering paper-start env refs, placeholder/local ref rejection and token redaction from outputs.
+- Added `docs/research/quant_v29_external_evidence_refs_guide.md`, documenting exactly how to obtain/fill refs and the commands to validate collector -> external gate -> V29 paper launch.
+- Updated `.env.example` with direct evidence-ref variables and optional probe variables. Updated `.gitignore` to ignore `config/production_evidence*.local.json` so local production evidence metadata is not accidentally committed.
+- Verified structural flow using temporary refs under `/private/tmp`: collector reported `paper_ready=true`, `production_ready=false`, `paper_blockers=0`, `production_blockers=5`; feeding that file into `prepare_v29_paper_launch_package.py --require-paper-launch-ready` passed paper launch readiness while still blocking full production.
+- Important: the temporary refs are structural test refs only, not real external evidence. Actual production readiness still requires refs generated by approved WORM/Vault/approval/provider/broker/calendar/benchmark/DR systems.
+
+## Markdown 中文说明规范更新 (2026-06-16)
+
+- 已将当前 V29 上线/证据链相关说明文档改为中文：`quant_v29_external_evidence_refs_guide.md`、`quant_v29_paper_trading_launch_runbook.md`、`quant_v29_portfolio_layer_findings.md`、`capital_impact_v29_portfolio_layer_2026-06-15.md`。
+- 已将入口说明文档 `README.md` 和 `deployment/README.md` 改为中文。
+- 已更新 `scripts/prepare_v29_paper_launch_package.py` 的 runbook 生成函数，确保后续自动生成的 V29 模拟盘启动运行手册仍为中文。
+- 已同步更新 `tests/system/test_v29_paper_launch_package.py` 的断言。
+- 验证：V29/README 目标文档扫描未再命中英文说明标题标记；Ruff 通过；`tests/integration/test_smoke.py tests/strategy/test_v29_spec.py tests/system/test_v29_evidence_collector.py tests/system/test_v29_paper_launch_package.py tests/system/test_deployment_gate.py tests/system/test_production_integrations.py` 共 41 项通过。
+- 备注：历史研究归档中仍有早期英文记录；如需严格做到所有历史 Markdown 逐行中文化，应单独继续一轮归档翻译，避免一次性改写大量历史审计文字引入误差。
+
+## V29 二十年长周期验证诊断 (2026-06-17) - PRODUCTION BLOCKED
+
+- 新增 `scripts/audit_v29_20y_data_coverage.py`，对 V29/V27 2000 只非大盘股 universe 做 2006-01-01 至 2026-05-29 的逐股票和逐日横截面覆盖审计。
+- 审计输出：`data/backtest_results/quant_v29_20y_data_coverage_audit.json`、`quant_v29_20y_symbol_coverage.csv`、`quant_v29_20y_daily_cross_section.csv`。
+- 覆盖结论：成功加载 1994/2000；完整覆盖请求窗口 566 只；严格二十年质量合格 519/2000（25.95%）；warm-up 后达到 500 只可交易股票为 2013-07-02，达到 1900 只为 2024-06-03。因此当前不能声称二十年全量生产验证，只能作为长周期诊断。
+- 跑通 2006-2026 V29 长周期诊断：`quant_logic_research_v29_portfolio_layer_20y_diagnostic.json/csv`。最佳 `v29_price_meta_balanced_carry_floor`：Sharpe 2.1286、年化收益 18.02%、最大回撤 -8.56%、OOS Sharpe 2.4620；推荐保守候选 `v29_price_meta_lowvol_recent_guard`：Sharpe 1.9686、年化收益 15.25%、最大回撤 -9.49%、OOS Sharpe 2.3979。
+- 跑通 2013-07-02 覆盖阈值诊断：`quant_logic_research_v29_portfolio_layer_coverage500_diagnostic.json/csv`。最佳 `v29_price_meta_lowvol_carry_floor`：Sharpe 2.1507、年化收益 16.22%、最大回撤 -5.89%、OOS Sharpe 2.4698；`v29_price_meta_lowvol_recent_guard`：Sharpe 1.9804、年化收益 16.66%、最大回撤 -9.56%、OOS Sharpe 2.3550。
+- 新增中文研究记录 `docs/research/quant_v29_20y_validation_findings.md`，明确说明当前结果支持继续推进 V29 模拟盘准备，但不解除外部 evidence、PIT 历史股票池、真实 provider、90 天 paper trading 和生产准入 blocker。
+- 验证：`tests/integration/test_smoke.py` 13 项通过；Ruff 通过；`tests/system/test_v29_20y_data_coverage_audit.py` 2 项通过。
+
+## V30 生产级历史数据与执行准入门禁 (2026-06-17) - PRODUCTION BLOCKED
+
+- 新增 `scripts/validate_v30_production_data_gate.py`，把真正 PIT 历史股票池、退市/ST/停牌/涨跌停状态、vendor corporate action/复权复核、二十年真实 tick/minute 执行历史、交易所/券商订单成交回放五项升级为机器可读 fail-closed 生产数据门禁。
+- 新增 `config/production_data_evidence.v30.template.json`，只保存非敏感外部 evidence refs 空模板；`.gitignore` 已忽略 `config/production_data_evidence*.local.json`，防止本地 evidence 元数据误提交。
+- `.env.example` 新增 V30 非敏感 evidence ref 变量；脚本支持 `QUANT_V30_DATA_EVIDENCE_FILE`、`QUANT_V30_DATA_EVIDENCE_JSON` 与 `QUANT_EVIDENCE_*_REF` 直接环境变量合并，仍不写入 token/API key。
+- 真实本地运行输出：`data/backtest_results/quant_v30_production_data_gate.json/csv`，当前 `production_data_ready=false`，5/5 要求均未达到生产，18 个 blocker；本地已有 `data/intraday/microstructure_features.parquet` 覆盖 257 个交易日、2475 个实体，但它只是近期分钟特征诊断，不是二十年真实 tick/minute 执行历史。
+- 当前抽样 200 个 V27 日线 parquet 文件均未发现 `adj_factor`、`qfq_factor`、`hfq_factor`、`adjusted_close` 等复权字段，不能声明 vendor corporate action 复核完成。
+- `scripts/score_strategy_readiness_v27.py` 已接入 V30 gate；刷新后的 `quant_v27_strategy_readiness.json` 仍为 `production_ready=false`，顶层 blocker 为：外部生产 evidence gate 未就绪、V29 approved paper-trading launch package 未就绪、V30 生产级历史数据与执行门禁未就绪。
+- 新增中文文档 `docs/research/quant_v30_production_data_gate.md`，列明五类数据文件路径、必要字段、外部 evidence key、当前状态和后续执行顺序。
+- 验证：`scripts/validate_v30_production_data_gate.py` 与 `scripts/score_strategy_readiness_v27.py` 运行通过；Ruff 通过；`tests/system/test_v30_production_data_gate.py tests/system/test_v29_20y_data_coverage_audit.py tests/system/test_deployment_gate.py tests/system/test_v29_evidence_collector.py tests/system/test_v29_paper_launch_package.py tests/integration/test_smoke.py` 共 34 项通过。
+- 仍无法从本地代码真实完成的外部项：供应商 PIT security master、交易状态历史、vendor 复权复核、二十年真实 tick/minute 数据、券商/交易所订单成交日志、外部 WORM/Secret/Approval/Provider/Broker/Paper/Capacity/DR evidence refs。必须由真实 vendor/broker/审批/归档系统提供后才能解除 blocker。
+
+## V31 免费数据 PIT 近似增强 (2026-06-18) - RESEARCH READY / PRODUCTION BLOCKED
+
+- 新增 `scripts/build_v31_free_data_pit_approximation.py`，基于本地免费/公开源日线 parquet 生成研究级 PIT 股票池近似和交易状态近似，输出独立落在 `data/security_master/free_pit_approx/`，不污染 V30 生产数据路径。
+- 真实运行输出：`data/security_master/free_pit_approx/pit_universe_v31.parquet`、`data/security_master/free_pit_approx/trading_status_v31.parquet`、`data/corporate_actions/free_reconciliation_v31.parquet`、`data/backtest_results/quant_v31_free_data_build_report.json/csv`。
+- 当前覆盖：请求 2000 只，成功加载 1994 只，4954 个交易日，PIT/交易状态各 6,210,405 行；缺本地日线文件 6 只：600200、603056、601028、601989、600705、600837。
+- V31 明确标记为 `research_pit_approximation=true`、`production_reconciled=false`、`production_data_ready=false`。ST 状态仍为未知字段 `is_st_known=false`；停牌由缺 bar 或成交量为 0 近似；涨跌停按板块规则近似；公司行动只做本地复权列审计，不含 vendor reconciliation。
+- 新增 `scripts/validate_v31_free_data_quality_gate.py`，用于区分免费源研究门槛与生产门槛。真实运行输出 `data/backtest_results/quant_v31_free_data_quality_gate.json/csv`：`free_research_ready=true`，3/3 研究要求通过，0 个研究 blocker；生产 blocker 仍为 5 个。
+- `scripts/score_strategy_readiness_v27.py` 已接入 `v31_free_data_quality_gate_summary`；刷新 `quant_v27_strategy_readiness.json` 后，V31 摘要显示 `free_research_ready=true`、`production_data_ready=false`。全局 `production_ready=false`，顶层 blocker 仍为外部生产 evidence gate、V29 approved paper-trading launch package、V30 production historical data/execution gate。
+- 新增中文说明 `docs/research/quant_v31_free_data_enhancement.md`，写明 V31 能补强研究回测但不能替代真实 vendor/broker 数据。
+- 验证：Ruff 通过；`tests/system/test_v31_free_data_pipeline.py tests/system/test_v30_production_data_gate.py tests/system/test_v29_20y_data_coverage_audit.py tests/integration/test_smoke.py` 共 22 项通过。
+- 下一步研究建议：将 `trading_status_v31.parquet` 接入 V29/V30 研究回测成交约束，过滤不可交易、涨停买入、跌停卖出场景，重新评估策略收益是否仍保持领先；生产 blocker 仍必须由真实 vendor/broker/evidence refs 解除。
+
+## V31 交易状态约束接入 V29 回测与鲁棒性 (2026-06-18) - RESEARCH STRONG / PRODUCTION BLOCKED
+
+- 扩展 `scripts/research_v29_portfolio_layer.py`，新增 `--trading-status-path` 与 `--require-trading-status`，可将 `data/security_master/free_pit_approx/trading_status_v31.parquet` 接入 V29 stock sleeve 再平衡路径。
+- 新增执行约束逻辑：买入/加仓遇到 `is_tradable=false` 或 `is_limit_up=true` 时不成交；卖出/减仓遇到 `is_tradable=false` 或 `is_limit_down=true` 时保留旧仓位；卖不出去导致资金不足时不允许凭空加杠杆，未买入部分保留现金。
+- 生成约束版主回测：`data/backtest_results/quant_logic_research_v29_portfolio_layer_v31_execution_constrained.json/csv`。最佳收益候选 `v29_price_meta_balanced_carry_floor`：Sharpe 2.4267、年化收益 22.23%、MDD -5.30%、OOS Sharpe 2.4991。推荐稳健候选 `v29_price_meta_lowvol_recent_guard`：Sharpe 2.1838、年化收益 19.82%、MDD -9.82%、OOS Sharpe 2.4237、最低 OOS Sharpe 0.1607。
+- 与旧无约束主回测相比，最佳 Sharpe 从 2.5173 降至 2.4267，MDD 从 -5.08% 到 -5.30%，OOS Sharpe 从 2.5686 到 2.4991；成交约束造成小幅收益衰减，但策略没有失效。
+- 约束影响统计：V31 状态加载 3,866,705 行、2281 个交易日、1994 个股票；四个 stock sleeve 的平均约束后现金约 0.44%-0.85%，说明约束有实质影响但没有大面积卡死组合。
+- 扩展 `scripts/validate_v29_robustness.py` 支持同一 V31 交易状态约束，并生成 `data/backtest_results/quant_v29_robustness_v31_execution_constrained.json/csv`。约束版 robustness gate 通过：21 cases，base Sharpe 2.1838，base OOS Sharpe 2.4237，min sensitivity Sharpe 2.0724，min sensitivity OOS 2.3301，min cost-stress Sharpe 2.0155，min cost-stress OOS 2.2416，recent 90d Sharpe 0.8937，recent 252d Sharpe 2.8458。
+- 更新 `scripts/score_strategy_readiness_v27.py`：新增 `v29_v31_execution_robustness_summary`；当约束版 robustness 通过时，`recommended_candidate` 优先选择 V31 执行约束版本。当前推荐为 `v29_price_meta_lowvol_recent_guard`，reason=`selected by V31 execution-constrained robustness gate`。
+- 更新 `scripts/prepare_v29_paper_launch_package.py` 默认研究/鲁棒性文件到 V31 约束版；更新 `config/strategies/v29_price_meta_lowvol_recent_guard.paper.yaml` 的 version、research_result_ref、robustness_ref 和指标。重新生成 `data/backtest_results/quant_v29_paper_trading_launch_package.json` 与 `docs/research/quant_v29_paper_trading_launch_runbook.md`，仍因 9 个 paper-start 外部 evidence 和 14 个 full-production evidence blocker 阻塞。
+- 新增中文研究记录 `docs/research/quant_v31_execution_constrained_v29_findings.md`，说明成交约束逻辑、主回测、鲁棒性、readiness 变化和生产判断。
+- 验证：Ruff 通过；`tests/strategy/test_v29_spec.py tests/system/test_v29_paper_launch_package.py tests/system/test_v29_execution_constraints.py tests/system/test_v31_free_data_pipeline.py tests/system/test_v30_production_data_gate.py tests/integration/test_smoke.py` 共 30 项通过。
+- 当前总 readiness：`production_ready=false`，顶层 blocker 仍为外部生产 evidence gate、V29 approved paper-trading launch package、V30 production historical data/execution gate。下一步应继续做 20 年长周期 V31 约束回测，或补外部 paper-start evidence refs。
+
+## V32 长周期 V31 交易约束候选固化 (2026-06-18) - RESEARCH LEADING / PRODUCTION BLOCKED
+
+- 跑通 2006-01-01 至 2026-05-29 的 V31 交易状态约束长周期回测：`data/backtest_results/quant_logic_research_v29_portfolio_layer_20y_v31_execution_constrained.json/csv`。V31 状态加载 6,210,405 行、4954 个交易日、1994 只股票。
+- 初始 20 年约束结果显示：多数 V29 候选通过生产最低门槛，但没有候选完全通过严格行业领先门槛；主要卡点为最低 OOS Sharpe 转负、MDD 略超 -10% 或 full Sharpe 略低于 2.0。
+- 进行长周期 meta 风控参数扫描，输出 `data/backtest_results/quant_v32_long_horizon_v31_execution_scan.json/csv`。扫描 288 组，18 组通过严格行业领先门槛，说明存在稳定参数岛而非单点偶然。
+- 固化新候选 `v29_price_meta_longhorizon_guard` 到 `scripts/research_v29_portfolio_layer.py`：base_gross=0.60, bull_gross=0.87, neutral_gross=0.60, risk_off_gross=0.16, vol_target=0.115, dd_reduce_threshold=0.05, dd_stop_threshold=0.09, crisis_fraction=0.75, carry_fraction=0.25。
+- 正式 20 年 V31 约束回测中，`v29_price_meta_longhorizon_guard`：Sharpe 2.0285、年化收益 15.95%、年化波动 6.63%、MDD -8.33%、胜率 56.52%、avg OOS Sharpe 2.4013、min OOS Sharpe 0.1980、sharpe_decay -0.0720。它是 20 年约束文件中唯一严格 industry-leading passes 的 production-comparable 候选。
+- 2017 起始 V31 约束回测中，`v29_price_meta_longhorizon_guard`：Sharpe 2.2848、年化收益 20.69%、MDD -8.54%、avg OOS Sharpe 2.4653、min OOS Sharpe 0.0425，也通过严格行业领先门槛。
+- 跑通 20 年 V31 约束 robustness：`data/backtest_results/quant_v29_robustness_20y_v31_execution_constrained.json/csv`，candidate=`v29_price_meta_longhorizon_guard`，`robustness_gate_passes=true`，21 cases，base Sharpe 2.0285，min sensitivity Sharpe 1.9100，min sensitivity OOS 2.3113，min sensitivity drawdown -10.10%，min cost-stress Sharpe 1.8446，min cost-stress OOS 2.2090，recent 90d Sharpe 0.6503，recent 252d Sharpe 2.7493。
+- 更新 `scripts/score_strategy_readiness_v27.py`：新增 `v29_20y_v31_execution_robustness_summary`，推荐优先级切到 20 年 V31 约束 robustness。当前 `recommended_candidate=v29_price_meta_longhorizon_guard`，reason=`selected by 20y V31 execution-constrained robustness gate`，但 `production_ready=false`。
+- 新增 `config/strategies/v29_price_meta_longhorizon_guard.paper.yaml`，并将 `scripts/prepare_v29_paper_launch_package.py` 默认 research/robustness/spec 切到 20 年 V31 约束证据。重新生成 `data/backtest_results/quant_v29_paper_trading_launch_package.json` 与 `docs/research/quant_v29_paper_trading_launch_runbook.md`，仍因 9 个 paper-start evidence 和 14 个 full-production evidence blocker 阻塞。
+- 新增中文文档 `docs/research/quant_v32_longhorizon_guard_findings.md`，记录扫描、正式回测、robustness、readiness 变化和剩余生产 blocker。
+- 验证：Ruff 通过；`tests/strategy/test_v29_spec.py tests/system/test_v29_paper_launch_package.py tests/system/test_v29_execution_constraints.py tests/system/test_v31_free_data_pipeline.py tests/system/test_v30_production_data_gate.py tests/integration/test_smoke.py` 共 30 项通过。
+- 当前本地研究结论：已有一个 20 年 + V31 交易状态约束 + robustness 通过的行业领先研究候选；但生产仍被外部 evidence、V30 真实 vendor/broker 数据、90 天 approved paper trading 阻塞。
+
+## V33 小资金账户可执行性研究 (2026-06-18) - SMALL ACCOUNT REJECTED / PRODUCTION BLOCKED
+
+- 新增 `scripts/research_v33_small_account_execution.py`，专门验证 5 万/10 万人民币账户是否可以直接执行 V29/V32 非大盘股多因子框架。
+- 脚本在 V31 交易状态约束上进一步加入小账户执行摩擦：100 股整数手、每笔最低佣金、佣金率、卖出印花税、滑点、涨停不可买、跌停不可卖、不可交易阻断、未成交部分留现金且不允许隐含杠杆。
+- 新增 `tests/system/test_v33_small_account_execution.py`，覆盖整数手向下取整、最低佣金/印花税、买不起自动降手数、涨停买入和跌停卖出阻断。
+- 正式运行 2006-01-04 至 2026-05-29，覆盖 1994 只股票、4954 个交易日，共扫描 96 个场景：资金 `50000/100000`，持仓上限 `5/8/10/12`，排序 `ic/blend/lowvol_reversal/defensive`，仓位 profile `v32_guard/small_defensive/small_balanced`。
+- 输出：`data/backtest_results/quant_v33_small_account_execution.json/csv`。
+- 5 万最佳场景为 `v33_small_account_small_balanced_blend_50000_5pos`：Sharpe 0.1407、年化收益 3.81%、MDD -22.30%、胜率 51.07%、期末资金 94,501.70、平均持仓 4.83、平均股票暴露 12.66%、平均现金 87.34%。未通过最低策略门槛。
+- 10 万最佳场景为 `v33_small_account_small_balanced_blend_100000_5pos`：Sharpe 0.4123、年化收益 6.73%、MDD -22.20%、胜率 54.01%、期末资金 319,647.81、平均持仓 5.30、平均股票暴露 21.19%、平均现金 78.81%。未通过最低策略门槛。
+- 全部 96 个场景均未通过 `small_account_minimum_gate`；35 个场景仅通过可执行性门槛但收益/回撤不合格。结论：V32 可以作为研究信号来源，但 5 万/10 万账户不能直接照搬当前非大盘股多因子选股框架实盘。
+- 新增中文研究报告 `docs/research/quant_v33_small_account_execution.md`，明确推荐下一步转向 V34 小账户 ETF/少持仓专用策略，而不是继续调当前 V33 非大盘股小账户版本。
+
+## V34 小资金 ETF 轮动研究 (2026-06-18) - EXECUTABLE BUT REJECTED / PRODUCTION BLOCKED
+
+- 新增 `scripts/research_v34_small_account_etf_rotation.py`，专门验证小资金账户是否更适合做低频 ETF 轮动，而不是继续硬套 V33 非大盘股少持仓股票组合。
+- 使用 `data/benchmarks` 下 7 个 ETF：510300、510500、159915、512100、588000、518880、511880。研究区间为 2013-01-04 至 2026-05-29，共 3252 个交易日；部分 ETF 上市较晚，因此早期可选资产较少。
+- 执行摩擦：100 股整数手、ETF 不收印花税、佣金、最低佣金、滑点、买不成留现金、无隐含杠杆。
+- 扫描 324 个场景：资金 `50000/100000/200000`，最大 ETF 持仓 `1/2/3`，调仓 `20/40/60` 日，排序 `momentum/risk_adjusted/defensive`，风控 `balanced/defensive/capital_guard/ultra_guard`。
+- 输出：`data/backtest_results/quant_v34_small_account_etf_rotation.json/csv`。
+- 5 万最佳场景 `v34_etf_balanced_risk_adjusted_50000_1asset_40d`：Sharpe 0.5643、年化收益 13.99%、MDD -47.92%、胜率 66.30%、期末资金 218,377.25。收益较高但回撤完全不可接受。
+- 10 万最佳场景 `v34_etf_balanced_risk_adjusted_100000_1asset_40d`：Sharpe 0.5678、年化收益 14.06%、MDD -47.90%、胜率 67.68%、期末资金 440,760.01。收益较高但回撤完全不可接受。
+- 20 万最佳场景 `v34_etf_ultra_guard_momentum_200000_1asset_20d`：Sharpe 0.5997、年化收益 7.03%、MDD -17.48%、胜率 67.36%、期末资金 460,987.94。回撤接近但仍未低于 15%，Sharpe 也远低于 1.2。
+- 全部 324 个场景均通过小账户可执行性门槛，但 0 个场景通过最低策略门槛，且没有任何场景达到 MDD <= 15%。结论：ETF 轮动方向比 V33 更适合小账户执行，但当前简单动量/风险调整框架仍不能实盘。
+- 新增 `tests/system/test_v34_small_account_etf_rotation.py`，覆盖 ETF 数据加载、负信号切货币 ETF、账户回撤触发 ultra_guard、100 股整数手与最低佣金执行。
+- 新增中文研究报告 `docs/research/quant_v34_small_account_etf_rotation.md`。下一步建议进入 V35：目标波动率、组合 VaR、市场状态 + 账户状态双触发、更完整 ETF/债券/商品/海外资产数据，先把 MDD 压到 15% 内再看收益。
+
+## V35 小资金 ETF 风险预算研究 (2026-06-18) - RISK CONTROL PASS / RETURN REJECTED / PRODUCTION BLOCKED
+
+- 新增 `scripts/research_v35_small_account_risk_budget.py`，在 V34 ETF 轮动基础上加入目标波动率、历史 95% VaR、账户回撤降仓/停仓和现金保留机制，专门验证 5 万/10 万/20 万小资金账户能否在可接受回撤下运行。
+- V35 不再把未分配预算买入货币 ETF 来包装暴露，风险资产排除 `511880`，未使用风险预算直接保留现金；回测继续保留 100 股整数手、佣金、最低佣金、滑点、买不成留现金和无隐含杠杆约束。
+- 正式运行 2013-01-04 至 2026-05-29，覆盖 7 个 ETF、3252 个交易日，共扫描 648 个场景：资金 `50000/100000/200000`，最大风险 ETF 持仓 `1/2`，调仓 `20/40` 日，排序 `momentum/risk_adjusted`，风控 profile `balanced_var/conservative_var/ultra_var`，目标波动率 `0.04/0.06/0.08`，日度 VaR 上限 `0.008/0.012/0.016`。
+- 输出：`data/backtest_results/quant_v35_small_account_risk_budget.json/csv`。`risk_gate_pass_count=648`，全部场景满足 MDD <= 15%；但 `minimum_gate_pass_count=0`，没有任何场景满足 Sharpe >= 1.2、MDD <= 15%、胜率 >= 40% 的最低策略门槛。
+- 5 万最佳场景 `v35_risk_budget_balanced_var_momentum_50000_1asset_20d_vol0.08_var0.008`：Sharpe 0.3094、年化收益 3.80%、年化波动 4.21%、MDD -6.90%、胜率 48.75%、期末资金 79,203.36、平均风险暴露 21.05%、平均现金 78.95%、平均 OOS Sharpe 0.1362、最低 OOS Sharpe -0.8163。
+- 10 万最佳场景 `v35_risk_budget_balanced_var_momentum_100000_1asset_20d_vol0.08_var0.008`：Sharpe 0.3197、年化收益 3.85%、MDD -6.88%、期末资金 159,358.64、平均风险暴露 21.15%、平均现金 78.85%、平均 OOS Sharpe 0.1490、最低 OOS Sharpe -0.8074。
+- 20 万最佳场景 `v35_risk_budget_balanced_var_momentum_200000_1asset_20d_vol0.08_var0.008`：Sharpe 0.3225、年化收益 3.87%、MDD -6.88%、期末资金 319,418.03、平均风险暴露 21.22%、平均现金 78.78%、平均 OOS Sharpe 0.1549、最低 OOS Sharpe -0.7989。
+- 新增 `tests/system/test_v35_small_account_risk_budget.py`，覆盖货币 ETF 不进入风险资产、历史波动/VaR 双重截断、账户回撤停仓、未分配预算保留现金。
+- 新增中文研究报告 `docs/research/quant_v35_small_account_risk_budget.md`，明确结论：V35 风控方向有效，但收益和样本外稳定性不足，不能用于实盘。
+- 验证：Ruff 通过；`tests/system/test_v35_small_account_risk_budget.py` 4 项通过。
+- 下一步建议进入 V36：扩展 ETF/债券/商品/海外/红利低波资产池，引入宏观 regime 与更强 alpha 信号，同时保留 V35 的目标波动率、VaR 和账户回撤预算作为硬风控层。
+
+## V36 小资金多资产 Regime 风险预算研究 (2026-06-18) - MODEST IMPROVEMENT / RETURN REJECTED / PRODUCTION BLOCKED
+
+- 新增 `scripts/research_v36_multi_asset_regime_budget.py`，在 V35 风险预算基础上加入多资产 ETF universe、权益市场 regime 识别、regime 分层风险预算、历史波动/VaR 缩放和账户回撤保护。
+- V36 明确拆分两个 universe：`core_long` 只包含长历史核心 ETF；`expanded_recent` 加入债券、商品、港股、海外、科创50等短历史 ETF，仅作为近期诊断，不允许作为长周期生产证据。
+- 覆盖审计结果：`core_long` 加载 6 个资产，6 个达到长历史门槛，0 个短历史资产；`expanded_recent` 加载 14 个资产，其中 6 个长历史、8 个短历史，短历史资产为 `159920/159980/159985/511010/511260/513100/513500/588000`。
+- 正式运行 2013-01-04 至 2026-05-29，共扫描 144 个场景：资金 `50000/100000/200000`，universe `core_long/expanded_recent`，最大持仓 `1/2`，调仓 `20/40` 日，排序 `trend/risk_adjusted`，风控 profile `aggressive/balanced/defensive`。
+- 输出：`data/backtest_results/quant_v36_multi_asset_regime_budget.json/csv`。`risk_gate_pass_count=120`，`minimum_gate_pass_count=0`，`long_history_research_gate_pass_count=0`，`production_ready=false`。
+- 5 万最佳场景 `v36_regime_core_long_aggressive_risk_adjusted_50000_1asset_20d`：Sharpe 0.4208、年化收益 5.72%、年化波动 7.66%、MDD -12.87%、胜率 28.28%、期末资金 97,949.27、平均风险暴露 15.52%、平均 OOS Sharpe 0.3527、最低 OOS Sharpe -0.9358。
+- 10 万最佳场景 `v36_regime_core_long_aggressive_risk_adjusted_100000_1asset_20d`：Sharpe 0.4210、年化收益 5.75%、MDD -13.51%、期末资金 196,444.33、平均风险暴露 15.61%、平均 OOS Sharpe 0.3545、最低 OOS Sharpe -0.9262。
+- 20 万最佳场景 `v36_regime_core_long_aggressive_risk_adjusted_200000_1asset_20d`：Sharpe 0.4219、年化收益 5.76%、MDD -13.51%、期末资金 393,341.31、平均风险暴露 15.64%、平均 OOS Sharpe 0.3550、最低 OOS Sharpe -0.9268。
+- 新增 `tests/system/test_v36_multi_asset_regime_budget.py`，覆盖长期核心池不混入短历史科创50、扩展池短历史资产标记、risk-on/risk-off regime 判定、现金代理 `511880` 不进入风险资产。
+- 新增中文研究报告 `docs/research/quant_v36_multi_asset_regime_budget.md`，明确结论：V36 比 V35 有小幅改善，但仍不能实盘；下一步不应继续微调风控旋钮，应进入 V37 将 V32 股票 alpha 以小风险预算接入 V36 多资产风控框架。
+- 验证：Ruff 通过；`tests/system/test_v36_multi_asset_regime_budget.py` 4 项通过；V36 JSON 结构校验通过。

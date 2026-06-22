@@ -1,0 +1,184 @@
+{
+  "ts": "2026-06-04T00:04:19.696659",
+  "version": "V5.9-aligned-validation",
+  "description": "Date-aligned V5.9 validation with cost deduction and optional large-cap exclusion via amount/turnover proxy",
+  "data": {
+    "symbols": 1196,
+    "dates": 6396,
+    "start": "2000-01-04",
+    "end": "2026-05-29",
+    "industry_mapped": 1164,
+    "industry_coverage": 0.9707,
+    "sector_cap_note": "Unknown industries are treated as per-symbol pseudo-sectors to avoid collapsing the portfolio to max_per_sector holdings."
+  },
+  "config": {
+    "top_n": 35,
+    "rebalance_freq": 90,
+    "max_position_pct": 0.2,
+    "warmup_days": 252,
+    "test_warmup_days": 60,
+    "min_stocks": 50,
+    "min_history": 252,
+    "stamp_duty": 0.0005,
+    "commission": 0.00025,
+    "slippage_base": 0.0005,
+    "slippage_factor": 0.1,
+    "risk_free_rate": 0.025,
+    "n_folds": 5,
+    "oos_pct": 0.2,
+    "purge_days": 10,
+    "max_per_sector": 5,
+    "mdd_reduce_threshold": 0.1,
+    "mdd_reduce_scale": 0.5,
+    "mdd_stop_threshold": 0.18,
+    "mdd_stop_scale": 0.25,
+    "large_cap_exclude_pct": 0.2
+  },
+  "scenarios": {
+    "baseline_aligned_cost_aware": {
+      "full": {
+        "sharpe_ratio": -0.0951,
+        "annual_return": 0.0186,
+        "annual_volatility": 0.067,
+        "max_drawdown": -0.2306,
+        "calmar_ratio": 0.0808,
+        "win_rate": 0.5322,
+        "total_return": 0.49,
+        "n_rebalances": 69,
+        "n_days": 6143,
+        "avg_active_stocks": 35.0,
+        "avg_candidate_stocks": 648.5,
+        "avg_excluded_large_caps": 0.0,
+        "avg_turnover": 1.0168,
+        "total_rebalance_cost": 0.0568
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "train_days": 5107,
+            "test_days": 255,
+            "is": -0.2845,
+            "oos": 0.301,
+            "active": 35.0
+          },
+          {
+            "fold": 1,
+            "train_days": 5362,
+            "test_days": 255,
+            "is": -0.2898,
+            "oos": 1.3924,
+            "active": 35.0
+          },
+          {
+            "fold": 2,
+            "train_days": 5617,
+            "test_days": 255,
+            "is": -0.3035,
+            "oos": -0.9155,
+            "active": 35.0
+          },
+          {
+            "fold": 3,
+            "train_days": 5872,
+            "test_days": 255,
+            "is": -0.3048,
+            "oos": -2.2264,
+            "active": 35.0
+          },
+          {
+            "fold": 4,
+            "train_days": 6127,
+            "test_days": 255,
+            "is": -0.2792,
+            "oos": 2.6609,
+            "active": 35.0
+          }
+        ],
+        "avg_is_sharpe": -0.2924,
+        "avg_oos_sharpe": 0.2425,
+        "sharpe_decay": -1.8294
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": true,
+        "W": true,
+        "A": false
+      }
+    },
+    "exclude_top_20pct_large_cap_proxy": {
+      "full": {
+        "sharpe_ratio": -0.2002,
+        "annual_return": 0.0134,
+        "annual_volatility": 0.0579,
+        "max_drawdown": -0.2488,
+        "calmar_ratio": 0.0539,
+        "win_rate": 0.5369,
+        "total_return": 0.3303,
+        "n_rebalances": 69,
+        "n_days": 6143,
+        "avg_active_stocks": 35.0,
+        "avg_candidate_stocks": 648.5,
+        "avg_excluded_large_caps": 129.3,
+        "avg_turnover": 1.0122,
+        "total_rebalance_cost": 0.0564
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "train_days": 5107,
+            "test_days": 255,
+            "is": -0.2221,
+            "oos": 0.5151,
+            "active": 35.0
+          },
+          {
+            "fold": 1,
+            "train_days": 5362,
+            "test_days": 255,
+            "is": -0.2347,
+            "oos": 1.594,
+            "active": 35.0
+          },
+          {
+            "fold": 2,
+            "train_days": 5617,
+            "test_days": 255,
+            "is": -0.2523,
+            "oos": -0.622,
+            "active": 35.0
+          },
+          {
+            "fold": 3,
+            "train_days": 5872,
+            "test_days": 255,
+            "is": -0.2451,
+            "oos": -1.8915,
+            "active": 35.0
+          },
+          {
+            "fold": 4,
+            "train_days": 6127,
+            "test_days": 255,
+            "is": -0.2251,
+            "oos": 2.7271,
+            "active": 35.0
+          }
+        ],
+        "avg_is_sharpe": -0.2359,
+        "avg_oos_sharpe": 0.4645,
+        "sharpe_decay": -2.9696
+      },
+      "gates": {
+        "S": false,
+        "M": false,
+        "D": true,
+        "W": true,
+        "A": false
+      }
+    }
+  },
+  "elapsed_s": 67.1
+}

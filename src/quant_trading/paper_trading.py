@@ -6,6 +6,7 @@ Simulates live trading with real market data, dynamic slippage, and MDD safeguar
 from __future__ import annotations
 
 import logging
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -16,7 +17,10 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from quant_trading.execution.algorithms import resolve_execution_fee_model_by_id
+
 log = logging.getLogger("paper_trading")
+_A_SHARE_CODE_RE = re.compile(r"(\d{6})")
 
 # ── V5.9 Production Config ──────────────────────────────────
 V59_CONFIG = {
@@ -26,8 +30,7 @@ V59_CONFIG = {
     "max_per_sector": 5,
     "slippage_base": 0.0005,
     "slippage_factor": 0.10,
-    "stamp_duty": 0.0005,
-    "commission": 0.00025,
+    "fee_model": "cn_stock",
     "risk_free_rate": 0.025,
     "warmup_days": 252,
     "min_history": 252,
@@ -180,7 +183,7 @@ class PaperTradingEngine:
     def __init__(
         self,
         initial_capital: float = 1_000_000,
-        config: dict[str, float | int] | None = None,
+        config: dict[str, float | int | str] | None = None,
         industry_data_path: str | Path | None = None,
     ) -> None:
         self.config = config or V59_CONFIG
@@ -195,6 +198,23 @@ class PaperTradingEngine:
         )
         self._load_industries()
 
+    def _fee_rate(self, side: str) -> float:
+        """Return the configured execution fee rate for paper-trading fills."""
+        fee_model_id = str(self.config.get("fee_model", "cn_stock"))
+        return resolve_execution_fee_model_by_id(fee_model_id).fee_rate(side, "taker")
+
+    def _cfg_float(self, key: str, default: float) -> float:
+        value = self.config.get(key, default)
+        if not isinstance(value, int | float):
+            raise ValueError(f"{key} must be numeric")
+        return float(value)
+
+    def _cfg_int(self, key: str, default: int) -> int:
+        value = self.config.get(key, default)
+        if not isinstance(value, int | float):
+            raise ValueError(f"{key} must be numeric")
+        return int(value)
+
     def _load_industries(self) -> None:
         """Load industry classification for sector caps."""
         try:
@@ -202,26 +222,25 @@ class PaperTradingEngine:
                 return
             df = pd.read_parquet(self.industry_data_path)
             for _, row in df.iterrows():
-                code = str(row["code"])
+                code_match = _A_SHARE_CODE_RE.search(str(row["code"]))
                 ind = row.get("industry", "")
-                if ind and not pd.isna(ind) and "." in code:
-                    self.industry_map[code.split(".")[1]] = ind
+                if code_match and ind and not pd.isna(ind):
+                    self.industry_map[code_match.group(1)] = str(ind)
         except Exception as e:
             log.warning(f"Industry data load failed: {e}")
 
     def check_mdd_safeguards(self) -> str:
         """Check and apply MDD safeguards. Returns action taken."""
         dd = self.account.current_drawdown
-        cfg = self.config
+        stop_threshold = self._cfg_float("mdd_stop_threshold", 0.18)
+        reduce_threshold = self._cfg_float("mdd_reduce_threshold", 0.10)
 
-        if dd < -cfg.get("mdd_stop_threshold", 0.18):
+        if dd < -stop_threshold:
             # Stop all trading
             self.stopped = True
-            return f"STOPPED: DD={dd:.1%} exceeds stop threshold {cfg['mdd_stop_threshold']:.0%}"
-        elif dd < -cfg.get("mdd_reduce_threshold", 0.10):
-            return (
-                f"REDUCED: DD={dd:.1%} exceeds reduce threshold {cfg['mdd_reduce_threshold']:.0%}"
-            )
+            return f"STOPPED: DD={dd:.1%} exceeds stop threshold {stop_threshold:.0%}"
+        elif dd < -reduce_threshold:
+            return f"REDUCED: DD={dd:.1%} exceeds reduce threshold {reduce_threshold:.0%}"
         return "OK"
 
     def compute_positions(
@@ -232,7 +251,6 @@ class PaperTradingEngine:
 
     def _compute_positions_inline(self, snapshot: dict[str, dict[str, Any]]) -> dict[str, float]:
         """Inline factor computation (avoids import issues)."""
-        cfg = self.config
         weights = V35_WEIGHTS
         factor_names = list(weights.keys())
 
@@ -268,8 +286,8 @@ class PaperTradingEngine:
         ranked.sort(key=lambda x: x[1], reverse=True)
 
         # Apply sector caps
-        top_n = cfg["top_n"]
-        max_sec = cfg.get("max_per_sector", 5)
+        top_n = self._cfg_int("top_n", 35)
+        max_sec = self._cfg_int("max_per_sector", 5)
         selected: list[str] = []
         sec_counts: dict[str, int] = {}
         for sym, _score in ranked:
@@ -284,16 +302,16 @@ class PaperTradingEngine:
             return {}
 
         n = len(selected)
-        w = min(1.0 / n, cfg["max_position_pct"])
+        w = min(1.0 / n, self._cfg_float("max_position_pct", 0.20))
         if w * n > 1.0:
             w = 1.0 / n
 
         # Apply MDD safeguards
         dd = self.account.current_drawdown
-        if dd < -cfg.get("mdd_stop_threshold", 0.18):
+        if dd < -self._cfg_float("mdd_stop_threshold", 0.18):
             return {}  # Stop all
-        elif dd < -cfg.get("mdd_reduce_threshold", 0.10):
-            w *= cfg.get("mdd_reduce_scale", 0.50)
+        elif dd < -self._cfg_float("mdd_reduce_threshold", 0.10):
+            w *= self._cfg_float("mdd_reduce_scale", 0.50)
 
         return {s: w for s in selected}
 
@@ -301,8 +319,6 @@ class PaperTradingEngine:
         self, target_weights: dict[str, float], prices: dict[str, float], date_str: str
     ) -> None:
         """Execute orders to reach target weights. Simulates slippage + costs."""
-        cfg = self.config
-
         # Calculate current weights
         total_eq = self.account.total_equity
         current_weights: dict[str, float] = {}
@@ -326,17 +342,18 @@ class PaperTradingEngine:
             current_value = cw * total_eq
 
             if diff > 0:  # Buy
-                slippage = cfg["slippage_base"] * (1 + cfg["slippage_factor"] * abs(diff))
+                slippage = self._cfg_float("slippage_base", 0.0005) * (
+                    1 + self._cfg_float("slippage_factor", 0.10) * abs(diff)
+                )
                 exec_price = price * (1 + slippage)
                 cost = target_value - current_value
-                cost_with_fees = cost * (1 + cfg["stamp_duty"] + cfg["commission"])
+                buy_fee_rate = self._fee_rate("buy")
+                cost_with_fees = cost * (1 + buy_fee_rate)
 
                 if cost_with_fees <= self.account.cash:
                     shares = int(target_value / exec_price / 100) * 100  # Round to lots
                     if shares > 0:
-                        actual_cost = (
-                            shares * exec_price * (1 + cfg["stamp_duty"] + cfg["commission"])
-                        )
+                        actual_cost = shares * exec_price * (1 + buy_fee_rate)
                         if actual_cost <= self.account.cash:
                             self.account.cash -= actual_cost
                             if sym not in self.account.positions:
@@ -366,15 +383,15 @@ class PaperTradingEngine:
                 if not sell_position or sell_position.shares <= 0:
                     continue
 
-                slippage = cfg["slippage_base"] * (1 + cfg["slippage_factor"] * abs(diff))
+                slippage = self._cfg_float("slippage_base", 0.0005) * (
+                    1 + self._cfg_float("slippage_factor", 0.10) * abs(diff)
+                )
                 exec_price = price * (1 - slippage)
                 sell_value = abs(current_value - target_value)
                 shares_to_sell = min(sell_position.shares, int(sell_value / exec_price / 100) * 100)
 
                 if shares_to_sell > 0:
-                    proceeds = (
-                        shares_to_sell * exec_price * (1 - cfg["stamp_duty"] - cfg["commission"])
-                    )
+                    proceeds = shares_to_sell * exec_price * (1 - self._fee_rate("sell"))
                     self.account.cash += proceeds
                     sell_position.shares -= shares_to_sell
                     if sell_position.shares <= 0:
@@ -401,8 +418,8 @@ class PaperTradingEngine:
                 price = prices.get(sym, 0)
                 if price <= 0:
                     continue
-                exec_price = price * (1 - cfg["slippage_base"])
-                proceeds = pos.shares * exec_price * (1 - cfg["stamp_duty"] - cfg["commission"])
+                exec_price = price * (1 - self._cfg_float("slippage_base", 0.0005))
+                proceeds = pos.shares * exec_price * (1 - self._fee_rate("sell"))
                 self.account.cash += proceeds
                 self.account.trade_log.append(
                     {

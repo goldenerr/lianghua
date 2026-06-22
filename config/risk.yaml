@@ -56,3 +56,8 @@ gates:
 # 2026-05-28 config-002: settlement reduce-only requires fresh reconciled position proof; no risk limits changed.
 # 2026-05-28 strategy/config guard: plugin strategy signals inherit market-session guard; no risk limits changed.
 # 2026-05-28 config-002/data routing: data source selection now follows MarketRouter controls; no risk limits changed.
+# 2026-05-28 config-002/execution fees: shortfall cost uses MarketRouter fee_model; no risk limits changed.
+# 2026-05-28 paper-trading fees: simulated fills reuse approved execution fee_model; no risk limits changed.
+# 2026-05-28 deploy readiness: production evidence gate added for external WORM/secret/approval/provider/calendar/benchmark/DR proofs; no risk limits changed.
+# 2026-05-29 local audit archive: dev/test WORM substitute writes redacted daily audit logs, hashes and HMAC manifests from externalized secrets; no risk limits changed.
+# 2026-05-29 production integrations: HTTPS adapters added for secret manager, approval service and exchange-backed position provider; no risk limits changed.

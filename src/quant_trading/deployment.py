@@ -7,6 +7,7 @@ verification and the documented approval workflow.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -24,6 +25,164 @@ class DeploymentDecision(str, Enum):
     ADVANCE = "advance"
     COMPLETE = "complete"
     ROLLBACK = "rollback"
+
+
+class ProductionReadinessError(RuntimeError):
+    """Raised when production release evidence is missing or untrusted."""
+
+
+@dataclass(frozen=True)
+class EvidenceRequirement:
+    """One externally verifiable production release prerequisite."""
+
+    key: str
+    description: str
+    allowed_prefixes: tuple[str, ...]
+
+    def validate(self, evidence: Mapping[str, str]) -> str | None:
+        reference = evidence.get(self.key, "").strip()
+        if not reference:
+            return f"{self.key}: missing {self.description}"
+        lowered = reference.lower()
+        placeholders = ("todo", "pending", "tbd", "local", "mock", "dummy", "sample")
+        if any(token in lowered for token in placeholders):
+            return f"{self.key}: placeholder/local evidence is not acceptable"
+        if not reference.startswith(self.allowed_prefixes):
+            allowed = ", ".join(self.allowed_prefixes)
+            return f"{self.key}: evidence must use one of {allowed}"
+        return None
+
+
+@dataclass(frozen=True)
+class ProductionReadinessReport:
+    """Hash/audit-friendly result for production gate evaluation."""
+
+    passed: bool
+    blockers: tuple[str, ...]
+    evidence_keys: tuple[str, ...]
+
+
+PRODUCTION_EVIDENCE_REQUIREMENTS: tuple[EvidenceRequirement, ...] = (
+    EvidenceRequirement(
+        "external_worm_archive",
+        "external immutable WORM archive attestation",
+        ("worm://", "s3-object-lock://", "vault-audit://"),
+    ),
+    EvidenceRequirement(
+        "secret_manager",
+        "approved production secret-manager resolver evidence",
+        ("vault://", "aws-sm://", "sealed://"),
+    ),
+    EvidenceRequirement(
+        "approval_service",
+        "risk/configuration approval service evidence",
+        ("approval://", "jira://", "servicenow://", "git-pr://"),
+    ),
+    EvidenceRequirement(
+        "real_market_data_provider",
+        "approved non-mock market-data provider evidence",
+        ("provider://", "exchange-feed://", "vendor-feed://"),
+    ),
+    EvidenceRequirement(
+        "provider_entitlement",
+        "data-provider entitlement, license and redistribution evidence",
+        ("entitlement://", "provider://", "contract://", "vendor-contract://"),
+    ),
+    EvidenceRequirement(
+        "alt_archive_readiness",
+        "archive-complete alternative-data readiness artifact",
+        ("artifact://", "ci-artifact://", "worm://", "s3-object-lock://"),
+    ),
+    EvidenceRequirement(
+        "exchange_position_provider",
+        "exchange-backed reconciled position provider evidence",
+        ("exchange://", "broker://"),
+    ),
+    EvidenceRequirement(
+        "broker_borrow_availability",
+        "broker-backed borrow availability feed and account binding evidence",
+        ("broker://", "borrow-feed://", "exchange://", "entitlement://"),
+    ),
+    EvidenceRequirement(
+        "paper_trading_90d",
+        "three-month paper-trading gate evidence using real market data",
+        ("paper://", "artifact://", "ci-artifact://", "report://"),
+    ),
+    EvidenceRequirement(
+        "signed_plugin_review",
+        "signed plugin load and code-review evidence",
+        ("signature://", "cosign://", "git-pr://"),
+    ),
+    EvidenceRequirement(
+        "production_calendar",
+        "approved production exchange calendar evidence",
+        ("calendar://", "exchange-calendar://", "vendor-calendar://"),
+    ),
+    EvidenceRequirement(
+        "rollover_runbook",
+        "approved futures rollover execution runbook/evidence",
+        ("rollover://", "runbook://", "approval://"),
+    ),
+    EvidenceRequirement(
+        "capacity_benchmark",
+        "production-like capacity benchmark report",
+        ("benchmark://", "grafana://", "artifact://"),
+    ),
+    EvidenceRequirement(
+        "failover_dr_test",
+        "multi-region failover and DR test report",
+        ("dr-test://", "failover://", "artifact://"),
+    ),
+)
+
+
+def evaluate_production_readiness(
+    evidence: Mapping[str, str],
+    *,
+    audit_bus: AuditBus | None = None,
+) -> ProductionReadinessReport:
+    """Validate external production evidence without accepting local substitutes.
+
+    The system may have local adapters and tests, but production release requires
+    independently approved evidence references. Missing or placeholder evidence
+    remains a blocker rather than being silently downgraded to a warning.
+    """
+
+    blockers = tuple(
+        blocker
+        for requirement in PRODUCTION_EVIDENCE_REQUIREMENTS
+        if (blocker := requirement.validate(evidence)) is not None
+    )
+    report = ProductionReadinessReport(
+        passed=not blockers,
+        blockers=blockers,
+        evidence_keys=tuple(requirement.key for requirement in PRODUCTION_EVIDENCE_REQUIREMENTS),
+    )
+    if audit_bus is not None:
+        audit_bus.record(
+            "production_readiness_evaluated",
+            "deployment",
+            {
+                "passed": report.passed,
+                "blockers": list(report.blockers),
+                "evidence_keys": list(report.evidence_keys),
+                "provided_keys": sorted(evidence.keys()),
+            },
+        )
+    return report
+
+
+def assert_production_readiness(
+    evidence: Mapping[str, str],
+    *,
+    audit_bus: AuditBus | None = None,
+) -> ProductionReadinessReport:
+    """Fail closed unless every external production prerequisite is present."""
+
+    report = evaluate_production_readiness(evidence, audit_bus=audit_bus)
+    if not report.passed:
+        raise ProductionReadinessError("; ".join(report.blockers))
+    return report
 
 
 @dataclass(frozen=True)

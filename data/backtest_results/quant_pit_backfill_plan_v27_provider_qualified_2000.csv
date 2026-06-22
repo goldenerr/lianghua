@@ -1,0 +1,3 @@
+panel,cadence,command
+daily_flow_snapshot,daily_after_close,env QUANT_FLOW_FETCH_NORTHBOUND_AGGREGATE=1 QUANT_FLOW_FETCH_NORTHBOUND_HOLDINGS=0 QUANT_FLOW_FETCH_MAIN_FUND=1 QUANT_FLOW_FETCH_BIG_DEAL=1 QUANT_FLOW_FETCH_FUND_FLOW_RANKS=1 QUANT_FLOW_FETCH_MARGIN_DETAILS=0 QUANT_FLOW_SKIP_EXISTING=0 .venv/bin/python scripts/fetch_flow_signals.py
+daily_alt_archive_pipeline,daily_after_all_snapshot_fetches,.venv/bin/python scripts/run_alt_archive_daily_pipeline.py --archive-date $(date +%Y%m%d)

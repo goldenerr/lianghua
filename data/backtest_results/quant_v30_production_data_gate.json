@@ -1,0 +1,357 @@
+{
+  "ts": "2026-06-17T02:20:30.657690+00:00",
+  "version": "V30-production-data-gate",
+  "research_only": true,
+  "production_data_ready": false,
+  "requirements": [
+    {
+      "requirement_id": "pit_security_master",
+      "title": "真正 PIT 历史股票池",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/pit_universe.parquet",
+      "exists": false,
+      "rows": 0,
+      "columns_present": [],
+      "missing_columns": [
+        "date",
+        "code",
+        "name",
+        "list_date",
+        "delist_date",
+        "is_listed",
+        "is_tradable",
+        "is_large_cap",
+        "source",
+        "asof_date"
+      ],
+      "unique_dates": 0,
+      "unique_entities": 0,
+      "date_start": null,
+      "date_end": null,
+      "local_coverage_ready": false,
+      "local_failures": [
+        "missing_file"
+      ],
+      "evidence_key": "pit_security_master",
+      "evidence_ref_provided": false,
+      "evidence_ready": false,
+      "evidence_failure": "pit_security_master: 缺少 历史时点证券主数据、上市/退市/可交易状态和非大盘 universe 生成证明",
+      "production_ready": false,
+      "production_blocker": "缺少可按交易日还原的 PIT security master，不能消除幸存者偏差。"
+    },
+    {
+      "requirement_id": "trading_status_actions",
+      "title": "退市/ST/停牌/涨跌停可交易状态",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/trading_status.parquet",
+      "exists": false,
+      "rows": 0,
+      "columns_present": [],
+      "missing_columns": [
+        "date",
+        "code",
+        "is_st",
+        "is_suspended",
+        "is_limit_up",
+        "is_limit_down",
+        "is_tradable",
+        "price_limit_pct",
+        "source",
+        "asof_date"
+      ],
+      "unique_dates": 0,
+      "unique_entities": 0,
+      "date_start": null,
+      "date_end": null,
+      "local_coverage_ready": false,
+      "local_failures": [
+        "missing_file"
+      ],
+      "evidence_key": "trading_status_actions",
+      "evidence_ref_provided": false,
+      "evidence_ready": false,
+      "evidence_failure": "trading_status_actions: 缺少 退市、ST、停牌、涨跌停、可成交状态的交易日级历史证明",
+      "production_ready": false,
+      "production_blocker": "缺少交易日级退市/ST/停牌/涨跌停状态，回测成交约束不可生产化。"
+    },
+    {
+      "requirement_id": "corporate_action_reconciliation",
+      "title": "真实 vendor corporate action/复权复核",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/corporate_actions/vendor_reconciliation.parquet",
+      "exists": false,
+      "rows": 0,
+      "columns_present": [],
+      "missing_columns": [
+        "date",
+        "code",
+        "action_type",
+        "vendor_adjust_factor",
+        "local_adjust_factor",
+        "adjustment_diff_bps",
+        "source",
+        "evidence_ref"
+      ],
+      "unique_dates": 0,
+      "unique_entities": 0,
+      "date_start": null,
+      "date_end": null,
+      "local_coverage_ready": false,
+      "local_failures": [
+        "missing_file"
+      ],
+      "evidence_key": "corporate_action_reconciliation",
+      "evidence_ref_provided": false,
+      "evidence_ready": false,
+      "evidence_failure": "corporate_action_reconciliation: 缺少 真实供应商复权因子和 corporate action 复核证明",
+      "production_ready": false,
+      "production_blocker": "缺少供应商复权因子与本地价格序列复核，不能证明回测/实盘 corporate action 一致。"
+    },
+    {
+      "requirement_id": "real_tick_minute_execution_feed",
+      "title": "二十年真实 tick/minute 执行历史",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/execution_history/tick_minute_20y.parquet",
+      "exists": false,
+      "rows": 0,
+      "columns_present": [],
+      "missing_columns": [
+        "timestamp",
+        "code",
+        "price",
+        "volume",
+        "bid",
+        "ask",
+        "trade_count",
+        "source",
+        "asof_date"
+      ],
+      "unique_dates": 0,
+      "unique_entities": 0,
+      "date_start": null,
+      "date_end": null,
+      "local_coverage_ready": false,
+      "local_failures": [
+        "missing_file"
+      ],
+      "evidence_key": "real_tick_minute_execution_feed",
+      "evidence_ref_provided": false,
+      "evidence_ready": false,
+      "evidence_failure": "real_tick_minute_execution_feed: 缺少 二十年真实 tick/minute 行情和订单簿/成交执行数据授权证明",
+      "production_ready": false,
+      "production_blocker": "缺少真实 tick/minute 执行历史；合成 tick 只能用于研究，不能替代生产执行验证。"
+    },
+    {
+      "requirement_id": "exchange_order_fill_replay",
+      "title": "交易所/券商订单成交回放",
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/execution_history/order_fill_replay.parquet",
+      "exists": false,
+      "rows": 0,
+      "columns_present": [],
+      "missing_columns": [
+        "timestamp",
+        "account_id",
+        "client_order_id",
+        "exchange_order_id",
+        "code",
+        "side",
+        "order_qty",
+        "fill_qty",
+        "fill_price",
+        "source",
+        "evidence_ref"
+      ],
+      "unique_dates": 0,
+      "unique_entities": 0,
+      "date_start": null,
+      "date_end": null,
+      "local_coverage_ready": false,
+      "local_failures": [
+        "missing_file"
+      ],
+      "evidence_key": "exchange_order_fill_replay",
+      "evidence_ref_provided": false,
+      "evidence_ready": false,
+      "evidence_failure": "exchange_order_fill_replay: 缺少 交易所或券商背书的历史订单/成交回放证明",
+      "production_ready": false,
+      "production_blocker": "缺少真实订单/成交回放，无法验证执行链路与交易所结果一致。"
+    }
+  ],
+  "summary": {
+    "total_requirements": 5,
+    "local_coverage_ready_count": 0,
+    "evidence_ready_count": 0,
+    "production_ready_count": 0,
+    "requirement_blocker_count": 5,
+    "evidence_failure_count": 5,
+    "cross_gate_blocker_count": 3
+  },
+  "external_gate_inputs": {
+    "twenty_year_audit": {
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v29_20y_data_coverage_audit.json",
+      "exists": true,
+      "can_claim_20y_full_universe_production_validation": false,
+      "can_run_20y_diagnostic_backtest": true,
+      "diagnostic_start_after_warmup": "2013-07-02",
+      "production_full_universe_start_after_warmup": "2024-06-03",
+      "minimum_production_symbols": 1900
+    },
+    "external_production_evidence_gate": {
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_external_evidence_gate_v26.json",
+      "exists": true,
+      "production_ready": false,
+      "blocker_count": 14
+    },
+    "pit_alpha_panel_gate": {
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_pit_alpha_panel_readiness_v27_provider_qualified_2000.json",
+      "exists": true,
+      "production_data_ready": false,
+      "research_ready_panels": 6,
+      "total_panels": 10
+    }
+  },
+  "diagnostics": {
+    "existing_intraday_microstructure": {
+      "path": "/Users/jacklondon/Documents/study/lianghua/data/intraday/microstructure_features.parquet",
+      "exists": true,
+      "rows": 104373,
+      "unique_dates": 257,
+      "unique_entities": 2475,
+      "date_start": "2024-11-29",
+      "date_end": "2026-06-15",
+      "note": "这是近期分钟特征诊断，不是二十年真实 tick/minute 执行历史。"
+    },
+    "daily_price_adjustment_columns": {
+      "universe_path": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
+      "price_dir": "/Users/jacklondon/Documents/study/lianghua/data/parquet",
+      "sampled_files": 200,
+      "files_with_adjustment_columns": 0,
+      "adjustment_column_candidates": [
+        "adj_factor",
+        "adjust_factor",
+        "adjusted_close",
+        "close_hfq",
+        "close_qfq",
+        "hfq_factor",
+        "qfq_factor"
+      ],
+      "sampled_columns_head": {
+        "002847": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "000729": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "603345": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "600309": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "600132": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "600872": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "603444": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "603605": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "002517": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "600298": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ]
+      },
+      "local_adjustment_columns_ready": false
+    }
+  },
+  "blockers": [
+    "缺少可按交易日还原的 PIT security master，不能消除幸存者偏差。",
+    "缺少交易日级退市/ST/停牌/涨跌停状态，回测成交约束不可生产化。",
+    "缺少供应商复权因子与本地价格序列复核，不能证明回测/实盘 corporate action 一致。",
+    "缺少真实 tick/minute 执行历史；合成 tick 只能用于研究，不能替代生产执行验证。",
+    "缺少真实订单/成交回放，无法验证执行链路与交易所结果一致。",
+    "pit_security_master:missing_file",
+    "trading_status_actions:missing_file",
+    "corporate_action_reconciliation:missing_file",
+    "real_tick_minute_execution_feed:missing_file",
+    "exchange_order_fill_replay:missing_file",
+    "pit_security_master: 缺少 历史时点证券主数据、上市/退市/可交易状态和非大盘 universe 生成证明",
+    "trading_status_actions: 缺少 退市、ST、停牌、涨跌停、可成交状态的交易日级历史证明",
+    "corporate_action_reconciliation: 缺少 真实供应商复权因子和 corporate action 复核证明",
+    "real_tick_minute_execution_feed: 缺少 二十年真实 tick/minute 行情和订单簿/成交执行数据授权证明",
+    "exchange_order_fill_replay: 缺少 交易所或券商背书的历史订单/成交回放证明",
+    "二十年覆盖审计未达到全量生产验证口径。",
+    "外部生产 evidence gate 未通过。",
+    "PIT alpha panel gate 未达到生产数据就绪。"
+  ],
+  "next_required_work": [
+    "接入供应商 PIT security master，并每日 WORM 归档。",
+    "接入退市、ST、停牌、涨跌停和可成交状态历史表。",
+    "接入 vendor corporate action/复权因子复核表，并与本地价格序列对账。",
+    "采购或接入二十年真实 tick/minute 行情与订单簿/成交执行数据。",
+    "导入券商/交易所订单成交日志，完成历史订单/成交回放验证。",
+    "补齐外部 WORM、Secret Manager、Approval、Provider Entitlement、Broker Position、90 天 Paper、容量与 DR evidence refs。"
+  ]
+}

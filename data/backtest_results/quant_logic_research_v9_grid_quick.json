@@ -1,0 +1,306 @@
+[
+  {
+    "i": 1,
+    "score": 0.878,
+    "full": {
+      "sharpe_ratio": 0.878,
+      "annual_return": 0.0754,
+      "annual_volatility": 0.0574,
+      "max_drawdown": -0.1018,
+      "win_rate": 0.5659,
+      "total_return": 4.2053,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.2074,
+      "avg_exposure": 0.172,
+      "total_cost": 0.1075,
+      "last_ic_weights": {
+        "amihud_low": 0.1425,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1241,
+        "low_vol_60": 0.0124,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.2154,
+        "turnover_change": 0.0,
+        "turnover_low": 0.0753,
+        "vol_dev": 0.4303
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 40,
+      "rebalance_freq": 10,
+      "target_vol": 0.1,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.025
+    }
+  },
+  {
+    "i": 2,
+    "score": 0.9038,
+    "full": {
+      "sharpe_ratio": 0.9038,
+      "annual_return": 0.0856,
+      "annual_volatility": 0.067,
+      "max_drawdown": -0.1168,
+      "win_rate": 0.5641,
+      "total_return": 5.4533,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.245,
+      "avg_exposure": 0.2038,
+      "total_cost": 0.1272,
+      "last_ic_weights": {
+        "amihud_low": 0.1425,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1241,
+        "low_vol_60": 0.0124,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.2154,
+        "turnover_change": 0.0,
+        "turnover_low": 0.0753,
+        "vol_dev": 0.4303
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 40,
+      "rebalance_freq": 10,
+      "target_vol": 0.12,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.025
+    }
+  },
+  {
+    "i": 3,
+    "score": 0.7741,
+    "full": {
+      "sharpe_ratio": 0.7741,
+      "annual_return": 0.0704,
+      "annual_volatility": 0.0587,
+      "max_drawdown": -0.1162,
+      "win_rate": 0.5616,
+      "total_return": 3.6519,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.2332,
+      "avg_exposure": 0.1739,
+      "total_cost": 0.0605,
+      "last_ic_weights": {
+        "amihud_low": 0.0654,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1414,
+        "low_vol_60": 0.0487,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.242,
+        "turnover_change": 0.0,
+        "turnover_low": 0.1135,
+        "vol_dev": 0.3891
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 40,
+      "rebalance_freq": 20,
+      "target_vol": 0.1,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.025
+    }
+  },
+  {
+    "i": 4,
+    "score": 0.7992,
+    "full": {
+      "sharpe_ratio": 0.7992,
+      "annual_return": 0.0798,
+      "annual_volatility": 0.0685,
+      "max_drawdown": -0.1384,
+      "win_rate": 0.5609,
+      "total_return": 4.6525,
+      "avg_active_stocks": 40.0,
+      "avg_turnover": 0.2744,
+      "avg_exposure": 0.2055,
+      "total_cost": 0.0713,
+      "last_ic_weights": {
+        "amihud_low": 0.0654,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1414,
+        "low_vol_60": 0.0487,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.242,
+        "turnover_change": 0.0,
+        "turnover_low": 0.1135,
+        "vol_dev": 0.3891
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 40,
+      "rebalance_freq": 20,
+      "target_vol": 0.12,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.025
+    }
+  },
+  {
+    "i": 5,
+    "score": 0.8442,
+    "full": {
+      "sharpe_ratio": 0.8442,
+      "annual_return": 0.073,
+      "annual_volatility": 0.0569,
+      "max_drawdown": -0.1062,
+      "win_rate": 0.5657,
+      "total_return": 3.9408,
+      "avg_active_stocks": 50.0,
+      "avg_turnover": 0.2012,
+      "avg_exposure": 0.172,
+      "total_cost": 0.1043,
+      "last_ic_weights": {
+        "amihud_low": 0.1425,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1241,
+        "low_vol_60": 0.0124,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.2154,
+        "turnover_change": 0.0,
+        "turnover_low": 0.0753,
+        "vol_dev": 0.4303
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 50,
+      "rebalance_freq": 10,
+      "target_vol": 0.1,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.02
+    }
+  },
+  {
+    "i": 6,
+    "score": 0.8697,
+    "full": {
+      "sharpe_ratio": 0.8697,
+      "annual_return": 0.0828,
+      "annual_volatility": 0.0664,
+      "max_drawdown": -0.1222,
+      "win_rate": 0.5627,
+      "total_return": 5.0647,
+      "avg_active_stocks": 50.0,
+      "avg_turnover": 0.2375,
+      "avg_exposure": 0.2037,
+      "total_cost": 0.1233,
+      "last_ic_weights": {
+        "amihud_low": 0.1425,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1241,
+        "low_vol_60": 0.0124,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.2154,
+        "turnover_change": 0.0,
+        "turnover_low": 0.0753,
+        "vol_dev": 0.4303
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 50,
+      "rebalance_freq": 10,
+      "target_vol": 0.12,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.02
+    }
+  },
+  {
+    "i": 7,
+    "score": 0.7469,
+    "full": {
+      "sharpe_ratio": 0.7469,
+      "annual_return": 0.0685,
+      "annual_volatility": 0.0583,
+      "max_drawdown": -0.1213,
+      "win_rate": 0.5586,
+      "total_return": 3.4618,
+      "avg_active_stocks": 50.0,
+      "avg_turnover": 0.2277,
+      "avg_exposure": 0.1739,
+      "total_cost": 0.0591,
+      "last_ic_weights": {
+        "amihud_low": 0.0654,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1414,
+        "low_vol_60": 0.0487,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.242,
+        "turnover_change": 0.0,
+        "turnover_low": 0.1135,
+        "vol_dev": 0.3891
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 50,
+      "rebalance_freq": 20,
+      "target_vol": 0.1,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.02
+    }
+  },
+  {
+    "i": 8,
+    "score": 0.7695,
+    "full": {
+      "sharpe_ratio": 0.7695,
+      "annual_return": 0.0774,
+      "annual_volatility": 0.068,
+      "max_drawdown": -0.1444,
+      "win_rate": 0.5567,
+      "total_return": 4.3591,
+      "avg_active_stocks": 50.0,
+      "avg_turnover": 0.2675,
+      "avg_exposure": 0.2051,
+      "total_cost": 0.0695,
+      "last_ic_weights": {
+        "amihud_low": 0.0654,
+        "bollinger_mr": 0.0,
+        "idio_vol_60": 0.1414,
+        "low_vol_60": 0.0487,
+        "macd_hist": 0.0,
+        "mom_120": 0.0,
+        "mom_20": 0.0,
+        "mom_60": 0.0,
+        "reversal_5": 0.242,
+        "turnover_change": 0.0,
+        "turnover_low": 0.1135,
+        "vol_dev": 0.3891
+      },
+      "n_days": 5639
+    },
+    "config": {
+      "top_n": 50,
+      "rebalance_freq": 20,
+      "target_vol": 0.12,
+      "gross_exposure": 0.75,
+      "max_position_pct": 0.02
+    }
+  }
+]

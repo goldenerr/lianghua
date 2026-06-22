@@ -3,7 +3,7 @@
 | Field | Value |
 | --- | --- |
 | Document version | 2.13.1-dev |
-| Updated | 2026-05-28 |
+| Updated | 2026-05-29 |
 | Status | Production blocked pending release evidence and approvals |
 | Authority | `AGENTS.md`, `feature_list.json`, approved configuration and audit events |
 
@@ -11,6 +11,9 @@
 
 | Version | Date | Author | Change |
 | --- | --- | --- | --- |
+| 2.13.4-dev | 2026-05-29 | Codex | Add HTTPS adapters for Secret Manager, approval service and exchange-backed position provider |
+| 2.13.3-dev | 2026-05-29 | Codex | Add dev/test local audit archive substitute for WORM evidence with redacted daily logs and signed hashes |
+| 2.13.2-dev | 2026-05-28 | Codex | Add production-readiness evidence gate for external integrations and operational proof |
 | 2.13.1-dev | 2026-05-28 | Codex | Bind configured market-time, data-source routing and order-submission gates in development, retaining production blockers |
 | 2.13.0-baseline | 2026-05-25 | Codex | Establish architecture, NFR, data-flow and gate baseline without asserting production approval |
 
@@ -19,7 +22,7 @@ This document records the safety architecture implemented in the repository and 
 ## Release Posture
 
 - `feature_list.json` intentionally has no `passes=true` entries as of 2026-05-25.
-- The current verified local baseline is `668` passing tests at `85.68%` source coverage, with Ruff, Black and strict mypy passing.
+- The current verified local baseline is `685` passing tests at `85.79%` source coverage, with Ruff, Black and strict mypy passing.
 - Production trading remains prohibited until paper-trading, small-live, approval, external archival, secrets and deployment gates are completed.
 - The core design rule is funds safety before strategy return and development speed.
 
@@ -116,10 +119,12 @@ sequenceDiagram
 | Order manager | Exchange gateway | Unique `client_order_id`, idempotent handling | Return original order on duplicate |
 | Reconciler | State machine | Exchange positions/balances compared to internal state | Safe Mode on unacceptable divergence |
 | All components | Audit bus | Hash-chained structured event is authoritative | Integrity failure blocks release |
+| Local audit archive | Audit bus / deployment evidence | Dev/test daily redacted `audit.jsonl` plus `audit-manifest.json` with file sha256, manifest hash and HMAC key loaded from `.env.local` or a test Secret Manager | Local substitute can generate WORM-style evidence; approved external WORM remains required before production |
 | Compliance | Archive adapter | Template-derived export plus hash-chain verification | External WORM remains required for production |
 | Deployment | Runtime | Signed manifest, config drift decision, canary gate | Failed verification blocks rollout |
 | Configuration loader | Runtime | Strict validated fields, immutable system/risk/API/account snapshots, unique account identities, audited atomic activation/reload/initial rejection decisions, environment-scoped accounts, production `secret_ref` resolution, TLS-only production endpoint binding and full-hash-bound approval reference | Production startup fails closed without resolver/approval; duplicate account identities, missing or non-TLS production endpoints, stale approval, unaudited activation and post-hash collection mutation are blocked |
-| Market configuration | Config loader/router/calendar/data source manager/strategy/order manager/rollover detector | Prevalidated audit-authorized loader-only hash-bound runtime publication, synchronized loader/runtime snapshots, immutable validated market-control collections, market-local sessions, explicit `holiday_calendar`, configured data-source priority/fee-model identifiers, provider selection from `MarketRouter`, plugin-inherited signal guards, lot/tick submission controls, reconciled reduce-only settlement validation and approval-gated futures rollover cost policy | Direct publication, unavailable mandatory audit writes, failed reload candidates, inactive market lookups, disabled-market data providers, off-session plugin signals and unverifiable settlement reductions fail closed; missing configured provider bindings are diagnostic; rollover is disabled unless futures is active and cannot auto-submit orders |
+| Production integrations | Config loader / order manager | HTTPS-only Secret Manager resolver, approval-service validator and exchange-position provider with timeout/retry, token injection, strict response validation and non-secret audit events | Service outage, unbound approval, wrong exchange, invalid credentials or stale/untrusted position data fails closed |
+| Market configuration | Config loader/router/calendar/data source manager/strategy/execution cost/paper trading/order manager/rollover detector | Prevalidated audit-authorized loader-only hash-bound runtime publication, synchronized loader/runtime snapshots, immutable validated market-control collections, market-local sessions, explicit `holiday_calendar`, configured data-source priority/fee-model identifiers, provider and execution/paper-fee selection from `MarketRouter`-approved fee models, plugin-inherited signal guards, lot/tick submission controls, reconciled reduce-only settlement validation and approval-gated futures rollover cost policy | Direct publication, unavailable mandatory audit writes, failed reload candidates, inactive market lookups, disabled-market data providers, unsupported fee models, off-session plugin signals and unverifiable settlement reductions fail closed; missing configured provider bindings are diagnostic; rollover is disabled unless futures is active and cannot auto-submit orders |
 
 ## Invariants
 
@@ -146,7 +151,7 @@ These are target requirements, not yet production benchmark evidence.
 | Availability | `>= 99.9%` | Local disaster/failover tests only | Blocked |
 | Recovery time objective | `<= 2 hours` | Local recovery tests only | Blocked |
 | Recovery point objective | `<= 1 hour` | Local backup manifest tests only | Blocked |
-| Test coverage | Core modules `>= 80%` | `85.68%`, `668` tests passed locally on 2026-05-28; Ruff/Black/mypy clean | Met locally |
+| Test coverage | Core modules `>= 80%` | `85.79%`, `685` tests passed locally on 2026-05-29; Ruff/Black/mypy clean | Met locally |
 
 ## Capacity Planning
 
@@ -165,10 +170,11 @@ Capacity values must be measured under approved datasets and infrastructure befo
 1. Validate adjusted input data and run deterministic backtest and smoke/regression suites.
 2. Generate capital-impact assessment and obtain risk approval for core business changes.
 3. Verify configuration drift exceptions and signed manifest/code artifacts.
-4. Archive evidence using an approved immutable retention service.
-5. Complete paper trading for at least 3 months.
-6. Complete approved small-live operation with no breached gates before full-live review.
-7. Use canary progression only after prior gates pass; rollback on configured threshold breach.
+4. Evaluate the production-readiness evidence package with `assert_production_readiness`; missing external WORM, secret-manager, approval-service, real market-data provider, exchange-backed position provider, signed plugin review, production calendar, rollover runbook, capacity benchmark or failover/DR report evidence blocks release.
+5. Archive evidence using an approved immutable retention service.
+6. Complete paper trading for at least 3 months.
+7. Complete approved small-live operation with no breached gates before full-live review.
+8. Use canary progression only after prior gates pass; rollback on configured threshold breach.
 
 ## Change Impact Matrix
 
@@ -184,9 +190,9 @@ Capacity values must be measured under approved datasets and infrastructure befo
 
 ## Known Production Blockers
 
-- Approved external WORM/audit retention service is not integrated.
+- Approved external WORM/audit retention service is not integrated. A dev/test local audit archive substitute now writes redacted daily audit files, hash manifests and HMAC signatures using externalized local/test secrets, and can provide a `worm://audit-file/...` attestation reference for local gates. This is still not an approved production WORM backend.
 - CI/CD does not yet enforce every signed artifact, config drift and capital-approval gate.
-- Production configuration now fails closed unless secret and approval validators are injected; real secret-manager/approval services, benchmark/feed adapters, model/factor registry and dashboard integrations still need approved environments.
-- Market schedule controls and configured lot/tick/price-field rules are bound to strategy signal generation and `OrderManager.submit()` locally; `Strategy.__init_subclass__` wraps plugin `on_data` methods so plugin signals inherit the same market-session guard and audit suppression. Hidden market-to-calendar, data-source-priority and fee-model routing constants have been externalized as strict configuration included in the public configuration hash, and `DataSourceManager` now derives provider order from the active `MarketRouter` snapshot while refusing disabled-market data providers and exposing missing configured provider bindings. Only `ConfigLoader` can publish a runtime market-control snapshot after hash and production-approval checks; direct router publication is refused even if a caller fabricates hash or approval strings. Market-control collections are immutable after validation, and failed hot reload retains the prior verified snapshot. Disabled markets cannot provide routing metadata, rules, calendars, data providers or settlement-window decisions. Quantity normalization never rounds requested exposure upward, and invalid rule numerics fail configuration validation. Settlement-window `reduce_only` orders now have a standard reconciled-position validator that requires fresh timezone-aware position data, reducing side and non-flipping quantity; production still needs an approved exchange-backed provider. Futures rollover detectors can now be created only by the configured `MarketRouter` while `期货` is active, emit an audited manual-approval-only intent with configured cost assumptions, and reject duplicate dates, invalid volumes, missing current contracts, unrelated contracts and backward-expiry targets before changing state; they deliberately do not generate closing/opening orders until execution, position-reconciliation and approval evidence are approved. Python-private loader/test installation capabilities remain protected by code review/signing governance rather than a process isolation boundary. Downstream data provider implementations for configured-but-unbound IDs, compliance adapter integration evidence, signed plugin loading/review evidence and approved production holiday/calendar/rollover execution evidence remain pending.
-- Capacity, latency and multi-region recovery targets have not been measured on production-like infrastructure.
+- Production configuration now fails closed unless secret and approval validators are injected. HTTPS adapters now exist for Secret Manager, approval service and exchange-backed position snapshots, and deployment readiness requires their external evidence before release. Actual production endpoints, tokens and service attestations are still environment-provided, not committed in this repository.
+- Market schedule controls and configured lot/tick/price-field rules are bound to strategy signal generation and `OrderManager.submit()` locally; `Strategy.__init_subclass__` wraps plugin `on_data` methods so plugin signals inherit the same market-session guard and audit suppression. Hidden market-to-calendar, data-source-priority and fee-model routing constants have been externalized as strict configuration included in the public configuration hash, `DataSourceManager` now derives provider order from the active `MarketRouter` snapshot while refusing disabled-market data providers and exposing missing configured provider bindings, and implementation-shortfall plus paper-trading fill fees now use the active approved `fee_model` instead of separate fixed A-share assumptions. Only `ConfigLoader` can publish a runtime market-control snapshot after hash and production-approval checks; direct router publication is refused even if a caller fabricates hash or approval strings. Market-control collections are immutable after validation, and failed hot reload retains the prior verified snapshot. Disabled markets cannot provide routing metadata, rules, calendars, data providers, fee models or settlement-window decisions. Quantity normalization never rounds requested exposure upward, and invalid rule numerics fail configuration validation. Settlement-window `reduce_only` orders now have a standard reconciled-position validator that requires fresh timezone-aware position data, reducing side and non-flipping quantity; production still needs an approved exchange-backed provider. Futures rollover detectors can now be created only by the configured `MarketRouter` while `期货` is active, emit an audited manual-approval-only intent with configured cost assumptions, and reject duplicate dates, invalid volumes, missing current contracts, unrelated contracts and backward-expiry targets before changing state; they deliberately do not generate closing/opening orders until execution, position-reconciliation and approval evidence are approved. Python-private loader/test installation capabilities remain protected by code review/signing governance rather than a process isolation boundary. Downstream data provider implementations for configured-but-unbound IDs, final compliance fee/tax templates, signed plugin loading/review evidence and approved production holiday/calendar/rollover execution evidence remain pending.
+- Capacity, latency and multi-region recovery targets have not been measured on production-like infrastructure; a production-like capacity benchmark and multi-region failover/DR report are now explicit release blockers.
 - Paper and small-live acceptance durations have not been completed.

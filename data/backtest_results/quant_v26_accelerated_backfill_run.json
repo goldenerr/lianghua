@@ -1,0 +1,2606 @@
+{
+  "ts": "2026-06-15T01:59:33.879679+00:00",
+  "version": "V26-accelerated-backfill-run",
+  "research_only": true,
+  "coverage": {
+    "northbound_existing_target_symbols": 1780,
+    "northbound_provider_unavailable_target_symbols": 220,
+    "northbound_missing_target_symbols": 220,
+    "northbound_fetchable_missing_target_symbols": 0,
+    "intraday_existing_target_symbols": 2000,
+    "intraday_missing_target_symbols": 0,
+    "margin_existing_complete_dates": 580,
+    "margin_expected_trading_dates": 580
+  },
+  "batch_counts": {
+    "northbound": 0,
+    "intraday": 0,
+    "margin": 0,
+    "daily_snapshot": 2
+  },
+  "events": [
+    {
+      "cycle": 1,
+      "started_at": "2026-06-15T01:24:29.403172+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 814,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "601033",
+          "601083",
+          "601096"
+        ],
+        "failures": [
+          {
+            "code": "601033",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "601083",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "601096",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 90.81364607810974
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 814,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "601033",
+          "601083",
+          "601096"
+        ],
+        "failures": [
+          {
+            "code": "601033",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "601083",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "601096",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 10.718493938446045
+      },
+      "northbound_provider_unavailable_added": [
+        "601033",
+        "601083",
+        "601096"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 800,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 69.76307606697083
+      }
+    },
+    {
+      "cycle": 2,
+      "started_at": "2026-06-15T01:27:21.892039+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 914,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "603014",
+          "603049",
+          "603072",
+          "603119",
+          "603193",
+          "603194",
+          "603341",
+          "603395"
+        ],
+        "failures": [
+          {
+            "code": "603014",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603049",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603072",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603119",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603193",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603194",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603341",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603395",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 90.49216294288635
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 914,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "603014",
+          "603049",
+          "603072",
+          "603119",
+          "603193",
+          "603194",
+          "603341",
+          "603395"
+        ],
+        "failures": [
+          {
+            "code": "603014",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603049",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603072",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603119",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603193",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603194",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603341",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603395",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 21.758463859558105
+      },
+      "northbound_provider_unavailable_added": [
+        "603014",
+        "603049",
+        "603072",
+        "603119",
+        "603193",
+        "603194",
+        "603341",
+        "603395"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 900,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 64.37655806541443
+      }
+    },
+    {
+      "cycle": 3,
+      "started_at": "2026-06-15T01:30:19.499590+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1014,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "688158",
+          "688213"
+        ],
+        "failures": [
+          {
+            "code": "688158",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688213",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 56.81211519241333
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1014,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "688158",
+          "688213"
+        ],
+        "failures": [
+          {
+            "code": "688158",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688213",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 7.601028919219971
+      },
+      "northbound_provider_unavailable_added": [
+        "688158",
+        "688213"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1000,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 63.379916191101074
+      }
+    },
+    {
+      "cycle": 4,
+      "started_at": "2026-06-15T01:32:28.368968+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1114,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "688326",
+          "688347",
+          "688548",
+          "688549",
+          "688563",
+          "688612",
+          "688702"
+        ],
+        "failures": [
+          {
+            "code": "688326",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688347",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688548",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688549",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688563",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688612",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688702",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 49.49450993537903
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1114,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "688326",
+          "688347",
+          "688548",
+          "688549",
+          "688563",
+          "688612",
+          "688702"
+        ],
+        "failures": [
+          {
+            "code": "688326",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688347",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688548",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688549",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688563",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688612",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688702",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 19.363697052001953
+      },
+      "northbound_provider_unavailable_added": [
+        "688326",
+        "688347",
+        "688548",
+        "688549",
+        "688563",
+        "688612",
+        "688702"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1100,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 63.21774172782898
+      }
+    },
+    {
+      "cycle": 5,
+      "started_at": "2026-06-15T01:34:41.694702+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1214,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "002956",
+          "003010",
+          "300824",
+          "603062",
+          "603199",
+          "603558",
+          "605080",
+          "688692"
+        ],
+        "failures": [
+          {
+            "code": "003010",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688692",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603558",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603199",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605080",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002956",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603062",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300824",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 73.72679615020752
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1214,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "002956",
+          "003010",
+          "300824",
+          "603062",
+          "603199",
+          "603558",
+          "605080",
+          "688692"
+        ],
+        "failures": [
+          {
+            "code": "003010",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688692",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603558",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603199",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605080",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002956",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603062",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300824",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 23.223057985305786
+      },
+      "northbound_provider_unavailable_added": [
+        "003010",
+        "688692",
+        "603558",
+        "603199",
+        "605080",
+        "002956",
+        "603062",
+        "300824"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1200,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 66.18560290336609
+      }
+    },
+    {
+      "cycle": 6,
+      "started_at": "2026-06-15T01:37:25.858505+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1314,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "001206",
+          "002790",
+          "300218",
+          "300818",
+          "300918",
+          "301187",
+          "603365",
+          "603697",
+          "605128",
+          "688510",
+          "688775",
+          "688793"
+        ],
+        "failures": [
+          {
+            "code": "603365",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002790",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603697",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605128",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001206",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301187",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688510",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688775",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688793",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300918",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300218",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300818",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 68.96839761734009
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1314,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "001206",
+          "002790",
+          "300218",
+          "300818",
+          "300918",
+          "301187",
+          "603365",
+          "603697",
+          "605128",
+          "688510",
+          "688775",
+          "688793"
+        ],
+        "failures": [
+          {
+            "code": "603365",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002790",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603697",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605128",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001206",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301187",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688510",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688775",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688793",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300918",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300218",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300818",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 32.56355285644531
+      },
+      "northbound_provider_unavailable_added": [
+        "603365",
+        "002790",
+        "603697",
+        "605128",
+        "001206",
+        "301187",
+        "688510",
+        "688775",
+        "688793",
+        "300918",
+        "300218",
+        "300818"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1300,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 63.135525703430176
+      }
+    },
+    {
+      "cycle": 7,
+      "started_at": "2026-06-15T01:40:11.777715+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1414,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "002225",
+          "002615",
+          "002949",
+          "300908",
+          "301033",
+          "603214",
+          "603215",
+          "603518",
+          "603755",
+          "603809",
+          "603998",
+          "605166",
+          "688049",
+          "688136",
+          "688322",
+          "688376",
+          "688411",
+          "688428",
+          "688480",
+          "688580",
+          "688582",
+          "688615",
+          "688625",
+          "688717"
+        ],
+        "failures": [
+          {
+            "code": "688580",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603518",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300908",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603214",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688376",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688615",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688625",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301033",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603755",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603998",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688136",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688717",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688411",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603809",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688582",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002615",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688322",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688049",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688428",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002225",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688480",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002949",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603215",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605166",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 59.253427267074585
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1414,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "002225",
+          "002615",
+          "002949",
+          "300908",
+          "301033",
+          "603214",
+          "603215",
+          "603518",
+          "603755",
+          "603809",
+          "603998",
+          "605166",
+          "688049",
+          "688136",
+          "688322",
+          "688376",
+          "688411",
+          "688428",
+          "688480",
+          "688580",
+          "688582",
+          "688615",
+          "688625",
+          "688717"
+        ],
+        "failures": [
+          {
+            "code": "688580",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603518",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300908",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603214",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688376",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688615",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688625",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301033",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603755",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603998",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688136",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688717",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688411",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603809",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688582",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002615",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688322",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688049",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688428",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002225",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688480",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002949",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603215",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605166",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 61.15674185752869
+      },
+      "northbound_provider_unavailable_added": [
+        "688580",
+        "603518",
+        "300908",
+        "603214",
+        "688376",
+        "688615",
+        "688625",
+        "301033",
+        "603755",
+        "603998",
+        "688136",
+        "688717",
+        "688411",
+        "603809",
+        "688582",
+        "002615",
+        "688322",
+        "688049",
+        "688428",
+        "002225",
+        "688480",
+        "002949",
+        "603215",
+        "605166"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1400,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 61.85822796821594
+      }
+    },
+    {
+      "cycle": 8,
+      "started_at": "2026-06-15T01:43:15.169733+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1514,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "001222",
+          "001283",
+          "002159",
+          "002469",
+          "002674",
+          "002734",
+          "002968",
+          "300622",
+          "301188",
+          "301193",
+          "603059",
+          "603166",
+          "605088",
+          "688108",
+          "688501",
+          "688551",
+          "688591",
+          "688627",
+          "688628",
+          "688687"
+        ],
+        "failures": [
+          {
+            "code": "002674",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688628",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001283",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605088",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688591",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688501",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688687",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002159",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002469",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688551",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688627",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301193",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603059",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002734",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002968",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300622",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301188",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603166",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688108",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001222",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 59.531084060668945
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1514,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "001222",
+          "001283",
+          "002159",
+          "002469",
+          "002674",
+          "002734",
+          "002968",
+          "300622",
+          "301188",
+          "301193",
+          "603059",
+          "603166",
+          "605088",
+          "688108",
+          "688501",
+          "688551",
+          "688591",
+          "688627",
+          "688628",
+          "688687"
+        ],
+        "failures": [
+          {
+            "code": "002674",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688628",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001283",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605088",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688591",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688501",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688687",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002159",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002469",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688551",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688627",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301193",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603059",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002734",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002968",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300622",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301188",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603166",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688108",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001222",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 51.657451152801514
+      },
+      "northbound_provider_unavailable_added": [
+        "002674",
+        "688628",
+        "001283",
+        "605088",
+        "688591",
+        "688501",
+        "688687",
+        "002159",
+        "002469",
+        "688551",
+        "688627",
+        "301193",
+        "603059",
+        "002734",
+        "002968",
+        "300622",
+        "301188",
+        "603166",
+        "688108",
+        "001222"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1500,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 63.148889780044556
+      }
+    },
+    {
+      "cycle": 9,
+      "started_at": "2026-06-15T01:46:10.561277+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1614,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "001380",
+          "002264",
+          "002452",
+          "300547",
+          "300938",
+          "301011",
+          "301110",
+          "301257",
+          "301413",
+          "603040",
+          "603061",
+          "603091",
+          "603237",
+          "605189",
+          "688117",
+          "688143",
+          "688195",
+          "688358",
+          "688398"
+        ],
+        "failures": [
+          {
+            "code": "301413",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301011",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301257",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603040",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603061",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603091",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603237",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688195",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688398",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002264",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002452",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300547",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301110",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688117",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688358",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300938",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605189",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688143",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001380",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 65.38132095336914
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1614,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "001380",
+          "002264",
+          "002452",
+          "300547",
+          "300938",
+          "301011",
+          "301110",
+          "301257",
+          "301413",
+          "603040",
+          "603061",
+          "603091",
+          "603237",
+          "605189",
+          "688117",
+          "688143",
+          "688195",
+          "688358",
+          "688398"
+        ],
+        "failures": [
+          {
+            "code": "301413",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301011",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301257",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603040",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603061",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603091",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603237",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688195",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688398",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002264",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002452",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300547",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301110",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688117",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688358",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300938",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605189",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688143",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001380",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 49.72113609313965
+      },
+      "northbound_provider_unavailable_added": [
+        "301413",
+        "301011",
+        "301257",
+        "603040",
+        "603061",
+        "603091",
+        "603237",
+        "688195",
+        "688398",
+        "002264",
+        "002452",
+        "300547",
+        "301110",
+        "688117",
+        "688358",
+        "300938",
+        "605189",
+        "688143",
+        "001380"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1600,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 65.54668688774109
+      }
+    },
+    {
+      "cycle": 10,
+      "started_at": "2026-06-15T01:49:12.294155+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1714,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "000803",
+          "001288",
+          "002380",
+          "002780",
+          "003001",
+          "300192",
+          "300945",
+          "300952",
+          "300993",
+          "301160",
+          "301230",
+          "301276",
+          "301338",
+          "301397",
+          "301607",
+          "603551",
+          "603722",
+          "603725",
+          "603890",
+          "603908",
+          "603909",
+          "605167",
+          "688045",
+          "688210",
+          "688286",
+          "688603",
+          "688722"
+        ],
+        "failures": [
+          {
+            "code": "605167",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002380",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603551",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603908",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300952",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301397",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603725",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603890",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603909",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688210",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688603",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688722",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300993",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301160",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603722",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002780",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "003001",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300192",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301230",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301338",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001288",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300945",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301276",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301607",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688045",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688286",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "000803",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 65.09326100349426
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1714,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "000803",
+          "001288",
+          "002380",
+          "002780",
+          "003001",
+          "300192",
+          "300945",
+          "300952",
+          "300993",
+          "301160",
+          "301230",
+          "301276",
+          "301338",
+          "301397",
+          "301607",
+          "603551",
+          "603722",
+          "603725",
+          "603890",
+          "603908",
+          "603909",
+          "605167",
+          "688045",
+          "688210",
+          "688286",
+          "688603",
+          "688722"
+        ],
+        "failures": [
+          {
+            "code": "605167",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002380",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603551",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603908",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300952",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301397",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603725",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603890",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603909",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688210",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688603",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688722",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300993",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301160",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603722",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002780",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "003001",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300192",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301230",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301338",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001288",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300945",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301276",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301607",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688045",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688286",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "000803",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 69.7509970664978
+      },
+      "northbound_provider_unavailable_added": [
+        "605167",
+        "002380",
+        "603551",
+        "603908",
+        "300952",
+        "301397",
+        "603725",
+        "603890",
+        "603909",
+        "688210",
+        "688603",
+        "688722",
+        "300993",
+        "301160",
+        "603722",
+        "002780",
+        "003001",
+        "300192",
+        "301230",
+        "301338",
+        "001288",
+        "300945",
+        "301276",
+        "301607",
+        "688045",
+        "688286",
+        "000803"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1700,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 67.93588781356812
+      }
+    },
+    {
+      "cycle": 11,
+      "started_at": "2026-06-15T01:52:36.179051+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1814,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "002026",
+          "002627",
+          "002858",
+          "300491",
+          "300652",
+          "301220",
+          "301272",
+          "301275",
+          "301285",
+          "301398",
+          "301548",
+          "603173",
+          "603238",
+          "603319",
+          "603325",
+          "603516",
+          "603969",
+          "688071",
+          "688156",
+          "688226",
+          "688253",
+          "688257",
+          "688273",
+          "688360",
+          "688386",
+          "688545",
+          "688593",
+          "688652",
+          "688719",
+          "688737",
+          "688799"
+        ],
+        "failures": [
+          {
+            "code": "300491",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300652",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688799",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002627",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002858",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301275",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301285",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301398",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688156",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688386",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688652",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688737",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301272",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688257",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301548",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603516",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603969",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688071",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688273",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688545",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301220",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603173",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603238",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603319",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603325",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688226",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688253",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688360",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688593",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688719",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002026",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 66.46094226837158
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1814,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [
+          "002026",
+          "002627",
+          "002858",
+          "300491",
+          "300652",
+          "301220",
+          "301272",
+          "301275",
+          "301285",
+          "301398",
+          "301548",
+          "603173",
+          "603238",
+          "603319",
+          "603325",
+          "603516",
+          "603969",
+          "688071",
+          "688156",
+          "688226",
+          "688253",
+          "688257",
+          "688273",
+          "688360",
+          "688386",
+          "688545",
+          "688593",
+          "688652",
+          "688719",
+          "688737",
+          "688799"
+        ],
+        "failures": [
+          {
+            "code": "300491",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300652",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688799",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002627",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002858",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301275",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301285",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301398",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688156",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688386",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688652",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688737",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301272",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688257",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301548",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603516",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603969",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688071",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688273",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688545",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301220",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603173",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603238",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603319",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603325",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688226",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688253",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688360",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688593",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688719",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002026",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 78.9211540222168
+      },
+      "northbound_provider_unavailable_added": [
+        "300491",
+        "300652",
+        "688799",
+        "002627",
+        "002858",
+        "301275",
+        "301285",
+        "301398",
+        "688156",
+        "688386",
+        "688652",
+        "688737",
+        "301272",
+        "688257",
+        "301548",
+        "603516",
+        "603969",
+        "688071",
+        "688273",
+        "688545",
+        "301220",
+        "603173",
+        "603238",
+        "603319",
+        "603325",
+        "688226",
+        "688253",
+        "688360",
+        "688593",
+        "688719",
+        "002026"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1800,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 64.10726189613342
+      }
+    },
+    {
+      "cycle": 12,
+      "started_at": "2026-06-15T01:56:06.647350+00:00",
+      "northbound_first": {
+        "panel": "northbound",
+        "offset": 1914,
+        "max_symbols": 86,
+        "returncode": 0,
+        "failed_codes": [
+          "000404",
+          "001205",
+          "001316",
+          "002103",
+          "002870",
+          "003019",
+          "300121",
+          "300445",
+          "300453",
+          "300698",
+          "300984",
+          "300994",
+          "301108",
+          "301489",
+          "301538",
+          "603096",
+          "603101",
+          "603151",
+          "603163",
+          "603312",
+          "603739",
+          "603758",
+          "603878",
+          "603966",
+          "605068",
+          "605196",
+          "688028",
+          "688290",
+          "688291",
+          "688600",
+          "688618",
+          "688709",
+          "688720"
+        ],
+        "failures": [
+          {
+            "code": "003019",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300445",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300994",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301489",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301538",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603096",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603878",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603966",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605196",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688709",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300984",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603312",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603739",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688618",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688720",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001205",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002870",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300121",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300698",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301108",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603101",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603151",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603163",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603758",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605068",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688028",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688290",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688291",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688600",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "000404",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001316",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002103",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300453",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 53.619560956954956
+      },
+      "northbound_retry": {
+        "panel": "northbound",
+        "offset": 1914,
+        "max_symbols": 86,
+        "returncode": 0,
+        "failed_codes": [
+          "000404",
+          "001205",
+          "001316",
+          "002103",
+          "002870",
+          "003019",
+          "300121",
+          "300445",
+          "300453",
+          "300698",
+          "300984",
+          "300994",
+          "301108",
+          "301489",
+          "301538",
+          "603096",
+          "603101",
+          "603151",
+          "603163",
+          "603312",
+          "603739",
+          "603758",
+          "603878",
+          "603966",
+          "605068",
+          "605196",
+          "688028",
+          "688290",
+          "688291",
+          "688600",
+          "688618",
+          "688709",
+          "688720"
+        ],
+        "failures": [
+          {
+            "code": "003019",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300445",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300994",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301489",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301538",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603096",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603878",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603966",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605196",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688709",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300984",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603312",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603739",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688618",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688720",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001205",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002870",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300121",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300698",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "301108",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603101",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603151",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603163",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "603758",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "605068",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688028",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688290",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688291",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "688600",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "000404",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "001316",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "002103",
+            "error": "'NoneType' object is not subscriptable"
+          },
+          {
+            "code": "300453",
+            "error": "'NoneType' object is not subscriptable"
+          }
+        ],
+        "elapsed_s": 84.20553803443909
+      },
+      "northbound_provider_unavailable_added": [
+        "003019",
+        "300445",
+        "300994",
+        "301489",
+        "301538",
+        "603096",
+        "603878",
+        "603966",
+        "605196",
+        "688709",
+        "300984",
+        "603312",
+        "603739",
+        "688618",
+        "688720",
+        "001205",
+        "002870",
+        "300121",
+        "300698",
+        "301108",
+        "603101",
+        "603151",
+        "603163",
+        "603758",
+        "605068",
+        "688028",
+        "688290",
+        "688291",
+        "688600",
+        "000404",
+        "001316",
+        "002103",
+        "300453"
+      ],
+      "intraday_first": {
+        "panel": "intraday",
+        "offset": 1900,
+        "max_symbols": 100,
+        "returncode": 0,
+        "failed_codes": [],
+        "failures": [],
+        "elapsed_s": 65.59444999694824
+      }
+    }
+  ],
+  "production_blockers": [
+    "provider-unavailable symbols are evidence only and are not counted as covered",
+    "historical intraday depth still needs daily archive accumulation or an entitled minute feed",
+    "broker-backed borrow availability and external evidence refs remain release blockers"
+  ]
+}

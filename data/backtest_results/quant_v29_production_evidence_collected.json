@@ -1,0 +1,16 @@
+{
+  "external_worm_archive": "",
+  "secret_manager": "",
+  "approval_service": "",
+  "real_market_data_provider": "",
+  "provider_entitlement": "",
+  "alt_archive_readiness": "",
+  "exchange_position_provider": "",
+  "broker_borrow_availability": "",
+  "paper_trading_90d": "",
+  "signed_plugin_review": "",
+  "production_calendar": "",
+  "rollover_runbook": "",
+  "capacity_benchmark": "",
+  "failover_dr_test": ""
+}

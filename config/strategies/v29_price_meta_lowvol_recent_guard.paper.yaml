@@ -1,0 +1,70 @@
+strategy_id: v29_price_meta_lowvol_recent_guard
+candidate: v29_price_meta_lowvol_recent_guard
+version: V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained
+stage: paper
+market: A股
+production_ready: false
+
+inputs:
+  universe_ref: data/stock_list_provider_qualified_non_largecap_2000_v27.json
+  price_history_dir: data/parquet
+  industry_classification_ref: data/industry_fixed.parquet
+  carry_floor_asset_ref: data/hedge_assets/etf_511260.parquet
+  readiness_ref: data/backtest_results/quant_v27_strategy_readiness.json
+  research_result_ref: data/backtest_results/quant_logic_research_v29_portfolio_layer_v31_execution_constrained.json
+  robustness_ref: data/backtest_results/quant_v29_robustness_v31_execution_constrained.json
+  launch_package_ref: data/backtest_results/quant_v29_paper_trading_launch_package.json
+
+parameters:
+  sleeves:
+    - price_ic_alpha
+    - price_ic_diversified
+    - price_lowvol_reversal
+    - price_defensive_breadth
+  lookback: 126
+  rebalance_freq: 10
+  base_gross: 0.56
+  bull_gross: 0.82
+  neutral_gross: 0.56
+  risk_off_gross: 0.15
+  vol_target: 0.11
+  max_sleeve_weight: 0.45
+  temperature: 0.65
+  dd_reduce_threshold: 0.05
+  dd_reduce_scale: 0.35
+  dd_stop_threshold: 0.09
+  dd_stop_scale: 0.04
+  meta_cost_bps: 2
+  use_crisis_sleeve: true
+  crisis_fraction: 0.9
+  carry_fraction: 0.1
+
+metrics:
+  full_sharpe: 2.1838
+  avg_oos_sharpe: 2.4237
+  min_oos_sharpe: 0.1607
+  max_drawdown: -0.0982
+  win_rate: 0.571
+  wf_folds: 5
+
+controls:
+  auto_trade_enabled: false
+  live_order_submission_allowed: false
+  max_live_capital_fraction: 0.0
+  paper_min_calendar_days: 90
+  paper_min_performance_vs_backtest: 0.70
+  fail_closed_on_missing_evidence: true
+  required_evidence_for_paper_start:
+    - external_worm_archive
+    - secret_manager
+    - approval_service
+    - real_market_data_provider
+    - provider_entitlement
+    - exchange_position_provider
+    - signed_plugin_review
+    - production_calendar
+    - capacity_benchmark
+  not_used_external_keys_for_candidate_scope:
+    - alt_archive_readiness
+    - broker_borrow_availability
+    - rollover_runbook

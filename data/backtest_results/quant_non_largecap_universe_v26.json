@@ -1,0 +1,90 @@
+{
+  "ts": "2026-06-09T02:10:28.205850+00:00",
+  "version": "V26-non-largecap-universe",
+  "research_only": true,
+  "production_ready": false,
+  "target_size": 2000,
+  "selected_count": 2000,
+  "universe_path": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_non_largecap_2000_v26.json",
+  "universe_sha256": "eee5487238b004e5d53217f8c884a67037eb02b92facf14ce39d1e51352003cc",
+  "first_codes": [
+    "000009",
+    "000019",
+    "000021",
+    "000027",
+    "000028",
+    "000035",
+    "000039",
+    "000048",
+    "000049",
+    "000050",
+    "000058",
+    "000059",
+    "000060",
+    "000061",
+    "000065",
+    "000088",
+    "000155",
+    "000400",
+    "000403",
+    "000422"
+  ],
+  "last_codes": [
+    "603163",
+    "603258",
+    "603698",
+    "603727",
+    "603758",
+    "605068",
+    "688028",
+    "688093",
+    "688290",
+    "688291",
+    "688383",
+    "688600",
+    "000404",
+    "000915",
+    "001316",
+    "002103",
+    "002609",
+    "002955",
+    "300351",
+    "300453"
+  ],
+  "large_cap_exclusion": {
+    "method": "CSI300 component evidence plus explicit large-cap blacklist",
+    "csi300_evidence_path": "data/csi300_components_v26.json",
+    "csi300_component_count": 279,
+    "explicit_large_cap_blacklist_count": 24,
+    "selected_csi300_overlap_count": 0,
+    "selected_csi300_overlap": [],
+    "provider_gap_note": "CSI300 evidence is accepted as a conservative local exclusion list for research planning. Production still requires an approved security master and market-cap/float/ST/suspension filters from an entitled provider."
+  },
+  "source_counts": {
+    "current_stock_list_seed": 1200,
+    "industry_fixed": 1200,
+    "analyst_ratings_frequency_ranked": 3642
+  },
+  "selected_by_source": {
+    "current_stock_list_seed": 1200,
+    "industry_fixed": 0,
+    "analyst_ratings_frequency_ranked": 800
+  },
+  "excluded_large_caps_by_source": {
+    "current_stock_list_seed": 0,
+    "industry_fixed": 0,
+    "analyst_ratings_frequency_ranked": 279
+  },
+  "coverage_intent": {
+    "northbound_stock_holding_min_target_symbols": 2000,
+    "intraday_microstructure_min_target_symbols": 2000,
+    "margin_short_min_target_symbols": 2000,
+    "borrow_availability_min_target_symbols": 2000
+  },
+  "production_blockers": [
+    "local universe is built from available research files, not an approved security master",
+    "large-cap exclusion lacks full production market-cap/float evidence",
+    "ST, suspension and listing-status filtering require an entitled provider before trading",
+    "all PIT panel backfills must use this universe explicitly through QUANT_STOCK_LIST"
+  ]
+}
