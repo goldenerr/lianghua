@@ -1,5 +1,5 @@
 # Quant Trading System — Progress Log
-# Last updated: 2026-06-04
+# Last updated: 2026-06-22
 
 ## Safety Audit Status (2026-05-29) - PRODUCTION BLOCKED
 
@@ -564,3 +564,171 @@
 - 新增 `tests/system/test_v36_multi_asset_regime_budget.py`，覆盖长期核心池不混入短历史科创50、扩展池短历史资产标记、risk-on/risk-off regime 判定、现金代理 `511880` 不进入风险资产。
 - 新增中文研究报告 `docs/research/quant_v36_multi_asset_regime_budget.md`，明确结论：V36 比 V35 有小幅改善，但仍不能实盘；下一步不应继续微调风控旋钮，应进入 V37 将 V32 股票 alpha 以小风险预算接入 V36 多资产风控框架。
 - 验证：Ruff 通过；`tests/system/test_v36_multi_asset_regime_budget.py` 4 项通过；V36 JSON 结构校验通过。
+
+## V37 股票 Alpha 接入多资产风险预算 (2026-06-22) - RELATIVE IMPROVEMENT / PRODUCTION BLOCKED
+
+- 新增 `scripts/research_v37_stock_alpha_multi_asset_budget.py`，把 V32/V29 price-only 股票 alpha 的 V33 小账户可执行近似接入 V36 多资产风险层；股票侧保留 100 股整数手、最低佣金、印花税、滑点和 V31 交易状态约束。
+- V37 不再固定切走 ETF 资本，而是只使用 V36 的闲置风险容量；所有预算决策只使用前一交易日及更早的 regime、60 日股票收益、组合波动率、历史 95% VaR 和账户回撤信息。
+- 增加 1% 风险容量缓冲：V36 最大预算 95%，V37 下单容量按 94% 控制，并将日终估算总风险暴露不超过 95%纳入严格改善门禁。
+- 默认成本扫描 72 个场景：资金 `50000/100000/200000`，股票预算上限 `10%/15%/20%`，profile `v32_guard/small_balanced`，1/2 只股票，20/40 日调仓。严格相对改善 6/72，股票执行门禁 70/72，生产最低门禁 0/72，`production_ready=false`。
+- 默认推荐均为 `20% 上限 + small_balanced + 2只 + 40日`：5 万年化 6.81%、Sharpe 0.5413、MDD -13.17%；10 万年化 6.88%、Sharpe 0.5436、MDD -14.07%；20 万年化 6.89%、Sharpe 0.5449、MDD -14.05%。相对 V36 年化分别提高 0.76%、0.81%、0.81%。
+- 实际平均股票资金分配仅约 2.9%，活跃交易日约 26%-28%，日终估算总风险暴露峰值不超过 94.11%。平均和最低 OOS 均不得弱于同日期 V36 基线；三个默认推荐最低 OOS 仍约 -0.92，不能视为生产稳定。
+- 成本压力将股票滑点和顶层切换成本同时提高到 10bps，并扫描 15%/20% 上限；3/6 场景严格改善。5 万/10 万保留 20% 上限，20 万应降到 15% 上限；生产最低门禁仍为 0。
+- 新增 `tests/system/test_v37_stock_alpha_multi_asset_budget.py`，覆盖 V33/V36 日收益接口默认关闭、risk-off 股票预算归零、未来冲击不影响历史权重、ETF 风险容量硬约束、严格改善必须同时满足收益/风险/OOS/执行/容量条件。
+- 新增中文报告 `docs/research/quant_v37_stock_alpha_multi_asset_budget.md`。结论：V37 证明小预算股票 alpha 可带来约 0.6%-0.8% 年化增量并保持 MDD <=15%，但 Sharpe、胜率和最差 OOS 远未达标，生产仍被真实 vendor/broker、90 天 paper trading 和外部 evidence gate 阻塞。
+
+## V38 共享账户与危机 Alpha (2026-06-22) - ENGINE VERIFIED / STRATEGY REJECTED / PRODUCTION BLOCKED
+
+- 新增 `scripts/research_v38_joint_account_crisis_alpha.py`，将 V36 ETF、V32/V29 衍生股票 Alpha 和黄金危机袖子放入单一共享现金账户；实现先卖后买、100 股整数手、股票/ETF 独立费用、V31 交易状态约束、现金非负、逐日归因和 95% 风险容量门禁。
+- 修复两项首轮审计问题：ETF 核心错误延迟到第 253 日启动，以及零股票预算仍触发额外 ETF 再平衡。修复后 ETF 从 V36 的第 130 日启动，股票在第 253 日预热后启用，零预算不触发股票调仓。
+- 新增 V36 逐日基线一致性门禁。5 万/10 万/20 万三档的 3122 个日收益与原生 V36 完全一致，最大单日差为 0；Sharpe、年化、MDD、最终净值、暴露、费用和订单数均精确复现，`v36_baseline_parity_passes=true`。
+- 广网格扫描股票 5%/10%/15% 与黄金 0%/10%/15%，27 个场景相对改善 0、生产最低门禁 0。股票预算达到 10%-15% 时会恶化账户回撤路径，不能沿用 V37 的名义上限。
+- 预先限定窄网格扫描股票 3%/5%/7% 与黄金 15%/20%/25%，27 个场景只有 10 万元、股票 7%、黄金 25% 通过相对门禁：年化 6.33%、Sharpe 0.4792、MDD -14.66%、平均 OOS 0.4624、最低 OOS -0.5416；生产最低门禁仍为 0。
+- 成本压力将股票和 ETF 滑点同时提高到 10bps，扫描 12 个场景。原 10 万候选失效：年化 5.79%、平均 OOS -0.3265、最低 OOS -3.5042；通过点转移到 5 万档，说明候选对资金规模、整数手和成本路径不稳定。
+- 新增 `tests/system/test_v38_joint_account_crisis_alpha.py`，覆盖黄金信号无前视、容量合并、共享现金先卖后买、跌停卖出阻断、负股票动量预算阻断和单日收益漂移基线门禁。
+- 新增中文报告 `docs/research/quant_v38_joint_account_crisis_alpha.md`。结论：共享账户工程目标已经验证，但策略收益、胜率、最弱 OOS 和成本稳定性均未达到生产门槛，`production_ready=false`；不应继续微调黄金比例，应补长历史、低相关、真实可交易的危机资产数据和真实券商模拟盘证据。
+
+## V39 长历史危机资产篮子 (2026-06-22) - DEFENSIVE EFFECT VERIFIED / COST ROBUSTNESS REJECTED / PRODUCTION BLOCKED
+
+- 修复 `scripts/fetch_hedge_crisis_assets.py` 的历史完整性缺陷：旧 `_is_current()` 只检查结束日期，导致 2024-2026 的 580 日文件被误判为完整。新文件记录 `requested_start/requested_end/source/fetched_at`，缺少请求区间溯源或请求起点过晚时强制重抓。
+- 联网请求 2000-01-01 至 2026-05-29 的完整可得历史。成功回填国债 ETF `511010` 3,201 日、十年国债 ETF `511260` 2,123 日、黄金 ETF 3,119 日，以及 IF/IH/IC 连续期货各 2,270 日；期货仅作为诊断，不计入可执行收益。
+- 豆粕、有色、纳指、标普500、恒生 ETF 的东方财富请求持续被远端断开。新浪备用接口为未复权口径，为避免违反 Corporate Action 一致性要求，没有混用或合成历史。
+- 新增 `scripts/research_v39_long_history_crisis_basket.py`，在精确 V36 核心基线上将黄金、国债、十年国债作为独立防御袖子；共享现金、100 股整数手、先卖后买、费用、94% 目标容量、95% 实际暴露和逐日权益不变式全部启用。
+- 首轮错误采用核心与危机资产日期交集，产生虚假 14 个相对改善；V36 基线门禁检测到逐日不一致并阻断。修复为完整核心日期轴后，三档 3,122 个日收益与原生 V36 完全一致，并新增危机资产不得缩短核心日历测试。
+- 默认扫描 36 个场景：危机上限 10%/15%/20%、1/2 资产、等权/逆波动。相对改善 2/36，生产最低门禁 0。5 万的 20% 两资产等权年化 6.34%、Sharpe 0.4892、MDD -12.87%、最低 OOS -0.4092；20 万的 15% 两资产等权年化 6.35%、Sharpe 0.4883、MDD -13.48%、最低 OOS -0.4711。
+- 最弱 OOS 均为 2023-04-12 至 2024-04-26：核心层贡献约 -2.24%，危机篮子贡献约 +2.95% 至 +3.40%，证明国债提供了真实防御效果。
+- 10bps 成本压力扫描 6 个重点场景，相对改善 0、生产最低门禁 0；三档年化增益降至约 0.40%-0.45%，低于预设 0.5% 门槛。候选不能跨资金档和成本假设稳定通过。
+- 新增 `tests/system/test_hedge_crisis_asset_fetch.py` 3 项和 `tests/system/test_v39_long_history_crisis_basket.py` 6 项，覆盖请求区间门禁、无前视、黄金/国债配对、risk-on 禁用、共享容量、核心日历保护和数据哈希审计。
+- 新增中文报告 `docs/research/quant_v39_long_history_crisis_basket.md`。结论：V39 的风险防御机制有效，但 Sharpe、最低 OOS 和成本稳健性不够，且黄金请求区间溯源、vendor PIT、broker、paper trading 和外部 evidence 仍缺失，`production_ready=false`。
+
+## V40 极低预算股票 Alpha + 防御篮子 (2026-06-22) - 200K RESEARCH CANDIDATE / ROBUSTNESS FAILED / PRODUCTION BLOCKED
+
+- 扩展 V38 共享账户，使其支持外部多资产危机价格与分配器，默认单黄金行为保持兼容；黄金、国债、十年国债统一进入危机费用/收益归因。
+- 新增股票调仓日历对齐：股票首次可用日向后对齐到下一个 ETF 调仓点，之后每 40 日与 ETF 同步，避免股票场景通过额外再平衡核心/危机资产产生虚假增量。
+- 新增 `scripts/research_v40_stock_alpha_defensive_basket.py`：每个场景严格比较同资金、同危机预算、股票为零的 V39 基线；股票必须产生真实持仓和费用才能通过执行门禁。
+- 默认扫描 18 个场景：5万/10万/20万，股票 3%/5%/7%，危机 15%/20%。股票执行 18/18，相对改善 3/18，生产最低门禁 0；所有 V39 基线 3,122 个日收益逐日一致。
+- 默认通过点：10 万 7%/20% 年化 6.37%、Sharpe 0.4755、MDD -13.86%、最低 OOS -0.1622；20 万 5%/20% 年化 6.24%、Sharpe 0.4609、MDD -14.39%；20 万 7%/20% 年化 6.43%、Sharpe 0.4807、MDD -14.40%、最低 OOS -0.1190。
+- 20 万 7%/20% 的实际平均股票目标仅 1.07%。最弱 OOS 中核心约 -2.24%、危机篮子 +3.79%、股票 +0.73%，增量归因清晰。
+- 10bps 股票/ETF 双滑点压力扫描 6 个重点场景，仅 20 万 7%/20% 相对通过：年化 5.93%、Sharpe 0.4294、MDD -14.35%、最低 OOS -0.5083；生产最低门禁仍为 0。
+- 二维 ±10% 敏感性：股票 6.3%/7.0%/7.7%，危机 18%/20%/22%。默认成本 6/9 通过，高成本 3/9 通过；股票 7.7% 因 MDD 约 -15.06% 全部淘汰，高成本通过区域集中在股票 <=7%、危机 >=20%。
+- 新增 `scripts/validate_v40_robustness.py`：候选默认/高成本相对门禁通过，但默认敏感性通过率 66.67%、高成本 33.33%、高成本 Sharpe 波动 18.51%、高成本跨资金档仅 1 档，最终 `robustness_gate_passes=false`。
+- 新增 `tests/system/test_v40_stock_alpha_defensive_basket.py`、`tests/system/test_v40_robustness.py`，并扩展 V38 测试覆盖多资产危机合并与股票调仓日历对齐。
+- 新增中文报告 `docs/research/quant_v40_stock_alpha_defensive_basket.md`。结论：20 万 7%/20% 可作为 paper shadow 研究候选，但 Sharpe、最低 OOS、高成本敏感性、真实 vendor/broker、90 天模拟盘和外部 evidence 均未达标，`production_ready=false`。
+
+## V41 降换手与 Paper-Shadow 包 (2026-06-23) - TURNOVER COOLDOWN REJECTED / SHADOW PACKAGE BLOCKED
+
+- 扩展 `scripts/research_v40_stock_alpha_defensive_basket.py`，新增 `--stock-rebalance-freqs`，默认仍为 40 日；股票子策略、股票 gate return 和共享账户执行使用同一调仓周期，输出记录 `stock_rebalance_freq`。
+- 默认成本扫描 20 万、股票 6.3%/7.0%、危机 20%/22%、调仓 40/80/120 日，共 12 个场景。股票执行 12/12，相对改善 6/12，生产最低门禁 0，V39 基线逐日一致。
+- 默认成本结论：40 日仍最佳。20%危机 + 7%股票 + 40 日年化 6.43%、Sharpe 0.4807、MDD -14.40%、最低 OOS -0.1190、总费用 6,589；80 日费用下降约 8%-9%但收益/OOS显著变差；120 日出现 OOS 崩塌。
+- 10bps 高成本同网格扫描 12 个场景，相对改善 9/12。高成本下 120 日出现更好单点：6.3%股票/20%危机/120 日年化 6.45%、Sharpe 0.4956、MDD -13.41%、最低 OOS -0.3482；但该点默认成本不通过，属于路径依赖，不能替换主候选。
+- 新增 `scripts/prepare_v40_paper_shadow_package.py`，生成 `data/backtest_results/quant_v40_paper_shadow_package.json` 和中文 `docs/research/quant_v40_paper_shadow_runbook.md`。固定候选为 20 万、股票 7%、危机 20%、40 日调仓，且 `auto_trade_enabled=false`、`live_order_submission_allowed=false`、`max_live_capital_fraction=0.0`。
+- Paper-shadow 包状态：`shadow_candidate_exists=true`，但 `paper_shadow_ready=false`、`production_ready=false`，阻塞项 14 个，包括 V40 robustness 失败、外部 WORM/Secret/Approval/provider/position/broker logs/90-day paper/calendar/capacity/DR 证据缺失。
+- 新增 `tests/system/test_v40_paper_shadow_package.py`，覆盖 robustness 失败时启动包保持阻塞、运行手册不包含 token/API key。
+- 新增中文报告 `docs/research/quant_v41_turnover_and_shadow_package.md`。结论：降换手方案拒绝；V40 候选只可作为只读 paper-shadow 准备对象，不能生产。
+
+## V42 影子模拟盘证据门禁 (2026-06-23) - PAPER EVIDENCE GATE ADDED / PRODUCTION BLOCKED
+
+- 新增 `scripts/validate_v42_paper_shadow_evidence.py`，作为 V40 影子模拟盘候选的日报证据门禁。该脚本只验证 paper evidence，不会把 `production_ready` 置为 true。
+- 门禁要求至少 90 个自然日跨度、至少 60 个日报交易日、每日审计 hash、WORM/归档引用、真实行情供应商引用、券商/交易所持仓快照引用和订单/成交日志引用。
+- 门禁强制 `auto_trade_enabled=false`、`live_order_submission_allowed=false`、`max_live_capital_fraction=0.0`；任何风控容量违规、不变式违规、敏感字段或疑似 token/API key 值都会阻塞。
+- 漂移阈值：累计收益漂移 <= 5%，平均日收益漂移 <= 5bps，实际滑点超预期 <= 5bps，实际成本超预期 <= 5bps。
+- 当前正式输出 `data/backtest_results/quant_v42_paper_shadow_evidence_gate.json`：`paper_evidence_ready=false`、`production_ready=false`、`paper_shadow_candidate_exists=true`，阻塞项 3 个：V40 包仍有 14 个 blocker、缺每日影子模拟盘报告、缺可信 `paper_trading_90d` 证据引用。
+- 新增中文报告 `docs/research/quant_v42_paper_shadow_evidence_gate.md`，明确说明 V42 只是 paper-shadow 证据门禁，不代表生产批准。
+- 新增 `tests/system/test_v42_paper_shadow_evidence_gate.py`，覆盖缺日报 fail-closed、完整 90 天证据可通过 paper gate、自动交易权限和敏感信息必须拒绝。
+- 验证：`tests/system/test_v42_paper_shadow_evidence_gate.py` 3 项通过；V40/V42 组合回归 23 项通过；Ruff 通过。
+
+## V43 本地容量与容灾门禁 (2026-06-23) - LOCAL CAPACITY/DR PASS / EXTERNAL EVIDENCE BLOCKED
+
+- 新增 `scripts/run_v43_local_capacity_dr_gate.py`，对 V40/V42 影子模拟盘路径执行本地容量与容灾基准，并生成机器可读 gate JSON 与中文报告。
+- 本地基准默认模拟 200 个品种、20 个策略、20,000 个行情事件和 2,000 个订单事件；所有订单事件只写审计，不允许实盘下单。
+- 当前输出 `data/backtest_results/quant_v43_local_capacity_dr_gate.json`：`local_capacity_dr_gate_passes=true`、`production_like=false`、`production_ready=false`。
+- 当前本地指标：事件吞吐 196,096.7/秒，行情到策略 P99 0.00225ms，订单事件吞吐 74,720.5/秒，信号到网关 P99 0.017ms，审计链完整性通过。
+- 本地 DR 指标：备用区域切换通过，不健康区域拒绝通过，本地 RTO 0.000003 秒，报告 RPO 0.5 秒。
+- 生产阻塞项仍保留：本地容量/DR 报告不是类生产环境或外部证明，仍缺外部 `capacity_benchmark`、`failover_dr_test`，且 V42 影子模拟盘 90 天证据门禁未通过。
+- 新增中文报告 `docs/research/quant_v43_local_capacity_dr_gate.md`，明确本地结果不得填入生产 readiness gate 的 `capacity_benchmark` 或 `failover_dr_test`。
+- 新增 `tests/system/test_v43_local_capacity_dr_gate.py`，覆盖本地通过不解除生产、V42 未通过仍阻塞、延迟/DR 失败会被拒绝、真实小基准订单事件保持 `live_order_submission_allowed=false`。
+- 验证：`tests/system/test_v43_local_capacity_dr_gate.py` 4 项通过；Ruff 通过。
+
+## V44 生产准入总门禁 (2026-06-23) - CONSOLIDATED GATE ADDED / PRODUCTION BLOCKED
+
+- 新增 `scripts/prepare_v44_production_readiness_gate.py`，聚合 V40 候选包、V42 影子模拟盘证据、V43 本地容量/容灾门禁和外部 14 类 production evidence refs。
+- V44 明确采用必要且共同充分的安全门：外部证据齐全不能绕过 V40 robustness、V42 90 天影子模拟盘、V43 本地工程门禁；任何一项失败都保持 `production_ready=false`。
+- 当前正式输出 `data/backtest_results/quant_v44_production_readiness_gate.json`：`production_ready=false`，总阻塞项 20 个；候选包未通过、90 天影子模拟盘证据未通过、外部生产证据未通过，本地容量/容灾门禁通过。
+- 当前 V44 识别的候选为 20 万资金、股票预算 7%、危机预算 20%、40 日股票调仓，且 `auto_trade_enabled=false`、`live_order_submission_allowed=false`、`max_live_capital_fraction=0.0`。
+- 当前生产阻塞项分组：V40 影子模拟盘包未就绪且仍有 14 个 blocker；V42 缺每日影子模拟盘报告和可信 `paper_trading_90d`；外部 WORM、Secret Manager、Approval Service、真实 provider、entitlement、position provider、borrow feed、signed plugin、calendar、rollover、capacity benchmark、failover/DR 全缺。
+- 新增中文报告 `docs/research/quant_v44_production_readiness_gate.md`，作为后续继续推进生产准入的单一入口报告。
+- 新增 `tests/system/test_v44_production_readiness_gate.py`，覆盖外部证据齐全不能绕过策略/模拟盘门禁、placeholder/local 外部证据必须阻塞、所有子门禁与外部证据全部通过时总门禁才可能 ready。
+- 验证：`tests/system/test_v44_production_readiness_gate.py` 3 项通过；Ruff 通过。
+
+## V45 影子模拟盘日报导入流水线 (2026-06-23) - DAILY LEDGER ADDED / PRODUCTION BLOCKED
+
+- 新增 `scripts/ingest_v45_paper_shadow_daily_report.py`，支持导入单日影子模拟盘 JSON，标准化为 V42 所需 `daily_reports` schema，并自动刷新 V42 影子模拟盘证据门禁和 V44 生产准入总门禁。
+- 新增 `data/backtest_results/quant_v45_paper_shadow_ledger.json` 作为日报台账。当前日报数量为 0，`external_refs` 为空；流水线默认运行时只刷新门禁，不伪造日报。
+- 新增 `data/backtest_results/quant_v45_paper_shadow_ingestion.json` 和中文报告 `docs/research/quant_v45_paper_shadow_ingestion.md`。当前输出：`production_ready=false`、`daily_report_count=0`、`v42_paper_evidence_ready=false`、`v44_production_ready=false`、V44 阻塞项 20 个。
+- 导入器安全规则：拒绝 token/API key/password/private key 字段或疑似值；拒绝 `auto_trade_enabled=true` 或 `live_order_submission_allowed=true`；同一日期不同内容必须显式 `--allow-replace` 才能替换。
+- 日报可提供 `audit_hash + audit_event_count`，也可提供 `audit_events` 或 `audit_jsonl_path`，导入器会计算 sha256 审计 hash 并记录 `report_sha256/source_sha256`。
+- 导入器会合并日报中的 `external_refs`，例如未来真实 `paper_trading_90d` 引用；但 V42/V44 仍会独立验证是否满足 90 天、滑点/成本漂移、风控和外部 evidence 门禁。
+- 新增 `tests/system/test_v45_paper_shadow_daily_ingestion.py`，覆盖审计 hash 计算、实盘权限拒绝、敏感材料拒绝、重复日报替换规则、导入后自动刷新 V42/V44 并保持 fail-closed。
+- 验证：`tests/system/test_v45_paper_shadow_daily_ingestion.py` 4 项通过；Ruff 通过；默认流水线运行通过并保持生产阻塞。
+
+## V46 影子模拟盘日报模板与导出适配器 (2026-06-23) - TEMPLATE/ADAPTER ADDED / PRODUCTION BLOCKED
+
+- 新增 `scripts/generate_v46_paper_shadow_daily_template.py`，生成 V45 日报模板、示例日报、字段映射和中文说明报告。
+- 新增 `data/backtest_results/quant_v46_paper_shadow_daily_template.json`，带 `template_only=true`，明确不能作为真实证据写入 V45 台账。
+- 新增 `data/backtest_results/quant_v46_paper_shadow_daily_example.json`，带 `example_only=true`，用于展示字段形态，不能作为真实证据写入 V45 台账。
+- 新增 `data/backtest_results/quant_v46_paper_shadow_adapter_mapping.json`，说明真实模拟盘导出应如何映射到 V45 日报字段；映射说明均为中文，`production_ready=false`。
+- 新增中文报告 `docs/research/quant_v46_paper_shadow_daily_template.md`，说明默认不会生成可入账日报；只有显式传入真实 `--source-export-json` 才会转换出单日日报，且仍必须经过 V45/V42/V44 逐级校验。
+- 加强 V45 导入器：`template_only=true` 或 `example_only=true` 的文件会被主动拒绝，防止模板/示例误入证据台账。
+- 新增 `tests/system/test_v46_paper_shadow_daily_template.py`，覆盖模板/示例不可入账、标准化真实源导出可转换为 V45 日报、生成的报告与 JSON 保持 fail-closed。
+- 验证：V45/V46 单测 7 项通过；Ruff 通过；默认生成器运行通过；模板与示例经 V45 校验均被拒绝。
+
+## V47 影子模拟盘源导出校验器 (2026-06-23) - SOURCE EXPORT GATE ADDED / PRODUCTION BLOCKED
+
+- 新增 `scripts/validate_v47_paper_shadow_source_export.py`，在 V46/V45 之前校验真实模拟盘源导出，防止未对账或含敏感材料的 broker/provider 文件进入 paper-shadow 台账。
+- V47 校验范围包括：敏感字段和值、自动交易/实盘下单权限、账户类型、收益/成本/风险字段、WORM/行情/provider/broker 引用前缀、订单幂等 ID、成交与订单一致性、成交数量不超过委托数量、持仓与成交净变化对账、行情覆盖交易/持仓品种、审计事件或审计 hash。
+- 新增 `data/backtest_results/quant_v47_paper_shadow_source_export_gate.json` 和中文报告 `docs/research/quant_v47_paper_shadow_source_export_gate.md`。当前默认输出缺少真实 `--source-export-json`，因此 `source_export_valid=false`、`production_ready=false`。
+- V47 通过只表示单日真实源导出可以转换为 V45 日报；不能绕过 V42 的 90 天 shadow evidence、V44 的生产总门禁或任何外部 broker/provider/WORM evidence blocker。
+- 加固审计 hash 分支：`audit_event_count` 非整数时记录 blocker，而不是让校验器异常退出。
+- 新增 `tests/system/test_v47_paper_shadow_source_export.py`，覆盖有效源导出可转成 V45 日报、敏感材料/实盘权限拒绝、无对应订单成交拒绝、超额成交拒绝、持仓对账不一致拒绝、行情覆盖缺失拒绝和坏审计计数 fail-closed。
+- 验证：V47 单测 5 项通过；Ruff 通过；默认 V47 evidence 运行通过并保持生产阻塞。
+
+## 全量测试与收益领先门禁校验 (2026-06-23) - TESTS PASS / PROFIT RESEARCH GATE PASS / PRODUCTION BLOCKED
+
+- 按项目默认配置运行完整 `pytest`，共 778 项通过，覆盖率 85.95%，超过 80% 门禁。
+- 发现并修复审计 WORM 日归档单测的日期口径问题：`LocalAuditWormArchive` 按事件真实 UTC 日期筛选每日日志，测试不应写死历史日期；已改为归档事件发生日，保持每日归档语义不变。
+- 运行独立 `scripts/run_production_tests.py`。首次发现旧脚本仍把 V5.9 当作当前硬收益门禁，V5.9 虽然全样本 Sharpe 1.2434、MDD -13.11%，但 WF 平均 OOS Sharpe -0.0526、Sharpe decay 1.0379，不能作为当前盈利领先候选。
+- 更新 `scripts/run_production_tests.py`：V5.9 保留为 legacy 风险诊断；当前收益领先门禁切换为 V29/V31 执行约束稳健性结果，并修复行业覆盖率代码解析，行业覆盖率从误报 0.0% 修正为 100.0%。
+- 重跑 V29 20 年 V31 执行约束稳健性：`robustness_gate_passes=true`、`production_ready=false`。最新核心指标：Full Sharpe 2.1714、OOS Sharpe 2.6239、最低 OOS Sharpe 0.5675、MDD -8.33%、成本压力 Full/OOS Sharpe 1.9989/2.432、近 90/252 日 Sharpe 0.6503/2.7493。
+- V29/V31 收益研究门禁达到当前内部“领先收益”阈值，但仍是 research-only。真实 PIT/vendor corporate action、真实交易状态、外部 WORM/provider/broker evidence、90 天 paper trading、V44 生产准入总门禁仍未解除，因此不能标记生产可用。
+- 修复 `scripts/validate_v29_robustness.py` 的 CSV 输出换行，统一写出 LF，避免 `git diff --check` 因 CRLF 报 trailing whitespace。
+- 最终验证：`scripts/run_production_tests.py` 6/6 通过；完整 `pytest` 778/778 通过；Ruff 通过；JSON 断言确认 V29 收益门禁通过且 V29/V40/V44/V47 全部保持 `production_ready=false`；`git diff --check` 通过。
+
+## V48 外部生产证据包导入门禁 (2026-06-23) - INTAKE GATE ADDED / PRODUCTION BLOCKED
+
+- 新增 `scripts/validate_v48_external_evidence_bundle.py`，作为真实外部生产证据的统一导入/校验入口；它只校验证据 reference，不生成或伪造 vendor/broker/WORM 证据。
+- 新增 `config/production_external_evidence_bundle.v48.template.json`，模板仅包含需要用户/外部系统填写的 reference 字段，明确禁止填写 token、API key、密码或私钥。
+- V48 同时校验 V44 生产准入所需 14 类外部 refs，以及 V30 生产数据门禁所需 5 类 refs：PIT security master、交易状态、corporate action 复核、真实 tick/minute 执行数据、券商/交易所订单成交回放。
+- 门禁规则：缺失、`local/mock/sample/pending/todo` 等占位符、错误前缀、敏感字段或疑似密钥值都会阻塞；合法的 `secret_manager` 作为 reference key 被允许，但真实 secret 值仍会拒绝。
+- 当前正式输出 `data/backtest_results/quant_v48_external_evidence_bundle_gate.json`：`evidence_bundle_valid=false`、`production_ready=false`、阻塞项 19 个，对应 14 个 V44 外部 refs 与 5 个 V30 生产数据 refs 全部缺失。
+- 新增中文报告 `docs/research/quant_v48_external_evidence_bundle_gate.md`，分清“必须由人工/外部系统提供”的真实证据与“本地可自动处理”的模板、敏感信息扫描、前缀校验、V44 refs 导出。
+- 新增 `tests/system/test_v48_external_evidence_bundle.py`，覆盖缺省 fail-closed、完整 bundle 可通过 V48 但仍不置 `production_ready`、敏感信息/占位符拒绝、CLI 仅在 bundle 有效时生成 V44 refs、报告保持中文。
+- 验证：V48 单测 5 项通过；V30/V44/V48/smoke 组合回归 25 项通过；Ruff 通过。
+
+## V48 后完整验证补充 (2026-06-23) - FULL TESTS PASS / PRODUCTION STILL BLOCKED
+
+- V48 增加后重新运行完整测试套件：`pytest` 共 783 项通过，覆盖率 85.95%，达到核心模块覆盖率 >=80% 的本地门禁。
+- 重新运行 `scripts/run_production_tests.py`：6/6 通过；V29/V31 收益研究门禁继续通过，Full Sharpe 2.1714、OOS Sharpe 2.6239、最低 OOS Sharpe 0.5675、MDD -8.33%、成本压力 Full/OOS Sharpe 1.9989/2.432。
+- `git diff --check` 通过。
+- 结论保持不变：盈利研究门禁通过不等于生产准入；真实 PIT/vendor corporate action、真实交易状态、外部 WORM/provider/broker evidence、90 天 paper trading 和 V44 总门禁仍然是生产阻塞项。
+
+## V49 5-10万小账户 Paper Trading / 准生产验证 (2026-06-23) - PAPER VALIDATION READY / PRODUCTION BLOCKED
+
+- 新增 `scripts/prepare_v49_small_account_paper_validation.py`，从 V33 小账户研究结果中选择 5 万和 10 万可执行候选，生成小账户 paper validation 包、日报台账、日报模板和中文运行报告。
+- 当前正式输出 `data/backtest_results/quant_v49_small_account_paper_validation_package.json`：`paper_validation_ready=true`、`paper_evidence_ready=false`、`production_ready=false`、`small_live_ready=false`，两个候选账户均保持 `auto_trade_enabled=false`、`live_order_submission_allowed=false`、`max_live_capital_fraction=0.0`。
+- 5 万候选：`v33_small_account_small_balanced_blend_50000_5pos`，年化 3.81%、Sharpe 0.1407、MDD -22.30%、胜率 51.07%、平均持仓 4.83、平均股票暴露 12.66%；小账户可执行门禁通过，但生产最低绩效门禁不通过。
+- 10 万候选：`v33_small_account_small_balanced_blend_100000_5pos`，年化 6.73%、Sharpe 0.4123、MDD -22.20%、胜率 54.01%、平均持仓 5.3、平均股票暴露 21.19%；小账户可执行门禁通过，但生产最低绩效门禁不通过。
+- 新增 `data/backtest_results/quant_v49_small_account_paper_ledger.json` 作为 V49 日报台账，当前日报数为 0，会保留未来真实日报和 `external_refs`，不会覆盖已有记录。
+- 新增 `data/backtest_results/quant_v49_small_account_daily_report_template.json` 作为 V49/V45 兼容日报模板，带 `template_only=true`，不能作为真实证据入账。
+- 新增中文报告 `docs/research/quant_v49_small_account_paper_validation.md`。结论：可以启动只读行情 + 模拟订单 + 日报归档的准生产观察阶段，但严禁自动交易、严禁真实下单、严禁实盘资金占用。
+- 新增 `tests/system/test_v49_small_account_paper_validation.py`，覆盖 V49 进入 paper validation 但不生产、缺候选/不可执行 fail-closed、日报台账保留已有记录、V49 包可被 V42 90 天 paper evidence gate 接收、CLI 输出中文报告和无密钥模板。
+- 验证：V49 单测 5 项通过；V42/V45/V49/smoke 组合回归 25 项通过；完整 `pytest` 788 项通过，覆盖率 85.95%；Ruff 通过；`git diff --check` 通过。

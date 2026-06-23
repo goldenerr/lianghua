@@ -1,0 +1,2736 @@
+{
+  "ts": "2026-06-22T06:22:51.800721+00:00",
+  "version": "V37-stock-alpha-multi-asset-budget-v1",
+  "research_only": true,
+  "production_ready": false,
+  "objective": "inject executable V32/V29-derived stock alpha into the V36 small-account risk layer",
+  "methodology": {
+    "capital_partition": "stock alpha uses only lagged V36 idle risk headroom; ETF capital is not reduced",
+    "signal_timing": "all overlay decisions use prior-day or older data",
+    "risk_layer": "V36 regime, 60-day volatility/VaR scale, 5% drawdown reduction and 8% stop",
+    "stock_execution": "100-share lots, minimum commission, stamp duty, slippage and V31 status",
+    "comparison": "same-date full-capital V36 core-long aggressive risk-adjusted baseline"
+  },
+  "v29_source_evidence": {
+    "path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_logic_research_v29_portfolio_layer_20y_v31_execution_constrained.json",
+    "sha256": "f1bd5cddadc5b6e339a99a58e5311a2ea79be8e72c9ef7ffcff4b5ff0383001b",
+    "candidate": "v29_price_meta_longhorizon_guard",
+    "config": {
+      "name": "v29_price_meta_longhorizon_guard",
+      "sleeves": [
+        "price_ic_alpha",
+        "price_ic_diversified",
+        "price_lowvol_reversal",
+        "price_defensive_breadth"
+      ],
+      "lookback": 126,
+      "rebalance_freq": 10,
+      "base_gross": 0.6,
+      "bull_gross": 0.87,
+      "neutral_gross": 0.6,
+      "risk_off_gross": 0.16,
+      "vol_target": 0.115,
+      "max_sleeve_weight": 0.45,
+      "temperature": 0.65,
+      "dd_reduce_threshold": 0.05,
+      "dd_reduce_scale": 0.35,
+      "dd_stop_threshold": 0.09,
+      "dd_stop_scale": 0.04,
+      "meta_cost_bps": 2,
+      "use_crisis_sleeve": true,
+      "crisis_fraction": 0.75,
+      "carry_fraction": 0.25
+    },
+    "full": {
+      "sharpe_ratio": 2.0285,
+      "annual_return": 0.1595,
+      "annual_volatility": 0.0663,
+      "max_drawdown": -0.0833,
+      "win_rate": 0.5652,
+      "total_return": 16.379,
+      "n_days": 4575,
+      "avg_stock_exposure": 0.2824,
+      "avg_crisis_weight": 0.5382,
+      "avg_carry_weight": 0.1794,
+      "avg_active_stocks": null,
+      "risk_off_rebalances": 1889
+    },
+    "wf": {
+      "folds": [
+        {
+          "fold": 0,
+          "test_start": "2021-03-16",
+          "test_end": "2022-03-29",
+          "is": 1.3696,
+          "oos": 4.2026,
+          "mdd": -0.0253
+        },
+        {
+          "fold": 1,
+          "test_start": "2022-03-29",
+          "test_end": "2023-04-12",
+          "is": 2.7937,
+          "oos": 2.6012,
+          "mdd": -0.0275
+        },
+        {
+          "fold": 2,
+          "test_start": "2023-04-12",
+          "test_end": "2024-04-26",
+          "is": 2.9232,
+          "oos": 0.198,
+          "mdd": -0.0409
+        },
+        {
+          "fold": 3,
+          "test_start": "2024-04-26",
+          "test_end": "2025-05-15",
+          "is": 2.3689,
+          "oos": 2.3224,
+          "mdd": -0.0525
+        },
+        {
+          "fold": 4,
+          "test_start": "2025-05-15",
+          "test_end": "2026-05-29",
+          "is": 1.7444,
+          "oos": 2.6825,
+          "mdd": -0.0833
+        }
+      ],
+      "avg_is_sharpe": 2.24,
+      "avg_oos_sharpe": 2.4013,
+      "sharpe_decay": -0.072
+    },
+    "limitation": "V29 is an idealized broad stock portfolio; V37 production-comparable conclusions use the V33 executable small-account approximation instead"
+  },
+  "universe": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
+  "universe_sha256": "dcc089db67747155fbf32c4a47db8461f8bd62902fc306b23971d831f6f5cc14",
+  "stock_coverage": {
+    "symbols_loaded": 1994,
+    "dates": 3252,
+    "start": "2013-01-04",
+    "end": "2026-05-29",
+    "industry_overlap": 1994
+  },
+  "trading_constraint_summary": {
+    "enabled": true,
+    "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet",
+    "exists": true,
+    "mode": "V31-free-trading-status-next-bar-execution",
+    "rows_loaded": 4922935,
+    "unique_dates": 3252,
+    "unique_symbols": 1994,
+    "missing_columns": [],
+    "limitations": [
+      "V31 status is free-source research approximation, not production trading-status evidence.",
+      "Orders are constrained using next bar status to stress-test tradability in daily research.",
+      "ST status remains unknown in V31 and is not used as a hard constraint here."
+    ]
+  },
+  "etf_coverage": {
+    "long_history_min_days": 1800,
+    "loaded_assets": 6,
+    "long_history_assets": 6,
+    "short_history_assets": 0,
+    "missing_or_invalid_assets": 0,
+    "long_history_symbols": [
+      "159915",
+      "510300",
+      "510500",
+      "511880",
+      "512100",
+      "518880"
+    ],
+    "short_history_symbols": [],
+    "missing_or_invalid_symbols": [],
+    "short_history_only": false
+  },
+  "cost_model": {
+    "stock": {
+      "commission_rate": 0.00025,
+      "min_commission": 5.0,
+      "stamp_duty_rate": 0.0005,
+      "slippage_bps": 10.0
+    },
+    "etf": {
+      "commission_rate": 0.00025,
+      "min_commission": 5.0,
+      "stamp_duty_rate": 0.0,
+      "slippage_bps": 3.0
+    },
+    "overlay_cost_bps": 10.0
+  },
+  "scenario_count": 6,
+  "simultaneous_improvement_pass_count": 3,
+  "stock_execution_pass_count": 6,
+  "minimum_gate_pass_count": 0,
+  "best_by_capital": {
+    "50000": {
+      "name": "v37_50000_alpha20_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 50000.0,
+        "alpha_cap": 0.2,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5381,
+        "annual_return": 0.0678,
+        "annual_volatility": 0.0796,
+        "max_drawdown": -0.1317,
+        "win_rate": 0.3301,
+        "total_return": 1.1586,
+        "final_nav": 107930.11,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4391,
+            "oos": 0.2014,
+            "mdd": -0.0594
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0296,
+            "oos": 0.3381,
+            "mdd": -0.0161
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1831,
+            "oos": -0.935,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0465,
+            "oos": 1.0115,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3561,
+            "oos": 1.177,
+            "mdd": -0.1256
+          }
+        ],
+        "avg_is_sharpe": 0.0166,
+        "avg_oos_sharpe": 0.3586,
+        "sharpe_decay": -20.5505
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4601,
+        "annual_return": 0.0605,
+        "annual_volatility": 0.0771,
+        "max_drawdown": -0.1287,
+        "win_rate": 0.2878,
+        "total_return": 0.9821,
+        "final_nav": 99102.74,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.439,
+            "oos": 0.1765,
+            "mdd": -0.0583
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0163,
+            "oos": 0.3255,
+            "mdd": -0.0172
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1694,
+            "oos": -0.9358,
+            "mdd": -0.0439
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0619,
+            "oos": 1.0229,
+            "mdd": -0.0592
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3617,
+            "oos": 1.1746,
+            "mdd": -0.1255
+          }
+        ],
+        "avg_is_sharpe": 0.0093,
+        "avg_oos_sharpe": 0.3527,
+        "sharpe_decay": -36.929
+      },
+      "gates": {
+        "annual_return_delta": 0.0073,
+        "sharpe_delta": 0.078,
+        "max_drawdown_delta": -0.003,
+        "avg_oos_sharpe_delta": 0.0059,
+        "min_oos_sharpe_delta": 0.0008,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": true,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": true
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.2,
+        "avg_alpha_allocation": 0.0285,
+        "max_alpha_allocation": 0.2,
+        "active_alpha_days": 820,
+        "active_alpha_ratio": 0.2734,
+        "allocation_turnover": 3.4328,
+        "overlay_cost_total_return": 0.003433,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 67,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.0509,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.186,
+        "max_estimated_total_risk_exposure": 0.9406,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 50000.0,
+        "full": {
+          "sharpe_ratio": 0.4208,
+          "annual_return": 0.0572,
+          "annual_volatility": 0.0766,
+          "max_drawdown": -0.1287,
+          "win_rate": 0.2828,
+          "total_return": 0.959,
+          "final_nav": 97949.27,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1552,
+          "avg_cash_weight": 0.8448,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 1313.83,
+          "fees_pct_initial_capital": 0.0263,
+          "turnover_pct_initial_capital": 38.6946,
+          "orders": 117,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 10000.0,
+        "scenario": {
+          "capital": 10000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.4528,
+          "annual_return": 0.0642,
+          "annual_volatility": 0.0867,
+          "max_drawdown": -0.3403,
+          "win_rate": 0.4478,
+          "total_return": 1.0544,
+          "final_nav": 20543.62,
+          "n_days": 2999,
+          "avg_holdings": 1.57,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.1852,
+          "avg_cash_weight": 0.8148,
+          "avg_target_gross": 0.2111,
+          "risk_off_rebalances": 23,
+          "total_fees": 1716.38,
+          "fees_pct_initial_capital": 0.1716,
+          "turnover_pct_initial_capital": 49.473,
+          "orders": 219,
+          "blocked_buys": 0,
+          "blocked_sells": 4,
+          "lot_blocked_targets": 28,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.6735,
+              "oos": 1.5608,
+              "mdd": -0.0336
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.3955,
+              "oos": -0.2046,
+              "mdd": -0.0235
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.5136,
+              "oos": -1.6647,
+              "mdd": -0.025
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.4618,
+              "oos": -1.7782,
+              "mdd": -0.0162
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -0.8848,
+              "oos": -0.5196,
+              "mdd": -0.0236
+            }
+          ],
+          "avg_is_sharpe": -0.2375,
+          "avg_oos_sharpe": -0.5213,
+          "sharpe_decay": 1.195
+        }
+      }
+    },
+    "100000": {
+      "name": "v37_100000_alpha20_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 100000.0,
+        "alpha_cap": 0.2,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5413,
+        "annual_return": 0.0686,
+        "annual_volatility": 0.0805,
+        "max_drawdown": -0.1407,
+        "win_rate": 0.3334,
+        "total_return": 1.176,
+        "final_nav": 217599.27,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4203,
+            "oos": 0.2104,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0446,
+            "oos": 0.343,
+            "mdd": -0.0161
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1952,
+            "oos": -0.9192,
+            "mdd": -0.0447
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0369,
+            "oos": 1.0136,
+            "mdd": -0.0592
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.361,
+            "oos": 1.1845,
+            "mdd": -0.1257
+          }
+        ],
+        "avg_is_sharpe": 0.0287,
+        "avg_oos_sharpe": 0.3665,
+        "sharpe_decay": -11.7597
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4599,
+        "annual_return": 0.0607,
+        "annual_volatility": 0.0777,
+        "max_drawdown": -0.1351,
+        "win_rate": 0.2881,
+        "total_return": 0.9874,
+        "final_nav": 198743.95,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4203,
+            "oos": 0.1732,
+            "mdd": -0.059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0253,
+            "oos": 0.3271,
+            "mdd": -0.0172
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1749,
+            "oos": -0.9262,
+            "mdd": -0.0441
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0609,
+            "oos": 1.0182,
+            "mdd": -0.0594
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.361,
+            "oos": 1.1803,
+            "mdd": -0.126
+          }
+        ],
+        "avg_is_sharpe": 0.016,
+        "avg_oos_sharpe": 0.3545,
+        "sharpe_decay": -21.1575
+      },
+      "gates": {
+        "annual_return_delta": 0.0079,
+        "sharpe_delta": 0.0814,
+        "max_drawdown_delta": -0.0056,
+        "avg_oos_sharpe_delta": 0.012,
+        "min_oos_sharpe_delta": 0.007,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": true,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": true
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.2,
+        "avg_alpha_allocation": 0.0292,
+        "max_alpha_allocation": 0.2,
+        "active_alpha_days": 800,
+        "active_alpha_ratio": 0.2668,
+        "allocation_turnover": 2.9899,
+        "overlay_cost_total_return": 0.00299,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 66,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.0515,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.1877,
+        "max_estimated_total_risk_exposure": 0.9399,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 100000.0,
+        "full": {
+          "sharpe_ratio": 0.421,
+          "annual_return": 0.0575,
+          "annual_volatility": 0.0772,
+          "max_drawdown": -0.1351,
+          "win_rate": 0.2832,
+          "total_return": 0.9644,
+          "final_nav": 196444.33,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1561,
+          "avg_cash_weight": 0.8439,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 2268.87,
+          "fees_pct_initial_capital": 0.0227,
+          "turnover_pct_initial_capital": 38.9067,
+          "orders": 116,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 20000.0,
+        "scenario": {
+          "capital": 20000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.208,
+          "annual_return": 0.0453,
+          "annual_volatility": 0.0974,
+          "max_drawdown": -0.4402,
+          "win_rate": 0.4758,
+          "total_return": 0.6195,
+          "final_nav": 32389.3,
+          "n_days": 2999,
+          "avg_holdings": 1.76,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.2116,
+          "avg_cash_weight": 0.7884,
+          "avg_target_gross": 0.2145,
+          "risk_off_rebalances": 23,
+          "total_fees": 2497.7,
+          "fees_pct_initial_capital": 0.1249,
+          "turnover_pct_initial_capital": 49.7034,
+          "orders": 250,
+          "blocked_buys": 0,
+          "blocked_sells": 3,
+          "lot_blocked_targets": 20,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.6959,
+              "oos": 1.7512,
+              "mdd": -0.0407
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.5534,
+              "oos": -0.1715,
+              "mdd": -0.031
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.6725,
+              "oos": -2.3439,
+              "mdd": -0.0347
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.4476,
+              "oos": -2.6128,
+              "mdd": -0.0173
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -1.2095,
+              "oos": -0.2795,
+              "mdd": -0.0383
+            }
+          ],
+          "avg_is_sharpe": -0.2464,
+          "avg_oos_sharpe": -0.7313,
+          "sharpe_decay": 1.9682
+        }
+      }
+    },
+    "200000": {
+      "name": "v37_200000_alpha15_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 200000.0,
+        "alpha_cap": 0.15,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5247,
+        "annual_return": 0.0669,
+        "annual_volatility": 0.0799,
+        "max_drawdown": -0.1399,
+        "win_rate": 0.3374,
+        "total_return": 1.1348,
+        "final_nav": 426952.17,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4148,
+            "oos": 0.2025,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0431,
+            "oos": 0.3262,
+            "mdd": -0.0165
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1899,
+            "oos": -0.9266,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.046,
+            "oos": 1.0133,
+            "mdd": -0.0595
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3571,
+            "oos": 1.192,
+            "mdd": -0.1257
+          }
+        ],
+        "avg_is_sharpe": 0.0259,
+        "avg_oos_sharpe": 0.3615,
+        "sharpe_decay": -12.9783
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4609,
+        "annual_return": 0.0608,
+        "annual_volatility": 0.0778,
+        "max_drawdown": -0.1351,
+        "win_rate": 0.2884,
+        "total_return": 0.9898,
+        "final_nav": 397953.36,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4148,
+            "oos": 0.1752,
+            "mdd": -0.059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.029,
+            "oos": 0.3289,
+            "mdd": -0.0173
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1781,
+            "oos": -0.9268,
+            "mdd": -0.044
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0593,
+            "oos": 1.017,
+            "mdd": -0.0595
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3613,
+            "oos": 1.1809,
+            "mdd": -0.1261
+          }
+        ],
+        "avg_is_sharpe": 0.0189,
+        "avg_oos_sharpe": 0.355,
+        "sharpe_decay": -17.825
+      },
+      "gates": {
+        "annual_return_delta": 0.0061,
+        "sharpe_delta": 0.0638,
+        "max_drawdown_delta": -0.0048,
+        "avg_oos_sharpe_delta": 0.0065,
+        "min_oos_sharpe_delta": 0.0002,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": true,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": true
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.15,
+        "avg_alpha_allocation": 0.0225,
+        "max_alpha_allocation": 0.15,
+        "active_alpha_days": 880,
+        "active_alpha_ratio": 0.2934,
+        "allocation_turnover": 2.327,
+        "overlay_cost_total_return": 0.002327,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 56,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.051,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.1813,
+        "max_estimated_total_risk_exposure": 0.9411,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 200000.0,
+        "full": {
+          "sharpe_ratio": 0.4219,
+          "annual_return": 0.0576,
+          "annual_volatility": 0.0772,
+          "max_drawdown": -0.1351,
+          "win_rate": 0.2835,
+          "total_return": 0.9667,
+          "final_nav": 393341.31,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1564,
+          "avg_cash_weight": 0.8436,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 4368.29,
+          "fees_pct_initial_capital": 0.0218,
+          "turnover_pct_initial_capital": 39.0087,
+          "orders": 119,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 30000.0,
+        "scenario": {
+          "capital": 30000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.2908,
+          "annual_return": 0.054,
+          "annual_volatility": 0.0999,
+          "max_drawdown": -0.436,
+          "win_rate": 0.4912,
+          "total_return": 0.7927,
+          "final_nav": 53781.61,
+          "n_days": 2999,
+          "avg_holdings": 1.77,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.2178,
+          "avg_cash_weight": 0.7822,
+          "avg_target_gross": 0.2145,
+          "risk_off_rebalances": 23,
+          "total_fees": 3258.39,
+          "fees_pct_initial_capital": 0.1086,
+          "turnover_pct_initial_capital": 52.3499,
+          "orders": 249,
+          "blocked_buys": 0,
+          "blocked_sells": 4,
+          "lot_blocked_targets": 21,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.6245,
+              "oos": 1.7564,
+              "mdd": -0.0396
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.599,
+              "oos": -0.0423,
+              "mdd": -0.0356
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.7002,
+              "oos": -0.5154,
+              "mdd": -0.0311
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.6657,
+              "oos": -1.4871,
+              "mdd": -0.0175
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -0.465,
+              "oos": 0.3146,
+              "mdd": -0.0315
+            }
+          ],
+          "avg_is_sharpe": -0.0249,
+          "avg_oos_sharpe": 0.0052,
+          "sharpe_decay": -1.2103
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "v37_100000_alpha20_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 100000.0,
+        "alpha_cap": 0.2,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5413,
+        "annual_return": 0.0686,
+        "annual_volatility": 0.0805,
+        "max_drawdown": -0.1407,
+        "win_rate": 0.3334,
+        "total_return": 1.176,
+        "final_nav": 217599.27,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4203,
+            "oos": 0.2104,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0446,
+            "oos": 0.343,
+            "mdd": -0.0161
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1952,
+            "oos": -0.9192,
+            "mdd": -0.0447
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0369,
+            "oos": 1.0136,
+            "mdd": -0.0592
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.361,
+            "oos": 1.1845,
+            "mdd": -0.1257
+          }
+        ],
+        "avg_is_sharpe": 0.0287,
+        "avg_oos_sharpe": 0.3665,
+        "sharpe_decay": -11.7597
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4599,
+        "annual_return": 0.0607,
+        "annual_volatility": 0.0777,
+        "max_drawdown": -0.1351,
+        "win_rate": 0.2881,
+        "total_return": 0.9874,
+        "final_nav": 198743.95,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4203,
+            "oos": 0.1732,
+            "mdd": -0.059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0253,
+            "oos": 0.3271,
+            "mdd": -0.0172
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1749,
+            "oos": -0.9262,
+            "mdd": -0.0441
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0609,
+            "oos": 1.0182,
+            "mdd": -0.0594
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.361,
+            "oos": 1.1803,
+            "mdd": -0.126
+          }
+        ],
+        "avg_is_sharpe": 0.016,
+        "avg_oos_sharpe": 0.3545,
+        "sharpe_decay": -21.1575
+      },
+      "gates": {
+        "annual_return_delta": 0.0079,
+        "sharpe_delta": 0.0814,
+        "max_drawdown_delta": -0.0056,
+        "avg_oos_sharpe_delta": 0.012,
+        "min_oos_sharpe_delta": 0.007,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": true,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": true
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.2,
+        "avg_alpha_allocation": 0.0292,
+        "max_alpha_allocation": 0.2,
+        "active_alpha_days": 800,
+        "active_alpha_ratio": 0.2668,
+        "allocation_turnover": 2.9899,
+        "overlay_cost_total_return": 0.00299,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 66,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.0515,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.1877,
+        "max_estimated_total_risk_exposure": 0.9399,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 100000.0,
+        "full": {
+          "sharpe_ratio": 0.421,
+          "annual_return": 0.0575,
+          "annual_volatility": 0.0772,
+          "max_drawdown": -0.1351,
+          "win_rate": 0.2832,
+          "total_return": 0.9644,
+          "final_nav": 196444.33,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1561,
+          "avg_cash_weight": 0.8439,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 2268.87,
+          "fees_pct_initial_capital": 0.0227,
+          "turnover_pct_initial_capital": 38.9067,
+          "orders": 116,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 20000.0,
+        "scenario": {
+          "capital": 20000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.208,
+          "annual_return": 0.0453,
+          "annual_volatility": 0.0974,
+          "max_drawdown": -0.4402,
+          "win_rate": 0.4758,
+          "total_return": 0.6195,
+          "final_nav": 32389.3,
+          "n_days": 2999,
+          "avg_holdings": 1.76,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.2116,
+          "avg_cash_weight": 0.7884,
+          "avg_target_gross": 0.2145,
+          "risk_off_rebalances": 23,
+          "total_fees": 2497.7,
+          "fees_pct_initial_capital": 0.1249,
+          "turnover_pct_initial_capital": 49.7034,
+          "orders": 250,
+          "blocked_buys": 0,
+          "blocked_sells": 3,
+          "lot_blocked_targets": 20,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.6959,
+              "oos": 1.7512,
+              "mdd": -0.0407
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.5534,
+              "oos": -0.1715,
+              "mdd": -0.031
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.6725,
+              "oos": -2.3439,
+              "mdd": -0.0347
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.4476,
+              "oos": -2.6128,
+              "mdd": -0.0173
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -1.2095,
+              "oos": -0.2795,
+              "mdd": -0.0383
+            }
+          ],
+          "avg_is_sharpe": -0.2464,
+          "avg_oos_sharpe": -0.7313,
+          "sharpe_decay": 1.9682
+        }
+      }
+    },
+    {
+      "name": "v37_50000_alpha20_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 50000.0,
+        "alpha_cap": 0.2,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5381,
+        "annual_return": 0.0678,
+        "annual_volatility": 0.0796,
+        "max_drawdown": -0.1317,
+        "win_rate": 0.3301,
+        "total_return": 1.1586,
+        "final_nav": 107930.11,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4391,
+            "oos": 0.2014,
+            "mdd": -0.0594
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0296,
+            "oos": 0.3381,
+            "mdd": -0.0161
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1831,
+            "oos": -0.935,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0465,
+            "oos": 1.0115,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3561,
+            "oos": 1.177,
+            "mdd": -0.1256
+          }
+        ],
+        "avg_is_sharpe": 0.0166,
+        "avg_oos_sharpe": 0.3586,
+        "sharpe_decay": -20.5505
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4601,
+        "annual_return": 0.0605,
+        "annual_volatility": 0.0771,
+        "max_drawdown": -0.1287,
+        "win_rate": 0.2878,
+        "total_return": 0.9821,
+        "final_nav": 99102.74,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.439,
+            "oos": 0.1765,
+            "mdd": -0.0583
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0163,
+            "oos": 0.3255,
+            "mdd": -0.0172
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1694,
+            "oos": -0.9358,
+            "mdd": -0.0439
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0619,
+            "oos": 1.0229,
+            "mdd": -0.0592
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3617,
+            "oos": 1.1746,
+            "mdd": -0.1255
+          }
+        ],
+        "avg_is_sharpe": 0.0093,
+        "avg_oos_sharpe": 0.3527,
+        "sharpe_decay": -36.929
+      },
+      "gates": {
+        "annual_return_delta": 0.0073,
+        "sharpe_delta": 0.078,
+        "max_drawdown_delta": -0.003,
+        "avg_oos_sharpe_delta": 0.0059,
+        "min_oos_sharpe_delta": 0.0008,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": true,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": true
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.2,
+        "avg_alpha_allocation": 0.0285,
+        "max_alpha_allocation": 0.2,
+        "active_alpha_days": 820,
+        "active_alpha_ratio": 0.2734,
+        "allocation_turnover": 3.4328,
+        "overlay_cost_total_return": 0.003433,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 67,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.0509,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.186,
+        "max_estimated_total_risk_exposure": 0.9406,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 50000.0,
+        "full": {
+          "sharpe_ratio": 0.4208,
+          "annual_return": 0.0572,
+          "annual_volatility": 0.0766,
+          "max_drawdown": -0.1287,
+          "win_rate": 0.2828,
+          "total_return": 0.959,
+          "final_nav": 97949.27,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1552,
+          "avg_cash_weight": 0.8448,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 1313.83,
+          "fees_pct_initial_capital": 0.0263,
+          "turnover_pct_initial_capital": 38.6946,
+          "orders": 117,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 10000.0,
+        "scenario": {
+          "capital": 10000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.4528,
+          "annual_return": 0.0642,
+          "annual_volatility": 0.0867,
+          "max_drawdown": -0.3403,
+          "win_rate": 0.4478,
+          "total_return": 1.0544,
+          "final_nav": 20543.62,
+          "n_days": 2999,
+          "avg_holdings": 1.57,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.1852,
+          "avg_cash_weight": 0.8148,
+          "avg_target_gross": 0.2111,
+          "risk_off_rebalances": 23,
+          "total_fees": 1716.38,
+          "fees_pct_initial_capital": 0.1716,
+          "turnover_pct_initial_capital": 49.473,
+          "orders": 219,
+          "blocked_buys": 0,
+          "blocked_sells": 4,
+          "lot_blocked_targets": 28,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.6735,
+              "oos": 1.5608,
+              "mdd": -0.0336
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.3955,
+              "oos": -0.2046,
+              "mdd": -0.0235
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.5136,
+              "oos": -1.6647,
+              "mdd": -0.025
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.4618,
+              "oos": -1.7782,
+              "mdd": -0.0162
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -0.8848,
+              "oos": -0.5196,
+              "mdd": -0.0236
+            }
+          ],
+          "avg_is_sharpe": -0.2375,
+          "avg_oos_sharpe": -0.5213,
+          "sharpe_decay": 1.195
+        }
+      }
+    },
+    {
+      "name": "v37_200000_alpha15_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 200000.0,
+        "alpha_cap": 0.15,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5247,
+        "annual_return": 0.0669,
+        "annual_volatility": 0.0799,
+        "max_drawdown": -0.1399,
+        "win_rate": 0.3374,
+        "total_return": 1.1348,
+        "final_nav": 426952.17,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4148,
+            "oos": 0.2025,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0431,
+            "oos": 0.3262,
+            "mdd": -0.0165
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1899,
+            "oos": -0.9266,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.046,
+            "oos": 1.0133,
+            "mdd": -0.0595
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3571,
+            "oos": 1.192,
+            "mdd": -0.1257
+          }
+        ],
+        "avg_is_sharpe": 0.0259,
+        "avg_oos_sharpe": 0.3615,
+        "sharpe_decay": -12.9783
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4609,
+        "annual_return": 0.0608,
+        "annual_volatility": 0.0778,
+        "max_drawdown": -0.1351,
+        "win_rate": 0.2884,
+        "total_return": 0.9898,
+        "final_nav": 397953.36,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4148,
+            "oos": 0.1752,
+            "mdd": -0.059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.029,
+            "oos": 0.3289,
+            "mdd": -0.0173
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1781,
+            "oos": -0.9268,
+            "mdd": -0.044
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0593,
+            "oos": 1.017,
+            "mdd": -0.0595
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3613,
+            "oos": 1.1809,
+            "mdd": -0.1261
+          }
+        ],
+        "avg_is_sharpe": 0.0189,
+        "avg_oos_sharpe": 0.355,
+        "sharpe_decay": -17.825
+      },
+      "gates": {
+        "annual_return_delta": 0.0061,
+        "sharpe_delta": 0.0638,
+        "max_drawdown_delta": -0.0048,
+        "avg_oos_sharpe_delta": 0.0065,
+        "min_oos_sharpe_delta": 0.0002,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": true,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": true
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.15,
+        "avg_alpha_allocation": 0.0225,
+        "max_alpha_allocation": 0.15,
+        "active_alpha_days": 880,
+        "active_alpha_ratio": 0.2934,
+        "allocation_turnover": 2.327,
+        "overlay_cost_total_return": 0.002327,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 56,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.051,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.1813,
+        "max_estimated_total_risk_exposure": 0.9411,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 200000.0,
+        "full": {
+          "sharpe_ratio": 0.4219,
+          "annual_return": 0.0576,
+          "annual_volatility": 0.0772,
+          "max_drawdown": -0.1351,
+          "win_rate": 0.2835,
+          "total_return": 0.9667,
+          "final_nav": 393341.31,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1564,
+          "avg_cash_weight": 0.8436,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 4368.29,
+          "fees_pct_initial_capital": 0.0218,
+          "turnover_pct_initial_capital": 39.0087,
+          "orders": 119,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 30000.0,
+        "scenario": {
+          "capital": 30000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.2908,
+          "annual_return": 0.054,
+          "annual_volatility": 0.0999,
+          "max_drawdown": -0.436,
+          "win_rate": 0.4912,
+          "total_return": 0.7927,
+          "final_nav": 53781.61,
+          "n_days": 2999,
+          "avg_holdings": 1.77,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.2178,
+          "avg_cash_weight": 0.7822,
+          "avg_target_gross": 0.2145,
+          "risk_off_rebalances": 23,
+          "total_fees": 3258.39,
+          "fees_pct_initial_capital": 0.1086,
+          "turnover_pct_initial_capital": 52.3499,
+          "orders": 249,
+          "blocked_buys": 0,
+          "blocked_sells": 4,
+          "lot_blocked_targets": 21,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.6245,
+              "oos": 1.7564,
+              "mdd": -0.0396
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.599,
+              "oos": -0.0423,
+              "mdd": -0.0356
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.7002,
+              "oos": -0.5154,
+              "mdd": -0.0311
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.6657,
+              "oos": -1.4871,
+              "mdd": -0.0175
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -0.465,
+              "oos": 0.3146,
+              "mdd": -0.0315
+            }
+          ],
+          "avg_is_sharpe": -0.0249,
+          "avg_oos_sharpe": 0.0052,
+          "sharpe_decay": -1.2103
+        }
+      }
+    },
+    {
+      "name": "v37_200000_alpha20_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 200000.0,
+        "alpha_cap": 0.2,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.543,
+        "annual_return": 0.0688,
+        "annual_volatility": 0.0806,
+        "max_drawdown": -0.1405,
+        "win_rate": 0.3354,
+        "total_return": 1.181,
+        "final_nav": 436199.38,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4148,
+            "oos": 0.1914,
+            "mdd": -0.0588
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0376,
+            "oos": 0.3254,
+            "mdd": -0.0162
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1844,
+            "oos": -0.9282,
+            "mdd": -0.0447
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0527,
+            "oos": 1.0055,
+            "mdd": -0.0599
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.352,
+            "oos": 1.1896,
+            "mdd": -0.1258
+          }
+        ],
+        "avg_is_sharpe": 0.0213,
+        "avg_oos_sharpe": 0.3567,
+        "sharpe_decay": -15.7484
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4609,
+        "annual_return": 0.0608,
+        "annual_volatility": 0.0778,
+        "max_drawdown": -0.1351,
+        "win_rate": 0.2884,
+        "total_return": 0.9898,
+        "final_nav": 397953.36,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4148,
+            "oos": 0.1752,
+            "mdd": -0.059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.029,
+            "oos": 0.3289,
+            "mdd": -0.0173
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1781,
+            "oos": -0.9268,
+            "mdd": -0.044
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0593,
+            "oos": 1.017,
+            "mdd": -0.0595
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3613,
+            "oos": 1.1809,
+            "mdd": -0.1261
+          }
+        ],
+        "avg_is_sharpe": 0.0189,
+        "avg_oos_sharpe": 0.355,
+        "sharpe_decay": -17.825
+      },
+      "gates": {
+        "annual_return_delta": 0.008,
+        "sharpe_delta": 0.0821,
+        "max_drawdown_delta": -0.0054,
+        "avg_oos_sharpe_delta": 0.0017,
+        "min_oos_sharpe_delta": -0.0014,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": false,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": false
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.2,
+        "avg_alpha_allocation": 0.0295,
+        "max_alpha_allocation": 0.2,
+        "active_alpha_days": 800,
+        "active_alpha_ratio": 0.2668,
+        "allocation_turnover": 3.0754,
+        "overlay_cost_total_return": 0.003075,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 61,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.0517,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.1882,
+        "max_estimated_total_risk_exposure": 0.9398,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 200000.0,
+        "full": {
+          "sharpe_ratio": 0.4219,
+          "annual_return": 0.0576,
+          "annual_volatility": 0.0772,
+          "max_drawdown": -0.1351,
+          "win_rate": 0.2835,
+          "total_return": 0.9667,
+          "final_nav": 393341.31,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1564,
+          "avg_cash_weight": 0.8436,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 4368.29,
+          "fees_pct_initial_capital": 0.0218,
+          "turnover_pct_initial_capital": 39.0087,
+          "orders": 119,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 40000.0,
+        "scenario": {
+          "capital": 40000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.2586,
+          "annual_return": 0.051,
+          "annual_volatility": 0.1006,
+          "max_drawdown": -0.4446,
+          "win_rate": 0.4945,
+          "total_return": 0.7277,
+          "final_nav": 69106.82,
+          "n_days": 2999,
+          "avg_holdings": 1.81,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.2205,
+          "avg_cash_weight": 0.7795,
+          "avg_target_gross": 0.2145,
+          "risk_off_rebalances": 23,
+          "total_fees": 4062.18,
+          "fees_pct_initial_capital": 0.1016,
+          "turnover_pct_initial_capital": 53.3334,
+          "orders": 256,
+          "blocked_buys": 0,
+          "blocked_sells": 4,
+          "lot_blocked_targets": 18,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.627,
+              "oos": 1.5305,
+              "mdd": -0.0404
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.5039,
+              "oos": -0.0461,
+              "mdd": -0.0345
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.6145,
+              "oos": -0.8763,
+              "mdd": -0.0387
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.4712,
+              "oos": -1.7543,
+              "mdd": -0.0138
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -0.636,
+              "oos": 0.1884,
+              "mdd": -0.036
+            }
+          ],
+          "avg_is_sharpe": -0.1347,
+          "avg_oos_sharpe": -0.1916,
+          "sharpe_decay": 0.4223
+        }
+      }
+    },
+    {
+      "name": "v37_100000_alpha15_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 100000.0,
+        "alpha_cap": 0.15,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5194,
+        "annual_return": 0.0664,
+        "annual_volatility": 0.0797,
+        "max_drawdown": -0.1393,
+        "win_rate": 0.3311,
+        "total_return": 1.1211,
+        "final_nav": 212114.73,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4203,
+            "oos": 0.1939,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0361,
+            "oos": 0.3366,
+            "mdd": -0.0165
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1863,
+            "oos": -0.9266,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0486,
+            "oos": 1.0086,
+            "mdd": -0.0596
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3563,
+            "oos": 1.1847,
+            "mdd": -0.1255
+          }
+        ],
+        "avg_is_sharpe": 0.022,
+        "avg_oos_sharpe": 0.3594,
+        "sharpe_decay": -15.3679
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4599,
+        "annual_return": 0.0607,
+        "annual_volatility": 0.0777,
+        "max_drawdown": -0.1351,
+        "win_rate": 0.2881,
+        "total_return": 0.9874,
+        "final_nav": 198743.95,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4203,
+            "oos": 0.1732,
+            "mdd": -0.059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0253,
+            "oos": 0.3271,
+            "mdd": -0.0172
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1749,
+            "oos": -0.9262,
+            "mdd": -0.0441
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0609,
+            "oos": 1.0182,
+            "mdd": -0.0594
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.361,
+            "oos": 1.1803,
+            "mdd": -0.126
+          }
+        ],
+        "avg_is_sharpe": 0.016,
+        "avg_oos_sharpe": 0.3545,
+        "sharpe_decay": -21.1575
+      },
+      "gates": {
+        "annual_return_delta": 0.0057,
+        "sharpe_delta": 0.0595,
+        "max_drawdown_delta": -0.0042,
+        "avg_oos_sharpe_delta": 0.0049,
+        "min_oos_sharpe_delta": -0.0004,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": true,
+        "min_oos_not_degraded": false,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": false
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.15,
+        "avg_alpha_allocation": 0.0219,
+        "max_alpha_allocation": 0.15,
+        "active_alpha_days": 820,
+        "active_alpha_ratio": 0.2734,
+        "allocation_turnover": 2.461,
+        "overlay_cost_total_return": 0.002461,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 63,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.0507,
+        "avg_daily_var95_at_rebalance": 0.0044,
+        "avg_estimated_total_risk_exposure": 0.1803,
+        "max_estimated_total_risk_exposure": 0.9399,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 100000.0,
+        "full": {
+          "sharpe_ratio": 0.421,
+          "annual_return": 0.0575,
+          "annual_volatility": 0.0772,
+          "max_drawdown": -0.1351,
+          "win_rate": 0.2832,
+          "total_return": 0.9644,
+          "final_nav": 196444.33,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1561,
+          "avg_cash_weight": 0.8439,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 2268.87,
+          "fees_pct_initial_capital": 0.0227,
+          "turnover_pct_initial_capital": 38.9067,
+          "orders": 116,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 15000.0,
+        "scenario": {
+          "capital": 15000.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.2269,
+          "annual_return": 0.0466,
+          "annual_volatility": 0.0953,
+          "max_drawdown": -0.4318,
+          "win_rate": 0.4675,
+          "total_return": 0.65,
+          "final_nav": 24750.71,
+          "n_days": 2999,
+          "avg_holdings": 1.67,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.2029,
+          "avg_cash_weight": 0.7971,
+          "avg_target_gross": 0.2145,
+          "risk_off_rebalances": 23,
+          "total_fees": 2057.29,
+          "fees_pct_initial_capital": 0.1372,
+          "turnover_pct_initial_capital": 47.1699,
+          "orders": 234,
+          "blocked_buys": 0,
+          "blocked_sells": 3,
+          "lot_blocked_targets": 22,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.7061,
+              "oos": 1.6265,
+              "mdd": -0.0411
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.4571,
+              "oos": -0.1974,
+              "mdd": -0.0314
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.5684,
+              "oos": -2.2479,
+              "mdd": -0.0239
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.5221,
+              "oos": -1.7375,
+              "mdd": -0.0168
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -0.9831,
+              "oos": 0.0726,
+              "mdd": -0.0225
+            }
+          ],
+          "avg_is_sharpe": -0.2283,
+          "avg_oos_sharpe": -0.4967,
+          "sharpe_decay": 1.1756
+        }
+      }
+    },
+    {
+      "name": "v37_50000_alpha15_small_balanced_2pos_40d",
+      "scenario": {
+        "capital": 50000.0,
+        "alpha_cap": 0.15,
+        "stock_profile": "small_balanced",
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "stock_rank_mode": "blend",
+        "overlay_rebalance_freq": 20,
+        "alpha_lookback": 60
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.5159,
+        "annual_return": 0.0656,
+        "annual_volatility": 0.0786,
+        "max_drawdown": -0.1287,
+        "win_rate": 0.3178,
+        "total_return": 1.1027,
+        "final_nav": 105137.24,
+        "n_days": 2999
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.4394,
+            "oos": 0.1694,
+            "mdd": -0.0591
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.013,
+            "oos": 0.3312,
+            "mdd": -0.0164
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1661,
+            "oos": -0.9342,
+            "mdd": -0.0443
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0642,
+            "oos": 1.0209,
+            "mdd": -0.0593
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3603,
+            "oos": 1.1733,
+            "mdd": -0.1255
+          }
+        ],
+        "avg_is_sharpe": 0.0072,
+        "avg_oos_sharpe": 0.3521,
+        "sharpe_decay": -48.1788
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4601,
+        "annual_return": 0.0605,
+        "annual_volatility": 0.0771,
+        "max_drawdown": -0.1287,
+        "win_rate": 0.2878,
+        "total_return": 0.9821,
+        "final_nav": 99102.74,
+        "n_days": 2999
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.439,
+            "oos": 0.1765,
+            "mdd": -0.0583
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0163,
+            "oos": 0.3255,
+            "mdd": -0.0172
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1694,
+            "oos": -0.9358,
+            "mdd": -0.0439
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.0619,
+            "oos": 1.0229,
+            "mdd": -0.0592
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3617,
+            "oos": 1.1746,
+            "mdd": -0.1255
+          }
+        ],
+        "avg_is_sharpe": 0.0093,
+        "avg_oos_sharpe": 0.3527,
+        "sharpe_decay": -36.929
+      },
+      "gates": {
+        "annual_return_delta": 0.0051,
+        "sharpe_delta": 0.0558,
+        "max_drawdown_delta": 0.0,
+        "avg_oos_sharpe_delta": -0.0006,
+        "min_oos_sharpe_delta": 0.0016,
+        "return_improved_50bps": true,
+        "sharpe_not_degraded": true,
+        "drawdown_controlled": true,
+        "oos_not_degraded": false,
+        "min_oos_not_degraded": true,
+        "risk_capacity_controlled": true,
+        "stock_execution_gate_passes": true,
+        "small_account_minimum_gate_passes": false,
+        "simultaneous_improvement_gate_passes": false
+      },
+      "allocation_diagnostics": {
+        "etf_capital_weight": 1.0,
+        "alpha_cap": 0.15,
+        "avg_alpha_allocation": 0.0172,
+        "max_alpha_allocation": 0.15,
+        "active_alpha_days": 680,
+        "active_alpha_ratio": 0.2267,
+        "allocation_turnover": 1.9971,
+        "overlay_cost_total_return": 0.001997,
+        "risk_off_rebalances": 47,
+        "momentum_blocked_rebalances": 82,
+        "drawdown_reduced_rebalances": 94,
+        "avg_realized_vol_at_rebalance": 0.0501,
+        "avg_daily_var95_at_rebalance": 0.0043,
+        "avg_estimated_total_risk_exposure": 0.1747,
+        "max_estimated_total_risk_exposure": 0.9406,
+        "risk_capacity_limit": 0.95,
+        "risk_capacity_buffer": 0.01
+      },
+      "etf_subaccount": {
+        "capital": 50000.0,
+        "full": {
+          "sharpe_ratio": 0.4208,
+          "annual_return": 0.0572,
+          "annual_volatility": 0.0766,
+          "max_drawdown": -0.1287,
+          "win_rate": 0.2828,
+          "total_return": 0.959,
+          "final_nav": 97949.27,
+          "n_days": 3122,
+          "avg_holdings": 0.53,
+          "max_holdings": 1,
+          "avg_risky_exposure": 0.1552,
+          "avg_cash_weight": 0.8448,
+          "avg_target_budget": 0.1579,
+          "max_target_budget": 0.9363,
+          "zero_budget_rebalances": 73,
+          "avg_realized_vol_at_rebalance": 0.1079,
+          "avg_daily_var95_at_rebalance": 0.009,
+          "total_fees": 1313.83,
+          "fees_pct_initial_capital": 0.0263,
+          "turnover_pct_initial_capital": 38.6946,
+          "orders": 117,
+          "lot_blocked_targets": 0,
+          "cash_blocked_buys": 0,
+          "missing_price_blocks": 1,
+          "regime_counts": {
+            "neutral": 51,
+            "risk_on": 32,
+            "risk_off": 47,
+            "cautious": 27
+          }
+        }
+      },
+      "stock_subaccount": {
+        "capital": 7500.0,
+        "scenario": {
+          "capital": 7500.0,
+          "max_positions": 2,
+          "rank_mode": "blend",
+          "gross_profile": "small_balanced",
+          "rebalance_freq": 40,
+          "lot_size": 100,
+          "candidate_pool_multiplier": 10,
+          "max_per_industry": 1,
+          "per_position_budget_buffer": 1.5
+        },
+        "full": {
+          "sharpe_ratio": 0.2538,
+          "annual_return": 0.0471,
+          "annual_volatility": 0.0872,
+          "max_drawdown": -0.3957,
+          "win_rate": 0.3818,
+          "total_return": 0.6747,
+          "final_nav": 12560.24,
+          "n_days": 2999,
+          "avg_holdings": 1.43,
+          "max_holdings": 3,
+          "avg_stock_exposure": 0.1872,
+          "avg_cash_weight": 0.8128,
+          "avg_target_gross": 0.2164,
+          "risk_off_rebalances": 23,
+          "total_fees": 1413.76,
+          "fees_pct_initial_capital": 0.1885,
+          "turnover_pct_initial_capital": 45.5619,
+          "orders": 197,
+          "blocked_buys": 0,
+          "blocked_sells": 6,
+          "lot_blocked_targets": 28,
+          "cash_blocked_buys": 0
+        },
+        "wf": {
+          "folds": [
+            {
+              "fold": 0,
+              "test_start": "2021-03-16",
+              "test_end": "2022-03-29",
+              "is": -1.7321,
+              "oos": 1.0935,
+              "mdd": -0.0295
+            },
+            {
+              "fold": 1,
+              "test_start": "2022-03-29",
+              "test_end": "2023-04-12",
+              "is": 0.2436,
+              "oos": -0.2106,
+              "mdd": -0.0308
+            },
+            {
+              "fold": 2,
+              "test_start": "2023-04-12",
+              "test_end": "2024-04-26",
+              "is": 0.3308,
+              "oos": -1.688,
+              "mdd": -0.0258
+            },
+            {
+              "fold": 3,
+              "test_start": "2024-04-26",
+              "test_end": "2025-05-15",
+              "is": 0.0677,
+              "oos": -4.4029,
+              "mdd": -0.0166
+            },
+            {
+              "fold": 4,
+              "test_start": "2025-05-15",
+              "test_end": "2026-05-29",
+              "is": -1.0573,
+              "oos": -0.9858,
+              "mdd": -0.0227
+            }
+          ],
+          "avg_is_sharpe": -0.4295,
+          "avg_oos_sharpe": -1.2388,
+          "sharpe_decay": 1.8845
+        }
+      }
+    }
+  ],
+  "production_blockers": [
+    "V37 is local research evidence and does not approve live trading",
+    "V31 trading status is a free-source approximation, not vendor PIT evidence",
+    "top-level fractional sleeve scaling approximates sub-account resizing and requires broker replay",
+    "requires real ETF/stock provider entitlement, 90-day paper fills and position reconciliation",
+    "requires external WORM/Secret/Approval/Position/Capacity/DR evidence gate"
+  ],
+  "elapsed_seconds": 44.21
+}

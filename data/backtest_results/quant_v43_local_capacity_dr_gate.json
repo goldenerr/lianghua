@@ -1,0 +1,49 @@
+{
+  "ts": "2026-06-23T03:15:41.236403+00:00",
+  "version": "V43-local-capacity-dr-gate",
+  "research_only": false,
+  "production_like": false,
+  "production_ready": false,
+  "local_capacity_dr_gate_passes": true,
+  "v42_paper_evidence_ready": false,
+  "thresholds": {
+    "min_events_per_second": 10000.0,
+    "max_market_data_to_strategy_p99_ms": 10.0,
+    "min_order_events_per_second": 500.0,
+    "max_signal_to_gateway_p99_ms": 60.0,
+    "max_failover_rto_seconds": 7200.0,
+    "max_failover_rpo_seconds": 3600.0
+  },
+  "capacity_benchmark_local": {
+    "event_count": 20000,
+    "order_count": 2000,
+    "symbol_count": 200,
+    "strategy_count": 20,
+    "events_per_second": 196096.7,
+    "order_events_per_second": 74720.5,
+    "market_data_to_strategy_p50_ms": 0.001625,
+    "market_data_to_strategy_p99_ms": 0.00225,
+    "signal_to_gateway_p50_ms": 0.008458,
+    "signal_to_gateway_p99_ms": 0.017,
+    "peak_rss_mb": 24.05,
+    "audit_integrity_passes": true,
+    "strategy_checksum": 40019928000,
+    "production_like": false
+  },
+  "failover_drill_local": {
+    "secondary_failover_ok": true,
+    "unhealthy_region_rejected": true,
+    "active_region": "ap-southeast",
+    "local_rto_seconds": 3e-06,
+    "reported_rpo_seconds": 0.5,
+    "production_like": false
+  },
+  "local_blockers": [],
+  "production_blockers": [
+    "本地容量/DR 报告不是类生产环境或外部证明",
+    "仍缺外部 capacity_benchmark 证据引用",
+    "仍缺外部 failover_dr_test 证据引用",
+    "V42 影子模拟盘 90 天证据门禁未通过"
+  ],
+  "note": "本地门禁用于工程回归，不能替代外部生产级容量压测和多区域容灾证明。"
+}

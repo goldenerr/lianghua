@@ -1,0 +1,122 @@
+{
+  "ts": "2026-06-23T06:41:40.860943+00:00",
+  "version": "V40-robustness-v1",
+  "research_only": true,
+  "production_ready": false,
+  "robustness_gate_passes": false,
+  "candidate": {
+    "capital": 200000.0,
+    "stock_cap": 0.07,
+    "crisis_cap": 0.2
+  },
+  "thresholds": {
+    "min_cross_capital_passes": 2,
+    "min_sensitivity_pass_ratio": 0.8,
+    "max_metric_spread": 0.15
+  },
+  "candidate_metrics": {
+    "default": {
+      "sharpe_ratio": 0.4807,
+      "annual_return": 0.0643,
+      "annual_volatility": 0.0817,
+      "max_drawdown": -0.144,
+      "win_rate": 0.4792,
+      "total_return": 1.1276,
+      "final_nav": 425512.26,
+      "n_days": 3122,
+      "avg_actual_risk_exposure": 0.2341,
+      "max_actual_risk_exposure": 0.9403,
+      "avg_cash_weight": 0.7659,
+      "avg_stock_holdings": 0.53,
+      "max_stock_holdings": 5,
+      "total_fees": 6589.04,
+      "fees_pct_initial_capital": 0.0329,
+      "orders": 317,
+      "blocked_buys": 1,
+      "blocked_sells": 0,
+      "cash_blocked_buys": 0,
+      "lot_blocked_targets": 48,
+      "invariant_max_error": 1e-10,
+      "risk_capacity_violations": 0,
+      "avg_target_etf": 0.1572,
+      "avg_target_stock": 0.0107,
+      "avg_target_crisis": 0.0828
+    },
+    "cost_stress": {
+      "sharpe_ratio": 0.4294,
+      "annual_return": 0.0593,
+      "annual_volatility": 0.08,
+      "max_drawdown": -0.1435,
+      "win_rate": 0.4728,
+      "total_return": 1.0047,
+      "final_nav": 400932.91,
+      "n_days": 3122,
+      "avg_actual_risk_exposure": 0.2225,
+      "max_actual_risk_exposure": 0.9399,
+      "avg_cash_weight": 0.7775,
+      "avg_stock_holdings": 0.47,
+      "max_stock_holdings": 5,
+      "total_fees": 12632.59,
+      "fees_pct_initial_capital": 0.0632,
+      "orders": 300,
+      "blocked_buys": 1,
+      "blocked_sells": 0,
+      "cash_blocked_buys": 0,
+      "lot_blocked_targets": 51,
+      "invariant_max_error": 1e-10,
+      "risk_capacity_violations": 0,
+      "avg_target_etf": 0.1459,
+      "avg_target_stock": 0.0084,
+      "avg_target_crisis": 0.0828
+    }
+  },
+  "sensitivity": {
+    "default_pass_ratio": 0.666667,
+    "cost_stress_pass_ratio": 0.333333,
+    "default_metric_spreads": {
+      "annual_return": 0.027994,
+      "sharpe_ratio": 0.029332,
+      "max_drawdown": 0.045833
+    },
+    "cost_stress_metric_spreads": {
+      "annual_return": 0.133221,
+      "sharpe_ratio": 0.185142,
+      "max_drawdown": 0.057143
+    }
+  },
+  "cross_capital": {
+    "default_pass_count": 2,
+    "default_passing_capitals": [
+      100000,
+      200000
+    ],
+    "cost_stress_pass_count": 1,
+    "cost_stress_passing_capitals": [
+      200000
+    ]
+  },
+  "gates": {
+    "candidate_default_relative_passes": true,
+    "candidate_cost_stress_relative_passes": true,
+    "default_sensitivity_pass_ratio_passes": false,
+    "stress_sensitivity_pass_ratio_passes": false,
+    "default_metric_spread_passes": true,
+    "stress_metric_spread_passes": false,
+    "default_cross_capital_passes": true,
+    "stress_cross_capital_passes": false,
+    "production_minimum_passes": false
+  },
+  "blockers": [
+    "default_sensitivity_pass_ratio_passes",
+    "stress_sensitivity_pass_ratio_passes",
+    "stress_metric_spread_passes",
+    "stress_cross_capital_passes",
+    "production_minimum_passes"
+  ],
+  "source_files": {
+    "base": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v40_stock_alpha_defensive_basket.json",
+    "stress": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v40_stock_alpha_defensive_basket_cost_stress.json",
+    "sensitivity": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v40_stock_alpha_defensive_basket_sensitivity.json",
+    "sensitivity_stress": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v40_stock_alpha_defensive_basket_sensitivity_cost_stress.json"
+  }
+}

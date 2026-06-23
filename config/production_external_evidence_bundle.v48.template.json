@@ -1,0 +1,35 @@
+{
+  "version": "V48-production-external-evidence-bundle-template",
+  "template_only": true,
+  "production_ready": false,
+  "说明": "仅填写外部证明 reference，不要填写 token、API key、密码或私钥。",
+  "external_refs": {
+    "external_worm_archive": "",
+    "secret_manager": "",
+    "approval_service": "",
+    "real_market_data_provider": "",
+    "provider_entitlement": "",
+    "alt_archive_readiness": "",
+    "exchange_position_provider": "",
+    "broker_borrow_availability": "",
+    "paper_trading_90d": "",
+    "signed_plugin_review": "",
+    "production_calendar": "",
+    "rollover_runbook": "",
+    "capacity_benchmark": "",
+    "failover_dr_test": ""
+  },
+  "production_data_refs": {
+    "pit_security_master": "",
+    "trading_status_actions": "",
+    "corporate_action_reconciliation": "",
+    "real_tick_minute_execution_feed": "",
+    "exchange_order_fill_replay": ""
+  },
+  "required_real_world_actions": [
+    "向数据供应商或券商获取真实 PIT 股票池、退市/ST/停牌/涨跌停状态、复权因子复核、tick/minute 执行历史。",
+    "向券商或模拟盘服务导出 90 天 paper trading 的订单、成交、持仓、滑点和审计归档 reference。",
+    "在 WORM/Object Lock、Secret Manager、Approval Service、容量压测和 DR 演练系统中生成外部可验证 reference。",
+    "只填写 reference，不填写任何密钥值或账户密码。"
+  ]
+}

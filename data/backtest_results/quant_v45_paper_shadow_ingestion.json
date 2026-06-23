@@ -1,0 +1,19 @@
+{
+  "ts": "2026-06-23T06:01:10.789135+00:00",
+  "version": "V45-paper-shadow-daily-ingestion",
+  "production_ready": false,
+  "ledger_path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v45_paper_shadow_ledger.json",
+  "daily_report_count": 0,
+  "ingestion_action": "refreshed_without_new_report",
+  "warnings": [],
+  "v42_paper_evidence_ready": false,
+  "v44_production_ready": false,
+  "v44_blocker_count": 20,
+  "latest_report_date": null,
+  "next_actions": [
+    "每日收盘后导出只读行情、模拟成交、持仓快照和审计事件，形成单日 JSON 并运行本脚本。",
+    "连续至少 90 个自然日、至少 60 个日报交易日后，V42 才可能解除日报数量阻塞。",
+    "日报不得包含 token、API key、password 或私钥值。",
+    "即使 V42 通过，也必须等待 V40 robustness、外部 evidence 和风控审批全部通过。"
+  ]
+}

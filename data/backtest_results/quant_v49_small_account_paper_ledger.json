@@ -1,0 +1,190 @@
+{
+  "version": "V49-small-account-paper-ledger",
+  "generated_by": "scripts/prepare_v49_small_account_paper_validation.py",
+  "updated_at": "2026-06-23T07:55:12.454558+00:00",
+  "stage": "5-10万小账户 paper trading / 准生产验证",
+  "production_ready": false,
+  "paper_validation_ready": true,
+  "candidate_accounts": [
+    {
+      "account_id": "paper_small_account_50000",
+      "capital": 50000.0,
+      "strategy_name": "v33_small_account_small_balanced_blend_50000_5pos",
+      "stage": "paper_trading_preproduction_validation",
+      "recommended_mode": "paper_orders_only_no_live_permission",
+      "paper_start_allowed": true,
+      "production_candidate": false,
+      "small_account_executable_gate_passes": true,
+      "small_account_minimum_gate_passes": false,
+      "scenario": {
+        "capital": 50000.0,
+        "max_positions": 5,
+        "rank_mode": "blend",
+        "gross_profile": "small_balanced",
+        "rebalance_freq": 10,
+        "lot_size": 100,
+        "candidate_pool_multiplier": 6,
+        "max_per_industry": 2,
+        "per_position_budget_buffer": 1.2
+      },
+      "cost_model": {
+        "commission_rate": 0.00025,
+        "min_commission": 5.0,
+        "stamp_duty_rate": 0.0005,
+        "slippage_bps": 5.0
+      },
+      "backtest_metrics": {
+        "sharpe_ratio": 0.1407,
+        "annual_return": 0.0381,
+        "annual_volatility": 0.093,
+        "max_drawdown": -0.223,
+        "win_rate": 0.5107,
+        "total_return": 0.89,
+        "final_nav": 94501.7,
+        "n_days": 4701,
+        "avg_holdings": 4.83,
+        "max_holdings": 8,
+        "avg_stock_exposure": 0.1266,
+        "avg_cash_weight": 0.8734,
+        "avg_target_gross": 0.1371,
+        "risk_off_rebalances": 201,
+        "total_fees": 22978.3,
+        "fees_pct_initial_capital": 0.4596,
+        "turnover_pct_initial_capital": 132.3564,
+        "orders": 3600,
+        "blocked_buys": 19,
+        "blocked_sells": 182,
+        "lot_blocked_targets": 171,
+        "cash_blocked_buys": 0
+      },
+      "walk_forward_summary": {
+        "avg_oos_sharpe": -0.8408,
+        "min_oos_sharpe": -2.5051,
+        "fold_count": 5
+      },
+      "controls": {
+        "paper_days_required": 90,
+        "min_report_days": 60,
+        "auto_trade_enabled": false,
+        "live_order_submission_allowed": false,
+        "max_live_capital_fraction": 0.0,
+        "manual_approval_required_for_parameter_change": true,
+        "daily_audit_hash_required": true,
+        "broker_position_snapshot_required": true,
+        "broker_order_fill_log_required": true,
+        "weekly_backtest_vs_paper_drift_required": true,
+        "max_abs_cumulative_return_drift": 0.05,
+        "max_mean_abs_daily_return_drift_bps": 5.0,
+        "max_slippage_over_expected_bps": 5.0,
+        "max_cost_over_expected_bps": 5.0
+      },
+      "risk_limits": {
+        "max_single_symbol_notional_fraction": 0.2,
+        "max_daily_loss_fraction": 0.02,
+        "weekly_loss_reduce_fraction": 0.03,
+        "drawdown_reduce_fraction": 0.1,
+        "drawdown_stop_fraction": 0.15,
+        "lot_size": 100,
+        "rebalance_freq_days": 10
+      },
+      "production_blockers": [
+        "5-10 万账户当前只允许 paper/pre-production validation，不允许实盘生产。",
+        "缺真实 PIT/vendor corporate action、真实交易状态和真实 tick/minute 执行数据复核。",
+        "缺 broker/provider/WORM/approval/position/borrow/capacity/DR 外部 evidence refs。",
+        "缺连续 90 天 paper trading 日报、订单成交日志、持仓快照和审计归档。",
+        "小账户股票 alpha 回测未达到生产最低绩效门槛。"
+      ]
+    },
+    {
+      "account_id": "paper_small_account_100000",
+      "capital": 100000.0,
+      "strategy_name": "v33_small_account_small_balanced_blend_100000_5pos",
+      "stage": "paper_trading_preproduction_validation",
+      "recommended_mode": "paper_orders_only_no_live_permission",
+      "paper_start_allowed": true,
+      "production_candidate": false,
+      "small_account_executable_gate_passes": true,
+      "small_account_minimum_gate_passes": false,
+      "scenario": {
+        "capital": 100000.0,
+        "max_positions": 5,
+        "rank_mode": "blend",
+        "gross_profile": "small_balanced",
+        "rebalance_freq": 10,
+        "lot_size": 100,
+        "candidate_pool_multiplier": 6,
+        "max_per_industry": 2,
+        "per_position_budget_buffer": 1.2
+      },
+      "cost_model": {
+        "commission_rate": 0.00025,
+        "min_commission": 5.0,
+        "stamp_duty_rate": 0.0005,
+        "slippage_bps": 5.0
+      },
+      "backtest_metrics": {
+        "sharpe_ratio": 0.4123,
+        "annual_return": 0.0673,
+        "annual_volatility": 0.1026,
+        "max_drawdown": -0.222,
+        "win_rate": 0.5401,
+        "total_return": 2.1965,
+        "final_nav": 319647.81,
+        "n_days": 4701,
+        "avg_holdings": 5.3,
+        "max_holdings": 10,
+        "avg_stock_exposure": 0.2119,
+        "avg_cash_weight": 0.7881,
+        "avg_target_gross": 0.2106,
+        "risk_off_rebalances": 201,
+        "total_fees": 45756.19,
+        "fees_pct_initial_capital": 0.4576,
+        "turnover_pct_initial_capital": 322.6986,
+        "orders": 4036,
+        "blocked_buys": 18,
+        "blocked_sells": 208,
+        "lot_blocked_targets": 47,
+        "cash_blocked_buys": 0
+      },
+      "walk_forward_summary": {
+        "avg_oos_sharpe": 0.3901,
+        "min_oos_sharpe": -0.593,
+        "fold_count": 5
+      },
+      "controls": {
+        "paper_days_required": 90,
+        "min_report_days": 60,
+        "auto_trade_enabled": false,
+        "live_order_submission_allowed": false,
+        "max_live_capital_fraction": 0.0,
+        "manual_approval_required_for_parameter_change": true,
+        "daily_audit_hash_required": true,
+        "broker_position_snapshot_required": true,
+        "broker_order_fill_log_required": true,
+        "weekly_backtest_vs_paper_drift_required": true,
+        "max_abs_cumulative_return_drift": 0.05,
+        "max_mean_abs_daily_return_drift_bps": 5.0,
+        "max_slippage_over_expected_bps": 5.0,
+        "max_cost_over_expected_bps": 5.0
+      },
+      "risk_limits": {
+        "max_single_symbol_notional_fraction": 0.2,
+        "max_daily_loss_fraction": 0.02,
+        "weekly_loss_reduce_fraction": 0.03,
+        "drawdown_reduce_fraction": 0.1,
+        "drawdown_stop_fraction": 0.15,
+        "lot_size": 100,
+        "rebalance_freq_days": 10
+      },
+      "production_blockers": [
+        "5-10 万账户当前只允许 paper/pre-production validation，不允许实盘生产。",
+        "缺真实 PIT/vendor corporate action、真实交易状态和真实 tick/minute 执行数据复核。",
+        "缺 broker/provider/WORM/approval/position/borrow/capacity/DR 外部 evidence refs。",
+        "缺连续 90 天 paper trading 日报、订单成交日志、持仓快照和审计归档。",
+        "小账户股票 alpha 回测未达到生产最低绩效门槛。"
+      ]
+    }
+  ],
+  "external_refs": {},
+  "daily_reports": []
+}

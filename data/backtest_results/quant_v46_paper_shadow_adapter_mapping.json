@@ -1,0 +1,65 @@
+{
+  "version": "V46-paper-shadow-adapter-mapping",
+  "production_ready": false,
+  "说明": "映射说明只用于把真实导出转换为 V45 日报，不是证据。",
+  "source_sections": {
+    "returns": {
+      "paper_daily_return": "扣除费用和滑点后的模拟盘单日收益",
+      "backtest_daily_return": "同日期对齐的回测预期单日收益"
+    },
+    "costs": {
+      "actual_slippage_bps": "模拟成交实际滑点，单位 bps",
+      "expected_slippage_bps": "回测滑点模型预期值，单位 bps",
+      "actual_cost_bps": "佣金、税费、费用和滑点合计实际成本，单位 bps",
+      "expected_cost_bps": "回测总成本模型预期值，单位 bps"
+    },
+    "risk": {
+      "risk_capacity_violations": "容量或风险违规次数",
+      "invariant_violations": "持仓、权益或幂等性不变式违规次数"
+    },
+    "refs": {
+      "archive_ref": "每日审计日志的 WORM 或归档引用",
+      "market_data_ref": "已批准行情供应商的每日数据引用",
+      "position_snapshot_ref": "券商或交易所持仓快照引用",
+      "order_fill_log_ref": "券商或交易所订单/成交日志引用",
+      "paper_trading_90d": "具备时填写滚动 90 天模拟盘证据引用"
+    },
+    "audit": {
+      "audit_hash": "可选 sha256 哈希",
+      "audit_event_count": "可选事件数量",
+      "audit_events": "可选审计事件列表，V45 可据此计算哈希",
+      "audit_jsonl_path": "可选本地审计 JSONL 路径，V45 可据此计算哈希"
+    }
+  },
+  "normalized_source_export_shape": {
+    "date": "YYYY-MM-DD",
+    "returns": {
+      "paper_daily_return": 0.0,
+      "backtest_daily_return": 0.0
+    },
+    "costs": {
+      "actual_slippage_bps": 0.0,
+      "expected_slippage_bps": 0.0,
+      "actual_cost_bps": 0.0,
+      "expected_cost_bps": 0.0
+    },
+    "risk": {
+      "risk_capacity_violations": 0,
+      "invariant_violations": 0
+    },
+    "refs": {
+      "archive_ref": "worm://...",
+      "market_data_ref": "provider://...",
+      "position_snapshot_ref": "broker://...",
+      "order_fill_log_ref": "broker://...",
+      "paper_trading_90d": "paper://..."
+    },
+    "audit": {
+      "audit_events": []
+    },
+    "controls": {
+      "auto_trade_enabled": false,
+      "live_order_submission_allowed": false
+    }
+  }
+}

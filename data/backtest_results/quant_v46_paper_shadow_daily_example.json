@@ -1,0 +1,41 @@
+{
+  "example_only": true,
+  "version": "V46-paper-shadow-daily-example",
+  "说明": "这是示例，V45 会拒绝 example_only=true 的文件，不能作为真实证据入账。",
+  "external_refs": {
+    "paper_trading_90d": "paper://example-only/not-production-evidence"
+  },
+  "daily_report": {
+    "date": "2026-01-02",
+    "paper_daily_return": 0.001,
+    "backtest_daily_return": 0.0011,
+    "actual_slippage_bps": 2.0,
+    "expected_slippage_bps": 3.0,
+    "actual_cost_bps": 4.0,
+    "expected_cost_bps": 5.0,
+    "risk_capacity_violations": 0,
+    "invariant_violations": 0,
+    "audit_events": [
+      {
+        "event_type": "paper_signal",
+        "trace_id": "example",
+        "payload": {
+          "orders": 0
+        }
+      },
+      {
+        "event_type": "paper_reconcile",
+        "trace_id": "example",
+        "payload": {
+          "ok": true
+        }
+      }
+    ],
+    "archive_ref": "archive://example-only/not-production-evidence",
+    "market_data_ref": "provider://example-only/not-production-evidence",
+    "position_snapshot_ref": "broker://example-only/not-production-evidence",
+    "order_fill_log_ref": "broker://example-only/not-production-evidence",
+    "auto_trade_enabled": false,
+    "live_order_submission_allowed": false
+  }
+}

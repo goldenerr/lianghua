@@ -451,6 +451,7 @@ def _run_scenario(
     industry_map: dict[str, str],
     trading_constraints: dict[str, pd.DataFrame],
     cost: CostConfig,
+    include_return_series: bool = False,
 ) -> dict[str, Any]:
     positions: dict[str, int] = {}
     cash = float(scenario.capital)
@@ -575,7 +576,7 @@ def _run_scenario(
         and full.get("avg_stock_exposure", 0.0) >= 0.10
         and full.get("cash_blocked_buys", 10**9) <= full.get("orders", 0) * 0.25 + 25
     )
-    return {
+    result: dict[str, Any] = {
         "name": (
             f"v33_small_account_{scenario.gross_profile}_{scenario.rank_mode}_"
             f"{int(scenario.capital)}_{scenario.max_positions}pos"
@@ -594,6 +595,9 @@ def _run_scenario(
             "missing broker order/fill replay, paper trading and external production evidence gate",
         ],
     }
+    if include_return_series:
+        result["_return_series"] = returns_series.copy()
+    return result
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:

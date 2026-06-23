@@ -173,7 +173,9 @@ def _asset_specs_for_mode(universe_mode: str) -> dict[str, dict[str, str]]:
     raise ValueError(f"unsupported universe mode: {universe_mode}")
 
 
-def _asset_path(spec: dict[str, str], symbol: str, benchmark_dir: Path, hedge_asset_dir: Path) -> Path:
+def _asset_path(
+    spec: dict[str, str], symbol: str, benchmark_dir: Path, hedge_asset_dir: Path
+) -> Path:
     if spec["source"] == "benchmark":
         return benchmark_dir / f"etf_{symbol}.parquet"
     if spec["source"] == "hedge":
@@ -254,10 +256,20 @@ def _load_multi_asset_panel(
 
 
 def _coverage_summary(metadata: dict[str, Any], *, long_history_min_days: int) -> dict[str, Any]:
-    loaded = {symbol: item for symbol, item in metadata.items() if item.get("exists") and not item.get("failure")}
+    loaded = {
+        symbol: item
+        for symbol, item in metadata.items()
+        if item.get("exists") and not item.get("failure")
+    }
     long_ready = {symbol: item for symbol, item in loaded.items() if item.get("long_history_ready")}
-    short_history = {symbol: item for symbol, item in loaded.items() if not item.get("long_history_ready")}
-    missing = {symbol: item for symbol, item in metadata.items() if not item.get("exists") or item.get("failure")}
+    short_history = {
+        symbol: item for symbol, item in loaded.items() if not item.get("long_history_ready")
+    }
+    missing = {
+        symbol: item
+        for symbol, item in metadata.items()
+        if not item.get("exists") or item.get("failure")
+    }
     return {
         "long_history_min_days": int(long_history_min_days),
         "loaded_assets": int(len(loaded)),
@@ -312,7 +324,9 @@ def _market_regime(
     equity_symbols = [
         symbol
         for symbol, role in roles.items()
-        if role in EQUITY_ROLES and symbol in close.columns and pd.notna(close.iloc[signal_idx].get(symbol))
+        if role in EQUITY_ROLES
+        and symbol in close.columns
+        and pd.notna(close.iloc[signal_idx].get(symbol))
     ]
     diagnostics = {
         "equity_breadth_60d": 0.0,
@@ -328,8 +342,14 @@ def _market_regime(
     combined = (0.60 * mom_60 + 0.40 * mom_120).replace([np.inf, -np.inf], np.nan).dropna()
     if combined.empty:
         return "risk_off", diagnostics
-    equal_weight_returns = window[combined.index].mean(axis=1).pct_change(fill_method=None).tail(60).dropna()
-    realized_vol = float(equal_weight_returns.std(ddof=1) * np.sqrt(252)) if len(equal_weight_returns) > 10 else 0.0
+    equal_weight_returns = (
+        window[combined.index].mean(axis=1).pct_change(fill_method=None).tail(60).dropna()
+    )
+    realized_vol = (
+        float(equal_weight_returns.std(ddof=1) * np.sqrt(252))
+        if len(equal_weight_returns) > 10
+        else 0.0
+    )
     breadth = float((mom_60.loc[combined.index] > 0.0).mean())
     composite = float(combined.mean())
     diagnostics.update(
@@ -354,7 +374,10 @@ def _risk_symbols(score: pd.Series, scenario: RegimeBudgetScenario) -> list[str]
     candidates = candidates[candidates >= float(profile["min_signal"])]
     if candidates.empty:
         return []
-    return [str(symbol) for symbol in candidates.sort_values(ascending=False).head(scenario.max_assets).index]
+    return [
+        str(symbol)
+        for symbol in candidates.sort_values(ascending=False).head(scenario.max_assets).index
+    ]
 
 
 def _historical_budget(
@@ -385,7 +408,13 @@ def _historical_budget(
     if not selected:
         return 0.0, diagnostics
     start = max(0, signal_idx - scenario.lookback + 1)
-    history = close[selected].iloc[start : signal_idx + 1].ffill().pct_change(fill_method=None).dropna(how="any")
+    history = (
+        close[selected]
+        .iloc[start : signal_idx + 1]
+        .ffill()
+        .pct_change(fill_method=None)
+        .dropna(how="any")
+    )
     if len(history) < 40:
         return 0.0, diagnostics
     portfolio_returns = history.mean(axis=1)
@@ -394,7 +423,9 @@ def _historical_budget(
     if not math.isfinite(realized_vol) or realized_vol <= 1e-12:
         return 0.0, diagnostics
     vol_scale = min(1.0, float(profile["target_vol"]) / realized_vol)
-    var_scale = 1.0 if daily_var95 <= 1e-12 else min(1.0, float(profile["daily_var_limit"]) / daily_var95)
+    var_scale = (
+        1.0 if daily_var95 <= 1e-12 else min(1.0, float(profile["daily_var_limit"]) / daily_var95)
+    )
     budget = min(float(profile["max_budget"]), base_budget) * min(vol_scale, var_scale)
     account_drawdown = nav / peak_nav - 1.0 if peak_nav > 0 else 0.0
     drawdown_scale = 1.0
@@ -449,7 +480,9 @@ def _target_weights(
     return {symbol: float(weight) for symbol in selected}, diagnostics
 
 
-def _portfolio_value(positions: dict[str, int], cash: float, prices: pd.Series) -> tuple[float, float]:
+def _portfolio_value(
+    positions: dict[str, int], cash: float, prices: pd.Series
+) -> tuple[float, float]:
     asset_value = 0.0
     for symbol, shares in positions.items():
         price = float(prices.get(symbol, np.nan))
@@ -464,6 +497,7 @@ def _run_scenario(
     cost: CostConfig,
     roles: dict[str, str],
     coverage: dict[str, Any],
+    include_return_series: bool = False,
 ) -> dict[str, Any]:
     valuation_close = close.ffill()
     positions: dict[str, int] = {}
@@ -537,7 +571,9 @@ def _run_scenario(
         {
             "avg_holdings": round(float(np.mean(holdings_counts)), 2) if holdings_counts else 0.0,
             "max_holdings": int(max(holdings_counts)) if holdings_counts else 0,
-            "avg_risky_exposure": round(float(np.mean(risky_exposures)), 4) if risky_exposures else 0.0,
+            "avg_risky_exposure": round(float(np.mean(risky_exposures)), 4)
+            if risky_exposures
+            else 0.0,
             "avg_cash_weight": round(float(np.mean(cash_weights)), 4) if cash_weights else 0.0,
             "avg_target_budget": round(float(np.mean(budget_values)), 4) if budget_values else 0.0,
             "max_target_budget": round(float(max(budget_values)), 4) if budget_values else 0.0,
@@ -555,9 +591,14 @@ def _run_scenario(
             if budget_diagnostics
             else 0.0,
             "total_fees": round(float(order_diagnostics["fees"]), 2),
-            "fees_pct_initial_capital": round(float(order_diagnostics["fees"] / scenario.capital), 4),
+            "fees_pct_initial_capital": round(
+                float(order_diagnostics["fees"] / scenario.capital), 4
+            ),
             "turnover_pct_initial_capital": round(
-                float((order_diagnostics["buy_notional"] + order_diagnostics["sell_notional"]) / scenario.capital),
+                float(
+                    (order_diagnostics["buy_notional"] + order_diagnostics["sell_notional"])
+                    / scenario.capital
+                ),
                 4,
             ),
             "orders": int(order_diagnostics["orders"]),
@@ -585,7 +626,7 @@ def _run_scenario(
         and bool(minimum_gate)
         and bool(executable_gate)
     )
-    return {
+    result: dict[str, Any] = {
         "name": (
             f"v36_regime_{scenario.universe_mode}_{scenario.risk_profile}_{scenario.rank_mode}_"
             f"{int(scenario.capital)}_{scenario.max_assets}asset_{scenario.rebalance_freq}d"
@@ -608,6 +649,15 @@ def _run_scenario(
             "requires external WORM/Secret/Approval/Position/Capacity/DR production evidence gate",
         ],
     }
+    if include_return_series:
+        result["_return_series"] = returns_series.copy()
+        result["_risky_exposure_series"] = pd.Series(
+            risky_exposures,
+            index=pd.DatetimeIndex(dates),
+            dtype=float,
+            name="v36_risky_exposure",
+        )
+    return result
 
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -649,7 +699,9 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         for row in rows:
             full = row["full"]
             wf = row.get("wf") or {}
-            oos_values = [fold.get("oos") for fold in wf.get("folds", []) if fold.get("oos") is not None]
+            oos_values = [
+                fold.get("oos") for fold in wf.get("folds", []) if fold.get("oos") is not None
+            ]
             scenario = row["scenario"]
             writer.writerow(
                 {
@@ -662,7 +714,9 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
                     "rebalance_freq": scenario["rebalance_freq"],
                     "risk_gate_passes": row["risk_gate_passes"],
                     "small_account_minimum_gate_passes": row["small_account_minimum_gate_passes"],
-                    "small_account_executable_gate_passes": row["small_account_executable_gate_passes"],
+                    "small_account_executable_gate_passes": row[
+                        "small_account_executable_gate_passes"
+                    ],
                     "long_history_research_gate_passes": row["long_history_research_gate_passes"],
                     "sharpe_ratio": full.get("sharpe_ratio"),
                     "annual_return": full.get("annual_return"),
@@ -800,7 +854,9 @@ def main() -> None:
         "cost_model": asdict(cost),
         "scenario_count": int(len(rows)),
         "risk_gate_pass_count": int(sum(1 for row in rows if row["risk_gate_passes"])),
-        "minimum_gate_pass_count": int(sum(1 for row in rows if row["small_account_minimum_gate_passes"])),
+        "minimum_gate_pass_count": int(
+            sum(1 for row in rows if row["small_account_minimum_gate_passes"])
+        ),
         "long_history_research_gate_pass_count": int(
             sum(1 for row in rows if row["long_history_research_gate_passes"])
         ),
@@ -825,7 +881,9 @@ def main() -> None:
                 "scenario_count": report["scenario_count"],
                 "risk_gate_pass_count": report["risk_gate_pass_count"],
                 "minimum_gate_pass_count": report["minimum_gate_pass_count"],
-                "long_history_research_gate_pass_count": report["long_history_research_gate_pass_count"],
+                "long_history_research_gate_pass_count": report[
+                    "long_history_research_gate_pass_count"
+                ],
                 "coverage_by_universe": report["coverage_by_universe"],
                 "best_by_capital": {
                     capital: {

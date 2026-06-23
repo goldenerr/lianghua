@@ -1,0 +1,118 @@
+{
+  "ts": "2026-06-23T07:26:02.248035+00:00",
+  "version": "V48-production-external-evidence-bundle-gate",
+  "production_ready": false,
+  "evidence_bundle_valid": false,
+  "scope_status": {
+    "sensitive_material_free": true,
+    "v44_external_refs_pass": false,
+    "v30_production_data_refs_pass": false
+  },
+  "provided_external_ref_keys": [],
+  "provided_production_data_ref_keys": [],
+  "required_external_ref_keys": [
+    "external_worm_archive",
+    "secret_manager",
+    "approval_service",
+    "real_market_data_provider",
+    "provider_entitlement",
+    "alt_archive_readiness",
+    "exchange_position_provider",
+    "broker_borrow_availability",
+    "paper_trading_90d",
+    "signed_plugin_review",
+    "production_calendar",
+    "rollover_runbook",
+    "capacity_benchmark",
+    "failover_dr_test"
+  ],
+  "required_production_data_ref_keys": [
+    "pit_security_master",
+    "trading_status_actions",
+    "corporate_action_reconciliation",
+    "real_tick_minute_execution_feed",
+    "exchange_order_fill_replay"
+  ],
+  "missing_external_ref_keys": [
+    "external_worm_archive",
+    "secret_manager",
+    "approval_service",
+    "real_market_data_provider",
+    "provider_entitlement",
+    "alt_archive_readiness",
+    "exchange_position_provider",
+    "broker_borrow_availability",
+    "paper_trading_90d",
+    "signed_plugin_review",
+    "production_calendar",
+    "rollover_runbook",
+    "capacity_benchmark",
+    "failover_dr_test"
+  ],
+  "missing_production_data_ref_keys": [
+    "pit_security_master",
+    "trading_status_actions",
+    "corporate_action_reconciliation",
+    "real_tick_minute_execution_feed",
+    "exchange_order_fill_replay"
+  ],
+  "blocker_groups": {
+    "sensitive_material": [],
+    "v44_external_refs": [
+      "external_worm_archive: missing external immutable WORM archive attestation",
+      "secret_manager: missing approved production secret-manager resolver evidence",
+      "approval_service: missing risk/configuration approval service evidence",
+      "real_market_data_provider: missing approved non-mock market-data provider evidence",
+      "provider_entitlement: missing data-provider entitlement, license and redistribution evidence",
+      "alt_archive_readiness: missing archive-complete alternative-data readiness artifact",
+      "exchange_position_provider: missing exchange-backed reconciled position provider evidence",
+      "broker_borrow_availability: missing broker-backed borrow availability feed and account binding evidence",
+      "paper_trading_90d: missing three-month paper-trading gate evidence using real market data",
+      "signed_plugin_review: missing signed plugin load and code-review evidence",
+      "production_calendar: missing approved production exchange calendar evidence",
+      "rollover_runbook: missing approved futures rollover execution runbook/evidence",
+      "capacity_benchmark: missing production-like capacity benchmark report",
+      "failover_dr_test: missing multi-region failover and DR test report"
+    ],
+    "v30_production_data_refs": [
+      "pit_security_master: 缺少 历史时点证券主数据、上市/退市/可交易状态和非大盘 universe 生成证明",
+      "trading_status_actions: 缺少 退市、ST、停牌、涨跌停、可成交状态的交易日级历史证明",
+      "corporate_action_reconciliation: 缺少 真实供应商复权因子和 corporate action 复核证明",
+      "real_tick_minute_execution_feed: 缺少 二十年真实 tick/minute 行情和订单簿/成交执行数据授权证明",
+      "exchange_order_fill_replay: 缺少 交易所或券商背书的历史订单/成交回放证明"
+    ]
+  },
+  "blockers": [
+    "external_worm_archive: missing external immutable WORM archive attestation",
+    "secret_manager: missing approved production secret-manager resolver evidence",
+    "approval_service: missing risk/configuration approval service evidence",
+    "real_market_data_provider: missing approved non-mock market-data provider evidence",
+    "provider_entitlement: missing data-provider entitlement, license and redistribution evidence",
+    "alt_archive_readiness: missing archive-complete alternative-data readiness artifact",
+    "exchange_position_provider: missing exchange-backed reconciled position provider evidence",
+    "broker_borrow_availability: missing broker-backed borrow availability feed and account binding evidence",
+    "paper_trading_90d: missing three-month paper-trading gate evidence using real market data",
+    "signed_plugin_review: missing signed plugin load and code-review evidence",
+    "production_calendar: missing approved production exchange calendar evidence",
+    "rollover_runbook: missing approved futures rollover execution runbook/evidence",
+    "capacity_benchmark: missing production-like capacity benchmark report",
+    "failover_dr_test: missing multi-region failover and DR test report",
+    "pit_security_master: 缺少 历史时点证券主数据、上市/退市/可交易状态和非大盘 universe 生成证明",
+    "trading_status_actions: 缺少 退市、ST、停牌、涨跌停、可成交状态的交易日级历史证明",
+    "corporate_action_reconciliation: 缺少 真实供应商复权因子和 corporate action 复核证明",
+    "real_tick_minute_execution_feed: 缺少 二十年真实 tick/minute 行情和订单簿/成交执行数据授权证明",
+    "exchange_order_fill_replay: 缺少 交易所或券商背书的历史订单/成交回放证明"
+  ],
+  "v44_external_refs": {},
+  "production_data_refs": {},
+  "next_actions": [
+    "把真实外部 refs 填入 V48 模板后重新运行本脚本。",
+    "V48 通过后使用 --write-v44-evidence-refs 生成 V44 可读取的 refs JSON。",
+    "继续运行 V30/V42/V44；V48 通过不代表生产准入通过。"
+  ],
+  "note": "V48 只校验外部证据包格式和可信 reference；不会生成真实 vendor/broker/WORM 证据，也不会开启实盘。",
+  "generated_files": {
+    "template": "/Users/jacklondon/Documents/study/lianghua/config/production_external_evidence_bundle.v48.template.json",
+    "v44_evidence_refs": ""
+  }
+}

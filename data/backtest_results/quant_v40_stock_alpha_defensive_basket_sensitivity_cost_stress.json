@@ -1,0 +1,2579 @@
+{
+  "ts": "2026-06-22T09:49:14.787043+00:00",
+  "version": "V40-stock-alpha-defensive-basket-v1",
+  "research_only": true,
+  "production_ready": false,
+  "objective": "incremental executable stock alpha over the same-capital V39 crisis baseline",
+  "methodology": {
+    "crisis_assets": [
+      "518880",
+      "511010",
+      "511260"
+    ],
+    "crisis_allocation": "two-asset gold/bond equal pair",
+    "stock_alpha": "V32/V29-derived V33 blend, two positions, 40-day rebalance",
+    "stock_rebalance_alignment": "aligned to V36 ETF rebalance calendar",
+    "comparison": "same capital and same crisis cap, stock cap fixed at zero"
+  },
+  "coverage": {
+    "stock_symbols": 1994,
+    "dates": 3252,
+    "start": "2013-01-04",
+    "end": "2026-05-29",
+    "crisis_asset_data_evidence": {
+      "518880": {
+        "path": "/Users/jacklondon/Documents/study/lianghua/data/benchmarks/etf_518880.parquet",
+        "sha256": "7ab327c92f8c7396d65c0f8d5f689e98b8a6a47d335132364040a5b145127a58",
+        "rows": 3119,
+        "start": "2013-07-29",
+        "end": "2026-05-29",
+        "source": null,
+        "requested_start": null,
+        "requested_end": null,
+        "request_range_provenance": false
+      },
+      "511010": {
+        "path": "/Users/jacklondon/Documents/study/lianghua/data/hedge_assets/etf_511010.parquet",
+        "sha256": "084a6c9fbc6686c7ef7a79a00b9eaaf7279fdb5b1002b704db662bc936e9e653",
+        "rows": 3201,
+        "start": "2013-03-25",
+        "end": "2026-05-29",
+        "source": "eastmoney_fund_etf_hist_akshare",
+        "requested_start": "20000101",
+        "requested_end": "20260529",
+        "request_range_provenance": true
+      },
+      "511260": {
+        "path": "/Users/jacklondon/Documents/study/lianghua/data/hedge_assets/etf_511260.parquet",
+        "sha256": "7efd7a2c10e44ae552e9ef611710fd6f2566cbbd719d0ab4801f7197ececd186",
+        "rows": 2123,
+        "start": "2017-08-24",
+        "end": "2026-05-29",
+        "source": "eastmoney_fund_etf_hist_akshare",
+        "requested_start": "20000101",
+        "requested_end": "20260529",
+        "request_range_provenance": true
+      }
+    }
+  },
+  "trading_constraint_summary": {
+    "enabled": true,
+    "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet",
+    "exists": true,
+    "mode": "V31-free-trading-status-next-bar-execution",
+    "rows_loaded": 4922935,
+    "unique_dates": 3252,
+    "unique_symbols": 1994,
+    "missing_columns": [],
+    "limitations": [
+      "V31 status is free-source research approximation, not production trading-status evidence.",
+      "Orders are constrained using next bar status to stress-test tradability in daily research.",
+      "ST status remains unknown in V31 and is not used as a hard constraint here."
+    ]
+  },
+  "cost_model": {
+    "stock": {
+      "commission_rate": 0.00025,
+      "min_commission": 5.0,
+      "stamp_duty_rate": 0.0005,
+      "slippage_bps": 10.0
+    },
+    "etf": {
+      "commission_rate": 0.00025,
+      "min_commission": 5.0,
+      "stamp_duty_rate": 0.0,
+      "slippage_bps": 10.0
+    }
+  },
+  "scenario_count": 9,
+  "stock_execution_pass_count": 9,
+  "relative_improvement_pass_count": 3,
+  "production_minimum_pass_count": 0,
+  "v39_baseline_parity_passes": true,
+  "v39_baseline_parity": {
+    "200000:0.1800": {
+      "passes": true,
+      "same_index": true,
+      "joint_days": 3122,
+      "reference_days": 3122,
+      "max_abs_daily_return_difference": 0.0
+    },
+    "200000:0.2000": {
+      "passes": true,
+      "same_index": true,
+      "joint_days": 3122,
+      "reference_days": 3122,
+      "max_abs_daily_return_difference": 0.0
+    },
+    "200000:0.2200": {
+      "passes": true,
+      "same_index": true,
+      "joint_days": 3122,
+      "reference_days": 3122,
+      "max_abs_daily_return_difference": 0.0
+    }
+  },
+  "baseline_by_capital_and_crisis_cap": {
+    "200000:0.1800": {
+      "name": "v38_joint_200000_stock0_crisis18",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.0,
+        "crisis_cap": 0.18,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.4483,
+        "annual_return": 0.0603,
+        "annual_volatility": 0.0788,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.452,
+        "total_return": 1.0311,
+        "final_nav": 406222.7,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2215,
+        "max_actual_risk_exposure": 0.9402,
+        "avg_cash_weight": 0.7785,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 12320.9,
+        "fees_pct_initial_capital": 0.0616,
+        "orders": 217,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1594,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0745
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.2723,
+            "oos": 0.1106,
+            "mdd": -0.0639
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0044,
+            "oos": 0.3286,
+            "mdd": -0.0193
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1146,
+            "oos": -0.3922,
+            "mdd": -0.0441
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": 0.0315,
+            "oos": 1.146,
+            "mdd": -0.051
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.5388,
+            "oos": 1.1628,
+            "mdd": -0.1269
+          }
+        ],
+        "avg_is_sharpe": 0.0834,
+        "avg_oos_sharpe": 0.4712,
+        "sharpe_decay": -4.6494
+      },
+      "weakest_fold_attribution": {
+        "fold": 2,
+        "start": "2023-04-12",
+        "end": "2024-04-26",
+        "oos_sharpe": -0.3922,
+        "max_drawdown": -0.0441,
+        "period_total_return": 0.01149,
+        "simple_return_contribution": {
+          "etf_core": -0.023057,
+          "crisis_gold": 0.035301,
+          "stock_alpha": 0.0,
+          "reconciliation_residual": -0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 217,
+        "buy_orders": 102,
+        "sell_orders": 115,
+        "buy_notional": 4766670.399999999,
+        "sell_notional": 4919555.4,
+        "fees": 12320.895049999996,
+        "fees_by_group": {
+          "etf_core": 6017.304874999999,
+          "crisis_gold": 6303.590174999999,
+          "stock_alpha": 0.0
+        },
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 39,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 1
+      }
+    },
+    "200000:0.2000": {
+      "name": "v38_joint_200000_stock0_crisis20",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.0,
+        "crisis_cap": 0.2,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.2885,
+        "annual_return": 0.0461,
+        "annual_volatility": 0.073,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4119,
+        "total_return": 0.7119,
+        "final_nav": 342374.48,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1745,
+        "max_actual_risk_exposure": 0.7094,
+        "avg_cash_weight": 0.8255,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 7958.42,
+        "fees_pct_initial_capital": 0.0398,
+        "orders": 192,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1047,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0828
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8992,
+            "oos": -7.0868,
+            "mdd": -0.0055
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9397,
+            "oos": -3.4563,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7332,
+            "oos": -0.0046,
+            "mdd": -0.0092
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.8757,
+            "oos": 0.845,
+            "mdd": -0.0514
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.2965,
+            "oos": 1.1642,
+            "mdd": -0.1268
+          }
+        ],
+        "avg_is_sharpe": -1.0303,
+        "avg_oos_sharpe": -1.7077,
+        "sharpe_decay": 0.6575
+      },
+      "weakest_fold_attribution": {
+        "fold": 0,
+        "start": "2021-03-16",
+        "end": "2022-03-29",
+        "oos_sharpe": -7.0868,
+        "max_drawdown": -0.0055,
+        "period_total_return": -0.003372,
+        "simple_return_contribution": {
+          "etf_core": 0.0,
+          "crisis_gold": -0.00337,
+          "stock_alpha": 0.0,
+          "reconciliation_residual": -0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 192,
+        "buy_orders": 91,
+        "sell_orders": 101,
+        "buy_notional": 3054259.3,
+        "sell_notional": 3149471.4000000004,
+        "fees": 7958.416349999999,
+        "fees_by_group": {
+          "etf_core": 3656.2804,
+          "crisis_gold": 4302.135950000001,
+          "stock_alpha": 0.0
+        },
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 39,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 0
+      }
+    },
+    "200000:0.2200": {
+      "name": "v38_joint_200000_stock0_crisis22",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.0,
+        "crisis_cap": 0.22,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.2952,
+        "annual_return": 0.0466,
+        "annual_volatility": 0.0732,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4135,
+        "total_return": 0.723,
+        "final_nav": 344606.63,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1799,
+        "max_actual_risk_exposure": 0.7109,
+        "avg_cash_weight": 0.8201,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 8180.47,
+        "fees_pct_initial_capital": 0.0409,
+        "orders": 195,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1054,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0911
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8814,
+            "oos": -6.5894,
+            "mdd": -0.0059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9298,
+            "oos": -3.0942,
+            "mdd": -0.0051
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7226,
+            "oos": 0.2168,
+            "mdd": -0.0094
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.5638,
+            "oos": 0.8622,
+            "mdd": -0.0518
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3363,
+            "oos": 1.1602,
+            "mdd": -0.1271
+          }
+        ],
+        "avg_is_sharpe": -0.9523,
+        "avg_oos_sharpe": -1.4889,
+        "sharpe_decay": 0.5635
+      },
+      "weakest_fold_attribution": {
+        "fold": 0,
+        "start": "2021-03-16",
+        "end": "2022-03-29",
+        "oos_sharpe": -6.5894,
+        "max_drawdown": -0.0059,
+        "period_total_return": -0.003604,
+        "simple_return_contribution": {
+          "etf_core": 0.0,
+          "crisis_gold": -0.003601,
+          "stock_alpha": 0.0,
+          "reconciliation_residual": 0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 195,
+        "buy_orders": 93,
+        "sell_orders": 102,
+        "buy_notional": 3142270.3000000003,
+        "sell_notional": 3239531.3,
+        "fees": 8180.470425000001,
+        "fees_by_group": {
+          "etf_core": 3663.002775,
+          "crisis_gold": 4517.4676500000005,
+          "stock_alpha": 0.0
+        },
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 39,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 0
+      }
+    }
+  },
+  "best_by_capital": {
+    "200000": {
+      "name": "v40_200000_stock7_crisis22",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.07,
+        "crisis_cap": 0.22,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.4341,
+        "annual_return": 0.0598,
+        "annual_volatility": 0.0801,
+        "max_drawdown": -0.1435,
+        "win_rate": 0.4731,
+        "total_return": 1.0149,
+        "final_nav": 402982.33,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2286,
+        "max_actual_risk_exposure": 0.9398,
+        "avg_cash_weight": 0.7714,
+        "avg_stock_holdings": 0.5,
+        "max_stock_holdings": 5,
+        "total_fees": 12858.87,
+        "fees_pct_initial_capital": 0.0643,
+        "orders": 303,
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 49,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1459,
+        "avg_target_stock": 0.0089,
+        "avg_target_crisis": 0.0911
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.5147,
+            "oos": -0.4424,
+            "mdd": -0.0609
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.4339,
+            "oos": -0.4707,
+            "mdd": -0.0078
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -0.5601,
+            "oos": -0.3201,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.3776,
+            "oos": 1.1871,
+            "mdd": -0.0507
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.4833,
+            "oos": 1.1749,
+            "mdd": -0.1279
+          }
+        ],
+        "avg_is_sharpe": -0.2806,
+        "avg_oos_sharpe": 0.2258,
+        "sharpe_decay": -1.8046
+      },
+      "weakest_fold_attribution": {
+        "fold": 1,
+        "start": "2022-03-29",
+        "end": "2023-04-12",
+        "oos_sharpe": -0.4707,
+        "max_drawdown": -0.0078,
+        "period_total_return": 0.019494,
+        "simple_return_contribution": {
+          "etf_core": 0.002424,
+          "crisis_gold": 0.016086,
+          "stock_alpha": 0.000976,
+          "reconciliation_residual": -0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 303,
+        "buy_orders": 151,
+        "sell_orders": 152,
+        "buy_notional": 4816112.7,
+        "sell_notional": 4967105.9,
+        "fees": 12858.870800000004,
+        "fees_by_group": {
+          "etf_core": 5729.274725,
+          "crisis_gold": 6179.023575000001,
+          "stock_alpha": 950.5724999999999
+        },
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 49,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 22
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.2952,
+        "annual_return": 0.0466,
+        "annual_volatility": 0.0732,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4135,
+        "total_return": 0.723,
+        "final_nav": 344606.63,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1799,
+        "max_actual_risk_exposure": 0.7109,
+        "avg_cash_weight": 0.8201,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 8180.47,
+        "fees_pct_initial_capital": 0.0409,
+        "orders": 195,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1054,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0911
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8814,
+            "oos": -6.5894,
+            "mdd": -0.0059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9298,
+            "oos": -3.0942,
+            "mdd": -0.0051
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7226,
+            "oos": 0.2168,
+            "mdd": -0.0094
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.5638,
+            "oos": 0.8622,
+            "mdd": -0.0518
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3363,
+            "oos": 1.1602,
+            "mdd": -0.1271
+          }
+        ],
+        "avg_is_sharpe": -0.9523,
+        "avg_oos_sharpe": -1.4889,
+        "sharpe_decay": 0.5635
+      },
+      "gates": {
+        "annual_return_delta": 0.0132,
+        "sharpe_delta": 0.1389,
+        "max_drawdown_delta": -0.0094,
+        "avg_oos_sharpe_delta": 1.7147,
+        "min_oos_sharpe_delta": 6.1187,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": true,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "v40_200000_stock7_crisis22",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.07,
+        "crisis_cap": 0.22,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.4341,
+        "annual_return": 0.0598,
+        "annual_volatility": 0.0801,
+        "max_drawdown": -0.1435,
+        "win_rate": 0.4731,
+        "total_return": 1.0149,
+        "final_nav": 402982.33,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2286,
+        "max_actual_risk_exposure": 0.9398,
+        "avg_cash_weight": 0.7714,
+        "avg_stock_holdings": 0.5,
+        "max_stock_holdings": 5,
+        "total_fees": 12858.87,
+        "fees_pct_initial_capital": 0.0643,
+        "orders": 303,
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 49,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1459,
+        "avg_target_stock": 0.0089,
+        "avg_target_crisis": 0.0911
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.5147,
+            "oos": -0.4424,
+            "mdd": -0.0609
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.4339,
+            "oos": -0.4707,
+            "mdd": -0.0078
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -0.5601,
+            "oos": -0.3201,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.3776,
+            "oos": 1.1871,
+            "mdd": -0.0507
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.4833,
+            "oos": 1.1749,
+            "mdd": -0.1279
+          }
+        ],
+        "avg_is_sharpe": -0.2806,
+        "avg_oos_sharpe": 0.2258,
+        "sharpe_decay": -1.8046
+      },
+      "weakest_fold_attribution": {
+        "fold": 1,
+        "start": "2022-03-29",
+        "end": "2023-04-12",
+        "oos_sharpe": -0.4707,
+        "max_drawdown": -0.0078,
+        "period_total_return": 0.019494,
+        "simple_return_contribution": {
+          "etf_core": 0.002424,
+          "crisis_gold": 0.016086,
+          "stock_alpha": 0.000976,
+          "reconciliation_residual": -0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 303,
+        "buy_orders": 151,
+        "sell_orders": 152,
+        "buy_notional": 4816112.7,
+        "sell_notional": 4967105.9,
+        "fees": 12858.870800000004,
+        "fees_by_group": {
+          "etf_core": 5729.274725,
+          "crisis_gold": 6179.023575000001,
+          "stock_alpha": 950.5724999999999
+        },
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 49,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 22
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.2952,
+        "annual_return": 0.0466,
+        "annual_volatility": 0.0732,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4135,
+        "total_return": 0.723,
+        "final_nav": 344606.63,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1799,
+        "max_actual_risk_exposure": 0.7109,
+        "avg_cash_weight": 0.8201,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 8180.47,
+        "fees_pct_initial_capital": 0.0409,
+        "orders": 195,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1054,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0911
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8814,
+            "oos": -6.5894,
+            "mdd": -0.0059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9298,
+            "oos": -3.0942,
+            "mdd": -0.0051
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7226,
+            "oos": 0.2168,
+            "mdd": -0.0094
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.5638,
+            "oos": 0.8622,
+            "mdd": -0.0518
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3363,
+            "oos": 1.1602,
+            "mdd": -0.1271
+          }
+        ],
+        "avg_is_sharpe": -0.9523,
+        "avg_oos_sharpe": -1.4889,
+        "sharpe_decay": 0.5635
+      },
+      "gates": {
+        "annual_return_delta": 0.0132,
+        "sharpe_delta": 0.1389,
+        "max_drawdown_delta": -0.0094,
+        "avg_oos_sharpe_delta": 1.7147,
+        "min_oos_sharpe_delta": 6.1187,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": true,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock7_crisis20",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.07,
+        "crisis_cap": 0.2,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.4294,
+        "annual_return": 0.0593,
+        "annual_volatility": 0.08,
+        "max_drawdown": -0.1435,
+        "win_rate": 0.4728,
+        "total_return": 1.0047,
+        "final_nav": 400932.91,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2225,
+        "max_actual_risk_exposure": 0.9399,
+        "avg_cash_weight": 0.7775,
+        "avg_stock_holdings": 0.47,
+        "max_stock_holdings": 5,
+        "total_fees": 12632.59,
+        "fees_pct_initial_capital": 0.0632,
+        "orders": 300,
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 51,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1459,
+        "avg_target_stock": 0.0084,
+        "avg_target_crisis": 0.0828
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.5255,
+            "oos": -0.4415,
+            "mdd": -0.0606
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.4348,
+            "oos": -0.5083,
+            "mdd": -0.0077
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -0.5637,
+            "oos": -0.3689,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.3987,
+            "oos": 1.1757,
+            "mdd": -0.0503
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.4637,
+            "oos": 1.1735,
+            "mdd": -0.128
+          }
+        ],
+        "avg_is_sharpe": -0.2918,
+        "avg_oos_sharpe": 0.2061,
+        "sharpe_decay": -1.7063
+      },
+      "weakest_fold_attribution": {
+        "fold": 1,
+        "start": "2022-03-29",
+        "end": "2023-04-12",
+        "oos_sharpe": -0.5083,
+        "max_drawdown": -0.0077,
+        "period_total_return": 0.019022,
+        "simple_return_contribution": {
+          "etf_core": 0.002427,
+          "crisis_gold": 0.01561,
+          "stock_alpha": 0.000977,
+          "reconciliation_residual": -0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 300,
+        "buy_orders": 148,
+        "sell_orders": 152,
+        "buy_notional": 4731138.899999999,
+        "sell_notional": 4879856.399999999,
+        "fees": 12632.592750000002,
+        "fees_by_group": {
+          "etf_core": 5722.4863,
+          "crisis_gold": 6023.82945,
+          "stock_alpha": 886.2769999999999
+        },
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 51,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 22
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.2885,
+        "annual_return": 0.0461,
+        "annual_volatility": 0.073,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4119,
+        "total_return": 0.7119,
+        "final_nav": 342374.48,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1745,
+        "max_actual_risk_exposure": 0.7094,
+        "avg_cash_weight": 0.8255,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 7958.42,
+        "fees_pct_initial_capital": 0.0398,
+        "orders": 192,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1047,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0828
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8992,
+            "oos": -7.0868,
+            "mdd": -0.0055
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9397,
+            "oos": -3.4563,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7332,
+            "oos": -0.0046,
+            "mdd": -0.0092
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.8757,
+            "oos": 0.845,
+            "mdd": -0.0514
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.2965,
+            "oos": 1.1642,
+            "mdd": -0.1268
+          }
+        ],
+        "avg_is_sharpe": -1.0303,
+        "avg_oos_sharpe": -1.7077,
+        "sharpe_decay": 0.6575
+      },
+      "gates": {
+        "annual_return_delta": 0.0132,
+        "sharpe_delta": 0.1409,
+        "max_drawdown_delta": -0.0094,
+        "avg_oos_sharpe_delta": 1.9138,
+        "min_oos_sharpe_delta": 6.5785,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": true,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock6_crisis22",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.063,
+        "crisis_cap": 0.22,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.4278,
+        "annual_return": 0.0592,
+        "annual_volatility": 0.0799,
+        "max_drawdown": -0.1445,
+        "win_rate": 0.4731,
+        "total_return": 1.0006,
+        "final_nav": 400116.5,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2269,
+        "max_actual_risk_exposure": 0.9397,
+        "avg_cash_weight": 0.7731,
+        "avg_stock_holdings": 0.47,
+        "max_stock_holdings": 5,
+        "total_fees": 12697.3,
+        "fees_pct_initial_capital": 0.0635,
+        "orders": 301,
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 48,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1459,
+        "avg_target_stock": 0.0075,
+        "avg_target_crisis": 0.0911
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.5104,
+            "oos": -0.444,
+            "mdd": -0.0609
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.4303,
+            "oos": -0.4731,
+            "mdd": -0.0078
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -0.5616,
+            "oos": -0.3193,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.3783,
+            "oos": 1.1855,
+            "mdd": -0.0509
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.4823,
+            "oos": 1.1909,
+            "mdd": -0.1277
+          }
+        ],
+        "avg_is_sharpe": -0.2797,
+        "avg_oos_sharpe": 0.228,
+        "sharpe_decay": -1.8153
+      },
+      "weakest_fold_attribution": {
+        "fold": 1,
+        "start": "2022-03-29",
+        "end": "2023-04-12",
+        "oos_sharpe": -0.4731,
+        "max_drawdown": -0.0078,
+        "period_total_return": 0.01946,
+        "simple_return_contribution": {
+          "etf_core": 0.002427,
+          "crisis_gold": 0.016041,
+          "stock_alpha": 0.000985,
+          "reconciliation_residual": 0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 301,
+        "buy_orders": 146,
+        "sell_orders": 155,
+        "buy_notional": 4757840.0,
+        "sell_notional": 4906211.100000001,
+        "fees": 12697.302400000002,
+        "fees_by_group": {
+          "etf_core": 5697.944425,
+          "crisis_gold": 6150.586475000001,
+          "stock_alpha": 848.7715000000001
+        },
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 48,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 22
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.2952,
+        "annual_return": 0.0466,
+        "annual_volatility": 0.0732,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4135,
+        "total_return": 0.723,
+        "final_nav": 344606.63,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1799,
+        "max_actual_risk_exposure": 0.7109,
+        "avg_cash_weight": 0.8201,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 8180.47,
+        "fees_pct_initial_capital": 0.0409,
+        "orders": 195,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1054,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0911
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8814,
+            "oos": -6.5894,
+            "mdd": -0.0059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9298,
+            "oos": -3.0942,
+            "mdd": -0.0051
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7226,
+            "oos": 0.2168,
+            "mdd": -0.0094
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.5638,
+            "oos": 0.8622,
+            "mdd": -0.0518
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3363,
+            "oos": 1.1602,
+            "mdd": -0.1271
+          }
+        ],
+        "avg_is_sharpe": -0.9523,
+        "avg_oos_sharpe": -1.4889,
+        "sharpe_decay": 0.5635
+      },
+      "gates": {
+        "annual_return_delta": 0.0126,
+        "sharpe_delta": 0.1326,
+        "max_drawdown_delta": -0.0104,
+        "avg_oos_sharpe_delta": 1.7169,
+        "min_oos_sharpe_delta": 6.1163,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": true,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock7_crisis22",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.077,
+        "crisis_cap": 0.22,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.4366,
+        "annual_return": 0.0602,
+        "annual_volatility": 0.0806,
+        "max_drawdown": -0.1517,
+        "win_rate": 0.4712,
+        "total_return": 1.0246,
+        "final_nav": 404923.21,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2294,
+        "max_actual_risk_exposure": 0.9398,
+        "avg_cash_weight": 0.7706,
+        "avg_stock_holdings": 0.48,
+        "max_stock_holdings": 5,
+        "total_fees": 12924.69,
+        "fees_pct_initial_capital": 0.0646,
+        "orders": 298,
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 48,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1459,
+        "avg_target_stock": 0.0101,
+        "avg_target_crisis": 0.0911
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.5116,
+            "oos": -0.4274,
+            "mdd": -0.0601
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.4263,
+            "oos": -0.4708,
+            "mdd": -0.0078
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -0.5548,
+            "oos": -0.3206,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.3712,
+            "oos": 1.2042,
+            "mdd": -0.0501
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.4922,
+            "oos": 1.168,
+            "mdd": -0.1279
+          }
+        ],
+        "avg_is_sharpe": -0.2743,
+        "avg_oos_sharpe": 0.2307,
+        "sharpe_decay": -1.8409
+      },
+      "weakest_fold_attribution": {
+        "fold": 1,
+        "start": "2022-03-29",
+        "end": "2023-04-12",
+        "oos_sharpe": -0.4708,
+        "max_drawdown": -0.0078,
+        "period_total_return": 0.019492,
+        "simple_return_contribution": {
+          "etf_core": 0.002427,
+          "crisis_gold": 0.016085,
+          "stock_alpha": 0.000972,
+          "reconciliation_residual": 0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 298,
+        "buy_orders": 146,
+        "sell_orders": 152,
+        "buy_notional": 4851634.1,
+        "sell_notional": 5004228.700000001,
+        "fees": 12924.689049999994,
+        "fees_by_group": {
+          "etf_core": 5748.644625000001,
+          "crisis_gold": 6204.810925,
+          "stock_alpha": 971.2335000000003
+        },
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 48,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 22
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.2952,
+        "annual_return": 0.0466,
+        "annual_volatility": 0.0732,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4135,
+        "total_return": 0.723,
+        "final_nav": 344606.63,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1799,
+        "max_actual_risk_exposure": 0.7109,
+        "avg_cash_weight": 0.8201,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 8180.47,
+        "fees_pct_initial_capital": 0.0409,
+        "orders": 195,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1054,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0911
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8814,
+            "oos": -6.5894,
+            "mdd": -0.0059
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9298,
+            "oos": -3.0942,
+            "mdd": -0.0051
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7226,
+            "oos": 0.2168,
+            "mdd": -0.0094
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.5638,
+            "oos": 0.8622,
+            "mdd": -0.0518
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3363,
+            "oos": 1.1602,
+            "mdd": -0.1271
+          }
+        ],
+        "avg_is_sharpe": -0.9523,
+        "avg_oos_sharpe": -1.4889,
+        "sharpe_decay": 0.5635
+      },
+      "gates": {
+        "annual_return_delta": 0.0136,
+        "sharpe_delta": 0.1414,
+        "max_drawdown_delta": -0.0176,
+        "avg_oos_sharpe_delta": 1.7196,
+        "min_oos_sharpe_delta": 6.1186,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": false,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock7_crisis20",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.077,
+        "crisis_cap": 0.2,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.4312,
+        "annual_return": 0.0597,
+        "annual_volatility": 0.0805,
+        "max_drawdown": -0.1517,
+        "win_rate": 0.4699,
+        "total_return": 1.0124,
+        "final_nav": 402474.52,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2233,
+        "max_actual_risk_exposure": 0.9408,
+        "avg_cash_weight": 0.7767,
+        "avg_stock_holdings": 0.45,
+        "max_stock_holdings": 5,
+        "total_fees": 12701.88,
+        "fees_pct_initial_capital": 0.0635,
+        "orders": 296,
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 50,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1459,
+        "avg_target_stock": 0.0094,
+        "avg_target_crisis": 0.0828
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.5263,
+            "oos": -0.4248,
+            "mdd": -0.0599
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.43,
+            "oos": -0.5067,
+            "mdd": -0.0077
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -0.5574,
+            "oos": -0.3695,
+            "mdd": -0.0445
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -0.3913,
+            "oos": 1.1901,
+            "mdd": -0.0496
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.4709,
+            "oos": 1.1678,
+            "mdd": -0.128
+          }
+        ],
+        "avg_is_sharpe": -0.2868,
+        "avg_oos_sharpe": 0.2114,
+        "sharpe_decay": -1.737
+      },
+      "weakest_fold_attribution": {
+        "fold": 1,
+        "start": "2022-03-29",
+        "end": "2023-04-12",
+        "oos_sharpe": -0.5067,
+        "max_drawdown": -0.0077,
+        "period_total_return": 0.019041,
+        "simple_return_contribution": {
+          "etf_core": 0.002426,
+          "crisis_gold": 0.015634,
+          "stock_alpha": 0.000974,
+          "reconciliation_residual": 0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 296,
+        "buy_orders": 145,
+        "sell_orders": 151,
+        "buy_notional": 4765827.8,
+        "sell_notional": 4916156.199999999,
+        "fees": 12701.881925000005,
+        "fees_by_group": {
+          "etf_core": 5740.2233750000005,
+          "crisis_gold": 6032.073550000001,
+          "stock_alpha": 929.5850000000003
+        },
+        "blocked_buys": 1,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 50,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 22
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.2885,
+        "annual_return": 0.0461,
+        "annual_volatility": 0.073,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4119,
+        "total_return": 0.7119,
+        "final_nav": 342374.48,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1745,
+        "max_actual_risk_exposure": 0.7094,
+        "avg_cash_weight": 0.8255,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 7958.42,
+        "fees_pct_initial_capital": 0.0398,
+        "orders": 192,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1047,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0828
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8992,
+            "oos": -7.0868,
+            "mdd": -0.0055
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9397,
+            "oos": -3.4563,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7332,
+            "oos": -0.0046,
+            "mdd": -0.0092
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.8757,
+            "oos": 0.845,
+            "mdd": -0.0514
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.2965,
+            "oos": 1.1642,
+            "mdd": -0.1268
+          }
+        ],
+        "avg_is_sharpe": -1.0303,
+        "avg_oos_sharpe": -1.7077,
+        "sharpe_decay": 0.6575
+      },
+      "gates": {
+        "annual_return_delta": 0.0136,
+        "sharpe_delta": 0.1427,
+        "max_drawdown_delta": -0.0176,
+        "avg_oos_sharpe_delta": 1.9191,
+        "min_oos_sharpe_delta": 6.5801,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": false,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock6_crisis20",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.063,
+        "crisis_cap": 0.2,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.3551,
+        "annual_return": 0.0518,
+        "annual_volatility": 0.0755,
+        "max_drawdown": -0.1445,
+        "win_rate": 0.4186,
+        "total_return": 0.8341,
+        "final_nav": 366816.67,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1834,
+        "max_actual_risk_exposure": 0.7657,
+        "avg_cash_weight": 0.8166,
+        "avg_stock_holdings": 0.4,
+        "max_stock_holdings": 5,
+        "total_fees": 9291.03,
+        "fees_pct_initial_capital": 0.0465,
+        "orders": 264,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 40,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1073,
+        "avg_target_stock": 0.0061,
+        "avg_target_crisis": 0.0828
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8961,
+            "oos": -7.1601,
+            "mdd": -0.0054
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.938,
+            "oos": -3.456,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7301,
+            "oos": 0.0769,
+            "mdd": -0.0091
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.7516,
+            "oos": 0.8624,
+            "mdd": -0.0504
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.3155,
+            "oos": 1.1992,
+            "mdd": -0.1274
+          }
+        ],
+        "avg_is_sharpe": -1.0001,
+        "avg_oos_sharpe": -1.6955,
+        "sharpe_decay": 0.6954
+      },
+      "weakest_fold_attribution": {
+        "fold": 0,
+        "start": "2021-03-16",
+        "end": "2022-03-29",
+        "oos_sharpe": -7.1601,
+        "max_drawdown": -0.0054,
+        "period_total_return": -0.003307,
+        "simple_return_contribution": {
+          "etf_core": 0.0,
+          "crisis_gold": -0.003304,
+          "stock_alpha": 0.0,
+          "reconciliation_residual": 0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 264,
+        "buy_orders": 130,
+        "sell_orders": 134,
+        "buy_notional": 3441889.2999999993,
+        "sell_notional": 3558823.2,
+        "fees": 9291.027525,
+        "fees_by_group": {
+          "etf_core": 3801.1106500000005,
+          "crisis_gold": 4776.018375,
+          "stock_alpha": 713.8985000000001
+        },
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 40,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 21
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.2885,
+        "annual_return": 0.0461,
+        "annual_volatility": 0.073,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.4119,
+        "total_return": 0.7119,
+        "final_nav": 342374.48,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1745,
+        "max_actual_risk_exposure": 0.7094,
+        "avg_cash_weight": 0.8255,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 7958.42,
+        "fees_pct_initial_capital": 0.0398,
+        "orders": 192,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1047,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0828
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.8992,
+            "oos": -7.0868,
+            "mdd": -0.0055
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9397,
+            "oos": -3.4563,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7332,
+            "oos": -0.0046,
+            "mdd": -0.0092
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.8757,
+            "oos": 0.845,
+            "mdd": -0.0514
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.2965,
+            "oos": 1.1642,
+            "mdd": -0.1268
+          }
+        ],
+        "avg_is_sharpe": -1.0303,
+        "avg_oos_sharpe": -1.7077,
+        "sharpe_decay": 0.6575
+      },
+      "gates": {
+        "annual_return_delta": 0.0057,
+        "sharpe_delta": 0.0666,
+        "max_drawdown_delta": -0.0104,
+        "avg_oos_sharpe_delta": 0.0122,
+        "min_oos_sharpe_delta": -0.0733,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": false,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock7_crisis18",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.077,
+        "crisis_cap": 0.18,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.3535,
+        "annual_return": 0.0519,
+        "annual_volatility": 0.0761,
+        "max_drawdown": -0.1517,
+        "win_rate": 0.4174,
+        "total_return": 0.8351,
+        "final_nav": 367028.3,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1768,
+        "max_actual_risk_exposure": 0.777,
+        "avg_cash_weight": 0.8232,
+        "avg_stock_holdings": 0.38,
+        "max_stock_holdings": 5,
+        "total_fees": 9012.2,
+        "fees_pct_initial_capital": 0.0451,
+        "orders": 251,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 43,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1066,
+        "avg_target_stock": 0.0077,
+        "avg_target_crisis": 0.0745
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.9118,
+            "oos": -8.1382,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9434,
+            "oos": -3.9033,
+            "mdd": -0.0041
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7355,
+            "oos": -0.1695,
+            "mdd": -0.0089
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -2.0952,
+            "oos": 0.83,
+            "mdd": -0.0497
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.2673,
+            "oos": 1.1763,
+            "mdd": -0.1278
+          }
+        ],
+        "avg_is_sharpe": -1.0837,
+        "avg_oos_sharpe": -2.0409,
+        "sharpe_decay": 0.8833
+      },
+      "weakest_fold_attribution": {
+        "fold": 0,
+        "start": "2021-03-16",
+        "end": "2022-03-29",
+        "oos_sharpe": -8.1382,
+        "max_drawdown": -0.0047,
+        "period_total_return": -0.002821,
+        "simple_return_contribution": {
+          "etf_core": 0.0,
+          "crisis_gold": -0.002819,
+          "stock_alpha": 0.0,
+          "reconciliation_residual": -0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 251,
+        "buy_orders": 124,
+        "sell_orders": 127,
+        "buy_notional": 3340374.8000000003,
+        "sell_notional": 3457241.5,
+        "fees": 9012.202800000003,
+        "fees_by_group": {
+          "etf_core": 3821.1330749999997,
+          "crisis_gold": 4440.909725,
+          "stock_alpha": 750.16
+        },
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 43,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 21
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4483,
+        "annual_return": 0.0603,
+        "annual_volatility": 0.0788,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.452,
+        "total_return": 1.0311,
+        "final_nav": 406222.7,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2215,
+        "max_actual_risk_exposure": 0.9402,
+        "avg_cash_weight": 0.7785,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 12320.9,
+        "fees_pct_initial_capital": 0.0616,
+        "orders": 217,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1594,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0745
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.2723,
+            "oos": 0.1106,
+            "mdd": -0.0639
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0044,
+            "oos": 0.3286,
+            "mdd": -0.0193
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1146,
+            "oos": -0.3922,
+            "mdd": -0.0441
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": 0.0315,
+            "oos": 1.146,
+            "mdd": -0.051
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.5388,
+            "oos": 1.1628,
+            "mdd": -0.1269
+          }
+        ],
+        "avg_is_sharpe": 0.0834,
+        "avg_oos_sharpe": 0.4712,
+        "sharpe_decay": -4.6494
+      },
+      "gates": {
+        "annual_return_delta": -0.0084,
+        "sharpe_delta": -0.0948,
+        "max_drawdown_delta": -0.0176,
+        "avg_oos_sharpe_delta": -2.5121,
+        "min_oos_sharpe_delta": -7.746,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": false,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock7_crisis18",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.07,
+        "crisis_cap": 0.18,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.3545,
+        "annual_return": 0.0518,
+        "annual_volatility": 0.0757,
+        "max_drawdown": -0.1435,
+        "win_rate": 0.4174,
+        "total_return": 0.8338,
+        "final_nav": 366763.48,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1767,
+        "max_actual_risk_exposure": 0.774,
+        "avg_cash_weight": 0.8233,
+        "avg_stock_holdings": 0.38,
+        "max_stock_holdings": 5,
+        "total_fees": 8978.12,
+        "fees_pct_initial_capital": 0.0449,
+        "orders": 251,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 42,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1073,
+        "avg_target_stock": 0.0066,
+        "avg_target_crisis": 0.0745
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.911,
+            "oos": -8.1183,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9426,
+            "oos": -3.9007,
+            "mdd": -0.0041
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7352,
+            "oos": -0.0449,
+            "mdd": -0.0089
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.9294,
+            "oos": 0.8264,
+            "mdd": -0.05
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.2779,
+            "oos": 1.18,
+            "mdd": -0.1278
+          }
+        ],
+        "avg_is_sharpe": -1.0481,
+        "avg_oos_sharpe": -2.0115,
+        "sharpe_decay": 0.9193
+      },
+      "weakest_fold_attribution": {
+        "fold": 0,
+        "start": "2021-03-16",
+        "end": "2022-03-29",
+        "oos_sharpe": -8.1183,
+        "max_drawdown": -0.0047,
+        "period_total_return": -0.002828,
+        "simple_return_contribution": {
+          "etf_core": 0.0,
+          "crisis_gold": -0.002826,
+          "stock_alpha": 0.0,
+          "reconciliation_residual": 0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 251,
+        "buy_orders": 123,
+        "sell_orders": 128,
+        "buy_notional": 3329306.9,
+        "sell_notional": 3445874.700000001,
+        "fees": 8978.123350000003,
+        "fees_by_group": {
+          "etf_core": 3813.3843499999994,
+          "crisis_gold": 4462.357000000001,
+          "stock_alpha": 702.3820000000001
+        },
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 42,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 21
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4483,
+        "annual_return": 0.0603,
+        "annual_volatility": 0.0788,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.452,
+        "total_return": 1.0311,
+        "final_nav": 406222.7,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2215,
+        "max_actual_risk_exposure": 0.9402,
+        "avg_cash_weight": 0.7785,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 12320.9,
+        "fees_pct_initial_capital": 0.0616,
+        "orders": 217,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1594,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0745
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.2723,
+            "oos": 0.1106,
+            "mdd": -0.0639
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0044,
+            "oos": 0.3286,
+            "mdd": -0.0193
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1146,
+            "oos": -0.3922,
+            "mdd": -0.0441
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": 0.0315,
+            "oos": 1.146,
+            "mdd": -0.051
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.5388,
+            "oos": 1.1628,
+            "mdd": -0.1269
+          }
+        ],
+        "avg_is_sharpe": 0.0834,
+        "avg_oos_sharpe": 0.4712,
+        "sharpe_decay": -4.6494
+      },
+      "gates": {
+        "annual_return_delta": -0.0085,
+        "sharpe_delta": -0.0938,
+        "max_drawdown_delta": -0.0094,
+        "avg_oos_sharpe_delta": -2.4827,
+        "min_oos_sharpe_delta": -7.7261,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": false,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    },
+    {
+      "name": "v40_200000_stock6_crisis18",
+      "scenario": {
+        "capital": 200000.0,
+        "stock_alpha_cap": 0.063,
+        "crisis_cap": 0.18,
+        "stock_positions": 2,
+        "stock_rebalance_freq": 40,
+        "etf_rebalance_freq": 20,
+        "stock_profile": "small_balanced",
+        "stock_rank_mode": "blend",
+        "stock_lookback": 60,
+        "lot_size": 100
+      },
+      "research_only": true,
+      "production_ready": false,
+      "full": {
+        "sharpe_ratio": 0.3499,
+        "annual_return": 0.0514,
+        "annual_volatility": 0.0754,
+        "max_drawdown": -0.1445,
+        "win_rate": 0.4174,
+        "total_return": 0.8246,
+        "final_nav": 364928.61,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.1751,
+        "max_actual_risk_exposure": 0.7657,
+        "avg_cash_weight": 0.8249,
+        "avg_stock_holdings": 0.37,
+        "max_stock_holdings": 5,
+        "total_fees": 8885.39,
+        "fees_pct_initial_capital": 0.0444,
+        "orders": 256,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 40,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.107,
+        "avg_target_stock": 0.006,
+        "avg_target_crisis": 0.0745
+      },
+      "wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.9011,
+            "oos": -8.1605,
+            "mdd": -0.0047
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": -0.9331,
+            "oos": -3.9355,
+            "mdd": -0.0041
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": -1.7228,
+            "oos": -0.047,
+            "mdd": -0.0089
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": -1.9421,
+            "oos": 0.8296,
+            "mdd": -0.05
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.2789,
+            "oos": 1.1984,
+            "mdd": -0.1275
+          }
+        ],
+        "avg_is_sharpe": -1.044,
+        "avg_oos_sharpe": -2.023,
+        "sharpe_decay": 0.9377
+      },
+      "weakest_fold_attribution": {
+        "fold": 0,
+        "start": "2021-03-16",
+        "end": "2022-03-29",
+        "oos_sharpe": -8.1605,
+        "max_drawdown": -0.0047,
+        "period_total_return": -0.002819,
+        "simple_return_contribution": {
+          "etf_core": 0.0,
+          "crisis_gold": -0.002817,
+          "stock_alpha": 0.0,
+          "reconciliation_residual": 0.0
+        }
+      },
+      "diagnostics": {
+        "orders": 256,
+        "buy_orders": 125,
+        "sell_orders": 131,
+        "buy_notional": 3280435.5,
+        "sell_notional": 3395481.0000000014,
+        "fees": 8885.385374999998,
+        "fees_by_group": {
+          "etf_core": 3795.4809750000013,
+          "crisis_gold": 4425.2569,
+          "stock_alpha": 664.6475000000002
+        },
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "lot_blocked_targets": 40,
+        "cash_blocked_buys": 0,
+        "missing_price_blocks": 21
+      },
+      "baseline_full": {
+        "sharpe_ratio": 0.4483,
+        "annual_return": 0.0603,
+        "annual_volatility": 0.0788,
+        "max_drawdown": -0.1341,
+        "win_rate": 0.452,
+        "total_return": 1.0311,
+        "final_nav": 406222.7,
+        "n_days": 3122,
+        "avg_actual_risk_exposure": 0.2215,
+        "max_actual_risk_exposure": 0.9402,
+        "avg_cash_weight": 0.7785,
+        "avg_stock_holdings": 0.0,
+        "max_stock_holdings": 0,
+        "total_fees": 12320.9,
+        "fees_pct_initial_capital": 0.0616,
+        "orders": 217,
+        "blocked_buys": 0,
+        "blocked_sells": 0,
+        "cash_blocked_buys": 0,
+        "lot_blocked_targets": 39,
+        "invariant_max_error": 1e-10,
+        "risk_capacity_violations": 0,
+        "avg_target_etf": 0.1594,
+        "avg_target_stock": 0.0,
+        "avg_target_crisis": 0.0745
+      },
+      "baseline_wf": {
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-03-16",
+            "test_end": "2022-03-29",
+            "is": -0.2723,
+            "oos": 0.1106,
+            "mdd": -0.0639
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-03-29",
+            "test_end": "2023-04-12",
+            "is": 0.0044,
+            "oos": 0.3286,
+            "mdd": -0.0193
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-04-12",
+            "test_end": "2024-04-26",
+            "is": 0.1146,
+            "oos": -0.3922,
+            "mdd": -0.0441
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-04-26",
+            "test_end": "2025-05-15",
+            "is": 0.0315,
+            "oos": 1.146,
+            "mdd": -0.051
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-05-15",
+            "test_end": "2026-05-29",
+            "is": 0.5388,
+            "oos": 1.1628,
+            "mdd": -0.1269
+          }
+        ],
+        "avg_is_sharpe": 0.0834,
+        "avg_oos_sharpe": 0.4712,
+        "sharpe_decay": -4.6494
+      },
+      "gates": {
+        "annual_return_delta": -0.0089,
+        "sharpe_delta": -0.0984,
+        "max_drawdown_delta": -0.0104,
+        "avg_oos_sharpe_delta": -2.4942,
+        "min_oos_sharpe_delta": -7.7683,
+        "joint_invariant_gate_passes": true,
+        "relative_improvement_gate_passes": false,
+        "production_minimum_gate_passes": false,
+        "stock_execution_gate_passes": true
+      }
+    }
+  ],
+  "production_blockers": [
+    "V40 remains local research evidence and does not approve live trading",
+    "stock alpha must improve the same-capital same-crisis V39 baseline under cost stress",
+    "free-source qfq and V31 status are not approved vendor PIT evidence",
+    "requires broker order/fill replay and approved 90-day paper trading",
+    "requires external WORM/Secret/Approval/Provider/Position/Capacity/DR evidence gate"
+  ],
+  "elapsed_seconds": 77.02
+}

@@ -1,7 +1,7 @@
 """Tests for audit bus (core-003)."""
 
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 
 import pytest
 from quant_trading.core.audit import (
@@ -93,6 +93,7 @@ class TestAuditBus:
 
 
 def test_local_audit_worm_archive_writes_daily_redacted_log_and_hash(tmp_path) -> None:
+    archive_date = datetime.now(timezone.utc).date()
     audit = AuditBus()
     audit.record(
         "api_call",
@@ -109,11 +110,11 @@ def test_local_audit_worm_archive_writes_daily_redacted_log_and_hash(tmp_path) -
         key_ref="test-sm://audit-key",
     )
 
-    result = archive.archive_day(audit, date(2026, 5, 29))
+    result = archive.archive_day(audit, archive_date)
 
     assert result.event_count == 1
-    assert result.attestation_ref.startswith("worm://audit-file/2026-05-29/")
-    assert archive.verify_day(date(2026, 5, 29)) is True
+    assert result.attestation_ref.startswith(f"worm://audit-file/{archive_date.isoformat()}/")
+    assert archive.verify_day(archive_date) is True
     assert "raw-key" not in result.log_path.read_text(encoding="utf-8")
     assert "raw-secret" not in result.log_path.read_text(encoding="utf-8")
     assert "[REDACTED]" in result.log_path.read_text(encoding="utf-8")
@@ -122,7 +123,7 @@ def test_local_audit_worm_archive_writes_daily_redacted_log_and_hash(tmp_path) -
     assert manifest["manifest_hash"] == result.manifest_hash
     assert manifest["key_ref"] == "test-sm://audit-key"
     with pytest.raises(FileExistsError, match="write-once"):
-        archive.archive_day(audit, date(2026, 5, 29))
+        archive.archive_day(audit, archive_date)
 
 
 def test_local_audit_worm_archive_detects_tampering(tmp_path) -> None:

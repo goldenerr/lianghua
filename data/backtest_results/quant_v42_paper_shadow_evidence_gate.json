@@ -1,0 +1,35 @@
+{
+  "ts": "2026-06-23T06:01:10.788285+00:00",
+  "version": "V42-paper-shadow-evidence-gate",
+  "research_only": false,
+  "production_ready": false,
+  "paper_evidence_ready": false,
+  "paper_shadow_candidate_exists": true,
+  "thresholds": {
+    "min_calendar_days": 90,
+    "min_report_days": 60,
+    "max_abs_cumulative_return_drift": 0.05,
+    "max_mean_abs_daily_return_drift_bps": 5.0,
+    "max_slippage_over_expected_bps": 5.0,
+    "max_cost_over_expected_bps": 5.0
+  },
+  "metrics": {
+    "report_days": 0,
+    "calendar_days": 0,
+    "paper_cumulative_return": 0.0,
+    "backtest_cumulative_return": 0.0,
+    "cumulative_return_drift": 0.0,
+    "mean_abs_daily_return_drift_bps": null,
+    "mean_actual_slippage_bps": null,
+    "mean_expected_slippage_bps": null,
+    "mean_actual_cost_bps": null,
+    "mean_expected_cost_bps": null
+  },
+  "blockers": [
+    "paper-shadow package still has 14 blocker(s)",
+    "missing daily paper-shadow reports",
+    "missing trusted paper_trading_90d evidence ref"
+  ],
+  "package_blocker_count": 14,
+  "note": "This gate only evaluates paper-shadow evidence. Production remains false until external production evidence, approvals, paper acceptance and operational gates pass."
+}

@@ -127,6 +127,8 @@ def _normalize_ohlcv(raw: pd.DataFrame, column_map: dict[str, str], asset: dict[
     df["role"] = asset["role"]
     df["source"] = asset.get("source", "akshare")
     df["fetched_at"] = datetime.now().isoformat()
+    df["requested_start"] = START_DATE
+    df["requested_end"] = END_DATE
     return df
 
 
@@ -139,7 +141,21 @@ def _is_current(path: Path) -> bool:
         return False
     if df.empty:
         return False
-    return pd.Timestamp(df.index.max()).normalize() >= pd.Timestamp(END_DATE).normalize()
+    if "requested_start" not in df.columns or "requested_end" not in df.columns:
+        return False
+    requested_starts = pd.to_datetime(
+        df["requested_start"].dropna().astype(str), format="%Y%m%d", errors="coerce"
+    ).dropna()
+    requested_ends = pd.to_datetime(
+        df["requested_end"].dropna().astype(str), format="%Y%m%d", errors="coerce"
+    ).dropna()
+    if requested_starts.empty or requested_ends.empty:
+        return False
+    return bool(
+        requested_starts.min().normalize() <= pd.Timestamp(START_DATE).normalize()
+        and requested_ends.max().normalize() >= pd.Timestamp(END_DATE).normalize()
+        and pd.Timestamp(df.index.max()).normalize() >= pd.Timestamp(END_DATE).normalize()
+    )
 
 
 def fetch_futures(ak: Any) -> tuple[list[dict[str, Any]], list[dict[str, str]], list[pd.DataFrame]]:

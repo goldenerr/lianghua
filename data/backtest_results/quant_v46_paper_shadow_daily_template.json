@@ -1,0 +1,27 @@
+{
+  "template_only": true,
+  "version": "V46-paper-shadow-daily-template",
+  "说明": "这是模板，V45 会拒绝 template_only=true 的文件，不能作为真实证据入账。",
+  "external_refs": {
+    "paper_trading_90d": "paper://真实90天影子模拟盘报告引用"
+  },
+  "daily_report": {
+    "date": "YYYY-MM-DD",
+    "paper_daily_return": 0.0,
+    "backtest_daily_return": 0.0,
+    "actual_slippage_bps": 0.0,
+    "expected_slippage_bps": 0.0,
+    "actual_cost_bps": 0.0,
+    "expected_cost_bps": 0.0,
+    "risk_capacity_violations": 0,
+    "invariant_violations": 0,
+    "audit_hash": "64位sha256审计日志哈希",
+    "audit_event_count": 0,
+    "archive_ref": "worm://或archive://或s3://worm-真实归档引用",
+    "market_data_ref": "provider://或vendor://真实行情源引用",
+    "position_snapshot_ref": "broker://或exchange://真实持仓快照引用",
+    "order_fill_log_ref": "broker://或exchange://真实订单成交日志引用",
+    "auto_trade_enabled": false,
+    "live_order_submission_allowed": false
+  }
+}

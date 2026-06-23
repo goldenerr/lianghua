@@ -1,0 +1,18 @@
+{
+  "source_export_valid": false,
+  "production_ready": false,
+  "date": "",
+  "blockers": [
+    "缺少 --source-export-json"
+  ],
+  "metrics": {
+    "order_count": 0,
+    "fill_count": 0,
+    "position_count": 0,
+    "traded_symbol_count": 0,
+    "position_symbol_count": 0,
+    "audit_event_count": 0,
+    "audit_hash": ""
+  },
+  "note": "V47 只校验源导出是否可进入 V46/V45，不代表生产批准。"
+}

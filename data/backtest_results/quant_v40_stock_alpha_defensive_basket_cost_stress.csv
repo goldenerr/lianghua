@@ -1,0 +1,7 @@
+name,capital,stock_alpha_cap,crisis_cap,relative_improvement_gate_passes,production_minimum_gate_passes,stock_execution_gate_passes,annual_return,sharpe_ratio,max_drawdown,avg_oos_sharpe,min_oos_sharpe,annual_return_delta,avg_target_stock,avg_target_crisis,avg_stock_holdings,max_actual_risk_exposure
+v40_200000_stock7_crisis20,200000.0,0.07,0.2,True,False,True,0.0593,0.4294,-0.1435,0.2061,-0.5083,0.0132,0.0084,0.0828,0.47,0.9399
+v40_50000_stock7_crisis20,50000.0,0.07,0.2,False,False,True,0.0673,0.5255,-0.1346,0.4691,-0.4897,0.0075,0.0082,0.0828,0.35,0.9364
+v40_200000_stock5_crisis20,200000.0,0.05,0.2,False,False,True,0.0505,0.3395,-0.1449,-1.6969,-7.1462,0.0044,0.0048,0.0828,0.37,0.7552
+v40_50000_stock5_crisis20,50000.0,0.05,0.2,False,False,True,0.0627,0.4763,-0.1395,0.4673,-0.4516,0.0029,0.0042,0.0828,0.25,0.94
+v40_100000_stock5_crisis20,100000.0,0.05,0.2,False,False,True,0.0577,0.4162,-0.1335,0.2396,-0.5448,-0.0028,0.0061,0.0828,0.33,0.9384
+v40_100000_stock7_crisis20,100000.0,0.07,0.2,False,False,True,0.0577,0.4151,-0.1396,0.1385,-0.6862,-0.0028,0.0068,0.0828,0.29,0.9392

@@ -1,0 +1,122 @@
+{
+  "ts": "2026-06-23T06:41:41.059328+00:00",
+  "version": "V44-consolidated-production-readiness-gate",
+  "research_only": false,
+  "production_ready": false,
+  "scope_status": {
+    "candidate_package_passes": false,
+    "paper_evidence_passes": false,
+    "local_capacity_dr_passes": true,
+    "external_evidence_passes": false
+  },
+  "candidate": {
+    "capital": 200000.0,
+    "stock_alpha_cap": 0.07,
+    "crisis_cap": 0.2,
+    "stock_rebalance_freq": 40,
+    "crisis_assets": [
+      "518880",
+      "511010",
+      "511260"
+    ],
+    "auto_trade_enabled": false,
+    "live_order_submission_allowed": false,
+    "max_live_capital_fraction": 0.0
+  },
+  "provided_evidence_keys": [],
+  "required_external_evidence_keys": [
+    "external_worm_archive",
+    "secret_manager",
+    "approval_service",
+    "real_market_data_provider",
+    "provider_entitlement",
+    "alt_archive_readiness",
+    "exchange_position_provider",
+    "broker_borrow_availability",
+    "paper_trading_90d",
+    "signed_plugin_review",
+    "production_calendar",
+    "rollover_runbook",
+    "capacity_benchmark",
+    "failover_dr_test"
+  ],
+  "missing_external_evidence_keys": [
+    "external_worm_archive",
+    "secret_manager",
+    "approval_service",
+    "real_market_data_provider",
+    "provider_entitlement",
+    "alt_archive_readiness",
+    "exchange_position_provider",
+    "broker_borrow_availability",
+    "paper_trading_90d",
+    "signed_plugin_review",
+    "production_calendar",
+    "rollover_runbook",
+    "capacity_benchmark",
+    "failover_dr_test"
+  ],
+  "candidate_blockers": [
+    "V40 影子模拟盘包未就绪",
+    "V40 影子模拟盘包仍有 14 个阻塞项"
+  ],
+  "paper_evidence_blockers": [
+    "V42 影子模拟盘 90 天证据门禁未通过",
+    "V42: paper-shadow package still has 14 blocker(s)",
+    "V42: missing daily paper-shadow reports",
+    "V42: missing trusted paper_trading_90d evidence ref"
+  ],
+  "capacity_dr_blockers": [],
+  "external_evidence_blockers": [
+    "external_worm_archive: missing external immutable WORM archive attestation",
+    "secret_manager: missing approved production secret-manager resolver evidence",
+    "approval_service: missing risk/configuration approval service evidence",
+    "real_market_data_provider: missing approved non-mock market-data provider evidence",
+    "provider_entitlement: missing data-provider entitlement, license and redistribution evidence",
+    "alt_archive_readiness: missing archive-complete alternative-data readiness artifact",
+    "exchange_position_provider: missing exchange-backed reconciled position provider evidence",
+    "broker_borrow_availability: missing broker-backed borrow availability feed and account binding evidence",
+    "paper_trading_90d: missing three-month paper-trading gate evidence using real market data",
+    "signed_plugin_review: missing signed plugin load and code-review evidence",
+    "production_calendar: missing approved production exchange calendar evidence",
+    "rollover_runbook: missing approved futures rollover execution runbook/evidence",
+    "capacity_benchmark: missing production-like capacity benchmark report",
+    "failover_dr_test: missing multi-region failover and DR test report"
+  ],
+  "production_blockers": [
+    "V40 影子模拟盘包未就绪",
+    "V40 影子模拟盘包仍有 14 个阻塞项",
+    "V42 影子模拟盘 90 天证据门禁未通过",
+    "V42: paper-shadow package still has 14 blocker(s)",
+    "V42: missing daily paper-shadow reports",
+    "V42: missing trusted paper_trading_90d evidence ref",
+    "external_worm_archive: missing external immutable WORM archive attestation",
+    "secret_manager: missing approved production secret-manager resolver evidence",
+    "approval_service: missing risk/configuration approval service evidence",
+    "real_market_data_provider: missing approved non-mock market-data provider evidence",
+    "provider_entitlement: missing data-provider entitlement, license and redistribution evidence",
+    "alt_archive_readiness: missing archive-complete alternative-data readiness artifact",
+    "exchange_position_provider: missing exchange-backed reconciled position provider evidence",
+    "broker_borrow_availability: missing broker-backed borrow availability feed and account binding evidence",
+    "paper_trading_90d: missing three-month paper-trading gate evidence using real market data",
+    "signed_plugin_review: missing signed plugin load and code-review evidence",
+    "production_calendar: missing approved production exchange calendar evidence",
+    "rollover_runbook: missing approved futures rollover execution runbook/evidence",
+    "capacity_benchmark: missing production-like capacity benchmark report",
+    "failover_dr_test: missing multi-region failover and DR test report"
+  ],
+  "source_gate_summary": {
+    "v40_shadow_candidate_exists": true,
+    "v40_paper_shadow_ready": false,
+    "v42_paper_evidence_ready": false,
+    "v43_local_capacity_dr_gate_passes": true,
+    "v43_production_like": false
+  },
+  "next_actions": [
+    "修复 V40 robustness 与候选包 blocker。",
+    "接入真实只读行情、模拟成交、每日审计归档和券商/交易所持仓快照，连续生成至少 90 天 V42 日报。",
+    "提供外部 WORM、Secret Manager、Approval Service、真实 provider、position provider、broker logs、生产日历、签名插件、容量压测和 DR 演练 refs。",
+    "所有外部 refs 到位后重新运行本脚本，并继续保持实盘下单关闭，直到风控审批和生产 gate 全部通过。"
+  ],
+  "note": "V44 是总门禁，任何子门禁或外部证据缺失都会保持 production_ready=false。"
+}
