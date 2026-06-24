@@ -14,9 +14,10 @@ from typing import Any
 import numpy as np
 
 # ── Factor Config ─────────────────────────────────────────────
-# Weights from CSI300 rolling 6-month Spearman IC analysis
-# Key insight: in large-cap A-shares, trend-following dominates mean-reversion
-FACTOR_WEIGHTS = {
+# Weights from CSI300 rolling 6-month Spearman IC analysis.
+# Key insight: in large-cap A-shares, trend-following dominates mean-reversion.
+# Do NOT use this profile for the full A-share universe.
+FACTOR_WEIGHTS_CSI300_TREND = {
     "bollinger": 0.278,  # trend > mean-reversion (neg IC = extremes outperform)
     "rsi": 0.277,  # same — RSI away from 50 predicts continuation
     "momentum": 0.263,  # positive momentum works in large-caps
@@ -24,6 +25,44 @@ FACTOR_WEIGHTS = {
     "vol_dev": 0.047,  # weak signal
     "low_vol": 0.005,  # weak in CSI 300
 }
+
+FACTOR_WEIGHTS_FULL_UNIVERSE_MR = {
+    "rsi": 0.25,
+    "bollinger": 0.25,
+    "momentum": 0.20,
+    "macd": 0.15,
+    "vol_dev": 0.10,
+    "low_vol": 0.05,
+}
+
+# Backward-compatible alias for older imports. New call sites should choose an
+# explicit universe profile instead of relying on this CSI300-specific profile.
+FACTOR_WEIGHTS = FACTOR_WEIGHTS_CSI300_TREND
+
+FACTOR_WEIGHT_PROFILES = {
+    "full_mr": FACTOR_WEIGHTS_FULL_UNIVERSE_MR,
+    "full_universe_mr": FACTOR_WEIGHTS_FULL_UNIVERSE_MR,
+    "csi300_trend": FACTOR_WEIGHTS_CSI300_TREND,
+}
+
+
+def resolve_factor_weights(
+    weights: dict[str, float] | None = None,
+    universe_profile: str | None = None,
+    *,
+    require_profile: bool = False,
+) -> dict[str, float]:
+    """Resolve weights without silently applying CSI300 weights to all-cap data."""
+    if weights is not None:
+        return weights
+    if universe_profile is None:
+        if require_profile:
+            raise ValueError("universe_profile is required when weights are omitted")
+        universe_profile = "full_mr"
+    try:
+        return FACTOR_WEIGHT_PROFILES[universe_profile]
+    except KeyError as exc:
+        raise ValueError(f"unknown universe_profile: {universe_profile}") from exc
 
 
 # ── Helper ────────────────────────────────────────────────────
@@ -164,6 +203,7 @@ def compute_factor_scores(
     volumes: np.ndarray | None = None,
     factors: list[str] | None = None,
     weights: dict[str, float] | None = None,
+    universe_profile: str | None = None,
 ) -> dict[str, float]:
     """Compute factor values for one stock at current timestamp.
 
@@ -172,8 +212,7 @@ def compute_factor_scores(
     """
     if factors is None:
         factors = list(FACTOR_REGISTRY.keys())
-    if weights is None:
-        weights = FACTOR_WEIGHTS
+    weights = resolve_factor_weights(weights, universe_profile)
 
     scores: dict[str, float] = {}
     for name in factors:
@@ -191,14 +230,14 @@ def composite_score(
     factor_values: dict[str, float],
     weights: dict[str, float] | None = None,
     cross_sectional_z: dict[str, tuple[float, float]] | None = None,
+    universe_profile: str | None = None,
 ) -> float:
     """Compute IC-weighted composite score from factor values.
 
     If cross_sectional_z is provided, z-score each factor before weighting.
     cross_sectional_z: {factor_name: (mean, std)} across all stocks.
     """
-    if weights is None:
-        weights = FACTOR_WEIGHTS
+    weights = resolve_factor_weights(weights, universe_profile)
 
     score = 0.0
     total_weight = 0.0
@@ -225,6 +264,7 @@ def rank_stocks(
     stock_data: dict[str, dict[str, Any]],
     factors: list[str] | None = None,
     weights: dict[str, float] | None = None,
+    universe_profile: str | None = None,
 ) -> list[tuple[str, float]]:
     """Cross-sectional ranking of stocks by composite factor score.
 
@@ -233,8 +273,7 @@ def rank_stocks(
     """
     if factors is None:
         factors = list(FACTOR_REGISTRY.keys())
-    if weights is None:
-        weights = FACTOR_WEIGHTS
+    weights = resolve_factor_weights(weights, universe_profile, require_profile=True)
 
     # Step 1: compute raw factor values per stock
     raw_factors: dict[str, dict[str, float]] = {}
@@ -289,7 +328,7 @@ if __name__ == "__main__":
             ),
         }
 
-    ranked = rank_stocks(stock_data)
+    ranked = rank_stocks(stock_data, universe_profile="full_mr")
     print(f"Ranked {len(ranked)} stocks")
     for sym, score in ranked[:10]:
         print(f"  {sym}: {score:.4f}")

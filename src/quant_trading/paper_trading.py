@@ -39,7 +39,7 @@ V59_CONFIG = {
     "mdd_reduce_threshold": 0.10,
     "mdd_reduce_scale": 0.50,
     "mdd_stop_threshold": 0.18,
-    "mdd_stop_scale": 0.0,
+    "mdd_stop_scale": 0.25,
 }
 
 V35_WEIGHTS = {
@@ -70,7 +70,7 @@ def factor_bollinger_mr(closes: np.ndarray) -> float:
     m = closes[-20:].mean()
     s = closes[-20:].std(ddof=1)
     w = 4.0 * s
-    return abs(closes[-1] - m) / w if w > 1e-12 else 0.0
+    return float(abs(closes[-1] - m) / w) if w > 1e-12 else 0.0
 
 
 def factor_momentum(closes: np.ndarray) -> float:
@@ -99,7 +99,7 @@ def factor_vol_dev(volumes: np.ndarray) -> float:
     if len(volumes) < 20:
         return np.nan
     m = volumes[-20:].mean()
-    return -abs(volumes[-1] / m - 1.0) if m > 1e-12 else 0.0
+    return float(-abs(volumes[-1] / m - 1.0)) if m > 1e-12 else 0.0
 
 
 def factor_low_vol(closes: np.ndarray) -> float:
@@ -234,11 +234,13 @@ class PaperTradingEngine:
         dd = self.account.current_drawdown
         stop_threshold = self._cfg_float("mdd_stop_threshold", 0.18)
         reduce_threshold = self._cfg_float("mdd_reduce_threshold", 0.10)
+        stop_scale = self._cfg_float("mdd_stop_scale", 0.25)
 
         if dd < -stop_threshold:
-            # Stop all trading
-            self.stopped = True
-            return f"STOPPED: DD={dd:.1%} exceeds stop threshold {stop_threshold:.0%}"
+            return (
+                f"FLOOR: DD={dd:.1%} exceeds stop threshold {stop_threshold:.0%}; "
+                f"keep {stop_scale:.0%} recovery exposure"
+            )
         elif dd < -reduce_threshold:
             return f"REDUCED: DD={dd:.1%} exceeds reduce threshold {reduce_threshold:.0%}"
         return "OK"
@@ -309,7 +311,7 @@ class PaperTradingEngine:
         # Apply MDD safeguards
         dd = self.account.current_drawdown
         if dd < -self._cfg_float("mdd_stop_threshold", 0.18):
-            return {}  # Stop all
+            w *= self._cfg_float("mdd_stop_scale", 0.25)
         elif dd < -self._cfg_float("mdd_reduce_threshold", 0.10):
             w *= self._cfg_float("mdd_reduce_scale", 0.50)
 

@@ -26,7 +26,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date, timezone
 from enum import Enum
-from typing import ClassVar
+from typing import Any, ClassVar
 
 import numpy as np
 import pandas as pd
@@ -134,16 +134,23 @@ class MetricsCalculator:
         # Volatility
         m.annualized_volatility = float(returns.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR))
 
-        # Sharpe
+        # Sharpe. A flat/no-trade equity curve has no risk-bearing return;
+        # do not manufacture huge ratios by dividing by an epsilon.
         excess = m.annualized_return - risk_free_rate
-        m.sharpe_ratio = excess / max(m.annualized_volatility, 1e-10)
+        if m.annualized_volatility < 1e-8:
+            m.sharpe_ratio = 0.0
+        else:
+            m.sharpe_ratio = excess / m.annualized_volatility
 
         # Sortino (downside deviation)
         downside = returns[returns < 0]
         downside_vol = (
-            downside.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR) if len(downside) > 0 else 1e-10
+            float(downside.std() * np.sqrt(cls.TRADING_DAYS_PER_YEAR)) if len(downside) > 0 else 0.0
         )
-        m.sortino_ratio = excess / max(downside_vol, 1e-10)
+        if downside_vol < 1e-8:
+            m.sortino_ratio = 0.0
+        else:
+            m.sortino_ratio = excess / downside_vol
 
         # Max drawdown
         cummax = equity.cummax()
@@ -286,7 +293,7 @@ class BacktestEngine(ABC):
     def run(
         self,
         data: dict[str, pd.DataFrame],
-        strategy: Callable,
+        strategy: Callable[..., Any],
         config: BacktestConfig | None = None,
     ) -> BacktestResult:
         """Execute a backtest. Must be implemented by plugins."""

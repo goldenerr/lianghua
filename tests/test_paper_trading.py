@@ -22,15 +22,34 @@ def test_rebalance_buys_and_removes_position(tmp_path):
     assert engine.account.trade_log[-1]["side"] == "sell"
 
 
-def test_mdd_stop_marks_paper_engine_stopped(tmp_path):
+def test_mdd_stop_keeps_recovery_floor_without_terminal_stop(tmp_path):
     engine = PaperTradingEngine(
         initial_capital=100_000,
         industry_data_path=tmp_path / "missing.parquet",
     )
     engine.account.cash = 75_000
     action = engine.check_mdd_safeguards()
-    assert action.startswith("STOPPED")
-    assert engine.stopped is True
+    assert action.startswith("FLOOR")
+    assert engine.stopped is False
+
+
+def test_compute_positions_applies_mdd_stop_scale_floor(tmp_path):
+    engine = PaperTradingEngine(
+        initial_capital=100_000,
+        industry_data_path=tmp_path / "missing.parquet",
+    )
+    engine.account.cash = 75_000
+    snapshot = {}
+    base_close = pd.Series(range(1, 260), dtype="float64").to_numpy()
+    base_volume = pd.Series(range(1_000, 1_260), dtype="float64").to_numpy()
+    for i in range(60):
+        snapshot[f"S{i:03d}"] = {"close": base_close + i, "volume": base_volume + i}
+
+    positions = engine.compute_positions(snapshot, current_date="2026-06-24")
+
+    assert positions
+    assert max(positions.values()) <= V59_CONFIG["mdd_stop_scale"] / len(positions) + 1e-12
+    assert sum(positions.values()) == pytest.approx(V59_CONFIG["mdd_stop_scale"])
 
 
 def test_status_and_report_use_marked_equity(tmp_path):

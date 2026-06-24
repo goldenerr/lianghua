@@ -1,5 +1,12 @@
 # Quant Trading System — Progress Log
-# Last updated: 2026-06-22
+# Last updated: 2026-06-24
+
+## Safety Baseline Fixes (2026-06-24) - PRODUCTION BLOCKED
+
+- Fixed V5.9 paper-trading MDD safeguard to use the validated 25% recovery-exposure floor instead of terminal stop/empty positions. `PaperTradingEngine.check_mdd_safeguards()` now reports `FLOOR` and does not set `stopped=True`; `compute_positions()` scales target exposure by `mdd_stop_scale=0.25` below the -18% threshold.
+- Fixed backtest metrics so flat/no-trade equity curves do not manufacture Sharpe/Sortino explosions via epsilon division; zero-volatility paths now return 0.0 ratios.
+- Made factor weight usage explicit: `factors.py` now separates `FACTOR_WEIGHTS_CSI300_TREND` from `FACTOR_WEIGHTS_FULL_UNIVERSE_MR`; stock ranking requires an explicit `universe_profile` when weights are omitted to prevent silent CSI300 trend weights on the full A-share universe.
+- Verification run: targeted regression tests passed (`29 passed`), broader related tests passed (`42 passed`), and Ruff passed on touched source/tests. V49/V45 daily report smoke succeeded. Full V5.9 validation remains blocked locally because `data/parquet` is absent in this checkout.
 
 ## Safety Audit Status (2026-05-29) - PRODUCTION BLOCKED
 
@@ -31,7 +38,7 @@
 
 ### Production Config
 - n=35, rebalance=90d, sector cap=5/industry
-- MDD safeguards: -10%→50%, -18%→stop
+- MDD safeguards: -10%→50%, -18%→25% recovery-exposure floor
 - Risk: position≤20%, leverage≤1x, VaR95≤5%
 - Initial capital: ¥1,000,000 (min ¥500,000)
 

@@ -68,6 +68,14 @@ class TestMetricsCalculator:
         assert metrics.annualized_return == -1.0
         assert metrics.total_trades == 0
 
+    def test_flat_equity_does_not_generate_zero_volatility_sharpe_explosion(self):
+        equity = pd.Series([100.0] * 30, index=pd.date_range("2024-01-01", periods=30))
+        metrics = MetricsCalculator.from_equity_curve(equity)
+        assert metrics.annualized_volatility == 0.0
+        assert metrics.sharpe_ratio == 0.0
+        assert metrics.sortino_ratio == 0.0
+        assert abs(metrics.sharpe_ratio) < 100
+
     def test_deterministic_results(self):
         eq1 = _make_equity_curve(seed=42)
         eq2 = _make_equity_curve(seed=42)
