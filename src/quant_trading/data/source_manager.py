@@ -24,6 +24,7 @@ from .provider import (
     DataResult,
     Frequency,
 )
+from .tencent_ifzq_provider import TencentIfzqProvider
 from .yfinance_provider import YfinanceProvider
 
 logger = logging.getLogger(__name__)
@@ -57,7 +58,7 @@ class DataSourceManager:
         self._market_priority: dict[str, list[str]] = {}
         self._source_aliases: dict[str, tuple[str, ...]] = {}
         self._missing_configured_sources: dict[str, tuple[str, ...]] = {}
-        self._switch_log: list[dict] = []
+        self._switch_log: list[dict[str, str]] = []
 
         self._register_defaults()
 
@@ -71,6 +72,10 @@ class DataSourceManager:
         ak = AkshareProvider()
         self._providers[ak.name] = ak
 
+        # Tencent IFZQ direct HTTP — canonical A-share production source.
+        tx = TencentIfzqProvider()
+        self._providers[tx.name] = tx
+
         # CCXT (Binance, OKX)
         for ex in ["binance", "okx"]:
             ccxt_p = CcxtProvider(exchange_id=ex)
@@ -79,6 +84,8 @@ class DataSourceManager:
         # Provider aliases translate config/system.yaml source identifiers into
         # concrete provider implementations without changing the approved order.
         self._source_aliases = {
+            "tencent_ifzq": ("tencent_ifzq",),
+            "tencent": ("tencent_ifzq",),
             "akshare": ("akshare",),
             "yfinance": ("yfinance",),
             "ccxt": ("ccxt/binance", "ccxt/okx"),
@@ -92,7 +99,7 @@ class DataSourceManager:
 
         # Legacy fallback used only before the configuration router is installed.
         self._market_priority = {
-            "A股": ["akshare", "yfinance"],
+            "A股": ["tencent_ifzq", "akshare"],
             "期货": ["akshare"],
             "加密货币": ["ccxt/binance", "ccxt/okx"],
             "美股": ["yfinance"],
@@ -233,11 +240,12 @@ class DataSourceManager:
                 elapsed = (datetime.now(UTC) - t0).total_seconds()
                 errors.append(f"{provider.name}: {e}")
 
-                # Check if we should degrade
-                if provider._fail_count >= self.MAX_FAILURES and i + 1 < len(providers):
+                # Degrade inside the same fetch call so a single provider outage
+                # cannot silently defer recovery until the next scheduler tick.
+                if i + 1 < len(providers):
                     next_p = providers[i + 1].name
                     self._log_switch(provider.name, next_p, symbol, str(e))
-                break  # Don't retry; let next priority take over on next call
+                continue
 
         # All providers exhausted
         raise DataProviderError(
@@ -266,7 +274,7 @@ class DataSourceManager:
         # AGENTS.md §10: 告警收敛 — 相同事件 5 分钟内只发送一次
         # (告警通道集成在 monitor-001)
 
-    def get_switch_history(self, limit: int = 50) -> list[dict]:
+    def get_switch_history(self, limit: int = 50) -> list[dict[str, str]]:
         """Get recent provider switch history."""
         return self._switch_log[-limit:]
 

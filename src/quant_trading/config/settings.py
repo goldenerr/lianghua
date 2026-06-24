@@ -278,7 +278,7 @@ class SystemSettings(BaseModel):
                 tick_size=0.01,
                 lot_size=100,
                 price_precision=2,
-                data_sources=("tushare", "akshare", "yfinance"),
+                data_sources=("tencent_ifzq", "akshare"),
                 fee_model="cn_stock",
                 funding_rate=None,
                 settlement_time="16:00",

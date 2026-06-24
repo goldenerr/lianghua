@@ -4,10 +4,49 @@ from unittest.mock import AsyncMock
 
 import pandas as pd
 import pytest
+
 from quant_trading.config.market_router import MarketRouter
 from quant_trading.config.settings import Market, MarketRules, SystemSettings, TradingSession
-from quant_trading.data.provider import DataProviderError, DataResult, Frequency
+from quant_trading.data.provider import (
+    DataProvider,
+    DataProviderError,
+    DataRequest,
+    DataResult,
+    Frequency,
+)
 from quant_trading.data.source_manager import DataSourceManager
+
+
+class AlwaysFailProvider(DataProvider):
+    def __init__(self, name: str = "fail") -> None:
+        super().__init__(name)
+
+    @property
+    def supported_markets(self) -> list[str]:
+        return ["A股"]
+
+    async def fetch(self, request: DataRequest) -> DataResult:
+        self.record_failure("boom")
+        raise DataProviderError("boom", provider=self.name, symbol=request.symbol)
+
+
+class AlwaysOkProvider(DataProvider):
+    def __init__(self, name: str = "ok") -> None:
+        super().__init__(name)
+
+    @property
+    def supported_markets(self) -> list[str]:
+        return ["A股"]
+
+    async def fetch(self, request: DataRequest) -> DataResult:
+        data = pd.DataFrame(
+            {"open": [1.0], "high": [1.1], "low": [0.9], "close": [1.0], "volume": [100.0]},
+            index=pd.DatetimeIndex(pd.to_datetime(["2026-06-24"])),
+        )
+        self.record_success()
+        return DataResult(
+            symbol=request.symbol, frequency=request.frequency, data=data, source=self.name
+        )
 
 
 class TestDataSourceManager:
@@ -18,9 +57,10 @@ class TestDataSourceManager:
         mgr = DataSourceManager(data_dir="test_data/")
         providers = mgr.get_providers_for_market("A股")
         names = [p.name for p in providers]
+        assert names[0] == "tencent_ifzq"
         assert "akshare" in names
-        assert "yfinance" in names
-        assert mgr.get_missing_configured_sources("A股") == {"A股": ("tushare",)}
+        assert "yfinance" not in names
+        assert mgr.get_missing_configured_sources("A股") == {"A股": ()}
 
     def test_crypto_market_providers(self):
         MarketRouter._configure_for_testing(
@@ -144,3 +184,18 @@ class TestDataSourceManager:
             assert result.source == providers[1].name
         finally:
             providers[1].fetch = original
+
+    @pytest.mark.asyncio
+    async def test_fetch_tries_next_provider_in_same_call_after_provider_error(self):
+        mgr = DataSourceManager(data_dir="test_data/", use_configured_routing=False)
+        fail = AlwaysFailProvider("primary_fail")
+        ok = AlwaysOkProvider("secondary_ok")
+        mgr.register(fail, "A股", priority=0)
+        mgr.register(ok, "A股", priority=1)
+        mgr._market_priority["A股"] = ["primary_fail", "secondary_ok"]
+
+        result = await mgr.fetch("600519", "A股")
+
+        assert result.source == "secondary_ok"
+        assert fail._fail_count == 1
+        assert mgr.get_switch_history()[-1]["from"] == "primary_fail"

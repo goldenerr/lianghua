@@ -11,6 +11,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import Enum
+from typing import cast
 
 import pandas as pd
 
@@ -56,7 +57,7 @@ class DataResult:
 
     @property
     def is_empty(self) -> bool:
-        return self.data.empty
+        return bool(self.data.empty)
 
 
 # Expected column schema after normalization
@@ -151,7 +152,7 @@ class DataProvider(ABC):
         # Lowercase all column names
         df.columns = [c.lower() for c in df.columns]
 
-        return df.sort_index()
+        return cast(pd.DataFrame, df.sort_index())
 
 
 class DataProviderError(Exception):

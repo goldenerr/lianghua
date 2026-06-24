@@ -3,6 +3,10 @@
 
 ## Safety Baseline Fixes (2026-06-24) - PRODUCTION BLOCKED
 
+- Fixed A-share production data routing to use `tencent_ifzq` direct HTTP as the canonical first provider, with `akshare` retained only as fallback. Removed `tushare`/`yfinance` from the default A-share routing path in `SystemSettings` and `config/system.yaml`.
+- Added `TencentIfzqProvider` for direct `web.ifzq.gtimg.cn` qfq daily OHLCV retrieval and normalization to UTC-indexed `open/close/high/low/volume` frames.
+- Fixed `DataSourceManager.fetch()` to continue to the next provider within the same fetch call after `DataProviderError`; a provider outage no longer waits for the next scheduler tick to recover. Switch events are logged immediately.
+- Verification run: data-source regression tests passed (`14 passed`), broader touched-module tests passed (`43 passed`), Ruff autofix/Ruff and mypy passed on touched data/config modules. Full V5.9 validation remains blocked locally because `data/parquet` is absent in this checkout.
 - Fixed V5.9 paper-trading MDD safeguard to use the validated 25% recovery-exposure floor instead of terminal stop/empty positions. `PaperTradingEngine.check_mdd_safeguards()` now reports `FLOOR` and does not set `stopped=True`; `compute_positions()` scales target exposure by `mdd_stop_scale=0.25` below the -18% threshold.
 - Fixed backtest metrics so flat/no-trade equity curves do not manufacture Sharpe/Sortino explosions via epsilon division; zero-volatility paths now return 0.0 ratios.
 - Made factor weight usage explicit: `factors.py` now separates `FACTOR_WEIGHTS_CSI300_TREND` from `FACTOR_WEIGHTS_FULL_UNIVERSE_MR`; stock ranking requires an explicit `universe_profile` when weights are omitted to prevent silent CSI300 trend weights on the full A-share universe.

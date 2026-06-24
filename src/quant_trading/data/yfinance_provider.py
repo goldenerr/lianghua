@@ -59,7 +59,7 @@ class YfinanceProvider(DataProvider):
             ticker = yf.Ticker(yf_symbol)
 
             # Build kwargs
-            kwargs: dict = {"interval": interval}
+            kwargs: dict[str, str] = {"interval": interval}
             if request.start_date:
                 kwargs["start"] = request.start_date.isoformat()
             if request.end_date:
