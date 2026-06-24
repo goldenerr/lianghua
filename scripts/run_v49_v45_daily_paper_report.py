@@ -52,6 +52,11 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--allow-replace", action="store_true")
     parser.add_argument(
+        "--skip-missing-market-data",
+        action="store_true",
+        help="Exit successfully with no ledger mutation when the requested date has no market bar.",
+    )
+    parser.add_argument(
         "--skip-v47", action="store_true", help="Debug only: skip source-export validation"
     )
     return parser.parse_args()
@@ -284,7 +289,12 @@ def main() -> None:
     if not symbols:
         raise SystemExit("symbols must not be empty")
 
-    bars = [_fetch_one_daily(symbol, report_date) for symbol in symbols]
+    try:
+        bars = [_fetch_one_daily(symbol, report_date) for symbol in symbols]
+    except RuntimeError as exc:
+        if args.skip_missing_market_data and "has no bar for" in str(exc):
+            return
+        raise
     prices = {bar["symbol"]: float(bar["close"]) for bar in bars}
     state_path = Path(args.state_json)
     state = _load_state(state_path, symbols)
