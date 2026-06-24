@@ -60,6 +60,7 @@ data/intraday/
 data/parquet/
 data/security_master/
 data/local_preprod_audit_archive*/
+data/runtime/
 data/backups/
 !data/.gitkeep
 
