@@ -1,68 +1,37 @@
 {
-  "ts": "2026-06-18T02:49:38.124074+00:00",
+  "ts": "2026-06-25T09:50:29.724397+00:00",
   "version": "V31-free-data-pit-approximation",
   "research_only": true,
   "research_pit_approximation": true,
   "production_data_ready": false,
-  "universe_path": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
-  "price_dir": "/Users/jacklondon/Documents/study/lianghua/data/parquet",
+  "universe_path": "data/stock_list_all1565_local.json",
+  "price_dir": "/home/hermes/.hermes/projects/lianghua/data/parquet",
   "requested_window": {
     "start_date": "2006-01-01",
     "end_date": "2026-05-29"
   },
   "summary": {
-    "symbols_requested": 2000,
-    "symbols_loaded": 1994,
+    "symbols_requested": 1565,
+    "symbols_loaded": 1565,
     "unique_trading_dates": 4954,
     "date_start": "2006-01-04",
     "date_end": "2026-05-29",
     "earliest_observed_symbol_date": "2006-01-04",
     "latest_observed_symbol_date": "2026-05-29",
     "symbols_with_adjustment_columns": 0,
-    "symbols_inferred_delisted_or_incomplete": 2
+    "symbols_inferred_delisted_or_incomplete": 0
   },
   "outputs": {
-    "pit_path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/pit_universe_v31.parquet",
-    "trading_status_path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet",
-    "corporate_action_path": "/Users/jacklondon/Documents/study/lianghua/data/corporate_actions/free_reconciliation_v31.parquet",
-    "pit_rows": 6210405,
-    "trading_status_rows": 6210405,
-    "corporate_action_rows": 1994,
+    "pit_path": "/home/hermes/.hermes/projects/lianghua/data/security_master/free_pit_approx/pit_universe_v31.parquet",
+    "trading_status_path": "/home/hermes/.hermes/projects/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet",
+    "corporate_action_path": "/home/hermes/.hermes/projects/lianghua/data/corporate_actions/free_reconciliation_v31.parquet",
+    "pit_rows": 5126135,
+    "trading_status_rows": 5126135,
+    "corporate_action_rows": 1565,
     "csi300_snapshot_symbols": 280
   },
-  "failures": [
-    {
-      "code": "600200",
-      "failure": "missing_price_file",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/parquet/600200.parquet"
-    },
-    {
-      "code": "603056",
-      "failure": "missing_price_file",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/parquet/603056.parquet"
-    },
-    {
-      "code": "601028",
-      "failure": "missing_price_file",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/parquet/601028.parquet"
-    },
-    {
-      "code": "601989",
-      "failure": "missing_price_file",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/parquet/601989.parquet"
-    },
-    {
-      "code": "600705",
-      "failure": "missing_price_file",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/parquet/600705.parquet"
-    },
-    {
-      "code": "600837",
-      "failure": "missing_price_file",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/parquet/600837.parquet"
-    }
-  ],
-  "failure_count": 6,
+  "failures": [],
+  "failure_count": 0,
   "limitations": [
     "上市/退市日期从本地日线可见区间推断，不是真正交易所或 vendor PIT security master。",
     "ST 状态在免费本地数据中不可可靠回放，当前输出显式标记 is_st_known=false。",

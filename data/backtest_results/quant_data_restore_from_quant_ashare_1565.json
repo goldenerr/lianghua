@@ -1,0 +1,15 @@
+{
+  "source": "/home/hermes/.hermes/projects/quant-ashare/data/csi_all_20year.parquet",
+  "source_sha256": "a5d219c92423b2fd8c862d744ea184a241be191a21d684c9f4d478355d3d9b7b",
+  "source_rows": 5130471,
+  "symbols_written": 1565,
+  "rows_written": 5130471,
+  "start": "2006-01-04",
+  "end": "2026-06-09",
+  "stock_list": "data/stock_list_all1565_local.json",
+  "failures": [],
+  "failure_count": 0,
+  "research_restore_only": true,
+  "production_ready": false,
+  "note": "Restored local per-symbol parquet from quant-ashare combined real-data parquet for research reruns; not vendor production evidence."
+}

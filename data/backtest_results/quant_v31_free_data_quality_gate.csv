@@ -1,4 +1,4 @@
 requirement_id,title,exists,rows,unique_dates,unique_entities,research_ready,failures,path
-free_pit_security_master_approx,免费源 PIT 股票池近似,True,6210405,4954,1994,True,[],/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/pit_universe_v31.parquet
-free_trading_status_approx,免费源交易状态近似,True,6210405,4954,1994,True,[],/Users/jacklondon/Documents/study/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet
-free_corporate_action_column_audit,免费源复权/公司行动列审计,True,1994,1,1994,True,[],/Users/jacklondon/Documents/study/lianghua/data/corporate_actions/free_reconciliation_v31.parquet
+free_pit_security_master_approx,免费源 PIT 股票池近似,True,5126135,4954,1565,False,['unique_entities<1900'],/home/hermes/.hermes/projects/lianghua/data/security_master/free_pit_approx/pit_universe_v31.parquet
+free_trading_status_approx,免费源交易状态近似,True,5126135,4954,1565,False,['unique_entities<1900'],/home/hermes/.hermes/projects/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet
+free_corporate_action_column_audit,免费源复权/公司行动列审计,True,1565,1,1565,False,['unique_entities<1900'],/home/hermes/.hermes/projects/lianghua/data/corporate_actions/free_reconciliation_v31.parquet

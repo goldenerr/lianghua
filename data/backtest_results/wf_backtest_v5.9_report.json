@@ -1,5 +1,5 @@
 {
-  "ts": "2026-06-23T16:04:32.445815",
+  "ts": "2026-06-25T18:17:55.914996",
   "version": "V5.9",
   "desc": "n=35 90d + sector cap (max 5 per industry)",
   "cfg": {
@@ -25,71 +25,71 @@
     "mdd_stop_scale": 0.25
   },
   "full": {
-    "sharpe_ratio": 1.2434,
-    "annual_return": 0.1243,
-    "annual_volatility": 0.0799,
-    "max_drawdown": -0.1311,
-    "calmar_ratio": 0.9481,
-    "win_rate": 0.5211,
-    "total_return": 17.7856,
-    "n_rebalances": 68,
-    "n_days": 6104,
-    "avg_active_stocks": 1079.4,
-    "avg_turnover": 1.4765
+    "sharpe_ratio": -0.1265,
+    "annual_return": 0.017,
+    "annual_volatility": 0.0634,
+    "max_drawdown": -0.1943,
+    "calmar_ratio": 0.0874,
+    "win_rate": 0.5453,
+    "total_return": 0.3222,
+    "n_rebalances": 53,
+    "n_days": 4704,
+    "avg_active_stocks": 1009.1,
+    "avg_turnover": 1.0724
   },
   "wf": {
     "folds": [
       {
         "fold": 0,
-        "train": 5076,
-        "test": 254,
-        "is": 1.5142,
-        "oos": -0.9754,
-        "act": 534.3
+        "train": 3956,
+        "test": 198,
+        "is": 0.0355,
+        "oos": -0.4098,
+        "act": 623.0
       },
       {
         "fold": 1,
-        "train": 5330,
-        "test": 254,
-        "is": 1.4333,
-        "oos": -0.981,
-        "act": 481.3
+        "train": 4154,
+        "test": 198,
+        "is": -0.0088,
+        "oos": -1.2734,
+        "act": 610.0
       },
       {
         "fold": 2,
-        "train": 5584,
-        "test": 254,
-        "is": 1.3853,
-        "oos": 0.8591,
-        "act": 436.0
+        "train": 4352,
+        "test": 198,
+        "is": -0.0539,
+        "oos": -1.0511,
+        "act": 577.0
       },
       {
         "fold": 3,
-        "train": 5838,
-        "test": 254,
-        "is": 1.3332,
-        "oos": 0.1931,
-        "act": 347.0
+        "train": 4550,
+        "test": 198,
+        "is": -0.0741,
+        "oos": 0.7616,
+        "act": 535.0
       },
       {
         "fold": 4,
-        "train": 6092,
-        "test": 254,
-        "is": 1.2833,
-        "oos": 0.6411,
-        "act": 137.3
+        "train": 4748,
+        "test": 198,
+        "is": -0.1193,
+        "oos": 0.5174,
+        "act": 495.5
       }
     ],
-    "avg_is_sharpe": 1.3899,
-    "avg_oos_sharpe": -0.0526,
-    "sharpe_decay": 1.0379
+    "avg_is_sharpe": -0.0441,
+    "avg_oos_sharpe": -0.2911,
+    "sharpe_decay": 5.597
   },
   "gates": {
-    "S": true,
-    "M": true,
+    "S": false,
+    "M": false,
     "D": false,
     "W": true,
     "A": false
   },
-  "elapsed": 46.7
+  "elapsed": 60.1
 }

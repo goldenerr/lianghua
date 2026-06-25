@@ -1,0 +1,22 @@
+label,candidate,leading_passes,sharpe_ratio,avg_oos_sharpe,min_oos_sharpe,max_drawdown,win_rate,sharpe_decay,annual_return,annual_volatility,total_return,failures
+base,v29_price_meta_longhorizon_guard,False,1.9684,1.7081,-0.6065,-0.056,0.574,0.1042,0.1294,0.0531,9.2123,full_sharpe:1.9684 >= 2.0 failed;min_oos_sharpe:-0.6065 >= 0.0 failed
+param_base_gross_0.90x,v29_price_meta_longhorizon_guard,False,1.9684,1.7081,-0.6065,-0.056,0.574,0.1042,0.1294,0.0531,9.2123,full_sharpe:1.9684 >= 2.0 failed;min_oos_sharpe:-0.6065 >= 0.0 failed
+param_base_gross_1.10x,v29_price_meta_longhorizon_guard,False,1.9684,1.7081,-0.6065,-0.056,0.574,0.1042,0.1294,0.0531,9.2123,full_sharpe:1.9684 >= 2.0 failed;min_oos_sharpe:-0.6065 >= 0.0 failed
+param_bull_gross_0.90x,v29_price_meta_longhorizon_guard,False,1.8617,1.6136,-0.6107,-0.0589,0.574,0.1077,0.1186,0.0503,7.4152,full_sharpe:1.8617 >= 2.0 failed;min_oos_sharpe:-0.6107 >= 0.0 failed
+param_bull_gross_1.10x,v29_price_meta_longhorizon_guard,False,2.0486,1.7706,-0.6022,-0.0583,0.5738,0.1057,0.1396,0.056,11.2581,min_oos_sharpe:-0.6022 >= 0.0 failed
+param_neutral_gross_0.90x,v29_price_meta_longhorizon_guard,False,2.0086,1.71,-0.6647,-0.0576,0.5746,0.1259,0.1273,0.0509,8.8452,min_oos_sharpe:-0.6647 >= 0.0 failed
+param_neutral_gross_1.10x,v29_price_meta_longhorizon_guard,False,1.925,1.6856,-0.5573,-0.0591,0.5733,0.0878,0.1315,0.0553,9.5782,full_sharpe:1.925 >= 2.0 failed;min_oos_sharpe:-0.5573 >= 0.0 failed
+param_risk_off_gross_0.90x,v29_price_meta_longhorizon_guard,False,2.0011,1.7358,-0.5672,-0.0556,0.5742,0.1033,0.1308,0.0529,9.4756,min_oos_sharpe:-0.5672 >= 0.0 failed
+param_risk_off_gross_1.10x,v29_price_meta_longhorizon_guard,False,1.9303,1.6802,-0.6451,-0.0576,0.5725,0.0982,0.1277,0.0532,8.8994,full_sharpe:1.9303 >= 2.0 failed;min_oos_sharpe:-0.6451 >= 0.0 failed
+param_vol_target_0.90x,v29_price_meta_longhorizon_guard,False,1.949,1.684,-0.6205,-0.0549,0.5746,0.1186,0.1188,0.0481,7.4645,full_sharpe:1.949 >= 2.0 failed;min_oos_sharpe:-0.6205 >= 0.0 failed
+param_vol_target_1.10x,v29_price_meta_longhorizon_guard,False,1.9714,1.7212,-0.5692,-0.0612,0.5718,0.0896,0.1387,0.0577,11.0212,full_sharpe:1.9714 >= 2.0 failed;min_oos_sharpe:-0.5692 >= 0.0 failed
+carry_fraction_0.04,v29_price_meta_longhorizon_guard,False,2.0248,1.7457,-0.5625,-0.0556,0.5762,0.1093,0.1324,0.053,9.7795,min_oos_sharpe:-0.5625 >= 0.0 failed
+carry_fraction_0.06,v29_price_meta_longhorizon_guard,False,2.0195,1.7421,-0.5667,-0.0556,0.576,0.1088,0.1321,0.053,9.7241,min_oos_sharpe:-0.5667 >= 0.0 failed
+carry_fraction_0.08,v29_price_meta_longhorizon_guard,False,2.0141,1.7385,-0.5709,-0.0556,0.576,0.1084,0.1318,0.053,9.6691,min_oos_sharpe:-0.5709 >= 0.0 failed
+carry_fraction_0.10,v29_price_meta_longhorizon_guard,False,2.0087,1.7349,-0.5751,-0.0556,0.576,0.1079,0.1316,0.053,9.6143,min_oos_sharpe:-0.5751 >= 0.0 failed
+carry_fraction_0.12,v29_price_meta_longhorizon_guard,False,2.0034,1.7313,-0.5793,-0.0557,0.5753,0.1074,0.1313,0.053,9.5598,min_oos_sharpe:-0.5793 >= 0.0 failed
+meta_cost_bps_5,v29_price_meta_longhorizon_guard,False,1.8571,1.5978,-0.7102,-0.0578,0.5714,0.1051,0.1236,0.0531,8.1794,full_sharpe:1.8571 >= 2.0 failed;min_oos_sharpe:-0.7102 >= 0.0 failed
+meta_cost_bps_10,v29_price_meta_longhorizon_guard,False,1.6717,1.3853,-0.8823,-0.0607,0.5672,0.1345,0.1137,0.053,6.6705,full_sharpe:1.6717 >= 2.0 failed;avg_oos_sharpe:1.3853 >= 1.5 failed;min_oos_sharpe:-0.8823 >= 0.0 failed
+meta_cost_bps_20,v29_price_meta_longhorizon_guard,False,1.2474,0.6006,-1.3759,-0.0666,0.5622,0.478,0.0889,0.0512,3.9017,full_sharpe:1.2474 >= 2.0 failed;avg_oos_sharpe:0.6006 >= 1.5 failed;sharpe_decay:0.478 <= 0.15 failed;min_oos_sharpe:-1.3759 >= 0.0 failed
+stock_sleeve_cost_2.0x,v29_price_meta_longhorizon_guard,False,1.8633,1.5765,-0.7213,-0.058,0.5703,0.1136,0.1237,0.053,8.2076,full_sharpe:1.8633 >= 2.0 failed;min_oos_sharpe:-0.7213 >= 0.0 failed
+stock_sleeve_cost_3.0x,v29_price_meta_longhorizon_guard,False,1.7489,1.4177,-0.827,-0.0598,0.5692,0.1434,0.1174,0.0529,7.2163,full_sharpe:1.7489 >= 2.0 failed;avg_oos_sharpe:1.4177 >= 1.5 failed;min_oos_sharpe:-0.827 >= 0.0 failed
