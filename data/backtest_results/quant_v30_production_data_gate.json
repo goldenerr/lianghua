@@ -1,5 +1,5 @@
 {
-  "ts": "2026-06-17T02:20:30.657690+00:00",
+  "ts": "2026-06-25T11:17:44.078802+00:00",
   "version": "V30-production-data-gate",
   "research_only": true,
   "production_data_ready": false,
@@ -7,7 +7,7 @@
     {
       "requirement_id": "pit_security_master",
       "title": "真正 PIT 历史股票池",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/pit_universe.parquet",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/security_master/pit_universe.parquet",
       "exists": false,
       "rows": 0,
       "columns_present": [],
@@ -41,7 +41,7 @@
     {
       "requirement_id": "trading_status_actions",
       "title": "退市/ST/停牌/涨跌停可交易状态",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/security_master/trading_status.parquet",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/security_master/trading_status.parquet",
       "exists": false,
       "rows": 0,
       "columns_present": [],
@@ -75,7 +75,7 @@
     {
       "requirement_id": "corporate_action_reconciliation",
       "title": "真实 vendor corporate action/复权复核",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/corporate_actions/vendor_reconciliation.parquet",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/corporate_actions/vendor_reconciliation.parquet",
       "exists": false,
       "rows": 0,
       "columns_present": [],
@@ -107,7 +107,7 @@
     {
       "requirement_id": "real_tick_minute_execution_feed",
       "title": "二十年真实 tick/minute 执行历史",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/execution_history/tick_minute_20y.parquet",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/execution_history/tick_minute_20y.parquet",
       "exists": false,
       "rows": 0,
       "columns_present": [],
@@ -140,7 +140,7 @@
     {
       "requirement_id": "exchange_order_fill_replay",
       "title": "交易所/券商订单成交回放",
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/execution_history/order_fill_replay.parquet",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/execution_history/order_fill_replay.parquet",
       "exists": false,
       "rows": 0,
       "columns_present": [],
@@ -184,7 +184,7 @@
   },
   "external_gate_inputs": {
     "twenty_year_audit": {
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_v29_20y_data_coverage_audit.json",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/backtest_results/quant_v29_20y_data_coverage_audit.json",
       "exists": true,
       "can_claim_20y_full_universe_production_validation": false,
       "can_run_20y_diagnostic_backtest": true,
@@ -193,13 +193,13 @@
       "minimum_production_symbols": 1900
     },
     "external_production_evidence_gate": {
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_external_evidence_gate_v26.json",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/backtest_results/quant_external_evidence_gate_v26.json",
       "exists": true,
       "production_ready": false,
       "blocker_count": 14
     },
     "pit_alpha_panel_gate": {
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/backtest_results/quant_pit_alpha_panel_readiness_v27_provider_qualified_2000.json",
+      "path": "/home/hermes/.hermes/projects/lianghua/data/backtest_results/quant_pit_alpha_panel_readiness_v27_provider_qualified_2000.json",
       "exists": true,
       "production_data_ready": false,
       "research_ready_panels": 6,
@@ -208,19 +208,13 @@
   },
   "diagnostics": {
     "existing_intraday_microstructure": {
-      "path": "/Users/jacklondon/Documents/study/lianghua/data/intraday/microstructure_features.parquet",
-      "exists": true,
-      "rows": 104373,
-      "unique_dates": 257,
-      "unique_entities": 2475,
-      "date_start": "2024-11-29",
-      "date_end": "2026-06-15",
-      "note": "这是近期分钟特征诊断，不是二十年真实 tick/minute 执行历史。"
+      "path": "/home/hermes/.hermes/projects/lianghua/data/intraday/microstructure_features.parquet",
+      "exists": false
     },
     "daily_price_adjustment_columns": {
-      "universe_path": "/Users/jacklondon/Documents/study/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
-      "price_dir": "/Users/jacklondon/Documents/study/lianghua/data/parquet",
-      "sampled_files": 200,
+      "universe_path": "/home/hermes/.hermes/projects/lianghua/data/stock_list_provider_qualified_non_largecap_2000_v27.json",
+      "price_dir": "/home/hermes/.hermes/projects/lianghua/data/parquet",
+      "sampled_files": 143,
       "files_with_adjustment_columns": 0,
       "adjustment_column_candidates": [
         "adj_factor",
@@ -259,25 +253,7 @@
           "amount",
           "turnover"
         ],
-        "600309": [
-          "open",
-          "high",
-          "low",
-          "close",
-          "volume",
-          "amount",
-          "turnover"
-        ],
         "600132": [
-          "open",
-          "high",
-          "low",
-          "close",
-          "volume",
-          "amount",
-          "turnover"
-        ],
-        "600872": [
           "open",
           "high",
           "low",
@@ -304,7 +280,7 @@
           "amount",
           "turnover"
         ],
-        "002517": [
+        "600298": [
           "open",
           "high",
           "low",
@@ -313,7 +289,25 @@
           "amount",
           "turnover"
         ],
-        "600298": [
+        "301498": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "002557": [
+          "open",
+          "high",
+          "low",
+          "close",
+          "volume",
+          "amount",
+          "turnover"
+        ],
+        "603317": [
           "open",
           "high",
           "low",

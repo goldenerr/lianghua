@@ -1,0 +1,28 @@
+{
+  "ts": "2026-06-25T11:45:00+00:00",
+  "version": "lianghua-fetch-data-25y-v2-1200",
+  "research_only": true,
+  "production_ready": false,
+  "source_project": "lianghua",
+  "source_script": "scripts/fetch_data_25y_v2.py",
+  "stock_list": "data/stock_list.json",
+  "data_dir": "data/parquet",
+  "data_dir_git_ignored": true,
+  "provider": "akshare/sina",
+  "adjust": "qfq",
+  "requested_start": "20000101",
+  "requested_end": "20260625",
+  "actual_range": "2000-01-04 -> 2026-06-25",
+  "total_requested": 1200,
+  "success": 1200,
+  "failed": 0,
+  "readable_files": 1200,
+  "total_rows": 4131934,
+  "elapsed_s": 394.8,
+  "quant_ashare_derived": false,
+  "notes": [
+    "Deleted prior ignored data/parquet files after explicit user authorization.",
+    "Refetched via lianghua/scripts/fetch_data_25y_v2.py only; no quant-ashare data used.",
+    "This is free/public research data, not external vendor/broker production evidence."
+  ]
+}

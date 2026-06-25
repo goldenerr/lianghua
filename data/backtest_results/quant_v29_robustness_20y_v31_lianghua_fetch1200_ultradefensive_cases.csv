@@ -1,0 +1,22 @@
+label,candidate,leading_passes,sharpe_ratio,avg_oos_sharpe,min_oos_sharpe,max_drawdown,win_rate,sharpe_decay,annual_return,annual_volatility,total_return,failures
+base,v29_price_meta_ultradefensive,False,2.1782,1.8689,-0.1856,-0.038,0.5872,0.1124,0.1086,0.0384,5.7677,min_oos_sharpe:-0.1856 >= 0.0 failed
+param_base_gross_0.90x,v29_price_meta_ultradefensive,False,2.1782,1.8689,-0.1856,-0.038,0.5872,0.1124,0.1086,0.0384,5.7677,min_oos_sharpe:-0.1856 >= 0.0 failed
+param_base_gross_1.10x,v29_price_meta_ultradefensive,False,2.1782,1.8689,-0.1856,-0.038,0.5872,0.1124,0.1086,0.0384,5.7677,min_oos_sharpe:-0.1856 >= 0.0 failed
+param_bull_gross_0.90x,v29_price_meta_ultradefensive,False,2.0895,1.7764,-0.2223,-0.0358,0.5874,0.1176,0.1004,0.0361,4.8541,min_oos_sharpe:-0.2223 >= 0.0 failed
+param_bull_gross_1.10x,v29_price_meta_ultradefensive,False,2.2516,1.9467,-0.1503,-0.0403,0.5867,0.1084,0.1169,0.0408,6.8224,min_oos_sharpe:-0.1503 >= 0.0 failed
+param_neutral_gross_0.90x,v29_price_meta_ultradefensive,False,2.2187,1.8996,-0.2068,-0.0369,0.5879,0.1191,0.1074,0.0371,5.6287,min_oos_sharpe:-0.2068 >= 0.0 failed
+param_neutral_gross_1.10x,v29_price_meta_ultradefensive,False,2.1355,1.8355,-0.1667,-0.0391,0.5865,0.1063,0.1098,0.0397,5.9089,min_oos_sharpe:-0.1667 >= 0.0 failed
+param_risk_off_gross_0.90x,v29_price_meta_ultradefensive,False,2.2102,1.9015,-0.1466,-0.0373,0.5888,0.1088,0.1096,0.0383,5.8804,min_oos_sharpe:-0.1466 >= 0.0 failed
+param_risk_off_gross_1.10x,v29_price_meta_ultradefensive,False,2.1456,1.8361,-0.224,-0.0388,0.5859,0.116,0.1077,0.0385,5.6567,min_oos_sharpe:-0.224 >= 0.0 failed
+param_vol_target_0.90x,v29_price_meta_ultradefensive,False,2.1706,1.8461,-0.2048,-0.0339,0.5897,0.1209,0.1001,0.0346,4.8346,min_oos_sharpe:-0.2048 >= 0.0 failed
+param_vol_target_1.10x,v29_price_meta_ultradefensive,False,2.181,1.8804,-0.1745,-0.0421,0.5847,0.1056,0.1168,0.0421,6.8006,min_oos_sharpe:-0.1745 >= 0.0 failed
+carry_fraction_0.04,v29_price_meta_ultradefensive,False,2.1599,1.8558,-0.2025,-0.0381,0.5865,0.1111,0.1079,0.0384,5.6825,min_oos_sharpe:-0.2025 >= 0.0 failed
+carry_fraction_0.06,v29_price_meta_ultradefensive,False,2.1507,1.8492,-0.2109,-0.0382,0.5863,0.1105,0.1076,0.0384,5.6403,min_oos_sharpe:-0.2109 >= 0.0 failed
+carry_fraction_0.08,v29_price_meta_ultradefensive,False,2.1415,1.8427,-0.2194,-0.0382,0.5859,0.1099,0.1072,0.0384,5.5984,min_oos_sharpe:-0.2194 >= 0.0 failed
+carry_fraction_0.10,v29_price_meta_ultradefensive,False,2.1323,1.8361,-0.2278,-0.0383,0.585,0.1092,0.1068,0.0384,5.5567,min_oos_sharpe:-0.2278 >= 0.0 failed
+carry_fraction_0.12,v29_price_meta_ultradefensive,False,2.1231,1.8296,-0.2363,-0.0384,0.5845,0.1086,0.1065,0.0384,5.5153,min_oos_sharpe:-0.2363 >= 0.0 failed
+meta_cost_bps_5,v29_price_meta_ultradefensive,False,2.0397,1.7087,-0.334,-0.04,0.5847,0.1246,0.1034,0.0384,5.1666,min_oos_sharpe:-0.334 >= 0.0 failed
+meta_cost_bps_10,v29_price_meta_ultradefensive,False,1.8662,1.508,-0.5193,-0.0424,0.5807,0.1428,0.0968,0.0385,4.4897,full_sharpe:1.8662 >= 2.0 failed;min_oos_sharpe:-0.5193 >= 0.0 failed
+meta_cost_bps_20,v29_price_meta_ultradefensive,False,1.5183,1.1069,-0.8879,-0.0472,0.5749,0.1937,0.0837,0.0387,3.3505,full_sharpe:1.5183 >= 2.0 failed;avg_oos_sharpe:1.1069 >= 1.5 failed;sharpe_decay:0.1937 <= 0.15 failed;min_oos_sharpe:-0.8879 >= 0.0 failed
+stock_sleeve_cost_2.0x,v29_price_meta_ultradefensive,False,2.0999,1.7782,-0.2648,-0.039,0.5847,0.1187,0.1055,0.0384,5.4077,min_oos_sharpe:-0.2648 >= 0.0 failed
+stock_sleeve_cost_3.0x,v29_price_meta_ultradefensive,False,2.0242,1.6918,-0.3401,-0.0399,0.5816,0.125,0.1026,0.0383,5.0833,min_oos_sharpe:-0.3401 >= 0.0 failed

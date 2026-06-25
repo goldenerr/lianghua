@@ -1,0 +1,67 @@
+{
+  "ts": "2026-06-25T11:17:59.577660+00:00",
+  "version": "V29-20y-data-coverage-audit",
+  "research_only": true,
+  "requested_window": {
+    "start_date": "2006-01-01",
+    "end_date": "2026-06-25",
+    "warmup_days": 252,
+    "min_rows_per_year": 220
+  },
+  "universe": "data/stock_list.json",
+  "universe_sha256": "f971cab553386a16ca4b990d81b6661c84a3dcecb76101d5e34a4a888a6481cb",
+  "data_dir": "/home/hermes/.hermes/projects/lianghua/data/parquet",
+  "summary": {
+    "universe_symbols": 1200,
+    "parquet_loaded_symbols": 1200,
+    "spans_requested_window_symbols": 364,
+    "strict_20y_quality_symbols": 333,
+    "strict_20y_quality_ratio": 0.2775,
+    "symbols_with_close_series": 1200,
+    "calendar_dates_in_window": 4972,
+    "cohorts_with_first_date_before_cutoff_and_last_after_end": {
+      "20060101": 364,
+      "20080101": 418,
+      "20100101": 463,
+      "20150101": 658,
+      "20170101": 750
+    },
+    "close_count_stats": {
+      "min": 285,
+      "p10": 386,
+      "median": 649,
+      "mean": 745.33,
+      "p90": 1175,
+      "max": 1200,
+      "first_date": "2006-01-04",
+      "last_date": "2026-06-25"
+    },
+    "warmup_eligible_count_stats": {
+      "min": 0,
+      "p10": 0,
+      "median": 334,
+      "mean": 445.41,
+      "p90": 1129,
+      "max": 1158,
+      "first_date": "2006-01-04",
+      "last_date": "2026-06-25"
+    },
+    "first_warmup_eligible_date_by_threshold": {
+      "100": "2013-05-08",
+      "300": "2013-06-28",
+      "500": "2018-04-25",
+      "1000": "2023-01-05",
+      "1500": null,
+      "2000": null
+    }
+  },
+  "assessment": {
+    "can_claim_20y_full_universe_production_validation": false,
+    "can_run_20y_diagnostic_backtest": true,
+    "diagnostic_start_after_warmup": "2018-04-25",
+    "production_full_universe_start_after_warmup": "2024-07-24",
+    "reason": "20-year run should be treated as a diagnostic unless PIT universe history and warmup cross-section coverage are expanded.",
+    "minimum_production_symbols": 1140,
+    "diagnostic_min_symbols": 500
+  }
+}

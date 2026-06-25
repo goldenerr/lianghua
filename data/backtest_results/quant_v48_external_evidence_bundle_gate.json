@@ -1,5 +1,5 @@
 {
-  "ts": "2026-06-23T07:26:02.248035+00:00",
+  "ts": "2026-06-25T11:17:44.754690+00:00",
   "version": "V48-production-external-evidence-bundle-gate",
   "production_ready": false,
   "evidence_bundle_valid": false,
@@ -112,7 +112,7 @@
   ],
   "note": "V48 只校验外部证据包格式和可信 reference；不会生成真实 vendor/broker/WORM 证据，也不会开启实盘。",
   "generated_files": {
-    "template": "/Users/jacklondon/Documents/study/lianghua/config/production_external_evidence_bundle.v48.template.json",
+    "template": "/home/hermes/.hermes/projects/lianghua/config/production_external_evidence_bundle.v48.template.json",
     "v44_evidence_refs": ""
   }
 }
