@@ -1,0 +1,448 @@
+{
+  "ts": "2026-06-26T06:30:09.256905+00:00",
+  "version": "V48-external-evidence-collection-manifest",
+  "production_ready": false,
+  "evidence_collection_complete": false,
+  "source_gate_valid": false,
+  "summary": {
+    "total_items": 19,
+    "missing_items": 19,
+    "provided_items": 0,
+    "paper_report_days": 2,
+    "paper_calendar_days": 2,
+    "paper_evidence_threshold_met": false
+  },
+  "items": [
+    {
+      "key": "pit_security_master",
+      "gate": "V30/V48",
+      "priority": 1,
+      "owner": "data/vendor-management",
+      "description": "历史时点证券主数据、上市/退市/可交易状态和非大盘 universe 生成证明",
+      "accepted_prefixes": [
+        "security-master://",
+        "vendor-feed://",
+        "entitlement://",
+        "worm://",
+        "s3-object-lock://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Obtain vendor/broker PIT security-master extract covering listed/delisted/tradable state for the requested universe and attach immutable ref.",
+      "cannot_be_satisfied_by": [
+        "lianghua free-source PIT approximation",
+        "local parquet alone",
+        "quant-ashare data",
+        "mock/sample/todo reference"
+      ]
+    },
+    {
+      "key": "trading_status_actions",
+      "gate": "V30/V48",
+      "priority": 2,
+      "owner": "data/vendor-management",
+      "description": "退市、ST、停牌、涨跌停、可成交状态的交易日级历史证明",
+      "accepted_prefixes": [
+        "trading-status://",
+        "exchange-feed://",
+        "vendor-feed://",
+        "entitlement://",
+        "worm://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Obtain trading-day ST/suspension/limit-up/limit-down/tradability history with vendor/exchange provenance.",
+      "cannot_be_satisfied_by": [
+        "lianghua free-source PIT approximation",
+        "local parquet alone",
+        "quant-ashare data",
+        "mock/sample/todo reference"
+      ]
+    },
+    {
+      "key": "corporate_action_reconciliation",
+      "gate": "V30/V48",
+      "priority": 3,
+      "owner": "data/vendor-management/research",
+      "description": "真实供应商复权因子和 corporate action 复核证明",
+      "accepted_prefixes": [
+        "corporate-action://",
+        "reconciliation://",
+        "vendor-feed://",
+        "artifact://",
+        "worm://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Reconcile local adjusted prices against vendor corporate-action/adjust-factor feed and archive the reconciliation artifact.",
+      "cannot_be_satisfied_by": [
+        "lianghua free-source PIT approximation",
+        "local parquet alone",
+        "quant-ashare data",
+        "mock/sample/todo reference"
+      ]
+    },
+    {
+      "key": "real_tick_minute_execution_feed",
+      "gate": "V30/V48",
+      "priority": 4,
+      "owner": "data/vendor-management/execution",
+      "description": "二十年真实 tick/minute 行情和订单簿/成交执行数据授权证明",
+      "accepted_prefixes": [
+        "tick-feed://",
+        "minute-feed://",
+        "exchange-feed://",
+        "vendor-feed://",
+        "entitlement://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Procure authorized tick/minute/order-book execution-history feed for capacity and slippage validation.",
+      "cannot_be_satisfied_by": [
+        "lianghua free-source PIT approximation",
+        "local parquet alone",
+        "quant-ashare data",
+        "mock/sample/todo reference"
+      ]
+    },
+    {
+      "key": "exchange_order_fill_replay",
+      "gate": "V30/V48",
+      "priority": 5,
+      "owner": "broker-integration/execution",
+      "description": "交易所或券商背书的历史订单/成交回放证明",
+      "accepted_prefixes": [
+        "broker-fill://",
+        "exchange-fill://",
+        "order-log://",
+        "report://",
+        "artifact://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Export broker/exchange-backed historical order/fill replay or certified simulator fill logs.",
+      "cannot_be_satisfied_by": [
+        "lianghua free-source PIT approximation",
+        "local parquet alone",
+        "quant-ashare data",
+        "mock/sample/todo reference"
+      ]
+    },
+    {
+      "key": "provider_entitlement",
+      "gate": "V44/V48",
+      "priority": 6,
+      "owner": "legal/data-vendor-management",
+      "description": "data-provider entitlement, license and redistribution evidence",
+      "accepted_prefixes": [
+        "entitlement://",
+        "provider://",
+        "contract://",
+        "vendor-contract://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Attach license/entitlement/redistribution proof for every market-data source used by research and paper evidence.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "real_market_data_provider",
+      "gate": "V44/V48",
+      "priority": 7,
+      "owner": "data/vendor-management",
+      "description": "approved non-mock market-data provider evidence",
+      "accepted_prefixes": [
+        "provider://",
+        "exchange-feed://",
+        "vendor-feed://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Bind real non-mock market-data provider contract/feed reference.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "external_worm_archive",
+      "gate": "V44/V48",
+      "priority": 8,
+      "owner": "platform/secops",
+      "description": "external immutable WORM archive attestation",
+      "accepted_prefixes": [
+        "worm://",
+        "s3-object-lock://",
+        "vault-audit://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Provision external WORM/Object-Lock or vault audit archive and record attestation reference.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "secret_manager",
+      "gate": "V44/V48",
+      "priority": 9,
+      "owner": "platform/secops",
+      "description": "approved production secret-manager resolver evidence",
+      "accepted_prefixes": [
+        "vault://",
+        "aws-sm://",
+        "sealed://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Bind production secrets to an approved secret manager; store only secret-manager reference, never secret values.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "approval_service",
+      "gate": "V44/V48",
+      "priority": 10,
+      "owner": "risk/compliance",
+      "description": "risk/configuration approval service evidence",
+      "accepted_prefixes": [
+        "approval://",
+        "jira://",
+        "servicenow://",
+        "git-pr://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Create risk/config approval workflow record and store approval reference.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "exchange_position_provider",
+      "gate": "V44/V48",
+      "priority": 11,
+      "owner": "broker-integration/ops",
+      "description": "exchange-backed reconciled position provider evidence",
+      "accepted_prefixes": [
+        "exchange://",
+        "broker://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Bind exchange/broker position snapshot provider and reconcile account binding.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "broker_borrow_availability",
+      "gate": "V44/V48",
+      "priority": 12,
+      "owner": "broker-integration/ops",
+      "description": "broker-backed borrow availability feed and account binding evidence",
+      "accepted_prefixes": [
+        "broker://",
+        "borrow-feed://",
+        "exchange://",
+        "entitlement://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Bind broker-backed borrow/availability feed or approved long-only no-borrow scope decision.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "paper_trading_90d",
+      "gate": "V44/V48",
+      "priority": 13,
+      "owner": "research/ops",
+      "description": "three-month paper-trading gate evidence using real market data",
+      "accepted_prefixes": [
+        "paper://",
+        "artifact://",
+        "ci-artifact://",
+        "report://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Let V49/V45 daily report cron accumulate natural 90-calendar/60-report-day evidence; do not backfill.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ],
+      "paper_progress": {
+        "report_days": 2,
+        "calendar_days": 2,
+        "first_date": "2026-06-24",
+        "latest_date": "2026-06-25",
+        "latest_age_calendar_days": 1,
+        "required_report_days": 60,
+        "required_calendar_days": 90,
+        "report_day_progress": 0.0333,
+        "calendar_day_progress": 0.0222,
+        "paper_evidence_threshold_met": false
+      }
+    },
+    {
+      "key": "production_calendar",
+      "gate": "V44/V48",
+      "priority": 14,
+      "owner": "data/platform",
+      "description": "approved production exchange calendar evidence",
+      "accepted_prefixes": [
+        "calendar://",
+        "exchange-calendar://",
+        "vendor-calendar://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Attach approved production exchange calendar evidence used by runtime and backtest alignment.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "capacity_benchmark",
+      "gate": "V44/V48",
+      "priority": 15,
+      "owner": "sre/platform",
+      "description": "production-like capacity benchmark report",
+      "accepted_prefixes": [
+        "benchmark://",
+        "grafana://",
+        "artifact://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Run production-like capacity benchmark and archive report reference.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "failover_dr_test",
+      "gate": "V44/V48",
+      "priority": 16,
+      "owner": "sre/platform",
+      "description": "multi-region failover and DR test report",
+      "accepted_prefixes": [
+        "dr-test://",
+        "failover://",
+        "artifact://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Run multi-region failover/DR exercise and archive signed report reference.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "signed_plugin_review",
+      "gate": "V44/V48",
+      "priority": 17,
+      "owner": "security/code-review",
+      "description": "signed plugin load and code-review evidence",
+      "accepted_prefixes": [
+        "signature://",
+        "cosign://",
+        "git-pr://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Attach signed code-review/plugin-load artifact for production plugins.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "alt_archive_readiness",
+      "gate": "V44/V48",
+      "priority": 18,
+      "owner": "data/platform",
+      "description": "archive-complete alternative-data readiness artifact",
+      "accepted_prefixes": [
+        "artifact://",
+        "ci-artifact://",
+        "worm://",
+        "s3-object-lock://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Archive alternative-data readiness artifact if alt data remains in scope; otherwise attach approved out-of-scope decision.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    },
+    {
+      "key": "rollover_runbook",
+      "gate": "V44/V48",
+      "priority": 19,
+      "owner": "trading-ops/risk",
+      "description": "approved futures rollover execution runbook/evidence",
+      "accepted_prefixes": [
+        "rollover://",
+        "runbook://",
+        "approval://"
+      ],
+      "current_status": "missing",
+      "current_ref_present": false,
+      "collection_action": "Attach futures rollover runbook/evidence or approved out-of-scope decision if futures are disabled.",
+      "cannot_be_satisfied_by": [
+        "local file only",
+        "mock/sample/todo reference",
+        "secret value",
+        "free-source approximation"
+      ]
+    }
+  ],
+  "next_actions": [
+    "Collect V30 vendor/broker data evidence first; it is the earliest blocker for production-grade full-universe claims.",
+    "Keep V49/V45 paper evidence cron and watchdog running until natural 90-calendar/60-report-day thresholds are met.",
+    "Fill config/production_external_evidence_bundle.v48.template.json only with approved external refs, then rerun validate_v48_external_evidence_bundle.py."
+  ],
+  "note": "This manifest is a checklist. It is not external evidence and does not reduce any production blocker by itself."
+}
