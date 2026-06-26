@@ -1,0 +1,28 @@
+{
+  "ts": "2026-06-26T06:12:33.349702+00:00",
+  "version": "V49/V45-paper-evidence-health-watchdog",
+  "research_only": false,
+  "production_ready": false,
+  "ledger_path": "/home/hermes/.hermes/projects/lianghua/data/runtime/v49_v45/quant_v45_paper_shadow_ledger.json",
+  "as_of_date": "2026-06-26",
+  "health_status": "ok",
+  "progress": {
+    "report_days": 2,
+    "calendar_days": 2,
+    "first_date": "2026-06-24",
+    "latest_date": "2026-06-25",
+    "latest_age_calendar_days": 1,
+    "required_report_days": 60,
+    "required_calendar_days": 90,
+    "report_day_progress": 0.0333,
+    "calendar_day_progress": 0.0222,
+    "paper_evidence_threshold_met": false
+  },
+  "blockers": [],
+  "warnings": [],
+  "next_required_work": [
+    "Keep the V49/V45 daily cron enabled after A-share close.",
+    "Do not backfill or fabricate missing report days; investigate stale/missing runtime files instead.",
+    "Run V42 strict evidence gate only after >=90 calendar days and >=60 report days are naturally accumulated."
+  ]
+}
