@@ -1,0 +1,360 @@
+{
+  "ts": "2026-06-26T09:23:26.735436+00:00",
+  "version": "V29-recent90-signal-decay-report",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "recent_days": 90,
+  "candidate_count": 2,
+  "global_diagnosis": [
+    "losses_are_month_concentrated",
+    "recent_drag_is_low_percentile_vs_own_history",
+    "stock_alpha_sleeves_are_primary_recent_drag"
+  ],
+  "candidates": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "recent_days": 90,
+      "recent_start": "2026-02-05",
+      "recent_end": "2026-06-25",
+      "recent_total_return": -0.035622,
+      "recent_mdd": -0.045032,
+      "sleeves": [
+        {
+          "sleeve": "contrib_price_lowvol_reversal",
+          "recent_sum": -0.013018,
+          "recent_mean": -0.00014465,
+          "recent_win_rate": 0.444444,
+          "full_mean": 0.00011444,
+          "full_win_rate": 0.562378,
+          "recent_90_sum_percentile_vs_history": 0.00222,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.011035,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_ic_diversified",
+          "recent_sum": -0.009045,
+          "recent_mean": -0.0001005,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.00014724,
+          "full_win_rate": 0.562595,
+          "recent_90_sum_percentile_vs_history": 0.008437,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.006423,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_defensive_breadth",
+          "recent_sum": -0.0073,
+          "recent_mean": -8.111e-05,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.000122,
+          "full_win_rate": 0.559765,
+          "recent_90_sum_percentile_vs_history": 0.004218,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.004558,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_ic_alpha",
+          "recent_sum": -0.006825,
+          "recent_mean": -7.583e-05,
+          "recent_win_rate": 0.455556,
+          "full_mean": 0.0001412,
+          "full_win_rate": 0.558241,
+          "recent_90_sum_percentile_vs_history": 0.013099,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.005171,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "carry_contrib",
+          "recent_sum": 0.0,
+          "recent_mean": 0.0,
+          "recent_win_rate": 0.0,
+          "full_mean": 0.0,
+          "full_win_rate": 0.0,
+          "recent_90_sum_percentile_vs_history": 1.0,
+          "worst_recent_month": "2026-02",
+          "worst_recent_month_sum": 0.0,
+          "flags": [
+            "low_recent_hit_rate"
+          ]
+        },
+        {
+          "sleeve": "crisis_contrib",
+          "recent_sum": 0.001783,
+          "recent_mean": 1.981e-05,
+          "recent_win_rate": 0.544444,
+          "full_mean": 4.475e-05,
+          "full_win_rate": 0.552145,
+          "recent_90_sum_percentile_vs_history": 0.333037,
+          "worst_recent_month": "2026-06",
+          "worst_recent_month_sum": 0.0,
+          "flags": []
+        }
+      ],
+      "dominant_negative_sleeves": [
+        {
+          "sleeve": "contrib_price_lowvol_reversal",
+          "recent_sum": -0.013018,
+          "recent_mean": -0.00014465,
+          "recent_win_rate": 0.444444,
+          "full_mean": 0.00011444,
+          "full_win_rate": 0.562378,
+          "recent_90_sum_percentile_vs_history": 0.00222,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.011035,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_ic_diversified",
+          "recent_sum": -0.009045,
+          "recent_mean": -0.0001005,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.00014724,
+          "full_win_rate": 0.562595,
+          "recent_90_sum_percentile_vs_history": 0.008437,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.006423,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_defensive_breadth",
+          "recent_sum": -0.0073,
+          "recent_mean": -8.111e-05,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.000122,
+          "full_win_rate": 0.559765,
+          "recent_90_sum_percentile_vs_history": 0.004218,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.004558,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_ic_alpha",
+          "recent_sum": -0.006825,
+          "recent_mean": -7.583e-05,
+          "recent_win_rate": 0.455556,
+          "full_mean": 0.0001412,
+          "full_win_rate": 0.558241,
+          "recent_90_sum_percentile_vs_history": 0.013099,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.005171,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "loss_concentrated_in_worst_month"
+          ]
+        }
+      ],
+      "diagnosis": [
+        "stock_alpha_sleeves_are_primary_recent_drag",
+        "recent_drag_is_low_percentile_vs_own_history",
+        "losses_are_month_concentrated"
+      ],
+      "production_ready": false,
+      "not_parameter_tuning": true
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "recent_days": 90,
+      "recent_start": "2026-02-05",
+      "recent_end": "2026-06-25",
+      "recent_total_return": -0.024043,
+      "recent_mdd": -0.03097,
+      "sleeves": [
+        {
+          "sleeve": "contrib_price_ic_diversified",
+          "recent_sum": -0.010157,
+          "recent_mean": -0.00011286,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.00014092,
+          "full_win_rate": 0.561675,
+          "recent_90_sum_percentile_vs_history": 0.002969,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.007579,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_lowvol_reversal",
+          "recent_sum": -0.00837,
+          "recent_mean": -9.3e-05,
+          "recent_win_rate": 0.444444,
+          "full_mean": 0.00010819,
+          "full_win_rate": 0.560555,
+          "recent_90_sum_percentile_vs_history": 0.002056,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.006904,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_defensive_breadth",
+          "recent_sum": -0.0078,
+          "recent_mean": -8.667e-05,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.00011631,
+          "full_win_rate": 0.558317,
+          "recent_90_sum_percentile_vs_history": 0.00137,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.004921,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "carry_contrib",
+          "recent_sum": 0.0,
+          "recent_mean": 0.0,
+          "recent_win_rate": 0.0,
+          "full_mean": 0.0,
+          "full_win_rate": 0.0,
+          "recent_90_sum_percentile_vs_history": 1.0,
+          "worst_recent_month": "2026-02",
+          "worst_recent_month_sum": 0.0,
+          "flags": [
+            "low_recent_hit_rate"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_ic_alpha",
+          "recent_sum": 0.0,
+          "recent_mean": 0.0,
+          "recent_win_rate": 0.0,
+          "full_mean": 0.0,
+          "full_win_rate": 0.0,
+          "recent_90_sum_percentile_vs_history": 1.0,
+          "worst_recent_month": "2026-02",
+          "worst_recent_month_sum": 0.0,
+          "flags": [
+            "low_recent_hit_rate"
+          ]
+        },
+        {
+          "sleeve": "crisis_contrib",
+          "recent_sum": 0.002675,
+          "recent_mean": 2.972e-05,
+          "recent_win_rate": 0.544444,
+          "full_mean": 7.094e-05,
+          "full_win_rate": 0.567719,
+          "recent_90_sum_percentile_vs_history": 0.301051,
+          "worst_recent_month": "2026-06",
+          "worst_recent_month_sum": 0.0,
+          "flags": []
+        }
+      ],
+      "dominant_negative_sleeves": [
+        {
+          "sleeve": "contrib_price_ic_diversified",
+          "recent_sum": -0.010157,
+          "recent_mean": -0.00011286,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.00014092,
+          "full_win_rate": 0.561675,
+          "recent_90_sum_percentile_vs_history": 0.002969,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.007579,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_lowvol_reversal",
+          "recent_sum": -0.00837,
+          "recent_mean": -9.3e-05,
+          "recent_win_rate": 0.444444,
+          "full_mean": 0.00010819,
+          "full_win_rate": 0.560555,
+          "recent_90_sum_percentile_vs_history": 0.002056,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.006904,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        },
+        {
+          "sleeve": "contrib_price_defensive_breadth",
+          "recent_sum": -0.0078,
+          "recent_mean": -8.667e-05,
+          "recent_win_rate": 0.433333,
+          "full_mean": 0.00011631,
+          "full_win_rate": 0.558317,
+          "recent_90_sum_percentile_vs_history": 0.00137,
+          "worst_recent_month": "2026-05",
+          "worst_recent_month_sum": -0.004921,
+          "flags": [
+            "recent_negative",
+            "bottom_quintile_vs_history",
+            "low_recent_hit_rate",
+            "loss_concentrated_in_worst_month"
+          ]
+        }
+      ],
+      "diagnosis": [
+        "stock_alpha_sleeves_are_primary_recent_drag",
+        "recent_drag_is_low_percentile_vs_own_history",
+        "losses_are_month_concentrated"
+      ],
+      "production_ready": false,
+      "not_parameter_tuning": true
+    }
+  ],
+  "decision": {
+    "should_parameter_tune_now": false,
+    "next_step_class": "signal validation/regime trigger audit before any parameter changes"
+  }
+}
