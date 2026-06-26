@@ -1,5 +1,5 @@
 {
-  "ts": "2026-06-25T11:16:32.275623+00:00",
+  "ts": "2026-06-26T01:21:52.690340+00:00",
   "version": "V31-free-data-pit-approximation",
   "research_only": true,
   "research_pit_approximation": true,
@@ -8,25 +8,25 @@
   "price_dir": "/home/hermes/.hermes/projects/lianghua/data/parquet",
   "requested_window": {
     "start_date": "2006-01-01",
-    "end_date": "2026-05-29"
+    "end_date": "2026-06-25"
   },
   "summary": {
     "symbols_requested": 1200,
     "symbols_loaded": 1200,
-    "unique_trading_dates": 4954,
+    "unique_trading_dates": 4972,
     "date_start": "2006-01-04",
-    "date_end": "2026-05-29",
+    "date_end": "2026-06-25",
     "earliest_observed_symbol_date": "2006-01-04",
-    "latest_observed_symbol_date": "2026-05-29",
+    "latest_observed_symbol_date": "2026-06-25",
     "symbols_with_adjustment_columns": 0,
-    "symbols_inferred_delisted_or_incomplete": 0
+    "symbols_inferred_delisted_or_incomplete": 1
   },
   "outputs": {
     "pit_path": "/home/hermes/.hermes/projects/lianghua/data/security_master/free_pit_approx/pit_universe_v31.parquet",
     "trading_status_path": "/home/hermes/.hermes/projects/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet",
     "corporate_action_path": "/home/hermes/.hermes/projects/lianghua/data/corporate_actions/free_reconciliation_v31.parquet",
-    "pit_rows": 3802030,
-    "trading_status_rows": 3802030,
+    "pit_rows": 3823627,
+    "trading_status_rows": 3823627,
     "corporate_action_rows": 1200,
     "csi300_snapshot_symbols": 280
   },

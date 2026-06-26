@@ -1,0 +1,629 @@
+{
+  "ts": "2026-06-26T01:25:58.119947+00:00",
+  "version": "V29-recent90-regime-diagnostic",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "universe": "data/stock_list.json",
+  "window": {
+    "start_date": "20060101",
+    "end_date": "20260625",
+    "recent_days": 90
+  },
+  "coverage": {
+    "symbols_loaded": 1198,
+    "dates": 4972,
+    "sleeve_rows": 4719,
+    "price_factor_names": [
+      "liquidity_20d",
+      "low_vol_20d",
+      "low_vol_60d",
+      "momentum_20d",
+      "momentum_60d",
+      "reversal_1d",
+      "reversal_5d",
+      "volume_stability_20d"
+    ]
+  },
+  "trading_constraint_summary": {
+    "enabled": true,
+    "path": "data/security_master/free_pit_approx/trading_status_v31.parquet",
+    "exists": true,
+    "mode": "V31-free-trading-status-next-bar-execution",
+    "rows_loaded": 3823163,
+    "unique_dates": 4972,
+    "unique_symbols": 1198,
+    "missing_columns": [],
+    "limitations": [
+      "V31 status is free-source research approximation, not production trading-status evidence.",
+      "Orders are constrained using next bar status to stress-test tradability in daily research.",
+      "ST status remains unknown in V31 and is not used as a hard constraint here."
+    ]
+  },
+  "summaries": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "recent_days": 90,
+      "recent_start": "2026-02-05",
+      "recent_end": "2026-06-25",
+      "recent_metrics": {
+        "sharpe_ratio": -2.4941,
+        "annual_return": -0.1003,
+        "annual_volatility": 0.0502,
+        "max_drawdown": -0.045,
+        "win_rate": 0.4556,
+        "total_return": -0.0356,
+        "n_days": 90
+      },
+      "full_metrics": {
+        "sharpe_ratio": 2.047,
+        "annual_return": 0.1399,
+        "annual_volatility": 0.0561,
+        "max_drawdown": -0.0554,
+        "win_rate": 0.5752,
+        "total_return": 11.4266,
+        "n_days": 4593
+      },
+      "avg_stock_exposure_recent": 0.2456,
+      "avg_crisis_weight_recent": 0.5658,
+      "avg_carry_weight_recent": 0.1886,
+      "risk_off_ratio_recent": 0.3556,
+      "mdd_state_counts_recent": {
+        "normal": 72,
+        "reduce_scale": 18
+      },
+      "contribution_totals_recent": {
+        "contrib_price_ic_alpha": -0.006825,
+        "contrib_price_ic_diversified": -0.009045,
+        "contrib_price_lowvol_reversal": -0.013018,
+        "contrib_price_defensive_breadth": -0.0073,
+        "crisis_contrib": 0.001783,
+        "carry_contrib": 0.0
+      },
+      "largest_negative_contributors_recent": [
+        {
+          "source": "contrib_price_lowvol_reversal",
+          "contribution_sum": -0.013018
+        },
+        {
+          "source": "contrib_price_ic_diversified",
+          "contribution_sum": -0.009045
+        },
+        {
+          "source": "contrib_price_defensive_breadth",
+          "contribution_sum": -0.0073
+        },
+        {
+          "source": "contrib_price_ic_alpha",
+          "contribution_sum": -0.006825
+        },
+        {
+          "source": "carry_contrib",
+          "contribution_sum": 0.0
+        }
+      ],
+      "monthly_recent": [
+        {
+          "month": "2026-02",
+          "return": 0.009854,
+          "avg_stock_exposure": 0.3341,
+          "avg_crisis_weight": 0.4994,
+          "avg_carry_weight": 0.1665,
+          "risk_off_ratio": 0.0,
+          "cost_sum": 9.4e-05,
+          "contrib_price_ic_alpha": 0.001759,
+          "contrib_price_ic_diversified": 0.002255,
+          "contrib_price_lowvol_reversal": 0.003886,
+          "contrib_price_defensive_breadth": 0.001732,
+          "crisis_contrib": 0.000304,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-03",
+          "return": -0.01372,
+          "avg_stock_exposure": 0.2192,
+          "avg_crisis_weight": 0.5856,
+          "avg_carry_weight": 0.1952,
+          "risk_off_ratio": 0.4545,
+          "cost_sum": 0.000435,
+          "contrib_price_ic_alpha": -0.002661,
+          "contrib_price_ic_diversified": -0.0039,
+          "contrib_price_lowvol_reversal": -0.004422,
+          "contrib_price_defensive_breadth": -0.002906,
+          "crisis_contrib": 0.000586,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-04",
+          "return": -0.000147,
+          "avg_stock_exposure": 0.1989,
+          "avg_crisis_weight": 0.6008,
+          "avg_carry_weight": 0.2003,
+          "risk_off_ratio": 0.381,
+          "cost_sum": 0.000125,
+          "contrib_price_ic_alpha": 4.4e-05,
+          "contrib_price_ic_diversified": 8.5e-05,
+          "contrib_price_lowvol_reversal": -0.000203,
+          "contrib_price_defensive_breadth": -0.000471,
+          "crisis_contrib": 0.000564,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-05",
+          "return": -0.027217,
+          "avg_stock_exposure": 0.4574,
+          "avg_crisis_weight": 0.4069,
+          "avg_carry_weight": 0.1356,
+          "risk_off_ratio": 0.0,
+          "cost_sum": 0.000452,
+          "contrib_price_ic_alpha": -0.005171,
+          "contrib_price_ic_diversified": -0.006423,
+          "contrib_price_lowvol_reversal": -0.011035,
+          "contrib_price_defensive_breadth": -0.004558,
+          "crisis_contrib": 0.00033,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-06",
+          "return": -0.00451,
+          "avg_stock_exposure": 0.0666,
+          "avg_crisis_weight": 0.7001,
+          "avg_carry_weight": 0.2334,
+          "risk_off_ratio": 0.7778,
+          "cost_sum": 0.000306,
+          "contrib_price_ic_alpha": -0.000797,
+          "contrib_price_ic_diversified": -0.001061,
+          "contrib_price_lowvol_reversal": -0.001244,
+          "contrib_price_defensive_breadth": -0.001098,
+          "crisis_contrib": 0.0,
+          "carry_contrib": 0.0
+        }
+      ],
+      "worst_days_recent": [
+        {
+          "date": "2026-05-14",
+          "return": -0.014879064634201323,
+          "gross_stock_exposure": 0.6527364410043912,
+          "crisis_weight": 0.2604476692467067,
+          "carry_weight": 0.08681588974890223,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 5.006517600515812e-05
+        },
+        {
+          "date": "2026-05-12",
+          "return": -0.009609266301326743,
+          "gross_stock_exposure": 0.7811226248494164,
+          "crisis_weight": 0.1641580313629377,
+          "carry_weight": 0.0547193437876459,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 6.436946984224878e-06
+        },
+        {
+          "date": "2026-05-27",
+          "return": -0.007076547453772086,
+          "gross_stock_exposure": 0.3642518023379932,
+          "crisis_weight": 0.47681114824650506,
+          "carry_weight": 0.15893704941550169,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 6.338161676223128e-06
+        },
+        {
+          "date": "2026-03-03",
+          "return": -0.006733410384538072,
+          "gross_stock_exposure": 0.2923762828254778,
+          "crisis_weight": 0.5307177878808916,
+          "carry_weight": 0.17690592929363055,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.8131542776015793e-05
+        },
+        {
+          "date": "2026-05-21",
+          "return": -0.0065836327156352055,
+          "gross_stock_exposure": 0.38923069277074124,
+          "crisis_weight": 0.4580769804219441,
+          "carry_weight": 0.1526923268073147,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 2.3398181329808297e-05
+        },
+        {
+          "date": "2026-04-28",
+          "return": -0.005930615307007842,
+          "gross_stock_exposure": 0.3183698521304409,
+          "crisis_weight": 0.5112226109021694,
+          "carry_weight": 0.17040753696738978,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 3.0037996693058067e-06
+        },
+        {
+          "date": "2026-03-02",
+          "return": -0.005835953494959809,
+          "gross_stock_exposure": 0.3377051397655172,
+          "crisis_weight": 0.496721145175862,
+          "carry_weight": 0.16557371505862067,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 4.344503602525238e-06
+        },
+        {
+          "date": "2026-05-20",
+          "return": -0.005093248771908637,
+          "gross_stock_exposure": 0.44772614609526196,
+          "crisis_weight": 0.41420539042855353,
+          "carry_weight": 0.1380684634761845,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.6282012540361546e-06
+        },
+        {
+          "date": "2026-05-15",
+          "return": -0.0040649052017894816,
+          "gross_stock_exposure": 0.44683668084262707,
+          "crisis_weight": 0.4148724893680297,
+          "carry_weight": 0.13829082978934323,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 8.23599040647056e-05
+        },
+        {
+          "date": "2026-06-02",
+          "return": -0.003987205566031887,
+          "gross_stock_exposure": 0.3630501473969286,
+          "crisis_weight": 0.4777123894523036,
+          "carry_weight": 0.15923746315076787,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 9.427938226816304e-05
+        }
+      ],
+      "best_days_recent": [
+        {
+          "date": "2026-05-19",
+          "return": 0.005697089102869403,
+          "gross_stock_exposure": 0.4517966492303524,
+          "crisis_weight": 0.41115251307723577,
+          "carry_weight": 0.13705083769241191,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.4546016011554475e-06
+        },
+        {
+          "date": "2026-05-13",
+          "return": 0.004882474734854367,
+          "gross_stock_exposure": 0.7778993810172865,
+          "crisis_weight": 0.1665754642370352,
+          "carry_weight": 0.0555251547456784,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.2892975328520074e-06
+        },
+        {
+          "date": "2026-04-29",
+          "return": 0.0046028478379745354,
+          "gross_stock_exposure": 0.3273501574077258,
+          "crisis_weight": 0.5044873819442057,
+          "carry_weight": 0.16816246064806856,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 3.5921221109139395e-06
+        },
+        {
+          "date": "2026-02-25",
+          "return": 0.004240768245160407,
+          "gross_stock_exposure": 0.3275941261062596,
+          "crisis_weight": 0.5043044054203053,
+          "carry_weight": 0.1681014684734351,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 2.9411073430183206e-06
+        },
+        {
+          "date": "2026-03-10",
+          "return": 0.004235804751494431,
+          "gross_stock_exposure": 0.46821421928721124,
+          "crisis_weight": 0.3988393355345916,
+          "carry_weight": 0.1329464451781972,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 7.279173282186211e-05
+        }
+      ]
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "recent_days": 90,
+      "recent_start": "2026-02-05",
+      "recent_end": "2026-06-25",
+      "recent_metrics": {
+        "sharpe_ratio": -2.67,
+        "annual_return": -0.0675,
+        "annual_volatility": 0.0347,
+        "max_drawdown": -0.031,
+        "win_rate": 0.4556,
+        "total_return": -0.024,
+        "n_days": 90
+      },
+      "full_metrics": {
+        "sharpe_ratio": 2.1786,
+        "annual_return": 0.1086,
+        "annual_volatility": 0.0384,
+        "max_drawdown": -0.0377,
+        "win_rate": 0.5872,
+        "total_return": 5.7698,
+        "n_days": 4467
+      },
+      "avg_stock_exposure_recent": 0.1749,
+      "avg_crisis_weight_recent": 0.8251,
+      "avg_carry_weight_recent": 0.0,
+      "risk_off_ratio_recent": 0.3556,
+      "mdd_state_counts_recent": {
+        "normal": 90
+      },
+      "contribution_totals_recent": {
+        "contrib_price_ic_diversified": -0.010157,
+        "contrib_price_lowvol_reversal": -0.00837,
+        "contrib_price_defensive_breadth": -0.0078,
+        "crisis_contrib": 0.002675,
+        "carry_contrib": 0.0
+      },
+      "largest_negative_contributors_recent": [
+        {
+          "source": "contrib_price_ic_diversified",
+          "contribution_sum": -0.010157
+        },
+        {
+          "source": "contrib_price_lowvol_reversal",
+          "contribution_sum": -0.00837
+        },
+        {
+          "source": "contrib_price_defensive_breadth",
+          "contribution_sum": -0.0078
+        },
+        {
+          "source": "carry_contrib",
+          "contribution_sum": 0.0
+        },
+        {
+          "source": "crisis_contrib",
+          "contribution_sum": 0.002675
+        }
+      ],
+      "monthly_recent": [
+        {
+          "month": "2026-02",
+          "return": 0.006466,
+          "avg_stock_exposure": 0.2179,
+          "avg_crisis_weight": 0.7821,
+          "avg_carry_weight": 0.0,
+          "risk_off_ratio": 0.0,
+          "cost_sum": 3.5e-05,
+          "contrib_price_ic_diversified": 0.002065,
+          "contrib_price_lowvol_reversal": 0.002535,
+          "contrib_price_defensive_breadth": 0.001419,
+          "crisis_contrib": 0.000476,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-03",
+          "return": -0.008048,
+          "avg_stock_exposure": 0.144,
+          "avg_crisis_weight": 0.856,
+          "avg_carry_weight": 0.0,
+          "risk_off_ratio": 0.4545,
+          "cost_sum": 0.000152,
+          "contrib_price_ic_diversified": -0.003315,
+          "contrib_price_lowvol_reversal": -0.002916,
+          "contrib_price_defensive_breadth": -0.002515,
+          "crisis_contrib": 0.000849,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-04",
+          "return": 0.000196,
+          "avg_stock_exposure": 0.1297,
+          "avg_crisis_weight": 0.8703,
+          "avg_carry_weight": 0.0,
+          "risk_off_ratio": 0.381,
+          "cost_sum": 4.1e-05,
+          "contrib_price_ic_diversified": -7e-06,
+          "contrib_price_lowvol_reversal": -9.5e-05,
+          "contrib_price_defensive_breadth": -0.000465,
+          "crisis_contrib": 0.00082,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-05",
+          "return": -0.018951,
+          "avg_stock_exposure": 0.3145,
+          "avg_crisis_weight": 0.6855,
+          "avg_carry_weight": 0.0,
+          "risk_off_ratio": 0.0,
+          "cost_sum": 0.000132,
+          "contrib_price_ic_diversified": -0.007579,
+          "contrib_price_lowvol_reversal": -0.006904,
+          "contrib_price_defensive_breadth": -0.004921,
+          "crisis_contrib": 0.000531,
+          "carry_contrib": 0.0
+        },
+        {
+          "month": "2026-06",
+          "return": -0.003757,
+          "avg_stock_exposure": 0.0996,
+          "avg_crisis_weight": 0.9004,
+          "avg_carry_weight": 0.0,
+          "risk_off_ratio": 0.7778,
+          "cost_sum": 0.000109,
+          "contrib_price_ic_diversified": -0.00132,
+          "contrib_price_lowvol_reversal": -0.00099,
+          "contrib_price_defensive_breadth": -0.001319,
+          "crisis_contrib": 0.0,
+          "carry_contrib": 0.0
+        }
+      ],
+      "worst_days_recent": [
+        {
+          "date": "2026-05-14",
+          "return": -0.010161743355735027,
+          "gross_stock_exposure": 0.4566871651205135,
+          "crisis_weight": 0.5433128348794865,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.7514054574518074e-05
+        },
+        {
+          "date": "2026-05-12",
+          "return": -0.00663508346747184,
+          "gross_stock_exposure": 0.5465125811040394,
+          "crisis_weight": 0.45348741889596056,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 2.251805541707852e-06
+        },
+        {
+          "date": "2026-05-27",
+          "return": -0.004621697417133957,
+          "gross_stock_exposure": 0.23755552326390866,
+          "crisis_weight": 0.7624444767360914,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 2.0667918509423357e-06
+        },
+        {
+          "date": "2026-03-03",
+          "return": -0.00429642705576978,
+          "gross_stock_exposure": 0.19068018445139856,
+          "crisis_weight": 0.8093198155486014,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 5.9124596008747035e-06
+        },
+        {
+          "date": "2026-05-21",
+          "return": -0.00415708898050838,
+          "gross_stock_exposure": 0.2538461039809183,
+          "crisis_weight": 0.7461538960190817,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 7.629841737980942e-06
+        },
+        {
+          "date": "2026-04-28",
+          "return": -0.0037498166859183785,
+          "gross_stock_exposure": 0.20763251225898322,
+          "crisis_weight": 0.7923674877410168,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 9.79499892164941e-07
+        },
+        {
+          "date": "2026-03-02",
+          "return": -0.003659534582368791,
+          "gross_stock_exposure": 0.2202424824557721,
+          "crisis_weight": 0.779757517544228,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.4166859573451735e-06
+        },
+        {
+          "date": "2026-05-20",
+          "return": -0.003454025002610433,
+          "gross_stock_exposure": 0.291995312670823,
+          "crisis_weight": 0.708004687329177,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 5.309351915335325e-07
+        },
+        {
+          "date": "2026-06-18",
+          "return": -0.002713685501903145,
+          "gross_stock_exposure": 0.22375749920276997,
+          "crisis_weight": 0.77624250079723,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 3.368768859647027e-05
+        },
+        {
+          "date": "2026-06-02",
+          "return": -0.0025514414689384282,
+          "gross_stock_exposure": 0.23677183525886647,
+          "crisis_weight": 0.7632281647411335,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.0589073450782139e-07
+        }
+      ],
+      "best_days_recent": [
+        {
+          "date": "2026-06-01",
+          "return": 0.004695119760054729,
+          "gross_stock_exposure": 0.2373012889314056,
+          "crisis_weight": 0.7626987110685944,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.4043854001156209e-06
+        },
+        {
+          "date": "2026-05-19",
+          "return": 0.0034801331155163173,
+          "gross_stock_exposure": 0.2946499886284907,
+          "crisis_weight": 0.7053500113715093,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.385409084768445e-06
+        },
+        {
+          "date": "2026-05-13",
+          "return": 0.0033448146280518586,
+          "gross_stock_exposure": 0.5442574379931039,
+          "crisis_weight": 0.4557425620068961,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 4.510286221871107e-07
+        },
+        {
+          "date": "2026-03-10",
+          "return": 0.0030506551175595894,
+          "gross_stock_exposure": 0.32758616042083744,
+          "crisis_weight": 0.6724138395791626,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 2.818224679296453e-05
+        },
+        {
+          "date": "2026-04-29",
+          "return": 0.0028424166983529228,
+          "gross_stock_exposure": 0.21348923309199508,
+          "crisis_weight": 0.7865107669080049,
+          "carry_weight": 0.0,
+          "risk_off": false,
+          "mdd_state": "normal",
+          "cost": 1.1713441666023783e-06
+        }
+      ]
+    }
+  ],
+  "diagnostic_conclusion": [
+    "Recent-90 weakness is treated as a regime/risk diagnosis input, not a trigger for small parameter tuning.",
+    "Production readiness remains false regardless of diagnostic output until V30/V44/V48 and 90-day paper evidence pass."
+  ],
+  "elapsed_seconds": 76.74
+}

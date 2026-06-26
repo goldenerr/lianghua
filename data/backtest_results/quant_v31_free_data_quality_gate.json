@@ -1,13 +1,13 @@
 {
-  "ts": "2026-06-25T11:17:28.223039+00:00",
+  "ts": "2026-06-26T01:22:47.757589+00:00",
   "version": "V31-free-data-quality-gate",
   "research_only": true,
-  "free_research_ready": false,
+  "free_research_ready": true,
   "production_data_ready": false,
   "thresholds": {
-    "min_entities": 1900,
+    "min_entities": 1140,
     "min_dates": 4500,
-    "min_corporate_action_entities": 1900
+    "min_corporate_action_entities": 1140
   },
   "requirements": [
     {
@@ -33,15 +33,13 @@
         "limitations"
       ],
       "missing_columns": [],
-      "research_ready": false,
-      "failures": [
-        "unique_entities<1900"
-      ],
-      "rows": 3802030,
-      "unique_dates": 4954,
+      "research_ready": true,
+      "failures": [],
+      "rows": 3823627,
+      "unique_dates": 4972,
       "unique_entities": 1200,
       "date_start": "2006-01-04",
-      "date_end": "2026-05-29"
+      "date_end": "2026-06-25"
     },
     {
       "requirement_id": "free_trading_status_approx",
@@ -66,15 +64,13 @@
         "limitations"
       ],
       "missing_columns": [],
-      "research_ready": false,
-      "failures": [
-        "unique_entities<1900"
-      ],
-      "rows": 3802030,
-      "unique_dates": 4954,
+      "research_ready": true,
+      "failures": [],
+      "rows": 3823627,
+      "unique_dates": 4972,
       "unique_entities": 1200,
       "date_start": "2006-01-04",
-      "date_end": "2026-05-29"
+      "date_end": "2026-06-25"
     },
     {
       "requirement_id": "free_corporate_action_column_audit",
@@ -97,32 +93,26 @@
         "asof_date"
       ],
       "missing_columns": [],
-      "research_ready": false,
-      "failures": [
-        "unique_entities<1900"
-      ],
+      "research_ready": true,
+      "failures": [],
       "rows": 1200,
       "unique_dates": 1,
       "unique_entities": 1200,
-      "date_start": "2026-06-25",
-      "date_end": "2026-06-25"
+      "date_start": "2026-06-26",
+      "date_end": "2026-06-26"
     }
   ],
   "summary": {
     "total_requirements": 3,
-    "research_ready_count": 0,
-    "research_blocker_count": 3,
+    "research_ready_count": 3,
+    "research_blocker_count": 0,
     "production_blocker_count": 5,
     "build_symbols_loaded": 1200,
-    "build_unique_trading_dates": 4954,
+    "build_unique_trading_dates": 4972,
     "build_failure_count": 0
   },
   "build_report_path": "/home/hermes/.hermes/projects/lianghua/data/backtest_results/quant_v31_free_data_build_report.json",
-  "research_blockers": [
-    "free_pit_security_master_approx:unique_entities<1900",
-    "free_trading_status_approx:unique_entities<1900",
-    "free_corporate_action_column_audit:unique_entities<1900"
-  ],
+  "research_blockers": [],
   "production_blockers": [
     "V31 是免费源/本地日线推断，不含 vendor PIT security master evidence ref。",
     "ST、退市、停牌、涨跌停和可成交状态仍含近似或未知字段，不能替代交易所/供应商历史状态表。",

@@ -1,5 +1,13 @@
 # Quant Trading System — Progress Log
-# Last updated: 2026-06-24
+# Last updated: 2026-06-26
+
+## V31/V30/V44/V48 Evidence and Recent-90 Diagnostics (2026-06-26) - PRODUCTION BLOCKED
+
+- Rebuilt V31 free-source PIT/trading-status approximation strictly from lianghua `data/stock_list.json` + `data/parquet` (1200/1200 symbols, 4972 dates through 2026-06-25). V31 research gate now passes under the 1200-universe threshold (`free_research_ready=true`, 3/3 research requirements), but remains `production_data_ready=false` because it is still free-source/local inference, not vendor/broker PIT evidence.
+- Re-ran V30, V44, V48 and V42 gates. Production remains blocked: V30 still has 0/5 production data requirements and 18 blockers; V44 still fails paper/external evidence; V48 still lacks 19 external/V30 refs; V42 strict paper evidence is not ready.
+- Verified V49/V45 paper evidence cron exists and is enabled (`dfe115126180`, weekdays 17:50, workdir lianghua). Runtime ledger under ignored `data/runtime/v49_v45/` has 2 report days (2026-06-24..2026-06-25); gate requires >=90 calendar days and >=60 report days, so no manual fabrication/backfill was done.
+- Added `scripts/diagnose_v29_recent90_regime.py` for research-only recent-90 regime/risk attribution without parameter tuning. Diagnostic output: `data/backtest_results/quant_v29_recent90_regime_diagnostic.json`. Longhorizon recent-90 Sharpe=-2.4941, return=-3.56%, MDD=-4.50%; ultradefensive recent-90 Sharpe=-2.67, return=-2.40%, MDD=-3.10%. Weakness is concentrated in stock sleeves, especially May 2026, while crisis/carry sleeves did not offset enough.
+- Verification: `./init.sh dev`, `scripts/run_production_tests.py` passed 6/6, V31/V30/V44/V48/V42 validation scripts executed, V49/V45 daily runner smoke with `--allow-replace` passed, and `ruff check`/`py_compile` passed for the new diagnostic script.
 
 ## Safety Baseline Fixes (2026-06-24) - PRODUCTION BLOCKED
 

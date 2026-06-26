@@ -1,5 +1,5 @@
 {
-  "ts": "2026-06-25T19:31:26.113205",
+  "ts": "2026-06-26T09:13:38.519419",
   "version": "V5.9",
   "desc": "n=35 90d + sector cap (max 5 per industry)",
   "cfg": {
@@ -91,5 +91,5 @@
     "W": true,
     "A": false
   },
-  "elapsed": 48.6
+  "elapsed": 48.8
 }
