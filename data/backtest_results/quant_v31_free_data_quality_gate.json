@@ -1,5 +1,5 @@
 {
-  "ts": "2026-06-26T01:22:47.757589+00:00",
+  "ts": "2026-06-26T06:09:16.350997+00:00",
   "version": "V31-free-data-quality-gate",
   "research_only": true,
   "free_research_ready": true,
@@ -7,7 +7,10 @@
   "thresholds": {
     "min_entities": 1140,
     "min_dates": 4500,
-    "min_corporate_action_entities": 1140
+    "min_corporate_action_entities": 1140,
+    "min_entity_coverage_ratio": 0.95,
+    "min_entities_source": "auto_95.00%_of_build_universe_1200",
+    "min_corporate_action_entities_source": "auto_95.00%_of_build_universe_1200"
   },
   "requirements": [
     {

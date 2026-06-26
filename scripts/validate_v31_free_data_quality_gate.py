@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -40,9 +41,25 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--build-report-json", default=str(DEFAULT_BUILD_REPORT_JSON))
     parser.add_argument("--output-json", default=str(DEFAULT_OUTPUT_JSON))
     parser.add_argument("--output-csv", default=str(DEFAULT_OUTPUT_CSV))
-    parser.add_argument("--min-entities", type=int, default=1900)
+    parser.add_argument(
+        "--min-entities",
+        type=int,
+        default=0,
+        help="0 means auto-derive from V31 build-report universe size",
+    )
     parser.add_argument("--min-dates", type=int, default=4500)
-    parser.add_argument("--min-corporate-action-entities", type=int, default=1900)
+    parser.add_argument(
+        "--min-corporate-action-entities",
+        type=int,
+        default=0,
+        help="0 means auto-derive from V31 build-report universe size",
+    )
+    parser.add_argument(
+        "--min-entity-coverage-ratio",
+        type=float,
+        default=0.95,
+        help="Auto threshold ratio against symbols_requested/symbols_loaded when min counts are 0",
+    )
     parser.add_argument("--require-free-research-ready", action="store_true")
     return parser.parse_args()
 
@@ -138,6 +155,42 @@ def _audit_file(
     }
 
 
+def _auto_min_entities(
+    *,
+    explicit_min: int,
+    build_report: dict[str, Any],
+    coverage_ratio: float,
+) -> tuple[int, str]:
+    """Resolve V31 research threshold against the actual requested universe.
+
+    V31 originally targeted a 2000-name non-largecap research universe, so a
+    fixed 1900 threshold was correct there. Lianghua's project-owned restored
+    parquet set is currently a 1200-name universe; auto mode prevents a complete
+    1200/1200 build from becoming a false research blocker while still failing a
+    2000-name request that only loads ~1200 files.
+    """
+
+    if explicit_min > 0:
+        return explicit_min, "explicit_cli"
+    if not (0.0 < coverage_ratio <= 1.0):
+        raise ValueError("min_entity_coverage_ratio must be within (0, 1]")
+    summary = build_report.get("summary", {}) if isinstance(build_report, dict) else {}
+    reference = summary.get("symbols_requested") or summary.get("symbols_loaded")
+    if reference is None:
+        raise ValueError(
+            "cannot auto-derive V31 min_entities: build report lacks symbols_requested/symbols_loaded"
+        )
+    try:
+        reference_count = int(reference)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "cannot auto-derive V31 min_entities: build report lacks symbols_requested/symbols_loaded"
+        ) from exc
+    return max(1, int(math.ceil(reference_count * coverage_ratio))), (
+        f"auto_{coverage_ratio:.2%}_of_build_universe_{reference_count}"
+    )
+
+
 def build_report(
     *,
     pit_path: Path,
@@ -148,7 +201,21 @@ def build_report(
     min_dates: int,
     min_corporate_action_entities: int,
     generated_at: datetime,
+    min_entity_coverage_ratio: float = 0.95,
 ) -> dict[str, Any]:
+    build_report = _load_json(build_report_path)
+    resolved_min_entities, min_entities_source = _auto_min_entities(
+        explicit_min=min_entities,
+        build_report=build_report,
+        coverage_ratio=min_entity_coverage_ratio,
+    )
+    resolved_min_corporate_action_entities, min_corporate_action_entities_source = (
+        _auto_min_entities(
+            explicit_min=min_corporate_action_entities,
+            build_report=build_report,
+            coverage_ratio=min_entity_coverage_ratio,
+        )
+    )
     rows = [
         _audit_file(
             requirement_id="free_pit_security_master_approx",
@@ -171,7 +238,7 @@ def build_report(
             date_column="date",
             entity_column="code",
             min_dates=min_dates,
-            min_entities=min_entities,
+            min_entities=resolved_min_entities,
         ),
         _audit_file(
             requirement_id="free_trading_status_approx",
@@ -195,7 +262,7 @@ def build_report(
             date_column="date",
             entity_column="code",
             min_dates=min_dates,
-            min_entities=min_entities,
+            min_entities=resolved_min_entities,
         ),
         _audit_file(
             requirement_id="free_corporate_action_column_audit",
@@ -216,10 +283,9 @@ def build_report(
             date_column="date",
             entity_column="code",
             min_dates=1,
-            min_entities=min_corporate_action_entities,
+            min_entities=resolved_min_corporate_action_entities,
         ),
     ]
-    build_report = _load_json(build_report_path)
     research_blockers = [
         f"{item['requirement_id']}:{','.join(item['failures'])}"
         for item in rows
@@ -240,9 +306,12 @@ def build_report(
         "free_research_ready": free_research_ready,
         "production_data_ready": False,
         "thresholds": {
-            "min_entities": min_entities,
+            "min_entities": resolved_min_entities,
             "min_dates": min_dates,
-            "min_corporate_action_entities": min_corporate_action_entities,
+            "min_corporate_action_entities": resolved_min_corporate_action_entities,
+            "min_entity_coverage_ratio": min_entity_coverage_ratio,
+            "min_entities_source": min_entities_source,
+            "min_corporate_action_entities_source": min_corporate_action_entities_source,
         },
         "requirements": rows,
         "summary": {
@@ -251,7 +320,9 @@ def build_report(
             "research_blocker_count": len(research_blockers),
             "production_blocker_count": len(production_blockers),
             "build_symbols_loaded": build_report.get("summary", {}).get("symbols_loaded"),
-            "build_unique_trading_dates": build_report.get("summary", {}).get("unique_trading_dates"),
+            "build_unique_trading_dates": build_report.get("summary", {}).get(
+                "unique_trading_dates"
+            ),
             "build_failure_count": build_report.get("failure_count"),
         },
         "build_report_path": str(build_report_path),
@@ -302,6 +373,7 @@ def main() -> None:
         min_dates=args.min_dates,
         min_corporate_action_entities=args.min_corporate_action_entities,
         generated_at=datetime.now(timezone.utc),
+        min_entity_coverage_ratio=args.min_entity_coverage_ratio,
     )
     write_report(report, output_json=Path(args.output_json), output_csv=Path(args.output_csv))
     print(

@@ -19,7 +19,9 @@ def _load_module(name: str):
     return module
 
 
-def _write_price_file(path: Path, dates: pd.DatetimeIndex, *, zero_volume_index: int | None = None) -> None:
+def _write_price_file(
+    path: Path, dates: pd.DatetimeIndex, *, zero_volume_index: int | None = None
+) -> None:
     frame = pd.DataFrame(
         {
             "open": [10.0, 10.0, 11.0, 12.0][: len(dates)],
@@ -116,6 +118,59 @@ def test_v31_quality_gate_is_research_ready_but_not_production_ready(tmp_path) -
     assert report["production_data_ready"] is False
     assert report["summary"]["research_ready_count"] == 3
     assert any("V30 production-data gate" in blocker for blocker in report["production_blockers"])
+
+
+def test_v31_quality_gate_auto_threshold_uses_requested_universe(tmp_path) -> None:
+    validate = _load_module("validate_v31_free_data_quality_gate")
+    output_dir, corporate_action_path = _build_sample_outputs(tmp_path)
+    build_report = tmp_path / "build_report.json"
+    build_report.write_text(
+        '{"summary": {"symbols_requested": 2, "symbols_loaded": 2, "unique_trading_dates": 4}, "failure_count": 0}',
+        encoding="utf-8",
+    )
+
+    report = validate.build_report(
+        pit_path=output_dir / "pit_universe_v31.parquet",
+        status_path=output_dir / "trading_status_v31.parquet",
+        corporate_action_path=corporate_action_path,
+        build_report_path=build_report,
+        min_entities=0,
+        min_dates=4,
+        min_corporate_action_entities=0,
+        min_entity_coverage_ratio=0.95,
+        generated_at=datetime(2026, 6, 18, tzinfo=timezone.utc),
+    )
+
+    assert report["free_research_ready"] is True
+    assert report["thresholds"]["min_entities"] == 2
+    assert report["thresholds"]["min_corporate_action_entities"] == 2
+    assert report["thresholds"]["min_entities_source"].startswith("auto_95.00%")
+
+
+def test_v31_quality_gate_auto_threshold_still_fails_partial_2000_universe(tmp_path) -> None:
+    validate = _load_module("validate_v31_free_data_quality_gate")
+    output_dir, corporate_action_path = _build_sample_outputs(tmp_path)
+    build_report = tmp_path / "build_report.json"
+    build_report.write_text(
+        '{"summary": {"symbols_requested": 2000, "symbols_loaded": 2, "unique_trading_dates": 4}, "failure_count": 1998}',
+        encoding="utf-8",
+    )
+
+    report = validate.build_report(
+        pit_path=output_dir / "pit_universe_v31.parquet",
+        status_path=output_dir / "trading_status_v31.parquet",
+        corporate_action_path=corporate_action_path,
+        build_report_path=build_report,
+        min_entities=0,
+        min_dates=4,
+        min_corporate_action_entities=0,
+        min_entity_coverage_ratio=0.95,
+        generated_at=datetime(2026, 6, 18, tzinfo=timezone.utc),
+    )
+
+    assert report["free_research_ready"] is False
+    assert report["thresholds"]["min_entities"] == 1900
+    assert any("unique_entities<1900" in blocker for blocker in report["research_blockers"])
 
 
 def test_v31_summary_is_visible_in_strategy_readiness(tmp_path) -> None:

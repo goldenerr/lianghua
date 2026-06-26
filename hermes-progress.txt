@@ -8,6 +8,7 @@
 - Verified V49/V45 paper evidence cron exists and is enabled (`dfe115126180`, weekdays 17:50, workdir lianghua). Runtime ledger under ignored `data/runtime/v49_v45/` has 2 report days (2026-06-24..2026-06-25); gate requires >=90 calendar days and >=60 report days, so no manual fabrication/backfill was done.
 - Added `scripts/diagnose_v29_recent90_regime.py` for research-only recent-90 regime/risk attribution without parameter tuning. Diagnostic output: `data/backtest_results/quant_v29_recent90_regime_diagnostic.json`. Longhorizon recent-90 Sharpe=-2.4941, return=-3.56%, MDD=-4.50%; ultradefensive recent-90 Sharpe=-2.67, return=-2.40%, MDD=-3.10%. Weakness is concentrated in stock sleeves, especially May 2026, while crisis/carry sleeves did not offset enough.
 - Verification: `./init.sh dev`, `scripts/run_production_tests.py` passed 6/6, V31/V30/V44/V48/V42 validation scripts executed, V49/V45 daily runner smoke with `--allow-replace` passed, and `ruff check`/`py_compile` passed for the new diagnostic script.
+- Follow-up fix: V31 quality gate no longer hard-codes the old 2000-name/1900 threshold when run with default arguments. It now auto-derives the research threshold from the V31 build report (`95%` of `symbols_requested`, currently 1140 for the lianghua 1200 universe), while still failing a partial 2000-name build. Added system tests for both cases; default `scripts/validate_v31_free_data_quality_gate.py --require-free-research-ready` now passes on current lianghua data.
 
 ## Safety Baseline Fixes (2026-06-24) - PRODUCTION BLOCKED
 
