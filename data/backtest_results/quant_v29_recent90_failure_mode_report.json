@@ -1,0 +1,134 @@
+{
+  "ts": "2026-06-26T06:32:47.200580+00:00",
+  "version": "V29-recent90-failure-mode-report",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "input_version": "V29-recent90-regime-diagnostic",
+  "candidate_count": 2,
+  "global_failure_modes": [
+    "defensive_sleeve_under_offset",
+    "drawdown_scaling_active_after_damage",
+    "regime_detection_lag_or_under_de_risking",
+    "stock_alpha_sleeve_decay"
+  ],
+  "classifications": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "recent_total_return": -0.0356,
+      "recent_sharpe": -2.4941,
+      "recent_mdd": -0.045,
+      "stock_alpha_contribution": -0.036188,
+      "crisis_contribution": 0.001783,
+      "carry_contribution": 0.0,
+      "avg_stock_exposure": 0.2456,
+      "risk_off_ratio": 0.3556,
+      "drawdown_scaling_ratio": 0.2,
+      "worst_month": {
+        "month": "2026-05",
+        "return": -0.027217,
+        "avg_stock_exposure": 0.4574,
+        "avg_crisis_weight": 0.4069,
+        "avg_carry_weight": 0.1356,
+        "risk_off_ratio": 0.0,
+        "cost_sum": 0.000452,
+        "contrib_price_ic_alpha": -0.005171,
+        "contrib_price_ic_diversified": -0.006423,
+        "contrib_price_lowvol_reversal": -0.011035,
+        "contrib_price_defensive_breadth": -0.004558,
+        "crisis_contrib": 0.00033,
+        "carry_contrib": 0.0
+      },
+      "negative_sources": [
+        {
+          "source": "contrib_price_lowvol_reversal",
+          "contribution_sum": -0.013018
+        },
+        {
+          "source": "contrib_price_ic_diversified",
+          "contribution_sum": -0.009045
+        },
+        {
+          "source": "contrib_price_defensive_breadth",
+          "contribution_sum": -0.0073
+        },
+        {
+          "source": "contrib_price_ic_alpha",
+          "contribution_sum": -0.006825
+        }
+      ],
+      "failure_modes": [
+        "stock_alpha_sleeve_decay",
+        "defensive_sleeve_under_offset",
+        "regime_detection_lag_or_under_de_risking",
+        "drawdown_scaling_active_after_damage"
+      ],
+      "recommended_next_work": [
+        "Run signal-decay diagnostics by sleeve and month before any parameter changes.",
+        "Audit risk-off trigger timing around the worst month; compare signal date vs drawdown start without changing thresholds.",
+        "Evaluate whether crisis/carry sleeves are true offsets in the current A-share regime; do not simply increase weights.",
+        "Check whether drawdown scaling reacts after losses rather than before them; keep it as diagnostics only."
+      ],
+      "production_ready": false,
+      "not_parameter_tuning": true
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "recent_total_return": -0.024,
+      "recent_sharpe": -2.67,
+      "recent_mdd": -0.031,
+      "stock_alpha_contribution": -0.026327,
+      "crisis_contribution": 0.002675,
+      "carry_contribution": 0.0,
+      "avg_stock_exposure": 0.1749,
+      "risk_off_ratio": 0.3556,
+      "drawdown_scaling_ratio": 0.0,
+      "worst_month": {
+        "month": "2026-05",
+        "return": -0.018951,
+        "avg_stock_exposure": 0.3145,
+        "avg_crisis_weight": 0.6855,
+        "avg_carry_weight": 0.0,
+        "risk_off_ratio": 0.0,
+        "cost_sum": 0.000132,
+        "contrib_price_ic_diversified": -0.007579,
+        "contrib_price_lowvol_reversal": -0.006904,
+        "contrib_price_defensive_breadth": -0.004921,
+        "crisis_contrib": 0.000531,
+        "carry_contrib": 0.0
+      },
+      "negative_sources": [
+        {
+          "source": "contrib_price_ic_diversified",
+          "contribution_sum": -0.010157
+        },
+        {
+          "source": "contrib_price_lowvol_reversal",
+          "contribution_sum": -0.00837
+        },
+        {
+          "source": "contrib_price_defensive_breadth",
+          "contribution_sum": -0.0078
+        }
+      ],
+      "failure_modes": [
+        "stock_alpha_sleeve_decay",
+        "defensive_sleeve_under_offset",
+        "regime_detection_lag_or_under_de_risking"
+      ],
+      "recommended_next_work": [
+        "Run signal-decay diagnostics by sleeve and month before any parameter changes.",
+        "Audit risk-off trigger timing around the worst month; compare signal date vs drawdown start without changing thresholds.",
+        "Evaluate whether crisis/carry sleeves are true offsets in the current A-share regime; do not simply increase weights."
+      ],
+      "production_ready": false,
+      "not_parameter_tuning": true
+    }
+  ],
+  "decision": {
+    "can_claim_industry_leading": false,
+    "can_pass_production": false,
+    "should_parameter_tune_now": false,
+    "next_step_class": "signal/regime/risk diagnostics, not small parameter tuning"
+  }
+}
