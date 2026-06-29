@@ -1,0 +1,646 @@
+{
+  "ts": "2026-06-29T09:25:42.009156+00:00",
+  "version": "V29-recent90-daily-liquidity-score-bucket-state-may2026",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "target_month": "2026-05",
+  "coverage": {
+    "symbols_loaded": 1198,
+    "dates": 4972,
+    "industry_overlap": 1138,
+    "trading_constraint_summary": {
+      "enabled": true,
+      "path": "data/security_master/free_pit_approx/trading_status_v31.parquet",
+      "exists": true,
+      "mode": "V31-free-trading-status-next-bar-execution",
+      "rows_loaded": 3823163,
+      "unique_dates": 4972,
+      "unique_symbols": 1198,
+      "missing_columns": [],
+      "limitations": [
+        "V31 status is free-source research approximation, not production trading-status evidence.",
+        "Orders are constrained using next bar status to stress-test tradability in daily research.",
+        "ST status remains unknown in V31 and is not used as a hard constraint here."
+      ]
+    },
+    "window": {
+      "pre_start": "2026-04-02",
+      "target_start": "2026-05-01",
+      "target_end": "2026-05-31",
+      "pre_days": 20
+    }
+  },
+  "observation_days": 3,
+  "selected_stock_row_count": 23562,
+  "daily_bucket_state_count": 722,
+  "trigger_specs": {
+    "v29_price_meta_longhorizon_guard": [
+      {
+        "bucket_type": "liquidity_bucket",
+        "bucket": "low_amount_proxy",
+        "stress_score": 0.147498,
+        "target_contribution": -0.075338,
+        "daily_trigger_threshold": -0.01255633
+      },
+      {
+        "bucket_type": "liquidity_bucket",
+        "bucket": "mid_amount_proxy",
+        "stress_score": 0.141759,
+        "target_contribution": -0.078418,
+        "daily_trigger_threshold": -0.01306967
+      },
+      {
+        "bucket_type": "score_bucket",
+        "bucket": "selected_mid",
+        "stress_score": 0.135056,
+        "target_contribution": -0.071377,
+        "daily_trigger_threshold": -0.01189617
+      },
+      {
+        "bucket_type": "score_bucket",
+        "bucket": "selected_top",
+        "stress_score": 0.123394,
+        "target_contribution": -0.059735,
+        "daily_trigger_threshold": -0.00995583
+      },
+      {
+        "bucket_type": "score_bucket",
+        "bucket": "selected_low",
+        "stress_score": 0.11414,
+        "target_contribution": -0.056367,
+        "daily_trigger_threshold": -0.0093945
+      },
+      {
+        "bucket_type": "sleeve",
+        "bucket": "price_ic_diversified",
+        "stress_score": 0.103408,
+        "target_contribution": -0.051769,
+        "daily_trigger_threshold": -0.00862817
+      },
+      {
+        "bucket_type": "sleeve",
+        "bucket": "price_lowvol_reversal",
+        "stress_score": 0.098706,
+        "target_contribution": -0.053975,
+        "daily_trigger_threshold": -0.00899583
+      },
+      {
+        "bucket_type": "sleeve",
+        "bucket": "price_ic_alpha",
+        "stress_score": 0.091445,
+        "target_contribution": -0.041511,
+        "daily_trigger_threshold": -0.0069185
+      }
+    ],
+    "v29_price_meta_ultradefensive": [
+      {
+        "bucket_type": "liquidity_bucket",
+        "bucket": "low_amount_proxy",
+        "stress_score": 0.112414,
+        "target_contribution": -0.060101,
+        "daily_trigger_threshold": -0.01001683
+      },
+      {
+        "bucket_type": "sleeve",
+        "bucket": "price_ic_diversified",
+        "stress_score": 0.103408,
+        "target_contribution": -0.051769,
+        "daily_trigger_threshold": -0.00862817
+      },
+      {
+        "bucket_type": "score_bucket",
+        "bucket": "selected_mid",
+        "stress_score": 0.100885,
+        "target_contribution": -0.055429,
+        "daily_trigger_threshold": -0.00923817
+      },
+      {
+        "bucket_type": "liquidity_bucket",
+        "bucket": "mid_amount_proxy",
+        "stress_score": 0.100607,
+        "target_contribution": -0.053682,
+        "daily_trigger_threshold": -0.008947
+      },
+      {
+        "bucket_type": "sleeve",
+        "bucket": "price_lowvol_reversal",
+        "stress_score": 0.098706,
+        "target_contribution": -0.053975,
+        "daily_trigger_threshold": -0.00899583
+      },
+      {
+        "bucket_type": "score_bucket",
+        "bucket": "selected_top",
+        "stress_score": 0.092224,
+        "target_contribution": -0.045404,
+        "daily_trigger_threshold": -0.00756733
+      },
+      {
+        "bucket_type": "score_bucket",
+        "bucket": "selected_low",
+        "stress_score": 0.088325,
+        "target_contribution": -0.045136,
+        "daily_trigger_threshold": -0.00752267
+      },
+      {
+        "bucket_type": "sleeve",
+        "bucket": "price_defensive_breadth",
+        "stress_score": 0.084018,
+        "target_contribution": -0.040226,
+        "daily_trigger_threshold": -0.00670433
+      }
+    ]
+  },
+  "summaries": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "can_change_strategy_now": false,
+      "diagnosis": "daily_bucket_state_available",
+      "bucket_day_count": 380,
+      "flagged_bucket_day_count": 115,
+      "bucket_type_summary": [
+        {
+          "bucket_type": "liquidity_bucket",
+          "contribution_sum": -0.196156,
+          "flagged_bucket_day_count": 29,
+          "bucket_count": 3
+        },
+        {
+          "bucket_type": "score_bucket",
+          "contribution_sum": -0.196156,
+          "flagged_bucket_day_count": 44,
+          "bucket_count": 3
+        },
+        {
+          "bucket_type": "sleeve",
+          "contribution_sum": -0.196156,
+          "flagged_bucket_day_count": 42,
+          "bucket_count": 4
+        }
+      ],
+      "worst_bucket_days": [
+        {
+          "date": "2026-05-14",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.039258,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_mid",
+          "contribution_sum": -0.033112,
+          "rolling_prior_contribution": -0.000311,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-04-28",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.031833,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-21",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.030653,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_low",
+          "contribution_sum": -0.030438,
+          "rolling_prior_contribution": 0.00322,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-04-28",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_low",
+          "contribution_sum": -0.029196,
+          "rolling_prior_contribution": -0.029126,
+          "bucket_stress_flag": true
+        },
+        {
+          "date": "2026-05-27",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.028882,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-21",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_low",
+          "contribution_sum": -0.028531,
+          "rolling_prior_contribution": -0.001381,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "mid_amount_proxy",
+          "contribution_sum": -0.028348,
+          "rolling_prior_contribution": -0.006093,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_top",
+          "contribution_sum": -0.027961,
+          "rolling_prior_contribution": -0.011323,
+          "bucket_stress_flag": true
+        },
+        {
+          "date": "2026-05-27",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "mid_amount_proxy",
+          "contribution_sum": -0.027862,
+          "rolling_prior_contribution": -0.000678,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-27",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_mid",
+          "contribution_sum": -0.027097,
+          "rolling_prior_contribution": 0.008586,
+          "bucket_stress_flag": false
+        }
+      ],
+      "next_step": "Use this daily liquidity/score state for a lagged bucket-aware simulation; do not change strategy code from this trace alone."
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "can_change_strategy_now": false,
+      "diagnosis": "daily_bucket_state_available",
+      "bucket_day_count": 342,
+      "flagged_bucket_day_count": 114,
+      "bucket_type_summary": [
+        {
+          "bucket_type": "sleeve",
+          "contribution_sum": -0.155436,
+          "flagged_bucket_day_count": 42,
+          "bucket_count": 3
+        },
+        {
+          "bucket_type": "liquidity_bucket",
+          "contribution_sum": -0.155436,
+          "flagged_bucket_day_count": 28,
+          "bucket_count": 3
+        },
+        {
+          "bucket_type": "score_bucket",
+          "contribution_sum": -0.155436,
+          "flagged_bucket_day_count": 44,
+          "bucket_count": 3
+        }
+      ],
+      "worst_bucket_days": [
+        {
+          "date": "2026-05-14",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.027779,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "sleeve",
+          "bucket": "price_ic_diversified",
+          "contribution_sum": -0.025841,
+          "rolling_prior_contribution": -0.00285,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-04-28",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.024582,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_mid",
+          "contribution_sum": -0.023931,
+          "rolling_prior_contribution": 0.001206,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_low",
+          "contribution_sum": -0.023831,
+          "rolling_prior_contribution": 0.002394,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-04-28",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_low",
+          "contribution_sum": -0.023239,
+          "rolling_prior_contribution": -0.020913,
+          "bucket_stress_flag": true
+        },
+        {
+          "date": "2026-05-21",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.022253,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "sleeve",
+          "bucket": "price_lowvol_reversal",
+          "contribution_sum": -0.021982,
+          "rolling_prior_contribution": -0.000351,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-14",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "mid_amount_proxy",
+          "contribution_sum": -0.021967,
+          "rolling_prior_contribution": -0.003003,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-27",
+          "bucket_type": "score_bucket",
+          "bucket": "selected_mid",
+          "contribution_sum": -0.021582,
+          "rolling_prior_contribution": 0.001044,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-27",
+          "bucket_type": "liquidity_bucket",
+          "bucket": "high_amount_proxy",
+          "contribution_sum": -0.021555,
+          "rolling_prior_contribution": 0.0,
+          "bucket_stress_flag": false
+        },
+        {
+          "date": "2026-05-27",
+          "bucket_type": "sleeve",
+          "bucket": "price_ic_diversified",
+          "contribution_sum": -0.021261,
+          "rolling_prior_contribution": 0.006532,
+          "bucket_stress_flag": false
+        }
+      ],
+      "next_step": "Use this daily liquidity/score state for a lagged bucket-aware simulation; do not change strategy code from this trace alone."
+    }
+  ],
+  "top_flagged_bucket_days": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-19",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_mid",
+      "contribution_sum": 0.018759,
+      "rolling_prior_contribution": -0.051003,
+      "daily_trigger_threshold": -0.011896
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-19",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_low",
+      "contribution_sum": 0.015959,
+      "rolling_prior_contribution": -0.049614,
+      "daily_trigger_threshold": -0.009395
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-07",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_mid",
+      "contribution_sum": 0.007394,
+      "rolling_prior_contribution": -0.046989,
+      "daily_trigger_threshold": -0.011896
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-19",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_top",
+      "contribution_sum": 0.016536,
+      "rolling_prior_contribution": -0.045276,
+      "daily_trigger_threshold": -0.009956
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-19",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "low_amount_proxy",
+      "contribution_sum": 0.013825,
+      "rolling_prior_contribution": -0.044284,
+      "daily_trigger_threshold": -0.012556
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-19",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "mid_amount_proxy",
+      "contribution_sum": 0.020672,
+      "rolling_prior_contribution": -0.044215,
+      "daily_trigger_threshold": -0.01307
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-07",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_top",
+      "contribution_sum": 0.007198,
+      "rolling_prior_contribution": -0.04391,
+      "daily_trigger_threshold": -0.009956
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-15",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_mid",
+      "contribution_sum": -0.01202,
+      "rolling_prior_contribution": -0.042407,
+      "daily_trigger_threshold": -0.011896
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-07",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "mid_amount_proxy",
+      "contribution_sum": 0.009319,
+      "rolling_prior_contribution": -0.042384,
+      "daily_trigger_threshold": -0.01307
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-07",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "low_amount_proxy",
+      "contribution_sum": 0.006052,
+      "rolling_prior_contribution": -0.040718,
+      "daily_trigger_threshold": -0.012556
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-19",
+      "bucket_type": "sleeve",
+      "bucket": "price_ic_alpha",
+      "contribution_sum": 0.016511,
+      "rolling_prior_contribution": -0.04029,
+      "daily_trigger_threshold": -0.006919
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-29",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_low",
+      "contribution_sum": 0.018843,
+      "rolling_prior_contribution": -0.040258,
+      "daily_trigger_threshold": -0.009395
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-08",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_mid",
+      "contribution_sum": 0.047067,
+      "rolling_prior_contribution": -0.039595,
+      "daily_trigger_threshold": -0.011896
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-29",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "mid_amount_proxy",
+      "contribution_sum": -0.012266,
+      "rolling_prior_contribution": -0.039496,
+      "daily_trigger_threshold": -0.01307
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "date": "2026-05-19",
+      "bucket_type": "sleeve",
+      "bucket": "price_lowvol_reversal",
+      "contribution_sum": 0.011752,
+      "rolling_prior_contribution": -0.039321,
+      "daily_trigger_threshold": -0.008996
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-19",
+      "bucket_type": "sleeve",
+      "bucket": "price_lowvol_reversal",
+      "contribution_sum": 0.011752,
+      "rolling_prior_contribution": -0.039321,
+      "daily_trigger_threshold": -0.008996
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-15",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "low_amount_proxy",
+      "contribution_sum": -0.006642,
+      "rolling_prior_contribution": -0.039176,
+      "daily_trigger_threshold": -0.012556
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-29",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "low_amount_proxy",
+      "contribution_sum": 0.001502,
+      "rolling_prior_contribution": -0.03902,
+      "daily_trigger_threshold": -0.012556
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-29",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_top",
+      "contribution_sum": 0.002081,
+      "rolling_prior_contribution": -0.038972,
+      "daily_trigger_threshold": -0.009956
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-15",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_top",
+      "contribution_sum": -0.006693,
+      "rolling_prior_contribution": -0.038815,
+      "daily_trigger_threshold": -0.009956
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-29",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_mid",
+      "contribution_sum": -0.022992,
+      "rolling_prior_contribution": -0.038463,
+      "daily_trigger_threshold": -0.011896
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-07",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_low",
+      "contribution_sum": 0.008112,
+      "rolling_prior_contribution": -0.03796,
+      "daily_trigger_threshold": -0.009395
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-05-15",
+      "bucket_type": "liquidity_bucket",
+      "bucket": "mid_amount_proxy",
+      "contribution_sum": -0.010248,
+      "rolling_prior_contribution": -0.037732,
+      "daily_trigger_threshold": -0.01307
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "date": "2026-05-19",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_low",
+      "contribution_sum": 0.010342,
+      "rolling_prior_contribution": -0.036916,
+      "daily_trigger_threshold": -0.007523
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "date": "2026-04-08",
+      "bucket_type": "score_bucket",
+      "bucket": "selected_top",
+      "contribution_sum": 0.040225,
+      "rolling_prior_contribution": -0.036712,
+      "daily_trigger_threshold": -0.009956
+    }
+  ],
+  "decision": {
+    "can_change_strategy_now": false,
+    "next_step_class": "daily liquidity/score bucket-aware simulation, still research-only",
+    "reason": "The sleeve-only proxy was falsified; this creates the missing daily bucket state needed for a better hypothesis."
+  },
+  "elapsed_seconds": 83.5
+}
