@@ -1,0 +1,525 @@
+{
+  "ts": "2026-06-29T03:17:13.846199+00:00",
+  "version": "V29-recent90-historical-bucket-contrast-may2026",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "universe": "data/stock_list.json",
+  "target_month": "2026-05",
+  "window": {
+    "start_date": "20170101",
+    "end_date": "20260625"
+  },
+  "coverage": {
+    "symbols_loaded": 1198,
+    "dates": 2299,
+    "industry_overlap": 1138,
+    "trading_constraint_summary": {
+      "enabled": true,
+      "path": "data/security_master/free_pit_approx/trading_status_v31.parquet",
+      "exists": true,
+      "mode": "V31-free-trading-status-next-bar-execution",
+      "rows_loaded": 2357100,
+      "unique_dates": 2299,
+      "unique_symbols": 1198,
+      "missing_columns": [],
+      "limitations": [
+        "V31 status is free-source research approximation, not production trading-status evidence.",
+        "Orders are constrained using next bar status to stress-test tradability in daily research.",
+        "ST status remains unknown in V31 and is not used as a hard constraint here."
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "target_month": "2026-05",
+      "diagnosis": "failed_buckets_flip_vs_positive_history",
+      "target_raw_contribution": -0.18748,
+      "month_count": 102,
+      "positive_month_count": 62,
+      "contrasts": {
+        "industry": [
+          {
+            "bucket": "I65软件和信息技术服务业",
+            "target_contribution": -0.03726,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.016683,
+            "historical_positive_median": 0.009659,
+            "historical_positive_hit_rate": 0.822581,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C35专用设备制造业",
+            "target_contribution": -0.029944,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.018312,
+            "historical_positive_median": 0.012809,
+            "historical_positive_hit_rate": 0.887097,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C26化学原料和化学制品制造业",
+            "target_contribution": -0.018303,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.007323,
+            "historical_positive_median": 0.005886,
+            "historical_positive_hit_rate": 0.709677,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "__UNKNOWN__",
+            "target_contribution": -0.015698,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.015656,
+            "historical_positive_median": 0.01521,
+            "historical_positive_hit_rate": 0.870968,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C38电气机械和器材制造业",
+            "target_contribution": -0.013246,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.015852,
+            "historical_positive_median": 0.010832,
+            "historical_positive_hit_rate": 0.83871,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C34通用设备制造业",
+            "target_contribution": -0.011155,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.010476,
+            "historical_positive_median": 0.008202,
+            "historical_positive_hit_rate": 0.822581,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "liquidity_bucket": [
+          {
+            "bucket": "mid_amount_proxy",
+            "target_contribution": -0.078418,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.067709,
+            "historical_positive_median": 0.056288,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "low_amount_proxy",
+            "target_contribution": -0.075338,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.075829,
+            "historical_positive_median": 0.068659,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "high_amount_proxy",
+            "target_contribution": -0.033724,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.055341,
+            "historical_positive_median": 0.037732,
+            "historical_positive_hit_rate": 0.887097,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "score_bucket": [
+          {
+            "bucket": "selected_mid",
+            "target_contribution": -0.071377,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.066917,
+            "historical_positive_median": 0.054191,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "selected_top",
+            "target_contribution": -0.059735,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.068049,
+            "historical_positive_median": 0.056174,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "selected_low",
+            "target_contribution": -0.056367,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.063963,
+            "historical_positive_median": 0.052209,
+            "historical_positive_hit_rate": 0.903226,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "sleeve": [
+          {
+            "bucket": "price_lowvol_reversal",
+            "target_contribution": -0.053975,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.048655,
+            "historical_positive_median": 0.036254,
+            "historical_positive_hit_rate": 0.919355,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "price_ic_diversified",
+            "target_contribution": -0.051769,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.051639,
+            "historical_positive_median": 0.039263,
+            "historical_positive_hit_rate": 1.0,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "price_ic_alpha",
+            "target_contribution": -0.041511,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.052473,
+            "historical_positive_median": 0.040737,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "price_defensive_breadth",
+            "target_contribution": -0.040226,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.046019,
+            "historical_positive_median": 0.035671,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ]
+      },
+      "monthly_totals_tail": [
+        {
+          "month": "2025-07",
+          "raw_contribution": 0.197215,
+          "row_count": 7820
+        },
+        {
+          "month": "2025-08",
+          "raw_contribution": 0.300967,
+          "row_count": 7140
+        },
+        {
+          "month": "2025-09",
+          "raw_contribution": 0.040552,
+          "row_count": 7458
+        },
+        {
+          "month": "2025-10",
+          "raw_contribution": 0.067128,
+          "row_count": 5742
+        },
+        {
+          "month": "2025-11",
+          "raw_contribution": 0.003993,
+          "row_count": 6770
+        },
+        {
+          "month": "2025-12",
+          "raw_contribution": 0.107504,
+          "row_count": 7797
+        },
+        {
+          "month": "2026-01",
+          "raw_contribution": 0.338504,
+          "row_count": 6790
+        },
+        {
+          "month": "2026-02",
+          "raw_contribution": 0.09576,
+          "row_count": 4760
+        },
+        {
+          "month": "2026-03",
+          "raw_contribution": -0.373568,
+          "row_count": 7483
+        },
+        {
+          "month": "2026-04",
+          "raw_contribution": 0.106254,
+          "row_count": 7140
+        },
+        {
+          "month": "2026-05",
+          "raw_contribution": -0.18748,
+          "row_count": 6120
+        },
+        {
+          "month": "2026-06",
+          "raw_contribution": -0.323785,
+          "row_count": 6072
+        }
+      ],
+      "next_required_diagnostics": [
+        "If failed buckets flip from positive history, design a sleeve/bucket-aware risk flag as a hypothesis only, then validate by WF/random/look-ahead/monthly checks.",
+        "If buckets are historically weak, investigate stale alpha definitions before changing market regime thresholds.",
+        "Do not change factor signs, top_n, crisis weights or exposure thresholds from this contrast alone."
+      ]
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "target_month": "2026-05",
+      "diagnosis": "failed_buckets_flip_vs_positive_history",
+      "target_raw_contribution": -0.145969,
+      "month_count": 102,
+      "positive_month_count": 62,
+      "contrasts": {
+        "industry": [
+          {
+            "bucket": "I65软件和信息技术服务业",
+            "target_contribution": -0.028271,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.012395,
+            "historical_positive_median": 0.007371,
+            "historical_positive_hit_rate": 0.806452,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C35专用设备制造业",
+            "target_contribution": -0.022405,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.013544,
+            "historical_positive_median": 0.009867,
+            "historical_positive_hit_rate": 0.903226,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "__UNKNOWN__",
+            "target_contribution": -0.01406,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.011439,
+            "historical_positive_median": 0.010063,
+            "historical_positive_hit_rate": 0.887097,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C26化学原料和化学制品制造业",
+            "target_contribution": -0.01333,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.005708,
+            "historical_positive_median": 0.00374,
+            "historical_positive_hit_rate": 0.758065,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C34通用设备制造业",
+            "target_contribution": -0.00919,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.007473,
+            "historical_positive_median": 0.006114,
+            "historical_positive_hit_rate": 0.806452,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "C38电气机械和器材制造业",
+            "target_contribution": -0.008458,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.011918,
+            "historical_positive_median": 0.008384,
+            "historical_positive_hit_rate": 0.870968,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "liquidity_bucket": [
+          {
+            "bucket": "low_amount_proxy",
+            "target_contribution": -0.060101,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.055921,
+            "historical_positive_median": 0.047945,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "mid_amount_proxy",
+            "target_contribution": -0.053682,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.049311,
+            "historical_positive_median": 0.043516,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "high_amount_proxy",
+            "target_contribution": -0.032185,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.041174,
+            "historical_positive_median": 0.025124,
+            "historical_positive_hit_rate": 0.83871,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "score_bucket": [
+          {
+            "bucket": "selected_mid",
+            "target_contribution": -0.055429,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.048591,
+            "historical_positive_median": 0.038981,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "selected_top",
+            "target_contribution": -0.045404,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.050049,
+            "historical_positive_median": 0.040431,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "selected_low",
+            "target_contribution": -0.045136,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.047816,
+            "historical_positive_median": 0.041296,
+            "historical_positive_hit_rate": 0.903226,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "sleeve": [
+          {
+            "bucket": "price_lowvol_reversal",
+            "target_contribution": -0.053975,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.048655,
+            "historical_positive_median": 0.036254,
+            "historical_positive_hit_rate": 0.919355,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "price_ic_diversified",
+            "target_contribution": -0.051769,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.051639,
+            "historical_positive_median": 0.039263,
+            "historical_positive_hit_rate": 1.0,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket": "price_defensive_breadth",
+            "target_contribution": -0.040226,
+            "positive_month_count": 62,
+            "historical_positive_mean": 0.046019,
+            "historical_positive_median": 0.035671,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "diagnosis": "target_negative_vs_positive_history"
+          }
+        ]
+      },
+      "monthly_totals_tail": [
+        {
+          "month": "2025-07",
+          "raw_contribution": 0.151066,
+          "row_count": 6440
+        },
+        {
+          "month": "2025-08",
+          "raw_contribution": 0.212718,
+          "row_count": 5880
+        },
+        {
+          "month": "2025-09",
+          "raw_contribution": 0.032603,
+          "row_count": 6144
+        },
+        {
+          "month": "2025-10",
+          "raw_contribution": 0.060919,
+          "row_count": 4736
+        },
+        {
+          "month": "2025-11",
+          "raw_contribution": 0.006383,
+          "row_count": 5580
+        },
+        {
+          "month": "2025-12",
+          "raw_contribution": 0.0921,
+          "row_count": 6427
+        },
+        {
+          "month": "2026-01",
+          "raw_contribution": 0.255368,
+          "row_count": 5590
+        },
+        {
+          "month": "2026-02",
+          "raw_contribution": 0.063639,
+          "row_count": 3920
+        },
+        {
+          "month": "2026-03",
+          "raw_contribution": -0.285228,
+          "row_count": 6173
+        },
+        {
+          "month": "2026-04",
+          "raw_contribution": 0.07825,
+          "row_count": 5880
+        },
+        {
+          "month": "2026-05",
+          "raw_contribution": -0.145969,
+          "row_count": 5040
+        },
+        {
+          "month": "2026-06",
+          "raw_contribution": -0.250647,
+          "row_count": 5010
+        }
+      ],
+      "next_required_diagnostics": [
+        "If failed buckets flip from positive history, design a sleeve/bucket-aware risk flag as a hypothesis only, then validate by WF/random/look-ahead/monthly checks.",
+        "If buckets are historically weak, investigate stale alpha definitions before changing market regime thresholds.",
+        "Do not change factor signs, top_n, crisis weights or exposure thresholds from this contrast alone."
+      ]
+    }
+  ],
+  "decision": {
+    "can_change_strategy_now": false,
+    "diagnostic_class": "historical failed-bucket contrast, not parameter tuning",
+    "reason": "Need to distinguish a one-off regime miss from historically unstable buckets before any strategy hypothesis."
+  },
+  "elapsed_seconds": 198.44
+}
