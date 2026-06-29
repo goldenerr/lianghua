@@ -837,3 +837,11 @@
 - Bucket totals over the trace window: longhorizon liquidity/score/sleeve each sum to -0.196156 (same selected-stock contribution viewed through different bucket dimensions), with stress flags split liquidity=29, score=44, sleeve=42. Ultradefensive sum -0.155436 with stress flags sleeve=42, liquidity=28, score=44.
 - Interpretation: do not change strategy yet. Next step is a true daily liquidity/score bucket-aware lagged simulation using this trace, then randomized baseline/look-ahead/monthly validation. The current report only provides the missing state representation.
 - Validation: `tests/system/test_v29_recent90_daily_bucket_state.py` passed 3 tests with `--no-cov`; Ruff passed for the new script/test.
+
+## V29 Daily Liquidity/Score Bucket-Aware Flag Simulation (2026-06-29) - RESEARCH ONLY / NO STRATEGY CHANGE
+
+- Added `scripts/simulate_v29_daily_bucket_aware_flag.py` to run the first true bucket-aware lagged attribution simulation using daily `liquidity_bucket` and `score_bucket` stress state. Sleeve proxy is explicitly excluded because the sleeve-only flag failed the randomized baseline.
+- Generated `data/backtest_results/quant_v29_daily_bucket_aware_flag_simulation.json` and `docs/research/quant_v29_daily_bucket_aware_flag_simulation.md`.
+- Evidence: with observation_days=3, reduction_fraction=0.5 and max_daily_delta_fraction=0.25, longhorizon improves from -2.7217% to -1.7577% (`+0.9641%`, 12/18 flagged days). Ultradefensive improves from -1.8951% to -1.2460% (`+0.6491%`, 12/18 flagged days). date_flag_count=40 across both candidates.
+- Interpretation: true daily liquidity/score bucket state is much more promising than the falsified sleeve-only proxy, but this is still a capped attribution-level simulation and cannot change strategy code. Next required step is a randomized bucket-aware flag baseline, followed by look-ahead/monthly/WF validation if it beats random.
+- Validation: `tests/system/test_v29_daily_bucket_aware_simulation.py` passed 3 tests with `--no-cov`; Ruff passed for the new script/test.
