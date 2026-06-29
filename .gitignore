@@ -48,6 +48,7 @@ data/raw/
 data/processed/
 data/interim/
 data/*.parquet
+data/paper_state.json
 data/alt_archives/
 data/alt_features/
 data/analyst_expectations/

@@ -177,10 +177,11 @@ def main() -> None:
     )
     output = Path(args.output_json)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    rendered = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
+    output.write_text(rendered, encoding="utf-8")
     if args.alert_only and report["health_status"] == "ok":
         return
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    print(rendered, end="")
 
 
 if __name__ == "__main__":
