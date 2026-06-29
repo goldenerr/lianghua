@@ -820,3 +820,11 @@
 - Evidence: the lagged 3-day, 50% flagged-sleeve attribution gate is not a strong fix. Longhorizon baseline May compound return -2.7217% vs simulated -2.7152% (`+0.0065%`, 7/18 flagged days). Ultradefensive baseline -1.8951% vs simulated -1.9002% (`-0.0051%`, 8/18 flagged days). This falsifies the simple sleeve-only lagged gate as a sufficient repair.
 - Interpretation: a sleeve-only stress flag catches some dates but does not materially repair May-2026 and can slightly hurt the ultradefensive candidate. Next work should not promote this to strategy code; if continuing, compare against randomized flag baselines and/or broaden the research hypothesis to liquidity/score bucket state that is actually unavailable in the current daily meta trace.
 - Validation: `tests/system/test_v29_bucket_risk_flag_simulation.py` passed 3 tests with `--no-cov`; Ruff passed for the new script/test.
+
+## V29 Bucket Stress Flag Randomized Baseline (2026-06-29) - RESEARCH ONLY / NO STRATEGY CHANGE
+
+- Added `scripts/compare_v29_bucket_risk_flag_random_baseline.py` to randomize the observed flagged-day schedule across non-risk-off May-2026 days while preserving flagged-day count and triggered sleeve labels. This is a falsification baseline for the sleeve-only lagged flag; it does not change strategy code or production config.
+- Generated `data/backtest_results/quant_v29_bucket_risk_flag_random_baseline.json` and `docs/research/quant_v29_bucket_risk_flag_random_baseline.md` with 500 deterministic trials (`seed=20260629`, stable SHA-256 candidate offsets; no Python hash nondeterminism).
+- Evidence: longhorizon observed sleeve-only delta is only +0.000065, while randomized median delta is +0.004299; observed percentile vs random is low and `beats_random_median=false`, diagnosis `does_not_beat_random_median`. Ultradefensive observed delta is -0.000051 vs randomized median +0.004632, diagnosis `no_positive_observed_edge`.
+- Interpretation: this further falsifies the simple sleeve-only lagged stress flag. The observed timing is worse than random placement, so do not promote it to strategy code. If continuing, the evidence points toward needing true daily liquidity/score bucket state rather than sleeve-only proxies.
+- Validation: `tests/system/test_v29_bucket_risk_flag_random_baseline.py` passed 3 tests with `--no-cov`; Ruff passed for the new script/test.
