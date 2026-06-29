@@ -1,0 +1,282 @@
+{
+  "ts": "2026-06-29T02:46:58.113003+00:00",
+  "version": "V29-recent90-repair-plan",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "inputs": {
+    "regime_version": "V29-recent90-regime-diagnostic",
+    "failure_version": "V29-recent90-failure-mode-report",
+    "decay_version": "V29-recent90-signal-decay-report"
+  },
+  "candidate_count": 2,
+  "global_next_actions": [
+    "defensive_offset_quality_audit",
+    "drawdown_scaling_lag_audit",
+    "regime_trigger_timing_audit",
+    "stock_sleeve_decay_root_cause"
+  ],
+  "candidates": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "recent_sharpe": -2.4941,
+      "recent_total_return": -0.0356,
+      "recent_mdd": -0.045,
+      "stock_alpha_contribution": -0.036188,
+      "crisis_contribution": 0.001783,
+      "carry_contribution": 0.0,
+      "worst_month": {
+        "month": "2026-05",
+        "return": -0.027217,
+        "avg_stock_exposure": 0.4574,
+        "avg_crisis_weight": 0.4069,
+        "avg_carry_weight": 0.1356,
+        "risk_off_ratio": 0.0,
+        "cost_sum": 0.000452,
+        "contrib_price_ic_alpha": -0.005171,
+        "contrib_price_ic_diversified": -0.006423,
+        "contrib_price_lowvol_reversal": -0.011035,
+        "contrib_price_defensive_breadth": -0.004558,
+        "crisis_contrib": 0.00033,
+        "carry_contrib": 0.0
+      },
+      "failure_modes": [
+        "stock_alpha_sleeve_decay",
+        "defensive_sleeve_under_offset",
+        "regime_detection_lag_or_under_de_risking",
+        "drawdown_scaling_active_after_damage"
+      ],
+      "repair_actions": [
+        {
+          "priority": 1,
+          "action": "stock_sleeve_decay_root_cause",
+          "why": "recent losses are primarily from stock alpha sleeves, not costs or paper evidence plumbing",
+          "evidence": {
+            "recent_total_return": -0.0356,
+            "stock_alpha_contribution": -0.036188,
+            "dominant_sleeves": [
+              {
+                "sleeve": "contrib_price_lowvol_reversal",
+                "recent_sum": -0.013018,
+                "recent_mean": -0.00014465,
+                "recent_win_rate": 0.444444,
+                "full_mean": 0.00011444,
+                "full_win_rate": 0.562378,
+                "recent_90_sum_percentile_vs_history": 0.00222,
+                "worst_recent_month": "2026-05",
+                "worst_recent_month_sum": -0.011035,
+                "flags": [
+                  "recent_negative",
+                  "bottom_quintile_vs_history",
+                  "low_recent_hit_rate",
+                  "loss_concentrated_in_worst_month"
+                ]
+              },
+              {
+                "sleeve": "contrib_price_ic_diversified",
+                "recent_sum": -0.009045,
+                "recent_mean": -0.0001005,
+                "recent_win_rate": 0.433333,
+                "full_mean": 0.00014724,
+                "full_win_rate": 0.562595,
+                "recent_90_sum_percentile_vs_history": 0.008437,
+                "worst_recent_month": "2026-05",
+                "worst_recent_month_sum": -0.006423,
+                "flags": [
+                  "recent_negative",
+                  "bottom_quintile_vs_history",
+                  "low_recent_hit_rate",
+                  "loss_concentrated_in_worst_month"
+                ]
+              },
+              {
+                "sleeve": "contrib_price_defensive_breadth",
+                "recent_sum": -0.0073,
+                "recent_mean": -8.111e-05,
+                "recent_win_rate": 0.433333,
+                "full_mean": 0.000122,
+                "full_win_rate": 0.559765,
+                "recent_90_sum_percentile_vs_history": 0.004218,
+                "worst_recent_month": "2026-05",
+                "worst_recent_month_sum": -0.004558,
+                "flags": [
+                  "recent_negative",
+                  "bottom_quintile_vs_history",
+                  "low_recent_hit_rate",
+                  "loss_concentrated_in_worst_month"
+                ]
+              }
+            ]
+          },
+          "next_diagnostic": "attribute May-2026 selected names by factor bucket / industry / market-cap and compare against historical winning months",
+          "do_not_do": "do not flip factor signs or lower exposure globally before cross-sectional attribution proves the regime boundary"
+        },
+        {
+          "priority": 2,
+          "action": "regime_trigger_timing_audit",
+          "why": "worst month kept high stock exposure while risk-off was mostly inactive",
+          "evidence": {
+            "worst_month": "2026-05",
+            "worst_month_return": -0.027217,
+            "worst_month_avg_stock_exposure": 0.4574,
+            "recent_avg_stock_exposure": 0.2456,
+            "worst_month_risk_off_ratio": 0.0
+          },
+          "next_diagnostic": "trace risk-off inputs 20 trading days before 2026-05 drawdown and measure trigger delay vs loss start",
+          "do_not_do": "do not simply tighten drawdown thresholds; that risks reacting after damage and overfitting May"
+        },
+        {
+          "priority": 3,
+          "action": "defensive_offset_quality_audit",
+          "why": "crisis/carry contribution was positive but too small to offset stock sleeve losses",
+          "evidence": {
+            "stock_alpha_contribution": -0.036188,
+            "crisis_plus_carry_contribution": 0.001783,
+            "offset_ratio_vs_stock_drag": 0.04927
+          },
+          "next_diagnostic": "test whether available defensive assets had positive returns in May-2026 and whether allocation arrived before or after the loss cluster",
+          "do_not_do": "do not just increase crisis weight without proving the sleeve is a contemporaneous hedge"
+        },
+        {
+          "priority": 4,
+          "action": "drawdown_scaling_lag_audit",
+          "why": "drawdown scaling appears after losses, so it may protect capital but not prevent the initial regime loss",
+          "evidence": {
+            "drawdown_scaling_ratio": 0.2,
+            "mdd_state_counts_recent": {
+              "normal": 72,
+              "reduce_scale": 18
+            }
+          },
+          "next_diagnostic": "compare dates of first stock-sleeve loss cluster, first reduce_scale day and subsequent recovery path",
+          "do_not_do": "do not convert the MDD floor into a terminal stop; previous tests showed terminal stops are harmful"
+        }
+      ]
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "recent_sharpe": -2.67,
+      "recent_total_return": -0.024,
+      "recent_mdd": -0.031,
+      "stock_alpha_contribution": -0.026327,
+      "crisis_contribution": 0.002675,
+      "carry_contribution": 0.0,
+      "worst_month": {
+        "month": "2026-05",
+        "return": -0.018951,
+        "avg_stock_exposure": 0.3145,
+        "avg_crisis_weight": 0.6855,
+        "avg_carry_weight": 0.0,
+        "risk_off_ratio": 0.0,
+        "cost_sum": 0.000132,
+        "contrib_price_ic_diversified": -0.007579,
+        "contrib_price_lowvol_reversal": -0.006904,
+        "contrib_price_defensive_breadth": -0.004921,
+        "crisis_contrib": 0.000531,
+        "carry_contrib": 0.0
+      },
+      "failure_modes": [
+        "stock_alpha_sleeve_decay",
+        "defensive_sleeve_under_offset",
+        "regime_detection_lag_or_under_de_risking"
+      ],
+      "repair_actions": [
+        {
+          "priority": 1,
+          "action": "stock_sleeve_decay_root_cause",
+          "why": "recent losses are primarily from stock alpha sleeves, not costs or paper evidence plumbing",
+          "evidence": {
+            "recent_total_return": -0.024,
+            "stock_alpha_contribution": -0.026327,
+            "dominant_sleeves": [
+              {
+                "sleeve": "contrib_price_ic_diversified",
+                "recent_sum": -0.010157,
+                "recent_mean": -0.00011286,
+                "recent_win_rate": 0.433333,
+                "full_mean": 0.00014092,
+                "full_win_rate": 0.561675,
+                "recent_90_sum_percentile_vs_history": 0.002969,
+                "worst_recent_month": "2026-05",
+                "worst_recent_month_sum": -0.007579,
+                "flags": [
+                  "recent_negative",
+                  "bottom_quintile_vs_history",
+                  "low_recent_hit_rate",
+                  "loss_concentrated_in_worst_month"
+                ]
+              },
+              {
+                "sleeve": "contrib_price_lowvol_reversal",
+                "recent_sum": -0.00837,
+                "recent_mean": -9.3e-05,
+                "recent_win_rate": 0.444444,
+                "full_mean": 0.00010819,
+                "full_win_rate": 0.560555,
+                "recent_90_sum_percentile_vs_history": 0.002056,
+                "worst_recent_month": "2026-05",
+                "worst_recent_month_sum": -0.006904,
+                "flags": [
+                  "recent_negative",
+                  "bottom_quintile_vs_history",
+                  "low_recent_hit_rate",
+                  "loss_concentrated_in_worst_month"
+                ]
+              },
+              {
+                "sleeve": "contrib_price_defensive_breadth",
+                "recent_sum": -0.0078,
+                "recent_mean": -8.667e-05,
+                "recent_win_rate": 0.433333,
+                "full_mean": 0.00011631,
+                "full_win_rate": 0.558317,
+                "recent_90_sum_percentile_vs_history": 0.00137,
+                "worst_recent_month": "2026-05",
+                "worst_recent_month_sum": -0.004921,
+                "flags": [
+                  "recent_negative",
+                  "bottom_quintile_vs_history",
+                  "low_recent_hit_rate",
+                  "loss_concentrated_in_worst_month"
+                ]
+              }
+            ]
+          },
+          "next_diagnostic": "attribute May-2026 selected names by factor bucket / industry / market-cap and compare against historical winning months",
+          "do_not_do": "do not flip factor signs or lower exposure globally before cross-sectional attribution proves the regime boundary"
+        },
+        {
+          "priority": 2,
+          "action": "regime_trigger_timing_audit",
+          "why": "worst month kept high stock exposure while risk-off was mostly inactive",
+          "evidence": {
+            "worst_month": "2026-05",
+            "worst_month_return": -0.018951,
+            "worst_month_avg_stock_exposure": 0.3145,
+            "recent_avg_stock_exposure": 0.1749,
+            "worst_month_risk_off_ratio": 0.0
+          },
+          "next_diagnostic": "trace risk-off inputs 20 trading days before 2026-05 drawdown and measure trigger delay vs loss start",
+          "do_not_do": "do not simply tighten drawdown thresholds; that risks reacting after damage and overfitting May"
+        },
+        {
+          "priority": 3,
+          "action": "defensive_offset_quality_audit",
+          "why": "crisis/carry contribution was positive but too small to offset stock sleeve losses",
+          "evidence": {
+            "stock_alpha_contribution": -0.026327,
+            "crisis_plus_carry_contribution": 0.002675,
+            "offset_ratio_vs_stock_drag": 0.101607
+          },
+          "next_diagnostic": "test whether available defensive assets had positive returns in May-2026 and whether allocation arrived before or after the loss cluster",
+          "do_not_do": "do not just increase crisis weight without proving the sleeve is a contemporaneous hedge"
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "can_claim_production_ready": false,
+    "should_change_strategy_parameters_now": false,
+    "next_step_class": "root-cause diagnostics for May-2026 stock sleeve decay and regime timing"
+  }
+}
