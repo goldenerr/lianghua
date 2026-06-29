@@ -1,0 +1,944 @@
+{
+  "ts": "2026-06-29T03:02:12.648697+00:00",
+  "version": "V29-recent90-cross-section-may2026",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "universe": "/home/hermes/.hermes/projects/lianghua/data/stock_list.json",
+  "target_month": "2026-05",
+  "coverage": {
+    "symbols_loaded": 1198,
+    "dates": 4972,
+    "industry_overlap": 1138,
+    "trading_constraint_summary": {
+      "enabled": true,
+      "path": "/home/hermes/.hermes/projects/lianghua/data/security_master/free_pit_approx/trading_status_v31.parquet",
+      "exists": true,
+      "mode": "V31-free-trading-status-next-bar-execution",
+      "rows_loaded": 3823163,
+      "unique_dates": 4972,
+      "unique_symbols": 1198,
+      "missing_columns": [],
+      "limitations": [
+        "V31 status is free-source research approximation, not production trading-status evidence.",
+        "Orders are constrained using next bar status to stress-test tradability in daily research.",
+        "ST status remains unknown in V31 and is not used as a hard constraint here."
+      ]
+    }
+  },
+  "candidate_count": 2,
+  "candidates": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "total_raw_stock_contribution": -0.205434,
+      "raw_unscaled_note": "Sum of per-sleeve selected-stock contributions before V29 meta allocation scaling; use for cross-sectional root-cause attribution, not portfolio PnL.",
+      "row_count": 6118,
+      "symbol_count": 278,
+      "sleeve_count": 4,
+      "worst_industries": [
+        {
+          "industry": "I65软件和信息技术服务业",
+          "contribution_sum": -0.031514,
+          "avg_return": -0.004827,
+          "avg_weight": 0.011436,
+          "symbol_count": 23,
+          "row_count": 569
+        },
+        {
+          "industry": "C39计算机、通信和其他电子设备制造业",
+          "contribution_sum": -0.026926,
+          "avg_return": -0.003475,
+          "avg_weight": 0.011727,
+          "symbol_count": 30,
+          "row_count": 612
+        },
+        {
+          "industry": "C35专用设备制造业",
+          "contribution_sum": -0.023995,
+          "avg_return": -0.004057,
+          "avg_weight": 0.012084,
+          "symbol_count": 23,
+          "row_count": 499
+        },
+        {
+          "industry": "C38电气机械和器材制造业",
+          "contribution_sum": -0.02058,
+          "avg_return": -0.003639,
+          "avg_weight": 0.011768,
+          "symbol_count": 17,
+          "row_count": 493
+        },
+        {
+          "industry": "C26化学原料和化学制品制造业",
+          "contribution_sum": -0.020396,
+          "avg_return": -0.004092,
+          "avg_weight": 0.011443,
+          "symbol_count": 17,
+          "row_count": 457
+        },
+        {
+          "industry": "__UNKNOWN__",
+          "contribution_sum": -0.019709,
+          "avg_return": -0.003223,
+          "avg_weight": 0.012412,
+          "symbol_count": 21,
+          "row_count": 510
+        },
+        {
+          "industry": "C33金属制品业",
+          "contribution_sum": -0.014127,
+          "avg_return": -0.007079,
+          "avg_weight": 0.013584,
+          "symbol_count": 5,
+          "row_count": 144
+        },
+        {
+          "industry": "C28化学纤维制造业",
+          "contribution_sum": -0.012083,
+          "avg_return": -0.007774,
+          "avg_weight": 0.012513,
+          "symbol_count": 3,
+          "row_count": 131
+        },
+        {
+          "industry": "C27医药制造业",
+          "contribution_sum": -0.011839,
+          "avg_return": -0.004327,
+          "avg_weight": 0.009641,
+          "symbol_count": 16,
+          "row_count": 277
+        },
+        {
+          "industry": "C13农副食品加工业",
+          "contribution_sum": -0.006504,
+          "avg_return": -0.010223,
+          "avg_weight": 0.016071,
+          "symbol_count": 3,
+          "row_count": 40
+        }
+      ],
+      "worst_liquidity_buckets": [
+        {
+          "liquidity_bucket": "low_amount_proxy",
+          "contribution_sum": -0.081589,
+          "avg_return": -0.003515,
+          "avg_weight": 0.011713,
+          "symbol_count": 103,
+          "row_count": 2024
+        },
+        {
+          "liquidity_bucket": "mid_amount_proxy",
+          "contribution_sum": -0.077203,
+          "avg_return": -0.003283,
+          "avg_weight": 0.011721,
+          "symbol_count": 129,
+          "row_count": 2034
+        },
+        {
+          "liquidity_bucket": "high_amount_proxy",
+          "contribution_sum": -0.046642,
+          "avg_return": -0.001669,
+          "avg_weight": 0.01172,
+          "symbol_count": 130,
+          "row_count": 2060
+        }
+      ],
+      "worst_score_buckets": [
+        {
+          "score_bucket": "selected_top",
+          "contribution_sum": -0.0757,
+          "avg_return": -0.003007,
+          "avg_weight": 0.01173,
+          "symbol_count": 129,
+          "row_count": 2060
+        },
+        {
+          "score_bucket": "selected_mid",
+          "contribution_sum": -0.071968,
+          "avg_return": -0.003032,
+          "avg_weight": 0.011725,
+          "symbol_count": 143,
+          "row_count": 2034
+        },
+        {
+          "score_bucket": "selected_low",
+          "contribution_sum": -0.057766,
+          "avg_return": -0.002406,
+          "avg_weight": 0.011699,
+          "symbol_count": 137,
+          "row_count": 2024
+        }
+      ],
+      "worst_sleeves": [
+        {
+          "sleeve": "price_lowvol_reversal",
+          "contribution_sum": -0.05815,
+          "avg_return": -0.003256,
+          "avg_weight": 0.014286,
+          "symbol_count": 137,
+          "row_count": 1250
+        },
+        {
+          "sleeve": "price_ic_diversified",
+          "contribution_sum": -0.055608,
+          "avg_return": -0.003082,
+          "avg_weight": 0.010996,
+          "symbol_count": 161,
+          "row_count": 1637
+        },
+        {
+          "sleeve": "price_ic_alpha",
+          "contribution_sum": -0.048171,
+          "avg_return": -0.002701,
+          "avg_weight": 0.016667,
+          "symbol_count": 143,
+          "row_count": 1070
+        },
+        {
+          "sleeve": "price_defensive_breadth",
+          "contribution_sum": -0.043505,
+          "avg_return": -0.002418,
+          "avg_weight": 0.008329,
+          "symbol_count": 182,
+          "row_count": 2161
+        }
+      ],
+      "worst_symbols": [
+        {
+          "symbol": "300663",
+          "industry": "__UNKNOWN__",
+          "contribution_sum": -0.012924,
+          "avg_return": -0.02241,
+          "avg_weight": 0.0136,
+          "row_count": 44
+        },
+        {
+          "symbol": "600810",
+          "industry": "C28化学纤维制造业",
+          "contribution_sum": -0.006817,
+          "avg_return": -0.013908,
+          "avg_weight": 0.013123,
+          "row_count": 38
+        },
+        {
+          "symbol": "688065",
+          "industry": "C28化学纤维制造业",
+          "contribution_sum": -0.006628,
+          "avg_return": -0.009207,
+          "avg_weight": 0.011899,
+          "row_count": 62
+        },
+        {
+          "symbol": "002104",
+          "industry": "C39计算机、通信和其他电子设备制造业",
+          "contribution_sum": -0.006329,
+          "avg_return": -0.011433,
+          "avg_weight": 0.013443,
+          "row_count": 40
+        },
+        {
+          "symbol": "002791",
+          "industry": "C33金属制品业",
+          "contribution_sum": -0.006258,
+          "avg_return": -0.008047,
+          "avg_weight": 0.013915,
+          "row_count": 55
+        },
+        {
+          "symbol": "301522",
+          "industry": "C33金属制品业",
+          "contribution_sum": -0.006031,
+          "avg_return": -0.010762,
+          "avg_weight": 0.013443,
+          "row_count": 40
+        },
+        {
+          "symbol": "300525",
+          "industry": "I65软件和信息技术服务业",
+          "contribution_sum": -0.005696,
+          "avg_return": -0.007834,
+          "avg_weight": 0.011899,
+          "row_count": 62
+        },
+        {
+          "symbol": "601567",
+          "industry": "C40仪器仪表制造业",
+          "contribution_sum": -0.005504,
+          "avg_return": -0.011065,
+          "avg_weight": 0.013813,
+          "row_count": 36
+        },
+        {
+          "symbol": "603395",
+          "industry": "C26化学原料和化学制品制造业",
+          "contribution_sum": -0.00524,
+          "avg_return": -0.007571,
+          "avg_weight": 0.011833,
+          "row_count": 60
+        },
+        {
+          "symbol": "600764",
+          "industry": "C39计算机、通信和其他电子设备制造业",
+          "contribution_sum": -0.005168,
+          "avg_return": -0.00725,
+          "avg_weight": 0.011899,
+          "row_count": 62
+        },
+        {
+          "symbol": "600217",
+          "industry": "C42废弃资源综合利用业",
+          "contribution_sum": -0.005164,
+          "avg_return": -0.005829,
+          "avg_weight": 0.012562,
+          "row_count": 70
+        },
+        {
+          "symbol": "301602",
+          "industry": "C35专用设备制造业",
+          "contribution_sum": -0.004955,
+          "avg_return": -0.006143,
+          "avg_weight": 0.012091,
+          "row_count": 64
+        },
+        {
+          "symbol": "603583",
+          "industry": "C38电气机械和器材制造业",
+          "contribution_sum": -0.004849,
+          "avg_return": -0.006887,
+          "avg_weight": 0.011967,
+          "row_count": 57
+        },
+        {
+          "symbol": "605009",
+          "industry": "C22造纸和纸制品业",
+          "contribution_sum": -0.004508,
+          "avg_return": -0.007567,
+          "avg_weight": 0.011246,
+          "row_count": 53
+        },
+        {
+          "symbol": "600403",
+          "industry": "B06煤炭开采和洗选业",
+          "contribution_sum": -0.00437,
+          "avg_return": -0.00694,
+          "avg_weight": 0.013772,
+          "row_count": 45
+        }
+      ],
+      "next_required_diagnostics": [
+        "Compare worst industry/liquidity buckets against historical winning months before changing factor signs.",
+        "Trace whether selected_low/selected_top score buckets both lose; if both lose, the issue is regime-wide rather than rank cutoff only.",
+        "Use a true market-cap/PIT security-master vendor feed before making production market-cap claims; amount bucket here is only a liquidity proxy."
+      ]
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "total_raw_stock_contribution": -0.157263,
+      "raw_unscaled_note": "Sum of per-sleeve selected-stock contributions before V29 meta allocation scaling; use for cross-sectional root-cause attribution, not portfolio PnL.",
+      "row_count": 5048,
+      "symbol_count": 262,
+      "sleeve_count": 3,
+      "worst_industries": [
+        {
+          "industry": "I65软件和信息技术服务业",
+          "contribution_sum": -0.025571,
+          "avg_return": -0.004868,
+          "avg_weight": 0.010605,
+          "symbol_count": 23,
+          "row_count": 491
+        },
+        {
+          "industry": "C26化学原料和化学制品制造业",
+          "contribution_sum": -0.019108,
+          "avg_return": -0.004438,
+          "avg_weight": 0.010758,
+          "symbol_count": 17,
+          "row_count": 404
+        },
+        {
+          "industry": "__UNKNOWN__",
+          "contribution_sum": -0.017962,
+          "avg_return": -0.003828,
+          "avg_weight": 0.011268,
+          "symbol_count": 21,
+          "row_count": 402
+        },
+        {
+          "industry": "C35专用设备制造业",
+          "contribution_sum": -0.017665,
+          "avg_return": -0.004206,
+          "avg_weight": 0.010818,
+          "symbol_count": 22,
+          "row_count": 391
+        },
+        {
+          "industry": "C39计算机、通信和其他电子设备制造业",
+          "contribution_sum": -0.016695,
+          "avg_return": -0.003001,
+          "avg_weight": 0.010669,
+          "symbol_count": 27,
+          "row_count": 504
+        },
+        {
+          "industry": "C38电气机械和器材制造业",
+          "contribution_sum": -0.016514,
+          "avg_return": -0.00379,
+          "avg_weight": 0.010761,
+          "symbol_count": 17,
+          "row_count": 409
+        },
+        {
+          "industry": "C28化学纤维制造业",
+          "contribution_sum": -0.011124,
+          "avg_return": -0.008897,
+          "avg_weight": 0.011629,
+          "symbol_count": 3,
+          "row_count": 108
+        },
+        {
+          "industry": "C33金属制品业",
+          "contribution_sum": -0.009399,
+          "avg_return": -0.006875,
+          "avg_weight": 0.012519,
+          "symbol_count": 5,
+          "row_count": 107
+        },
+        {
+          "industry": "C27医药制造业",
+          "contribution_sum": -0.009103,
+          "avg_return": -0.004025,
+          "avg_weight": 0.009095,
+          "symbol_count": 14,
+          "row_count": 257
+        },
+        {
+          "industry": "I64互联网和相关服务",
+          "contribution_sum": -0.004943,
+          "avg_return": -0.004808,
+          "avg_weight": 0.010584,
+          "symbol_count": 4,
+          "row_count": 100
+        }
+      ],
+      "worst_liquidity_buckets": [
+        {
+          "liquidity_bucket": "low_amount_proxy",
+          "contribution_sum": -0.066072,
+          "avg_return": -0.003694,
+          "avg_weight": 0.010677,
+          "symbol_count": 94,
+          "row_count": 1674
+        },
+        {
+          "liquidity_bucket": "mid_amount_proxy",
+          "contribution_sum": -0.061605,
+          "avg_return": -0.00343,
+          "avg_weight": 0.010657,
+          "symbol_count": 116,
+          "row_count": 1674
+        },
+        {
+          "liquidity_bucket": "high_amount_proxy",
+          "contribution_sum": -0.029586,
+          "avg_return": -0.001421,
+          "avg_weight": 0.010672,
+          "symbol_count": 121,
+          "row_count": 1700
+        }
+      ],
+      "worst_score_buckets": [
+        {
+          "score_bucket": "selected_mid",
+          "contribution_sum": -0.054579,
+          "avg_return": -0.003061,
+          "avg_weight": 0.010662,
+          "symbol_count": 130,
+          "row_count": 1674
+        },
+        {
+          "score_bucket": "selected_top",
+          "contribution_sum": -0.053073,
+          "avg_return": -0.002845,
+          "avg_weight": 0.010684,
+          "symbol_count": 117,
+          "row_count": 1700
+        },
+        {
+          "score_bucket": "selected_low",
+          "contribution_sum": -0.049612,
+          "avg_return": -0.002617,
+          "avg_weight": 0.01066,
+          "symbol_count": 122,
+          "row_count": 1674
+        }
+      ],
+      "worst_sleeves": [
+        {
+          "sleeve": "price_lowvol_reversal",
+          "contribution_sum": -0.05815,
+          "avg_return": -0.003256,
+          "avg_weight": 0.014286,
+          "symbol_count": 137,
+          "row_count": 1250
+        },
+        {
+          "sleeve": "price_ic_diversified",
+          "contribution_sum": -0.055608,
+          "avg_return": -0.003082,
+          "avg_weight": 0.010996,
+          "symbol_count": 161,
+          "row_count": 1637
+        },
+        {
+          "sleeve": "price_defensive_breadth",
+          "contribution_sum": -0.043505,
+          "avg_return": -0.002418,
+          "avg_weight": 0.008329,
+          "symbol_count": 182,
+          "row_count": 2161
+        }
+      ],
+      "worst_symbols": [
+        {
+          "symbol": "300663",
+          "industry": "__UNKNOWN__",
+          "contribution_sum": -0.011231,
+          "avg_return": -0.026012,
+          "avg_weight": 0.012698,
+          "row_count": 34
+        },
+        {
+          "symbol": "688065",
+          "industry": "C28化学纤维制造业",
+          "contribution_sum": -0.005906,
+          "avg_return": -0.009769,
+          "avg_weight": 0.011193,
+          "row_count": 54
+        },
+        {
+          "symbol": "600810",
+          "industry": "C28化学纤维制造业",
+          "contribution_sum": -0.005704,
+          "avg_return": -0.015391,
+          "avg_weight": 0.012178,
+          "row_count": 30
+        },
+        {
+          "symbol": "300525",
+          "industry": "I65软件和信息技术服务业",
+          "contribution_sum": -0.004913,
+          "avg_return": -0.008125,
+          "avg_weight": 0.011193,
+          "row_count": 54
+        },
+        {
+          "symbol": "603395",
+          "industry": "C26化学原料和化学制品制造业",
+          "contribution_sum": -0.00477,
+          "avg_return": -0.008039,
+          "avg_weight": 0.011194,
+          "row_count": 53
+        },
+        {
+          "symbol": "600764",
+          "industry": "C39计算机、通信和其他电子设备制造业",
+          "contribution_sum": -0.004754,
+          "avg_return": -0.007864,
+          "avg_weight": 0.011193,
+          "row_count": 54
+        },
+        {
+          "symbol": "605009",
+          "industry": "C22造纸和纸制品业",
+          "contribution_sum": -0.004508,
+          "avg_return": -0.007567,
+          "avg_weight": 0.011246,
+          "row_count": 53
+        },
+        {
+          "symbol": "002882",
+          "industry": "C38电气机械和器材制造业",
+          "contribution_sum": -0.004281,
+          "avg_return": -0.00928,
+          "avg_weight": 0.010552,
+          "row_count": 44
+        },
+        {
+          "symbol": "002104",
+          "industry": "C39计算机、通信和其他电子设备制造业",
+          "contribution_sum": -0.003907,
+          "avg_return": -0.010759,
+          "avg_weight": 0.012221,
+          "row_count": 29
+        },
+        {
+          "symbol": "002791",
+          "industry": "C33金属制品业",
+          "contribution_sum": -0.003749,
+          "avg_return": -0.007893,
+          "avg_weight": 0.012577,
+          "row_count": 37
+        },
+        {
+          "symbol": "002978",
+          "industry": "B09有色金属矿采选业",
+          "contribution_sum": -0.003706,
+          "avg_return": -0.006219,
+          "avg_weight": 0.011246,
+          "row_count": 53
+        },
+        {
+          "symbol": "301522",
+          "industry": "C33金属制品业",
+          "contribution_sum": -0.003622,
+          "avg_return": -0.00986,
+          "avg_weight": 0.012221,
+          "row_count": 29
+        },
+        {
+          "symbol": "603583",
+          "industry": "C38电气机械和器材制造业",
+          "contribution_sum": -0.003429,
+          "avg_return": -0.006681,
+          "avg_weight": 0.010844,
+          "row_count": 46
+        },
+        {
+          "symbol": "600217",
+          "industry": "C42废弃资源综合利用业",
+          "contribution_sum": -0.00339,
+          "avg_return": -0.005691,
+          "avg_weight": 0.011246,
+          "row_count": 53
+        },
+        {
+          "symbol": "301602",
+          "industry": "C35专用设备制造业",
+          "contribution_sum": -0.003312,
+          "avg_return": -0.005456,
+          "avg_weight": 0.011243,
+          "row_count": 54
+        }
+      ],
+      "next_required_diagnostics": [
+        "Compare worst industry/liquidity buckets against historical winning months before changing factor signs.",
+        "Trace whether selected_low/selected_top score buckets both lose; if both lose, the issue is regime-wide rather than rank cutoff only.",
+        "Use a true market-cap/PIT security-master vendor feed before making production market-cap claims; amount bucket here is only a liquidity proxy."
+      ]
+    }
+  ],
+  "top_loss_records": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-06",
+      "symbol": "300663",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.199688,
+      "contribution": -0.002853
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-06",
+      "symbol": "300663",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.199688,
+      "contribution": -0.002853
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "sleeve": "price_ic_diversified",
+      "date": "2026-05-06",
+      "symbol": "300663",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "low_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.011111,
+      "stock_return": -0.199688,
+      "contribution": -0.002219
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_diversified",
+      "date": "2026-05-06",
+      "symbol": "300663",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "low_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.011111,
+      "stock_return": -0.199688,
+      "contribution": -0.002219
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-14",
+      "symbol": "002683",
+      "industry": "B11开采专业及辅助性活动",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_mid",
+      "weight": 0.016667,
+      "stock_return": -0.089567,
+      "contribution": -0.001493
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-29",
+      "symbol": "688776",
+      "industry": "C39计算机、通信和其他电子设备制造业",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.094521,
+      "contribution": -0.00135
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-29",
+      "symbol": "688776",
+      "industry": "C39计算机、通信和其他电子设备制造业",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.094521,
+      "contribution": -0.00135
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-14",
+      "symbol": "002683",
+      "industry": "B11开采专业及辅助性活动",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.089567,
+      "contribution": -0.00128
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-14",
+      "symbol": "002683",
+      "industry": "B11开采专业及辅助性活动",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.089567,
+      "contribution": -0.00128
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-29",
+      "symbol": "688326",
+      "industry": "C39计算机、通信和其他电子设备制造业",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_mid",
+      "weight": 0.016667,
+      "stock_return": -0.070857,
+      "contribution": -0.001181
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-26",
+      "symbol": "688776",
+      "industry": "C39计算机、通信和其他电子设备制造业",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.016667,
+      "stock_return": -0.069941,
+      "contribution": -0.001166
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-15",
+      "symbol": "601212",
+      "industry": "C32有色金属冶炼和压延加工业",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.016667,
+      "stock_return": -0.069426,
+      "contribution": -0.001157
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-21",
+      "symbol": "002121",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_mid",
+      "weight": 0.016667,
+      "stock_return": -0.063514,
+      "contribution": -0.001059
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-21",
+      "symbol": "300663",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_top",
+      "weight": 0.016667,
+      "stock_return": -0.061433,
+      "contribution": -0.001024
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-14",
+      "symbol": "300663",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.070157,
+      "contribution": -0.001002
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_lowvol_reversal",
+      "date": "2026-05-14",
+      "symbol": "300663",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.014286,
+      "stock_return": -0.070157,
+      "contribution": -0.001002
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_diversified",
+      "date": "2026-05-14",
+      "symbol": "002683",
+      "industry": "B11开采专业及辅助性活动",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_mid",
+      "weight": 0.011111,
+      "stock_return": -0.089567,
+      "contribution": -0.000995
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "sleeve": "price_ic_diversified",
+      "date": "2026-05-14",
+      "symbol": "002683",
+      "industry": "B11开采专业及辅助性活动",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_mid",
+      "weight": 0.011111,
+      "stock_return": -0.089567,
+      "contribution": -0.000995
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-27",
+      "symbol": "601702",
+      "industry": "C32有色金属冶炼和压延加工业",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_mid",
+      "weight": 0.016667,
+      "stock_return": -0.059401,
+      "contribution": -0.00099
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-14",
+      "symbol": "002690",
+      "industry": "C35专用设备制造业",
+      "liquidity_bucket": "low_amount_proxy",
+      "score_bucket": "selected_top",
+      "weight": 0.016667,
+      "stock_return": -0.059026,
+      "contribution": -0.000984
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-28",
+      "symbol": "300409",
+      "industry": "C39计算机、通信和其他电子设备制造业",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_top",
+      "weight": 0.016667,
+      "stock_return": -0.057724,
+      "contribution": -0.000962
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-27",
+      "symbol": "301522",
+      "industry": "C33金属制品业",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.016667,
+      "stock_return": -0.056886,
+      "contribution": -0.000948
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-15",
+      "symbol": "600363",
+      "industry": "C39计算机、通信和其他电子设备制造业",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_mid",
+      "weight": 0.016667,
+      "stock_return": -0.05671,
+      "contribution": -0.000945
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-27",
+      "symbol": "601212",
+      "industry": "C32有色金属冶炼和压延加工业",
+      "liquidity_bucket": "high_amount_proxy",
+      "score_bucket": "selected_low",
+      "weight": 0.016667,
+      "stock_return": -0.05638,
+      "contribution": -0.00094
+    },
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "sleeve": "price_ic_alpha",
+      "date": "2026-05-11",
+      "symbol": "603360",
+      "industry": "__UNKNOWN__",
+      "liquidity_bucket": "mid_amount_proxy",
+      "score_bucket": "selected_top",
+      "weight": 0.016667,
+      "stock_return": -0.054893,
+      "contribution": -0.000915
+    }
+  ],
+  "decision": {
+    "can_change_strategy_now": false,
+    "next_step_class": "cross-sectional root-cause diagnosis, not parameter tuning",
+    "limitations": [
+      "amount/liquidity bucket is not true market capitalization; production market-cap attribution requires vendor PIT security master.",
+      "V31 trading-status constraints are free-source research approximations, not production broker/vendor evidence."
+    ]
+  }
+}
