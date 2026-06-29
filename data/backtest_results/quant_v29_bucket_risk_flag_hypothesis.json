@@ -1,0 +1,371 @@
+{
+  "ts": "2026-06-29T08:23:33.194524+00:00",
+  "version": "V29-bucket-risk-flag-hypothesis-plan",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "source_reports": {
+    "historical_contrast_version": "V29-recent90-historical-bucket-contrast-may2026",
+    "regime_timing_version": "V29-recent90-regime-trigger-timing-may2026",
+    "target_month": "2026-05"
+  },
+  "hypotheses": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "can_implement_strategy_change_now": false,
+      "hypothesis_ready_for_simulation": true,
+      "hypothesis_type": "sleeve_bucket_stress_flag",
+      "evidence_summary": {
+        "contrast_diagnosis": "failed_buckets_flip_vs_positive_history",
+        "timing_diagnosis": "risk_off_missed_loss_window",
+        "risk_off_ratio": 0.0,
+        "target_raw_contribution": -0.18748,
+        "positive_month_count": 62,
+        "month_count": 102
+      },
+      "ranked_flag_inputs": [
+        {
+          "bucket_type": "liquidity_bucket",
+          "bucket": "low_amount_proxy",
+          "target_contribution": -0.075338,
+          "historical_positive_mean": 0.075829,
+          "historical_positive_hit_rate": 0.951613,
+          "direction_flip": true,
+          "stress_score": 0.147498,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "liquidity_bucket",
+          "bucket": "mid_amount_proxy",
+          "target_contribution": -0.078418,
+          "historical_positive_mean": 0.067709,
+          "historical_positive_hit_rate": 0.935484,
+          "direction_flip": true,
+          "stress_score": 0.141759,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "score_bucket",
+          "bucket": "selected_mid",
+          "target_contribution": -0.071377,
+          "historical_positive_mean": 0.066917,
+          "historical_positive_hit_rate": 0.951613,
+          "direction_flip": true,
+          "stress_score": 0.135056,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "score_bucket",
+          "bucket": "selected_top",
+          "target_contribution": -0.059735,
+          "historical_positive_mean": 0.068049,
+          "historical_positive_hit_rate": 0.935484,
+          "direction_flip": true,
+          "stress_score": 0.123394,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "score_bucket",
+          "bucket": "selected_low",
+          "target_contribution": -0.056367,
+          "historical_positive_mean": 0.063963,
+          "historical_positive_hit_rate": 0.903226,
+          "direction_flip": true,
+          "stress_score": 0.11414,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "sleeve",
+          "bucket": "price_ic_diversified",
+          "target_contribution": -0.051769,
+          "historical_positive_mean": 0.051639,
+          "historical_positive_hit_rate": 1.0,
+          "direction_flip": true,
+          "stress_score": 0.103408,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "sleeve",
+          "bucket": "price_lowvol_reversal",
+          "target_contribution": -0.053975,
+          "historical_positive_mean": 0.048655,
+          "historical_positive_hit_rate": 0.919355,
+          "direction_flip": true,
+          "stress_score": 0.098706,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "sleeve",
+          "bucket": "price_ic_alpha",
+          "target_contribution": -0.041511,
+          "historical_positive_mean": 0.052473,
+          "historical_positive_hit_rate": 0.951613,
+          "direction_flip": true,
+          "stress_score": 0.091445,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        }
+      ],
+      "proposed_flag_spec": {
+        "name": "v29_price_meta_longhorizon_guard_bucket_stress_guard_hypothesis",
+        "trigger_inputs": [
+          {
+            "bucket_type": "liquidity_bucket",
+            "bucket": "low_amount_proxy",
+            "target_contribution": -0.075338,
+            "historical_positive_mean": 0.075829,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "stress_score": 0.147498,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket_type": "liquidity_bucket",
+            "bucket": "mid_amount_proxy",
+            "target_contribution": -0.078418,
+            "historical_positive_mean": 0.067709,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "stress_score": 0.141759,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket_type": "score_bucket",
+            "bucket": "selected_mid",
+            "target_contribution": -0.071377,
+            "historical_positive_mean": 0.066917,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "stress_score": 0.135056,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket_type": "score_bucket",
+            "bucket": "selected_top",
+            "target_contribution": -0.059735,
+            "historical_positive_mean": 0.068049,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "stress_score": 0.123394,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "trigger_concept": "During a benign market-level regime, monitor rolling raw sleeve/bucket contributions for historically positive buckets. If multiple high-stress buckets flip negative together, flag local sleeve/bucket stress before market-level mom/vol risk-off triggers.",
+        "allowed_research_actions": [
+          "simulate exposure gating only inside research scripts",
+          "compare against unchanged V29 baseline",
+          "record all changes as fail-closed hypotheses"
+        ],
+        "forbidden_actions": [
+          "no production config change",
+          "no factor sign flip",
+          "no top_n or threshold tuning in production code",
+          "no crisis weight increase without full validation"
+        ]
+      },
+      "required_validation": [
+        "walk_forward_oos_vs_unchanged_v29_baseline",
+        "randomized_bucket_flag_baseline",
+        "look_ahead_bias_audit_for_bucket_contribution_inputs",
+        "monthly_distribution_check_including_2018_2020_2022_2026",
+        "recent90_retest_and_worst_month_attribution",
+        "paper_evidence_unchanged_until_real_daily_reports_accumulate"
+      ],
+      "next_step": "Implement a research-only simulation of this flag against unchanged V29 baseline. Do not touch production strategy or feature passes."
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "can_implement_strategy_change_now": false,
+      "hypothesis_ready_for_simulation": true,
+      "hypothesis_type": "sleeve_bucket_stress_flag",
+      "evidence_summary": {
+        "contrast_diagnosis": "failed_buckets_flip_vs_positive_history",
+        "timing_diagnosis": "risk_off_missed_loss_window",
+        "risk_off_ratio": 0.0,
+        "target_raw_contribution": -0.145969,
+        "positive_month_count": 62,
+        "month_count": 102
+      },
+      "ranked_flag_inputs": [
+        {
+          "bucket_type": "liquidity_bucket",
+          "bucket": "low_amount_proxy",
+          "target_contribution": -0.060101,
+          "historical_positive_mean": 0.055921,
+          "historical_positive_hit_rate": 0.935484,
+          "direction_flip": true,
+          "stress_score": 0.112414,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "sleeve",
+          "bucket": "price_ic_diversified",
+          "target_contribution": -0.051769,
+          "historical_positive_mean": 0.051639,
+          "historical_positive_hit_rate": 1.0,
+          "direction_flip": true,
+          "stress_score": 0.103408,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "score_bucket",
+          "bucket": "selected_mid",
+          "target_contribution": -0.055429,
+          "historical_positive_mean": 0.048591,
+          "historical_positive_hit_rate": 0.935484,
+          "direction_flip": true,
+          "stress_score": 0.100885,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "liquidity_bucket",
+          "bucket": "mid_amount_proxy",
+          "target_contribution": -0.053682,
+          "historical_positive_mean": 0.049311,
+          "historical_positive_hit_rate": 0.951613,
+          "direction_flip": true,
+          "stress_score": 0.100607,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "sleeve",
+          "bucket": "price_lowvol_reversal",
+          "target_contribution": -0.053975,
+          "historical_positive_mean": 0.048655,
+          "historical_positive_hit_rate": 0.919355,
+          "direction_flip": true,
+          "stress_score": 0.098706,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "score_bucket",
+          "bucket": "selected_top",
+          "target_contribution": -0.045404,
+          "historical_positive_mean": 0.050049,
+          "historical_positive_hit_rate": 0.935484,
+          "direction_flip": true,
+          "stress_score": 0.092224,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "score_bucket",
+          "bucket": "selected_low",
+          "target_contribution": -0.045136,
+          "historical_positive_mean": 0.047816,
+          "historical_positive_hit_rate": 0.903226,
+          "direction_flip": true,
+          "stress_score": 0.088325,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        },
+        {
+          "bucket_type": "sleeve",
+          "bucket": "price_defensive_breadth",
+          "target_contribution": -0.040226,
+          "historical_positive_mean": 0.046019,
+          "historical_positive_hit_rate": 0.951613,
+          "direction_flip": true,
+          "stress_score": 0.084018,
+          "eligible_for_flag_hypothesis": true,
+          "source_diagnosis": "target_negative_vs_positive_history"
+        }
+      ],
+      "proposed_flag_spec": {
+        "name": "v29_price_meta_ultradefensive_bucket_stress_guard_hypothesis",
+        "trigger_inputs": [
+          {
+            "bucket_type": "liquidity_bucket",
+            "bucket": "low_amount_proxy",
+            "target_contribution": -0.060101,
+            "historical_positive_mean": 0.055921,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "stress_score": 0.112414,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket_type": "sleeve",
+            "bucket": "price_ic_diversified",
+            "target_contribution": -0.051769,
+            "historical_positive_mean": 0.051639,
+            "historical_positive_hit_rate": 1.0,
+            "direction_flip": true,
+            "stress_score": 0.103408,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket_type": "score_bucket",
+            "bucket": "selected_mid",
+            "target_contribution": -0.055429,
+            "historical_positive_mean": 0.048591,
+            "historical_positive_hit_rate": 0.935484,
+            "direction_flip": true,
+            "stress_score": 0.100885,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          },
+          {
+            "bucket_type": "liquidity_bucket",
+            "bucket": "mid_amount_proxy",
+            "target_contribution": -0.053682,
+            "historical_positive_mean": 0.049311,
+            "historical_positive_hit_rate": 0.951613,
+            "direction_flip": true,
+            "stress_score": 0.100607,
+            "eligible_for_flag_hypothesis": true,
+            "source_diagnosis": "target_negative_vs_positive_history"
+          }
+        ],
+        "trigger_concept": "During a benign market-level regime, monitor rolling raw sleeve/bucket contributions for historically positive buckets. If multiple high-stress buckets flip negative together, flag local sleeve/bucket stress before market-level mom/vol risk-off triggers.",
+        "allowed_research_actions": [
+          "simulate exposure gating only inside research scripts",
+          "compare against unchanged V29 baseline",
+          "record all changes as fail-closed hypotheses"
+        ],
+        "forbidden_actions": [
+          "no production config change",
+          "no factor sign flip",
+          "no top_n or threshold tuning in production code",
+          "no crisis weight increase without full validation"
+        ]
+      },
+      "required_validation": [
+        "walk_forward_oos_vs_unchanged_v29_baseline",
+        "randomized_bucket_flag_baseline",
+        "look_ahead_bias_audit_for_bucket_contribution_inputs",
+        "monthly_distribution_check_including_2018_2020_2022_2026",
+        "recent90_retest_and_worst_month_attribution",
+        "paper_evidence_unchanged_until_real_daily_reports_accumulate"
+      ],
+      "next_step": "Implement a research-only simulation of this flag against unchanged V29 baseline. Do not touch production strategy or feature passes."
+    }
+  ],
+  "global_decision": {
+    "can_change_strategy_now": false,
+    "can_simulate_research_hypothesis_next": true,
+    "reason": "Cross-section, timing and historical contrast now support a falsifiable local bucket-stress flag hypothesis, but no production change is validated."
+  }
+}
