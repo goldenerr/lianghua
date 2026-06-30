@@ -1,6 +1,14 @@
 # Quant Trading System — Progress Log
 # Last updated: 2026-06-30
 
+## V29 Fold-Internal Bucket-Aware WF Validation (2026-06-30) - PRODUCTION BLOCKED
+
+- Added true fold-internal bucket-aware WF validator (`scripts/validate_v29_bucket_aware_wf.py`): each fold generates liquidity/score bucket trigger specs from its 756-day train window only, then applies them to the following 252-day OOS window. Report explicitly records `fold_internal_trigger_generation=true` and `oos_data_used_for_specs=false`.
+- Ran 5 OOS folds through 2026-06-25 with V31 free-source trading-status constraints. Longhorizon: avg OOS delta +3.5731%, positive_fold_rate=100%, beats_random_median_fold_rate=100%. Ultradefensive: avg OOS delta +2.2779%, positive_fold_rate=100%, beats_random_median_fold_rate=100%. Both pass the research WF gate, but remain research-only.
+- Outputs: `data/backtest_results/quant_v29_bucket_aware_wf_validation.json` and `docs/research/quant_v29_bucket_aware_wf_validation.md`. Runtime was ~400s; bucket state used 1,250,279 selected-stock rows and 25,040 daily bucket-state rows.
+- Important guardrail: this removes the same-month May-2026 post-hoc blocker for the research timing hypothesis, but it still does not authorize strategy-code changes or production readiness. External V30/V44/V48 evidence, paper/live gates, capital approval, and strategy implementation review remain blockers; `can_change_strategy_now=false`.
+- Verification: new TDD tests for fold construction/train-only specs/fail-closed summaries pass; full related V29 recent-90/bucket suite has 42 tests passing; Ruff and `git diff --check` pass.
+
 ## V29 Daily Bucket-Aware Flag Validation (2026-06-30) - PRODUCTION BLOCKED
 
 - Re-ran true lagged liquidity/score bucket-aware V29 stress-flag simulation (`scripts/simulate_v29_daily_bucket_aware_flag.py --require-trading-status`). May 2026 attribution improves but remains research-only: longhorizon delta +0.9641%, ultradefensive delta +0.6491%; no strategy/config/feature pass changed.
