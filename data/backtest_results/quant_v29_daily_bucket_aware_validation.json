@@ -1,0 +1,126 @@
+{
+  "ts": "2026-06-30T01:27:32.231744+00:00",
+  "version": "V29-daily-bucket-aware-lookahead-monthly-wf-validation",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "can_change_strategy_now": false,
+  "target_month": "2026-05",
+  "lookahead_audit": {
+    "passes": false,
+    "lagged_mechanics_pass": true,
+    "posthoc_hypothesis_source_blocker": true,
+    "source_month": "2026-05",
+    "target_month": "2026-05",
+    "blockers": [
+      "hypothesis_inputs_derived_from_same_target_month"
+    ],
+    "interpretation": "mechanical lagging/cap checks pass, but same-month hypothesis derivation blocks a clean look-ahead pass"
+  },
+  "monthly_distribution": {
+    "passes": false,
+    "unique_month_count": 1,
+    "months": [
+      "2026-05"
+    ],
+    "required_stress_years": [
+      2018,
+      2020,
+      2022,
+      2026
+    ],
+    "missing_stress_years": [
+      2018,
+      2020,
+      2022
+    ],
+    "monthly_rows": [
+      {
+        "candidate": "v29_price_meta_longhorizon_guard",
+        "month": "2026-05",
+        "baseline_compound_return": -0.027217,
+        "simulated_compound_return": -0.017577,
+        "simulated_minus_baseline": 0.009641,
+        "n_days": 18
+      },
+      {
+        "candidate": "v29_price_meta_ultradefensive",
+        "month": "2026-05",
+        "baseline_compound_return": -0.018951,
+        "simulated_compound_return": -0.01246,
+        "simulated_minus_baseline": 0.006491,
+        "n_days": 18
+      }
+    ],
+    "blockers": [
+      "insufficient_month_coverage",
+      "missing_required_stress_years:2018,2020,2022"
+    ]
+  },
+  "walk_forward_validation": {
+    "passes": false,
+    "fold_count": 0,
+    "random_baseline_candidates": {
+      "v29_price_meta_longhorizon_guard": {
+        "candidate": "v29_price_meta_longhorizon_guard",
+        "production_ready": false,
+        "not_parameter_tuning": true,
+        "can_change_strategy_now": false,
+        "observed_delta": 0.009641,
+        "observed_flagged_day_count": 12,
+        "random_trial_count": 500,
+        "random_median_delta": 0.006451,
+        "random_mean_delta": 0.006541,
+        "random_best_delta": 0.012182,
+        "random_worst_delta": 0.001198,
+        "observed_percentile_vs_random": 0.9,
+        "beats_random_median": true,
+        "diagnosis": "beats_random_median_only_not_validated",
+        "required_next_validation": [
+          "look_ahead_bias_audit_for_lagged_bucket_state",
+          "monthly_distribution_check_including_2018_2020_2022_2026",
+          "walk_forward_oos_vs_unchanged_v29_baseline",
+          "do_not_promote_bucket_aware_flag_without_full_validation"
+        ]
+      },
+      "v29_price_meta_ultradefensive": {
+        "candidate": "v29_price_meta_ultradefensive",
+        "production_ready": false,
+        "not_parameter_tuning": true,
+        "can_change_strategy_now": false,
+        "observed_delta": 0.006491,
+        "observed_flagged_day_count": 12,
+        "random_trial_count": 500,
+        "random_median_delta": 0.004415,
+        "random_mean_delta": 0.00444,
+        "random_best_delta": 0.007769,
+        "random_worst_delta": 0.000916,
+        "observed_percentile_vs_random": 0.918,
+        "beats_random_median": true,
+        "diagnosis": "beats_random_median_only_not_validated",
+        "required_next_validation": [
+          "look_ahead_bias_audit_for_lagged_bucket_state",
+          "monthly_distribution_check_including_2018_2020_2022_2026",
+          "walk_forward_oos_vs_unchanged_v29_baseline",
+          "do_not_promote_bucket_aware_flag_without_full_validation"
+        ]
+      }
+    },
+    "blockers": [
+      "no_walk_forward_fold_records"
+    ],
+    "interpretation": "No historical fold evidence exists in the current bucket-aware artifact; cannot validate WF OOS."
+  },
+  "global_decision": {
+    "passes": false,
+    "can_change_strategy_now": false,
+    "can_claim_production_ready": false,
+    "blockers": [
+      "lookahead:hypothesis_inputs_derived_from_same_target_month",
+      "monthly:insufficient_month_coverage",
+      "monthly:missing_required_stress_years:2018,2020,2022",
+      "walk_forward:no_walk_forward_fold_records"
+    ],
+    "reason": "Observed May improvement beats random median, but clean look-ahead, multi-month distribution and WF OOS validation are not satisfied."
+  }
+}

@@ -1,5 +1,13 @@
 # Quant Trading System — Progress Log
-# Last updated: 2026-06-26
+# Last updated: 2026-06-30
+
+## V29 Daily Bucket-Aware Flag Validation (2026-06-30) - PRODUCTION BLOCKED
+
+- Re-ran true lagged liquidity/score bucket-aware V29 stress-flag simulation (`scripts/simulate_v29_daily_bucket_aware_flag.py --require-trading-status`). May 2026 attribution improves but remains research-only: longhorizon delta +0.9641%, ultradefensive delta +0.6491%; no strategy/config/feature pass changed.
+- Added randomized bucket-aware baseline (`scripts/compare_v29_daily_bucket_aware_random_baseline.py`) preserving observed flagged-day count and trigger metadata while randomizing non-risk-off dates. Observed timing beats random median for both candidates (percentiles 0.900 and 0.918), but random best still exceeds observed in both cases, so diagnosis is `beats_random_median_only_not_validated`.
+- Added fail-closed validation (`scripts/validate_v29_daily_bucket_aware_flag.py`) for look-ahead/monthly/WF gates. Mechanical lagged/capped delta checks pass, but clean validation fails: hypothesis inputs are derived from the same May-2026 target month, monthly coverage is only one month and misses required 2018/2020/2022 stress years, and no WF fold records exist.
+- Outputs: `data/backtest_results/quant_v29_daily_bucket_aware_random_baseline.json`, `data/backtest_results/quant_v29_daily_bucket_aware_validation.json`, plus docs under `docs/research/`.
+- Verification: 39 targeted V29 recent-90/bucket tests passed, Ruff passed on touched scripts/tests, and `git diff --check` passed. Production remains blocked; `can_change_strategy_now=false`.
 
 ## V31/V30/V44/V48 Evidence and Recent-90 Diagnostics (2026-06-26) - PRODUCTION BLOCKED
 

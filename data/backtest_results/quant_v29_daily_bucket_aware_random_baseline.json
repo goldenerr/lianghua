@@ -1,0 +1,354 @@
+{
+  "ts": "2026-06-30T01:27:23.506281+00:00",
+  "version": "V29-daily-bucket-aware-random-baseline",
+  "research_only": true,
+  "production_ready": false,
+  "not_parameter_tuning": true,
+  "target_month": "2026-05",
+  "parameters": {
+    "trials": 500,
+    "seed": 20260630,
+    "reduction_fraction": 0.5,
+    "max_daily_delta_fraction": 0.25,
+    "randomizes_only_flag_schedule": true,
+    "preserves_trigger_metadata": true
+  },
+  "summaries": [
+    {
+      "candidate": "v29_price_meta_longhorizon_guard",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "can_change_strategy_now": false,
+      "observed_delta": 0.009641,
+      "observed_flagged_day_count": 12,
+      "random_trial_count": 500,
+      "random_median_delta": 0.006451,
+      "random_mean_delta": 0.006541,
+      "random_best_delta": 0.012182,
+      "random_worst_delta": 0.001198,
+      "observed_percentile_vs_random": 0.9,
+      "beats_random_median": true,
+      "diagnosis": "beats_random_median_only_not_validated",
+      "required_next_validation": [
+        "look_ahead_bias_audit_for_lagged_bucket_state",
+        "monthly_distribution_check_including_2018_2020_2022_2026",
+        "walk_forward_oos_vs_unchanged_v29_baseline",
+        "do_not_promote_bucket_aware_flag_without_full_validation"
+      ]
+    },
+    {
+      "candidate": "v29_price_meta_ultradefensive",
+      "production_ready": false,
+      "not_parameter_tuning": true,
+      "can_change_strategy_now": false,
+      "observed_delta": 0.006491,
+      "observed_flagged_day_count": 12,
+      "random_trial_count": 500,
+      "random_median_delta": 0.004415,
+      "random_mean_delta": 0.00444,
+      "random_best_delta": 0.007769,
+      "random_worst_delta": 0.000916,
+      "observed_percentile_vs_random": 0.918,
+      "beats_random_median": true,
+      "diagnosis": "beats_random_median_only_not_validated",
+      "required_next_validation": [
+        "look_ahead_bias_audit_for_lagged_bucket_state",
+        "monthly_distribution_check_including_2018_2020_2022_2026",
+        "walk_forward_oos_vs_unchanged_v29_baseline",
+        "do_not_promote_bucket_aware_flag_without_full_validation"
+      ]
+    }
+  ],
+  "trial_samples_first20": {
+    "v29_price_meta_longhorizon_guard": [
+      {
+        "trial": 0,
+        "simulated_minus_baseline": 0.010659,
+        "simulated_compound_return": -0.016558,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.010804
+      },
+      {
+        "trial": 1,
+        "simulated_minus_baseline": 0.009656,
+        "simulated_compound_return": -0.017561,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.009787
+      },
+      {
+        "trial": 2,
+        "simulated_minus_baseline": 0.008676,
+        "simulated_compound_return": -0.018541,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.008797
+      },
+      {
+        "trial": 3,
+        "simulated_minus_baseline": 0.00628,
+        "simulated_compound_return": -0.020938,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.006377
+      },
+      {
+        "trial": 4,
+        "simulated_minus_baseline": 0.006066,
+        "simulated_compound_return": -0.021151,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.006181
+      },
+      {
+        "trial": 5,
+        "simulated_minus_baseline": 0.008279,
+        "simulated_compound_return": -0.018938,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.008401
+      },
+      {
+        "trial": 6,
+        "simulated_minus_baseline": 0.012182,
+        "simulated_compound_return": -0.015035,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.012345
+      },
+      {
+        "trial": 7,
+        "simulated_minus_baseline": 0.009393,
+        "simulated_compound_return": -0.017825,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.009526
+      },
+      {
+        "trial": 8,
+        "simulated_minus_baseline": 0.009535,
+        "simulated_compound_return": -0.017682,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.009675
+      },
+      {
+        "trial": 9,
+        "simulated_minus_baseline": 0.005801,
+        "simulated_compound_return": -0.021417,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.005915
+      },
+      {
+        "trial": 10,
+        "simulated_minus_baseline": 0.008295,
+        "simulated_compound_return": -0.018923,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.008409
+      },
+      {
+        "trial": 11,
+        "simulated_minus_baseline": 0.008599,
+        "simulated_compound_return": -0.018619,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.008722
+      },
+      {
+        "trial": 12,
+        "simulated_minus_baseline": 0.002689,
+        "simulated_compound_return": -0.024529,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.00275
+      },
+      {
+        "trial": 13,
+        "simulated_minus_baseline": 0.006731,
+        "simulated_compound_return": -0.020486,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.006856
+      },
+      {
+        "trial": 14,
+        "simulated_minus_baseline": 0.004757,
+        "simulated_compound_return": -0.022461,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.004849
+      },
+      {
+        "trial": 15,
+        "simulated_minus_baseline": 0.003693,
+        "simulated_compound_return": -0.023525,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.003771
+      },
+      {
+        "trial": 16,
+        "simulated_minus_baseline": 0.007554,
+        "simulated_compound_return": -0.019663,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.007668
+      },
+      {
+        "trial": 17,
+        "simulated_minus_baseline": 0.009296,
+        "simulated_compound_return": -0.017922,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.009425
+      },
+      {
+        "trial": 18,
+        "simulated_minus_baseline": 0.008137,
+        "simulated_compound_return": -0.01908,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.008255
+      },
+      {
+        "trial": 19,
+        "simulated_minus_baseline": 0.008433,
+        "simulated_compound_return": -0.018785,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.008559
+      }
+    ],
+    "v29_price_meta_ultradefensive": [
+      {
+        "trial": 0,
+        "simulated_minus_baseline": 0.002706,
+        "simulated_compound_return": -0.016245,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.002746
+      },
+      {
+        "trial": 1,
+        "simulated_minus_baseline": 0.002759,
+        "simulated_compound_return": -0.016192,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.002801
+      },
+      {
+        "trial": 2,
+        "simulated_minus_baseline": 0.004763,
+        "simulated_compound_return": -0.014188,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.004824
+      },
+      {
+        "trial": 3,
+        "simulated_minus_baseline": 0.007115,
+        "simulated_compound_return": -0.011836,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.007185
+      },
+      {
+        "trial": 4,
+        "simulated_minus_baseline": 0.002542,
+        "simulated_compound_return": -0.016409,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.00258
+      },
+      {
+        "trial": 5,
+        "simulated_minus_baseline": 0.005719,
+        "simulated_compound_return": -0.013232,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.005778
+      },
+      {
+        "trial": 6,
+        "simulated_minus_baseline": 0.005318,
+        "simulated_compound_return": -0.013633,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.00537
+      },
+      {
+        "trial": 7,
+        "simulated_minus_baseline": 0.005642,
+        "simulated_compound_return": -0.013309,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.005702
+      },
+      {
+        "trial": 8,
+        "simulated_minus_baseline": 0.004416,
+        "simulated_compound_return": -0.014535,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.004464
+      },
+      {
+        "trial": 9,
+        "simulated_minus_baseline": 0.004575,
+        "simulated_compound_return": -0.014376,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.004635
+      },
+      {
+        "trial": 10,
+        "simulated_minus_baseline": 0.006738,
+        "simulated_compound_return": -0.012213,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.006804
+      },
+      {
+        "trial": 11,
+        "simulated_minus_baseline": 0.00625,
+        "simulated_compound_return": -0.012701,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.006312
+      },
+      {
+        "trial": 12,
+        "simulated_minus_baseline": 0.003458,
+        "simulated_compound_return": -0.015493,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.003503
+      },
+      {
+        "trial": 13,
+        "simulated_minus_baseline": 0.002793,
+        "simulated_compound_return": -0.016159,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.002835
+      },
+      {
+        "trial": 14,
+        "simulated_minus_baseline": 0.003545,
+        "simulated_compound_return": -0.015407,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.003592
+      },
+      {
+        "trial": 15,
+        "simulated_minus_baseline": 0.002118,
+        "simulated_compound_return": -0.016833,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.002146
+      },
+      {
+        "trial": 16,
+        "simulated_minus_baseline": 0.004112,
+        "simulated_compound_return": -0.014839,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.004156
+      },
+      {
+        "trial": 17,
+        "simulated_minus_baseline": 0.004638,
+        "simulated_compound_return": -0.014313,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.004698
+      },
+      {
+        "trial": 18,
+        "simulated_minus_baseline": 0.003308,
+        "simulated_compound_return": -0.015643,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.003357
+      },
+      {
+        "trial": 19,
+        "simulated_minus_baseline": 0.006069,
+        "simulated_compound_return": -0.012882,
+        "flagged_day_count": 12,
+        "net_attribution_delta": 0.006133
+      }
+    ]
+  },
+  "global_decision": {
+    "can_change_strategy_now": false,
+    "can_claim_production_ready": false,
+    "next_required_step": "look_ahead_monthly_walk_forward_validation",
+    "reason": "Bucket-aware flag timing must beat random and still pass look-ahead/monthly/WF validation before strategy code can be considered."
+  }
+}
