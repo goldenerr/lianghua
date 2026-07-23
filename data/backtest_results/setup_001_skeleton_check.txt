@@ -1,0 +1,26 @@
+Thu Jul 23 03:07:38 AM UTC 2026
+/home/hermes/.hermes/projects/lianghua
+feature/setup-001-safety-baseline
+?? .multiagent/
+?? data/backtest_results/setup_001_skeleton_check.txt
+?? docs/research/setup_001_evidence_ledger.md
+DIR_OK src
+DIR_OK config
+DIR_OK data
+DIR_OK logs
+DIR_OK tests
+DIR_OK deployment
+DIR_OK scripts
+FILE_OK pyproject.toml
+FILE_OK .pre-commit-config.yaml
+FILE_OK .github/workflows/ci.yml
+FILE_OK init.sh
+FILE_OK deployment/docker/Dockerfile
+FILE_OK deployment/docker/docker-compose.yml
+FILE_MISSING Dockerfile
+FILE_MISSING docker-compose.yml
+/usr/bin/docker
+Docker version 29.5.2, build 79eb04c
+/home/hermes/.local/bin/poetry
+Poetry (version 2.2.1)
+PRE_COMMIT_NOT_ON_OUTER_PATH
