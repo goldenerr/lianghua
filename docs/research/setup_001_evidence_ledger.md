@@ -13,10 +13,10 @@ Rules:
 | --- | --- | --- | --- |
 | directory structure | src/config/data/logs/tests/deployment/scripts exist | fresh committed evidence | see setup-001 plan |
 | pyproject/pre-commit | pyproject + .pre-commit-config exist | fresh pre-commit run | see setup-001 plan |
-| Docker/compose | deployment/docker/ is the canonical Docker path. Option B selected: do not create root Dockerfile/docker-compose.yml wrappers. Canonical compose file: deployment/docker/docker-compose.yml; canonical Dockerfile: deployment/docker/Dockerfile. | up/down evidence still required | setup-001 Task 3 Option B, updated 2026-07-23 |
+| Docker/compose | deployment/docker/ is the canonical Docker path. Option B selected: do not create root Dockerfile/docker-compose.yml wrappers. Compose safety hardening now removes internal host port publication, loopback-binds public ports, requires Redis/ClickHouse secret env vars, adds resource limits, and removes obsolete top-level version. | runtime up/down evidence still required | data/backtest_results/setup_001_docker_compose_check.txt; data/backtest_results/setup_001_docker_compose_hardening_check.txt |
 | CI/CD | .github/workflows/ci.yml exists | fresh validation/CI run | see setup-001 plan |
 | init.sh | dev/test/prod and flags exist | fresh init evidence | see setup-001 plan |
-| docker compose up | not freshly verified | compose config/up/down logs | data/backtest_results/setup_001_docker_compose_check.txt |
+| docker compose up | config verified with ephemeral secrets; runtime blocked by docker daemon permission | compose up/ps/down logs from docker-capable environment | data/backtest_results/setup_001_docker_compose_hardening_check.txt |
 | smoke + consistency | historical only | fresh full tests and consistency report | see setup-001 plan |
 | capital impact + risk approval | not complete | report + approval reference | see setup-001 plan |
 | code signing + Kill Switch | not complete | signed verification + Kill Switch evidence | see setup-001 plan |

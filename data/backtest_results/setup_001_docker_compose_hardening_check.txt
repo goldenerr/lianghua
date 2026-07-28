@@ -1,0 +1,62 @@
+# setup-001 Docker Compose hardening check
+Generated: 2026-07-28T11:20:00
+Workdir: /home/hermes/.hermes/projects/lianghua
+Scope: deployment/docker/docker-compose.yml safety hardening for setup-001 compose blockers
+
+## TDD_RED
+$ .venv/bin/python -m pytest -q tests/deployment/test_docker_compose_hardening.py --no-cov
+
+exit_code=1
+summary=5 failed
+expected_failures:
+- redis published host port
+- app port not loopback-bound
+- missing Redis requirepass
+- missing ClickHouse password reference
+- missing service resource limits
+- obsolete top-level compose version key
+
+## TDD_GREEN
+$ .venv/bin/python -m pytest -q tests/deployment/test_docker_compose_hardening.py --no-cov
+
+exit_code=0
+summary=5 passed in 0.05s
+
+## FAIL_CLOSED_MISSING_SECRETS
+$ docker compose -f deployment/docker/docker-compose.yml config
+
+exit_code=1
+stderr=error while interpolating services.app.environment.[]: required variable REDIS_PASSWORD is missing a value: Set REDIS_PASSWORD
+
+## CANONICAL_COMPOSE_CONFIG_WITH_EPHEMERAL_SECRETS
+$ REDIS_PASSWORD=dev-redis-pass-for-compose-check CLICKHOUSE_PASSWORD=dev-clickhouse-pass-for-compose-check docker compose -f deployment/docker/docker-compose.yml config
+
+exit_code=0
+rendered_security_properties:
+- app published port is bound to host_ip 127.0.0.1, published 8080 in the default env used by the rendered config
+- nginx published ports are bound to host_ip 127.0.0.1, published 8081 and 8443 in the rendered config
+- redis has no rendered host port publication
+- clickhouse has no rendered host port publication
+- redis command includes --requirepass
+- clickhouse environment includes CLICKHOUSE_PASSWORD from the ephemeral environment
+- all services render mem_limit, cpus and pids_limit
+- no obsolete compose version warning was emitted
+
+## DOCKER_RUNTIME_UP_DOWN
+$ docker info
+
+exit_code=1
+stderr=permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+
+$ sudo -n docker info
+
+exit_code=1
+stderr=sudo: a password is required
+
+decision=DOCKER_RUNTIME_BLOCKED_BY_DAEMON_PERMISSION
+Reason: Hermes session user cannot access /var/run/docker.sock and does not have passwordless sudo. Compose up -d / ps / down were not executed, so setup-001 still cannot claim one-command startup completion.
+
+## STATUS
+COMPOSE_HARDENING_CONFIG_OK
+COMPOSE_UP_DOWN_STILL_NOT_VERIFIED
+setup-001 remains NOT COMPLETE / passes=false
