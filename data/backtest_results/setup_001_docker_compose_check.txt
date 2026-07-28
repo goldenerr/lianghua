@@ -1,0 +1,219 @@
+# setup-001 Docker Compose check
+Generated: 2026-07-23T11:17:00
+Workdir: /home/hermes/.hermes/projects/lianghua
+Scope: Task 4 only; canonical compose path deployment/docker/docker-compose.yml
+
+## FAILED_ROOT_COMPOSE_CHECK
+$ docker compose config
+
+exit_code=1
+--- stdout ---
+
+--- stderr ---
+no configuration file provided: not found
+
+
+## DOCKER_COMPOSE_VERSION
+$ docker compose version
+
+exit_code=0
+--- stdout ---
+Docker Compose version v5.1.4
+
+--- stderr ---
+
+
+## CANONICAL_COMPOSE_CONFIG
+$ docker compose -f deployment/docker/docker-compose.yml config
+
+exit_code=0
+--- stdout ---
+name: docker
+services:
+  app:
+    build:
+      context: /home/hermes/.hermes/projects/lianghua
+      dockerfile: deployment/docker/Dockerfile
+      target: production
+    container_name: quant-app
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+        required: true
+      redis:
+        condition: service_healthy
+        required: true
+    environment:
+      CLICKHOUSE_URL: http://clickhouse:8123
+      QUANT_ENV: dev
+      REDIS_URL: redis://redis:6379/0
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/health
+      timeout: 10s
+      interval: 30s
+      retries: 3
+      start_period: 10s
+    image: quant-trading:latest
+    networks:
+      quant-net: null
+    ports:
+      - mode: ingress
+        target: 8080
+        published: "8080"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/config
+        target: /app/config
+        read_only: true
+        bind: {}
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/data
+        target: /app/data
+        bind: {}
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/logs
+        target: /app/logs
+        bind: {}
+  clickhouse:
+    container_name: quant-clickhouse
+    environment:
+      CLICKHOUSE_DB: quant
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+      CLICKHOUSE_USER: quant
+    healthcheck:
+      test:
+        - CMD
+        - clickhouse-client
+        - --query
+        - SELECT 1
+      timeout: 5s
+      interval: 10s
+      retries: 5
+    image: clickhouse/clickhouse-server:24-alpine
+    networks:
+      quant-net: null
+    ports:
+      - mode: ingress
+        target: 8123
+        published: "8123"
+        protocol: tcp
+      - mode: ingress
+        target: 9000
+        published: "9000"
+        protocol: tcp
+    restart: unless-stopped
+    ulimits:
+      nofile: 262144
+    volumes:
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/clickhouse-data
+        target: /var/lib/clickhouse
+        bind: {}
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/deployment/docker/clickhouse/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        read_only: true
+        bind: {}
+  nginx:
+    container_name: quant-nginx
+    depends_on:
+      app:
+        condition: service_started
+        required: true
+    healthcheck:
+      test:
+        - CMD
+        - nginx
+        - -t
+      timeout: 10s
+      interval: 30s
+      retries: 3
+    image: nginx:1.27-alpine
+    networks:
+      quant-net: null
+    ports:
+      - mode: ingress
+        target: 80
+        published: "80"
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        published: "443"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/deployment/docker/nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+        bind: {}
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/deployment/docker/nginx/certs
+        target: /etc/nginx/certs
+        read_only: true
+        bind: {}
+  redis:
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - allkeys-lru
+    container_name: quant-redis
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      timeout: 5s
+      interval: 10s
+      retries: 5
+    image: redis:7-alpine
+    networks:
+      quant-net: null
+    ports:
+      - mode: ingress
+        target: 6379
+        published: "6379"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /home/hermes/.hermes/projects/lianghua/redis-data
+        target: /data
+        bind: {}
+networks:
+  quant-net:
+    name: docker_quant-net
+    driver: bridge
+
+--- stderr ---
+time="2026-07-23T11:17:00+08:00" level=warning msg="/home/hermes/.hermes/projects/lianghua/deployment/docker/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+
+
+## FAIL_CLOSED_SAFETY_REVIEW
+
+canonical_compose_config_exit_code=0
+
+findings=- PORT_RISK: Redis port 6379 is published to host
+- PORT_RISK: ClickHouse HTTP port 8123 is published to host
+- PORT_RISK: ClickHouse native port 9000 is published to host
+- PORT_RISK: Nginx port 80 is published to host
+- PORT_RISK: Nginx port 443 is published to host
+- SECRET_RISK: Redis is exposed without requirepass in compose command
+- SECRET_RISK: ClickHouse user configured without password/secret reference
+- RESOURCE_RISK: No compose CPU/memory/pids resource limits found
+
+decision=BLOCKED_DO_NOT_RUN_UP_DOWN
+
+## COMPOSE_UP_DOWN_SKIPPED
+
+Reason: fail-closed safety review found port/resource/secret blockers, so up -d / ps / down were not executed. The compose up/down success marker is intentionally absent.
