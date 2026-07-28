@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock
 
 import pandas as pd
 import pytest
-
 from quant_trading.config.market_router import MarketRouter
 from quant_trading.config.settings import Market, MarketRules, SystemSettings, TradingSession
 from quant_trading.data.provider import (

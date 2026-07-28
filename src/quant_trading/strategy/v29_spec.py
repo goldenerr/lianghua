@@ -114,7 +114,7 @@ class V29LaunchControls(BaseModel):
 
     auto_trade_enabled: Literal[False] = False
     live_order_submission_allowed: Literal[False] = False
-    max_live_capital_fraction: Literal[0.0] = 0.0
+    max_live_capital_fraction: float = Field(default=0.0, ge=0.0, le=0.0)
     paper_min_calendar_days: int = Field(default=90, ge=90)
     paper_min_performance_vs_backtest: float = Field(default=0.70, ge=0.70, le=1.0)
     fail_closed_on_missing_evidence: Literal[True] = True

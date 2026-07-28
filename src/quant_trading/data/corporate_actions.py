@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 
@@ -97,7 +97,7 @@ class AdjustmentFactors:
 
     def to_dataframe(self) -> pd.DataFrame:
         """Convert to DataFrame indexed by date."""
-        return pd.DataFrame(
+        frame = pd.DataFrame(
             {
                 "pre_factor": self.pre_factors,
                 "post_factor": self.post_factors,
@@ -105,6 +105,7 @@ class AdjustmentFactors:
             },
             index=pd.DatetimeIndex(pd.to_datetime(self.dates)),
         ).sort_index()
+        return cast(pd.DataFrame, frame)
 
 
 class AdjustmentEngine:
@@ -264,7 +265,7 @@ def adjust_prices(
     # Align dates
     common_idx = adjusted.index.intersection(fac_df.index)
     if len(common_idx) == 0:
-        return adjusted
+        return cast(pd.DataFrame, adjusted)
 
     factor_col = {
         AdjustmentMode.PRE_ADJUSTED: "pre_factor",
@@ -284,7 +285,7 @@ def adjust_prices(
     if "volume" in adjusted.columns:
         adjusted.loc[common_idx, "volume"] = adjusted.loc[common_idx, "volume"] / factors_aligned
 
-    return adjusted
+    return cast(pd.DataFrame, adjusted)
 
 
 # ── Event calendar fetcher ────────────────────────────────────────────────────
@@ -387,7 +388,7 @@ class DeliveryHandler:
         quantity: float,
         contract_multiplier: float = 1.0,
         delivery_type: str = "cash",  # "cash" or "physical"
-    ) -> dict:
+    ) -> dict[str, object]:
         """
         Process futures contract delivery.
 
@@ -422,7 +423,7 @@ class DeliveryHandler:
         quantity: float,
         option_type: str = "call",
         underlying_price: float = 0.0,
-    ) -> dict:
+    ) -> dict[str, object]:
         """
         Process option exercise.
 

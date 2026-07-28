@@ -4,7 +4,6 @@ from datetime import date
 
 import pandas as pd
 import pytest
-
 from quant_trading.data.provider import DataProviderError, DataRequest, Frequency
 from quant_trading.data.tencent_ifzq_provider import TencentIfzqProvider
 
