@@ -797,6 +797,7 @@ def _run_meta_portfolio(
 
 
 def _walk_forward_from_returns(returns: pd.Series) -> dict[str, Any]:
+    """Return fixed-candidate chronological diagnostics, not a valid WF fit."""
     test_days = 252
     warmup = 756
     folds: list[dict[str, Any]] = []
@@ -823,6 +824,101 @@ def _walk_forward_from_returns(returns: pd.Series) -> dict[str, Any]:
     avg_oos = float(np.mean(oos_values)) if oos_values else 0.0
     decay = (avg_is - avg_oos) / abs(avg_is) if abs(avg_is) > 1e-12 else 0.0
     return {
+        "valid": False,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": folds,
+        "avg_is_sharpe": round(avg_is, 4),
+        "avg_oos_sharpe": round(avg_oos, 4),
+        "sharpe_decay": round(decay, 4),
+    }
+
+
+def _walk_forward_select_candidates(
+    candidate_returns: dict[str, pd.Series],
+    *,
+    production_comparable: dict[str, bool],
+    n_folds: int = 5,
+    train_days: int = 756,
+    test_days: int = 252,
+) -> dict[str, Any]:
+    """Select on each train fold, freeze the candidate, then evaluate OOS."""
+    eligible = sorted(
+        name for name in candidate_returns if bool(production_comparable.get(name, False))
+    )
+    if not eligible:
+        return {
+            "valid": False,
+            "selection_mode": "train_only_candidate_selection",
+            "oos_data_used_for_selection": False,
+            "invalid_reason": "no production-comparable candidates",
+            "folds": [],
+        }
+    frame = pd.concat(
+        {name: pd.to_numeric(candidate_returns[name], errors="coerce") for name in eligible},
+        axis=1,
+    ).replace([np.inf, -np.inf], np.nan)
+    frame = frame.sort_index().dropna(how="any")
+    train_n = int(train_days)
+    test_n = int(test_days)
+    requested_folds = int(n_folds)
+    available_folds = max(0, (len(frame) - train_n) // test_n)
+    if available_folds < requested_folds:
+        return {
+            "valid": False,
+            "selection_mode": "train_only_candidate_selection",
+            "oos_data_used_for_selection": False,
+            "invalid_reason": "insufficient aligned history for all requested folds",
+            "folds": [],
+        }
+    max_folds = requested_folds
+
+    first_test_start = len(frame) - max_folds * test_n
+    folds: list[dict[str, Any]] = []
+    for fold in range(max_folds):
+        test_start = first_test_start + fold * test_n
+        test_end = test_start + test_n
+        train_start = test_start - train_n
+        train = frame.iloc[train_start:test_start]
+        test = frame.iloc[test_start:test_end]
+        train_metrics = {name: _metrics(train[name]) for name in eligible}
+        selected = max(
+            eligible,
+            key=lambda name: float(train_metrics[name].get("sharpe_ratio", -999.0)),
+        )
+        selected_train = train_metrics[selected]
+        selected_oos = _metrics(test[selected])
+        folds.append(
+            {
+                "fold": fold,
+                "train_start": train.index[0].date().isoformat(),
+                "train_end": train.index[-1].date().isoformat(),
+                "test_start": test.index[0].date().isoformat(),
+                "test_end": test.index[-1].date().isoformat(),
+                "selected_candidate": selected,
+                "selection_frozen_for_oos": True,
+                "train_candidate_metrics": train_metrics,
+                "is": selected_train.get("sharpe_ratio"),
+                "oos": selected_oos.get("sharpe_ratio"),
+                "mdd": selected_oos.get("max_drawdown"),
+                "test_n_days": int(len(test)),
+            }
+        )
+
+    is_values = [float(item["is"]) for item in folds if item.get("is") is not None]
+    oos_values = [float(item["oos"]) for item in folds if item.get("oos") is not None]
+    avg_is = float(np.mean(is_values)) if is_values else 0.0
+    avg_oos = float(np.mean(oos_values)) if oos_values else 0.0
+    decay = (avg_is - avg_oos) / abs(avg_is) if abs(avg_is) > 1e-12 else 0.0
+    return {
+        "valid": True,
+        "selection_mode": "train_only_candidate_selection",
+        "training_operation": "select one fixed causal candidate by train Sharpe",
+        "oos_data_used_for_selection": False,
+        "production_candidates": eligible,
+        "n_folds": len(folds),
+        "train_days": train_n,
+        "test_days": test_n,
         "folds": folds,
         "avg_is_sharpe": round(avg_is, 4),
         "avg_oos_sharpe": round(avg_oos, 4),
@@ -934,10 +1030,14 @@ def main() -> None:
         else "V29-dynamic-sleeve-portfolio-layer"
     )
     results: list[dict[str, Any]] = []
+    candidate_returns: dict[str, pd.Series] = {}
+    production_comparability: dict[str, bool] = {}
     for config in _portfolio_configs():
         run = _run_meta_portfolio(config, sleeve_frame, crisis_returns, carry_returns, close.index, regime)
         wf = _walk_forward_from_returns(run["returns"])
         production_comparable = bool(config.get("production_comparable", True))
+        candidate_returns[config["name"]] = run["returns"]
+        production_comparability[config["name"]] = production_comparable
         blockers = [config["production_blocker"]] if config.get("production_blocker") else []
         results.append(
             {
@@ -952,8 +1052,8 @@ def main() -> None:
                 "gates": {
                     "S": run["full"].get("sharpe_ratio", -999) >= 1.2,
                     "M": run["full"].get("max_drawdown", -999) >= -0.15,
-                    "W": wf.get("avg_oos_sharpe", -999) >= 0.84,
-                    "D": wf.get("sharpe_decay", 999) <= 0.30,
+                    "W": False,
+                    "D": False,
                 },
             }
         )
@@ -965,6 +1065,16 @@ def main() -> None:
         ),
         reverse=True,
     )
+    walk_forward_selection = _walk_forward_select_candidates(
+        candidate_returns,
+        production_comparable=production_comparability,
+    )
+    walk_forward_gates = {
+        "W": bool(walk_forward_selection.get("valid"))
+        and float(walk_forward_selection.get("avg_oos_sharpe", -999.0)) >= 0.84,
+        "D": bool(walk_forward_selection.get("valid"))
+        and float(walk_forward_selection.get("sharpe_decay", 999.0)) <= 0.30,
+    }
 
     payload = {
         "ts": datetime.now(timezone.utc).isoformat(),
@@ -987,11 +1097,14 @@ def main() -> None:
             "carry": _metrics(carry_returns),
             "carry_source": str(HEDGE_ASSETS_DIR / "etf_511260.parquet"),
         },
+        "walk_forward_selection": walk_forward_selection,
+        "walk_forward_gates": walk_forward_gates,
         "results": results,
         "production_blockers": [
             "research script only; not an approved strategy artifact",
             "external WORM/provider entitlement/secret/approval/broker evidence remains required",
             "alt-data variants require production PIT entitlement evidence before comparison",
+            "candidate-level chronological diagnostics are not valid walk-forward gates",
             "must run approved paper-trading service and capital-impact approval before promotion",
         ],
         "elapsed_seconds": round(time.perf_counter() - started, 2),
@@ -1009,8 +1122,8 @@ def main() -> None:
             "Best V29: "
             f"{best['name']} full_sharpe={best['full'].get('sharpe_ratio')} "
             f"mdd={best['full'].get('max_drawdown')} "
-            f"oos={best['wf'].get('avg_oos_sharpe')} "
-            f"decay={best['wf'].get('sharpe_decay')}"
+            f"wf_selection_oos={walk_forward_selection.get('avg_oos_sharpe')} "
+            f"wf_selection_decay={walk_forward_selection.get('sharpe_decay')}"
         )
 
 

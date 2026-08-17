@@ -1,6 +1,14 @@
 # Quant Trading System — Progress Log
 # Last updated: 2026-08-17
 
+## V29 Fold-Internal Candidate Selection (2026-08-17) - PRODUCTION BLOCKED
+
+- Replaced candidate-level pseudo-Walk-Forward gating with a top-level train-only candidate-selection workflow: each fold ranks production-comparable causal candidates on the preceding 756 trading days, freezes one candidate, and evaluates only that candidate on the next 252 OOS days.
+- Fixed-candidate chronological slices remain available as diagnostics but now carry `valid=false`; their per-candidate W/D gates fail closed. The top-level W/D gates use only the fold-internal selection output.
+- Added regression tests proving OOS returns cannot influence training selection, unselected-candidate OOS mutations cannot change selected OOS, and incomplete requested folds fail closed.
+- Verification: 3/3 new tests passed; 22/22 targeted V29 tests passed before the final fail-closed addition; full suite 855/855 passed with 86.86% source coverage; Ruff, Mypy (98 source files), py_compile, diff-check, and Smoke Test passed.
+- Historical V29 OOS reports remain invalid and were not regenerated. The candidate set was developed post-hoc and still requires preregistration plus clean reruns; `strategy-001.passes` and all production/paper/live gates remain false.
+
 ## V29 Rolling-IC Label-Horizon Fix (2026-08-17) - PRODUCTION BLOCKED
 
 - Fixed a confirmed five-trading-day label look-ahead in `scripts/research_v28_factor_direction.py`: rolling IC weights now lag by the full `label_horizon=5` instead of one day, and both V28/V29 callers bind that horizon explicitly.
