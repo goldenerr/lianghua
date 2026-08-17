@@ -316,11 +316,12 @@ def _rolling_ic_weights(
     future_return: pd.DataFrame,
     *,
     lookback: int = 252,
+    label_horizon: int = 5,
 ) -> pd.DataFrame:
     ic_frame = pd.DataFrame(
         {name: _cross_sectional_ic(factor, future_return) for name, factor in factors.items()}
     ).sort_index()
-    rolling = ic_frame.rolling(lookback, min_periods=80).mean().shift(1)
+    rolling = ic_frame.rolling(lookback, min_periods=80).mean().shift(label_horizon)
     return rolling.reindex(future_return.index)
 
 
@@ -949,7 +950,7 @@ def main() -> None:
     factors.update(alt_factors)
     future_5d = close.shift(-5) / close - 1.0
     diagnostics = _factor_diagnostics(factors, future_5d)
-    rolling_ic = _rolling_ic_weights(factors, future_5d)
+    rolling_ic = _rolling_ic_weights(factors, future_5d, label_horizon=5)
     industry_map = _load_industry_map()
     industry_overlap = len(set(close.columns) & set(industry_map))
     crisis_returns = _load_crisis_returns(close.index)

@@ -906,7 +906,7 @@ def main() -> None:
     factors.update(alt_factors)
     future_5d = close.shift(-5) / close - 1.0
     diagnostics = _factor_diagnostics(factors, future_5d)
-    rolling_ic = _rolling_ic_weights(factors, future_5d)
+    rolling_ic = _rolling_ic_weights(factors, future_5d, label_horizon=5)
     industry_map = _load_industry_map()
     crisis_returns = _load_crisis_returns(close.index)
     carry_returns = _load_asset_returns("etf_511260.parquet", close.index)

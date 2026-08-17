@@ -1,5 +1,12 @@
 # Quant Trading System — Progress Log
-# Last updated: 2026-06-30
+# Last updated: 2026-08-17
+
+## V29 Rolling-IC Label-Horizon Fix (2026-08-17) - PRODUCTION BLOCKED
+
+- Fixed a confirmed five-trading-day label look-ahead in `scripts/research_v28_factor_direction.py`: rolling IC weights now lag by the full `label_horizon=5` instead of one day, and both V28/V29 callers bind that horizon explicitly.
+- Added a truncation-invariance regression test proving that changes to labels not yet observable on the decision date cannot change that date's IC weight. TDD RED reproduced a weight change from `0.0049721` to `-0.0030540`; GREEN passes after the full-horizon embargo.
+- Verification: 20/20 targeted V29 tests passed; full suite 852/852 passed with 86.86% source coverage; Ruff on `src/tests` and touched scripts passed; Mypy passed for 98 source files; Smoke Test passed with `PYTHONPATH=src`.
+- Existing V28/V29 adaptive-IC metrics and reports remain invalid historical evidence and must not be promoted. They are not regenerated yet because the separate pseudo-Walk-Forward defect remains open; production and paper/live gates stay closed and `strategy-001.passes` remains false.
 
 ## V29 Fold-Internal Bucket-Aware WF Validation (2026-06-30) - PRODUCTION BLOCKED
 
