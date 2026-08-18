@@ -101,9 +101,11 @@ class TestAdjustmentEngine:
             index=pd.DatetimeIndex(pd.to_datetime(["2024-01-01", "2024-06-01"])),
         )
         factors = engine.compute_factors(events, prices)
-        # Split: pre /= 2 → 0.5, post *= 2 → 2.0
-        # Dividend: pre unchanged (0.5), post *= (10-1)/10 = 0.9 → 2.0*0.9 = 1.8
-        assert factors.pre_factors[-1] == pytest.approx(0.5)
+        # Split applies only to history before 2024-03-01 in pre-adjusted space.
+        # Dividend does not alter this engine's pre-factor; the current date stays 1.0.
+        assert factors.pre_factors[0] == pytest.approx(0.5)
+        assert factors.pre_factors[-1] == pytest.approx(1.0)
+        # Post-adjustment accumulates split and ex-dividend factors forward.
         assert factors.post_factors[-1] == pytest.approx(1.8)
 
     def test_factors_to_dataframe(self):
@@ -153,11 +155,39 @@ class TestAdjustPrices:
         prices = pd.Series(df["close"].values, index=df.index)
         factors = engine.compute_factors(events, prices)
         adjusted = adjust_prices(df, factors, mode=AdjustmentMode.PRE_ADJUSTED)
-        # Pre-adjust: pre-factor after split = 0.5. Both dates: 10*0.5 = 5.0
-        assert adjusted["close"].iloc[-1] == pytest.approx(5.0)
+        # Pre-adjust only history before the split; ex-date/current prices stay unchanged.
         assert adjusted["close"].iloc[0] == pytest.approx(5.0)
-        # Volume adjusted inversely: 1000 / 0.5 = 2000
-        assert adjusted["volume"].iloc[-1] == pytest.approx(2000.0)
+        assert adjusted["close"].iloc[-1] == pytest.approx(10.0)
+        # Historical volume is adjusted inversely; ex-date volume stays unchanged.
+        assert adjusted["volume"].iloc[0] == pytest.approx(2000.0)
+        assert adjusted["volume"].iloc[-1] == pytest.approx(1000.0)
+
+    def test_pre_adjust_multiple_splits_is_piecewise(self):
+        df = pd.DataFrame(
+            {"close": [60.0, 30.0, 10.0], "volume": [1000.0, 1000.0, 1000.0]},
+            index=pd.DatetimeIndex(pd.to_datetime(["2024-01-01", "2024-04-01", "2024-07-01"])),
+        )
+        events = [
+            CorporateActionEvent(
+                symbol="T",
+                event_date=date(2024, 3, 1),
+                event_type=EventType.STOCK_SPLIT,
+                split_ratio=2.0,
+            ),
+            CorporateActionEvent(
+                symbol="T",
+                event_date=date(2024, 6, 1),
+                event_type=EventType.STOCK_SPLIT,
+                split_ratio=3.0,
+            ),
+        ]
+
+        factors = AdjustmentEngine().compute_factors(events, df["close"])
+        adjusted = adjust_prices(df, factors, mode=AdjustmentMode.PRE_ADJUSTED)
+
+        assert factors.pre_factors == pytest.approx([1 / 6, 1 / 3, 1.0])
+        assert adjusted["close"].tolist() == pytest.approx([10.0, 10.0, 10.0])
+        assert adjusted["volume"].tolist() == pytest.approx([6000.0, 3000.0, 1000.0])
 
     def test_total_return(self):
         df = pd.DataFrame(

@@ -181,11 +181,16 @@ class AdjustmentEngine:
                 factors.post_factors.append(round(post_factor, 10))
                 factors.total_return_factors.append(round(tr_factor, 10))
 
-        # Post-process: pre_factor should be terminal value for ALL dates
-        # (前复权 applies final cumulative factor uniformly backward across history)
-        if factors.pre_factors:
+        # Price-aligned pre-adjustment normalizes each date to the latest basis.
+        # The running factor contains events already observed by that date, while
+        # pre-adjustment must apply only events still in the future. Dividing the
+        # terminal cumulative factor by each running value produces that piecewise
+        # backward-adjustment path (for example: 1/6 -> 1/3 -> 1 for 2x then 3x splits).
+        if price_series is not None and not price_series.empty and factors.pre_factors:
             terminal_pre = factors.pre_factors[-1]
-            factors.pre_factors = [terminal_pre] * len(factors.pre_factors)
+            factors.pre_factors = [
+                round(terminal_pre / running_pre, 10) for running_pre in factors.pre_factors
+            ]
 
         return factors
 
