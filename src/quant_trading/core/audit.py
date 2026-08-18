@@ -10,6 +10,7 @@ import hashlib
 import hmac
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -54,20 +55,20 @@ class AuditBus:
             "timestamp": datetime.now(UTC).isoformat(),
             "event_type": event_type,
             "source": source,
-            "payload": payload,
+            "payload": deepcopy(payload),
             "trace_id": kwargs.get("trace_id", ""),
             "previous_hash": previous_hash,
         }
         entry["hash"] = self._hash_entry(entry)
         self._events.append(entry)
-        ev = Event(event_type=EventType.SYSTEM, payload=entry)
+        ev = Event(event_type=EventType.SYSTEM, payload=deepcopy(entry))
         self.bus.publish(ev)
 
     def query(self, event_type: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
         events = self._events
         if event_type:
             events = [e for e in events if e["event_type"] == event_type]
-        return events[-limit:]
+        return deepcopy(events[-limit:])
 
     def get_count(self) -> int:
         return len(self._events)

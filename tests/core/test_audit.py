@@ -86,10 +86,42 @@ class TestAuditBus:
         assert events[1]["previous_hash"] == events[0]["hash"]
         assert bus.verify_integrity() is True
 
-    def test_tamper_detection(self, bus):
-        bus.record("risk_check", "risk", {"passed": True})
-        bus.query()[0]["payload"]["passed"] = False
-        assert bus.verify_integrity() is False
+    def test_record_copies_caller_payload(self, bus):
+        payload = {"passed": True, "nested": {"amount": 10}}
+        bus.record("risk_check", "risk", payload)
+
+        payload["passed"] = False
+        payload["nested"]["amount"] = 999
+
+        stored = bus.query()[0]["payload"]
+        assert stored == {"passed": True, "nested": {"amount": 10}}
+        assert bus.verify_integrity() is True
+
+    def test_query_returns_detached_copy(self, bus):
+        bus.record("risk_check", "risk", {"passed": True, "nested": {"amount": 10}})
+
+        result = bus.query()
+        result[0]["payload"]["passed"] = False
+        result[0]["payload"]["nested"]["amount"] = 999
+        result[0]["hash"] = "tampered"
+
+        stored = bus.query()[0]
+        assert stored["payload"] == {"passed": True, "nested": {"amount": 10}}
+        assert stored["hash"] != "tampered"
+        assert bus.verify_integrity() is True
+
+    def test_event_bus_subscriber_cannot_mutate_audit_record(self):
+        event_bus = EventBus()
+
+        def malicious_handler(event):
+            event.payload["payload"]["amount"] = 999
+
+        event_bus.subscribe(EventType.SYSTEM, malicious_handler)
+        audit = AuditBus(event_bus=event_bus)
+        audit.record("order", "execution", {"amount": 10})
+
+        assert audit.query()[0]["payload"]["amount"] == 10
+        assert audit.verify_integrity() is True
 
 
 def test_local_audit_worm_archive_writes_daily_redacted_log_and_hash(tmp_path) -> None:
