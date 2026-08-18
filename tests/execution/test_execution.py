@@ -524,42 +524,73 @@ class TestOrderManager:
 
 
 class TestPositionReconciler:
+    def test_mismatch_always_enters_safe_mode(self):
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        pr = PositionReconciler(system_fsm=fsm, tolerance=0.0001)
+
+        assert pr.reconcile(1000.0, 1002.0) is False
+        assert fsm.state == SystemState.SAFE_MODE
+        assert fsm.can_trade is False
+
+    def test_retry_fetch_failure_enters_safe_mode_and_propagates(self):
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        pr = PositionReconciler(system_fsm=fsm)
+
+        async def fetch_internal():
+            raise ConnectionError("position store unavailable")
+
+        async def fetch_exchange():
+            return 100.0
+
+        with pytest.raises(ConnectionError, match="position store unavailable"):
+            asyncio.run(
+                pr.reconcile_with_retry(
+                    fetch_internal, fetch_exchange, max_retries=1, backoff_seconds=(0.0,)
+                )
+            )
+        assert fsm.state == SystemState.SAFE_MODE
+        assert fsm.can_trade is False
+
     def test_exact_match(self):
-        pr = PositionReconciler(tolerance=0.0001)
+        pr = PositionReconciler(SystemStateMachine(), tolerance=0.0001)
         assert pr.reconcile(1000.0, 1000.0) is True
 
     def test_within_tolerance(self):
-        pr = PositionReconciler(tolerance=0.001)
+        pr = PositionReconciler(SystemStateMachine(), tolerance=0.001)
         assert pr.reconcile(1000.0, 1000.5) is True
 
     def test_outside_tolerance(self):
-        pr = PositionReconciler(tolerance=0.0001)
+        pr = PositionReconciler(SystemStateMachine(), tolerance=0.0001)
         assert pr.reconcile(1000.0, 1002.0) is False
 
     def test_zero_exchange_position(self):
         """AGENTS.md §18: tolerance relative to exchange position, use max(abs, 1.0)."""
-        pr = PositionReconciler(tolerance=0.01)
+        pr = PositionReconciler(SystemStateMachine(), tolerance=0.01)
         assert pr.reconcile(0.1, 0.0) is False
 
     def test_zero_both(self):
-        pr = PositionReconciler()
+        pr = PositionReconciler(SystemStateMachine())
         assert pr.reconcile(0.0, 0.0) is True
 
     def test_large_positions(self):
-        pr = PositionReconciler(tolerance=0.0001)
+        pr = PositionReconciler(SystemStateMachine(), tolerance=0.0001)
         # 1e6 position, 200 diff = 0.02% = outside 0.01% tolerance
         assert pr.reconcile(1_000_000, 1_000_200) is False
         # 1e6 position, 50 diff = 0.005% = within
         assert pr.reconcile(1_000_000, 1_000_050) is True
 
     def test_custom_tolerance(self):
-        pr_loose = PositionReconciler(tolerance=0.15)  # 15% tolerance
+        pr_loose = PositionReconciler(SystemStateMachine(), tolerance=0.15)  # 15% tolerance
         assert pr_loose.reconcile(100, 90) is True  # 10/90=11.1% < 15%
-        pr_tight = PositionReconciler(tolerance=0.00001)  # 0.001% tolerance
+        pr_tight = PositionReconciler(SystemStateMachine(), tolerance=0.00001)  # 0.001% tolerance
         assert pr_tight.reconcile(1000, 1000.1) is False  # 0.1/1000.1=0.00999% > 0.001%
 
     def test_reconcile_with_retry_succeeds_after_retry(self):
-        pr = PositionReconciler(tolerance=0.001)
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        pr = PositionReconciler(fsm, tolerance=0.001)
         pairs = [(100.0, 101.0), (100.0, 100.0)]
         state = {"idx": 0}
 
@@ -580,14 +611,13 @@ class TestPositionReconciler:
         )
         assert result.matched is True
         assert result.attempts == 2
+        assert fsm.state == SystemState.RUNNING
+        assert fsm.can_trade is True
 
-    def test_reconcile_with_retry_failure_triggers_safe_mode_callback(self):
-        triggered = {"value": False}
-
-        def on_safe_mode(_msg: str):
-            triggered["value"] = True
-
-        pr = PositionReconciler(tolerance=0.00001, on_safe_mode=on_safe_mode)
+    def test_reconcile_with_retry_failure_enters_safe_mode(self):
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        pr = PositionReconciler(fsm, tolerance=0.00001)
 
         async def fetch_internal():
             return 100.0
@@ -601,7 +631,8 @@ class TestPositionReconciler:
             )
         )
         assert result.matched is False
-        assert triggered["value"] is True
+        assert fsm.state == SystemState.SAFE_MODE
+        assert fsm.can_trade is False
 
 
 # ── Order Book ─────────────────────────────────────────────────────

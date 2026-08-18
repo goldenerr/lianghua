@@ -39,7 +39,7 @@ def test_failover_rejects_unhealthy_region():
 def test_reconcile_violation_blocks_new_orders():
     fsm = SystemStateMachine()
     fsm.transition(SystemState.RUNNING)
-    pr = PositionReconciler(tolerance=0.0001, on_safe_mode=fsm.enter_safe_mode)
+    pr = PositionReconciler(fsm, tolerance=0.0001)
 
     assert pr.reconcile(100.0, 130.0) is False
     assert fsm.state == SystemState.SAFE_MODE
