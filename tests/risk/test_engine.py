@@ -4,7 +4,12 @@ import numpy as np
 import pytest
 from quant_trading.core.audit import AuditBus
 from quant_trading.core.state_machine import SystemState, SystemStateMachine
-from quant_trading.execution.order_manager import Order, OrderManager, OrderSide
+from quant_trading.execution.order_manager import (
+    InMemoryOrderStore,
+    Order,
+    OrderManager,
+    OrderSide,
+)
 from quant_trading.risk.engine import RiskEngine, RiskLimits
 
 
@@ -88,6 +93,6 @@ class TestRiskEngine:
         assert result.passed is False
         assert fsm.state == SystemState.EMERGENCY
 
-        om = OrderManager(system_fsm=fsm)
+        om = OrderManager(order_store=InMemoryOrderStore(), system_fsm=fsm)
         with pytest.raises(RuntimeError, match="system state"):
             om.submit(Order("risk-block-1", "AAPL", OrderSide.BUY, 1))

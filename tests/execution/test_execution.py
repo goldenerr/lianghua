@@ -19,6 +19,7 @@ from quant_trading.execution.order_book import (
     vwap_schedule,
 )
 from quant_trading.execution.order_manager import (
+    InMemoryOrderStore,
     Order,
     OrderManager,
     OrderSide,
@@ -26,17 +27,19 @@ from quant_trading.execution.order_manager import (
     OrderType,
     ReconciledPositionSnapshot,
     ReconciledReduceOnlyValidator,
+    SqliteOrderStore,
 )
 from quant_trading.execution.reconciler import PositionReconciler
 
 UTC = timezone.utc
 
 
-def _running_order_manager(audit_bus=None):
+def _running_order_manager(audit_bus=None, order_store=None):
     fsm = SystemStateMachine()
     fsm.transition(SystemState.RUNNING)
     MarketRouter._configure_for_testing(SystemSettings())
     return OrderManager(
+        order_store=order_store or InMemoryOrderStore(),
         audit_bus=audit_bus,
         system_fsm=fsm,
         decision_clock=lambda: datetime(2026, 5, 18, 2, 0, tzinfo=UTC),
@@ -74,6 +77,39 @@ class TestOrder:
 
 
 class TestOrderManager:
+    def test_requires_order_store(self):
+        with pytest.raises(ValueError, match="order_store is required"):
+            OrderManager()
+
+    def test_pending_intent_is_recovered_without_resubmit(self, tmp_path):
+        path = tmp_path / "pending-orders.sqlite3"
+        store = SqliteOrderStore(path)
+        pending = Order(
+            "pending-id",
+            "600519.SH",
+            OrderSide.BUY,
+            100,
+            market=Market.A_SHARES,
+        )
+        assert store.reserve(pending) is True
+
+        restarted = _running_order_manager(order_store=SqliteOrderStore(path))
+        assert (
+            restarted.submit(
+                Order(
+                    "pending-id",
+                    "600519.SH",
+                    OrderSide.BUY,
+                    100,
+                    market=Market.A_SHARES,
+                )
+            )
+            == "pending-id"
+        )
+        recovered = restarted.get("pending-id")
+        assert recovered is not None
+        assert recovered.status == OrderStatus.PENDING
+
     def test_submit_order(self):
         om = _running_order_manager()
         o = Order("id-1", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
@@ -83,15 +119,43 @@ class TestOrderManager:
         assert om.get("id-1") is o
 
     def test_submit_idempotent_client_id(self):
-        """AGENTS.md §36: unique client_order_id, re-submit returns existing."""
+        """AGENTS.md §36: exact replay returns the persisted original."""
         om = _running_order_manager()
         o1 = Order("dup-id", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
-        o2 = Order("dup-id", "600519.SH", OrderSide.BUY, 200, market=Market.A_SHARES)
+        o2 = Order("dup-id", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
         om.submit(o1)
-        om.submit(o2)
+        assert om.submit(o2) == "dup-id"
         result = om.get("dup-id")
         assert result is not None
-        assert result.quantity == 100  # idempotent replay keeps original
+        assert result.quantity == 100
+
+    def test_conflicting_idempotency_key_is_rejected(self):
+        audit = AuditBus()
+        om = _running_order_manager(audit_bus=audit)
+        om.submit(Order("dup-id", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES))
+
+        with pytest.raises(RuntimeError, match="idempotency conflict"):
+            om.submit(Order("dup-id", "600519.SH", OrderSide.BUY, 200, market=Market.A_SHARES))
+
+        event = audit.query("order_idempotency_conflict")[-1]["payload"]
+        assert event["client_order_id"] == "dup-id"
+
+    def test_sqlite_store_recovers_order_after_restart(self, tmp_path):
+        path = tmp_path / "orders.sqlite3"
+        first = _running_order_manager(order_store=SqliteOrderStore(path))
+        first.submit(Order("restart-id", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES))
+
+        restarted = _running_order_manager(order_store=SqliteOrderStore(path))
+        recovered = restarted.get("restart-id")
+        assert recovered is not None
+        assert recovered.status == OrderStatus.SUBMITTED
+        assert recovered.quantity == 100
+        assert (
+            restarted.submit(
+                Order("restart-id", "600519.SH", OrderSide.BUY, 100, market=Market.A_SHARES)
+            )
+            == "restart-id"
+        )
 
     def test_order_manager_emits_audit_events(self):
         audit = AuditBus()
@@ -144,7 +208,7 @@ class TestOrderManager:
 
     def test_order_blocked_when_system_not_running(self):
         audit = AuditBus()
-        om = OrderManager(audit_bus=audit)  # Defaults to INIT, can_trade=False.
+        om = OrderManager(order_store=InMemoryOrderStore(), audit_bus=audit)  # INIT blocks trading.
         with pytest.raises(RuntimeError, match="blocked"):
             om.submit(Order("blk-1", "AAPL", OrderSide.BUY, 1))
         events = audit.query(event_type="order_rejected_system_state")
@@ -156,6 +220,7 @@ class TestOrderManager:
         fsm.transition(SystemState.RUNNING)
         MarketRouter._configure_for_testing(SystemSettings())
         om = OrderManager(
+            order_store=InMemoryOrderStore(),
             system_fsm=fsm,
             decision_clock=lambda: datetime(2026, 5, 18, 2, 0, tzinfo=UTC),
         )
@@ -259,6 +324,7 @@ class TestOrderManager:
         fsm.transition(SystemState.RUNNING)
         MarketRouter._configure_for_testing(SystemSettings())
         om = OrderManager(
+            order_store=InMemoryOrderStore(),
             audit_bus=audit,
             system_fsm=fsm,
             decision_clock=lambda: datetime(2026, 5, 18, 4, 0, tzinfo=UTC),
@@ -273,6 +339,7 @@ class TestOrderManager:
         fsm.transition(SystemState.RUNNING)
         MarketRouter._configure_for_testing(SystemSettings())
         om = OrderManager(
+            order_store=InMemoryOrderStore(),
             audit_bus=audit,
             system_fsm=fsm,
             decision_clock=lambda: datetime(2026, 5, 18, 2, 0),
@@ -322,6 +389,7 @@ class TestOrderManager:
         fsm = SystemStateMachine()
         fsm.transition(SystemState.RUNNING)
         om = OrderManager(
+            order_store=InMemoryOrderStore(),
             system_fsm=fsm,
             decision_clock=lambda: datetime(2026, 5, 18, 7, 45, tzinfo=UTC),
             reduce_only_validator=lambda order: order.side == OrderSide.SELL,
@@ -374,6 +442,7 @@ class TestOrderManager:
             clock=lambda: decision_time,
         )
         om = OrderManager(
+            order_store=InMemoryOrderStore(),
             system_fsm=fsm,
             decision_clock=lambda: decision_time,
             reduce_only_validator=validator,
@@ -451,6 +520,7 @@ class TestOrderManager:
             clock=lambda: decision_time,
         )
         om = OrderManager(
+            order_store=InMemoryOrderStore(),
             audit_bus=audit,
             system_fsm=fsm,
             decision_clock=lambda: decision_time,
@@ -501,6 +571,7 @@ class TestOrderManager:
         fsm.transition(SystemState.RUNNING)
         audit = AuditBus()
         om = OrderManager(
+            order_store=InMemoryOrderStore(),
             audit_bus=audit,
             system_fsm=fsm,
             decision_clock=lambda: datetime(2026, 5, 18, 7, 45, tzinfo=UTC),

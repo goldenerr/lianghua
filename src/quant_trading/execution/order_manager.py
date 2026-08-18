@@ -5,12 +5,15 @@ AGENTS.md §7: Support limit/market/stop/take-profit orders.
 
 from __future__ import annotations
 
+import copy
 import math
+import sqlite3
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import NoReturn
+from pathlib import Path
+from typing import NoReturn, Protocol
 
 from quant_trading.config.market_router import MarketRouter, MarketRuleSet
 from quant_trading.config.settings import Market
@@ -56,6 +59,162 @@ class Order:
     timeout_seconds: int = 30
     market: Market | None = None
     reduce_only: bool = False
+
+
+class OrderStore(Protocol):
+    """Durable source of truth for idempotent order intents."""
+
+    def load_all(self) -> list[Order]: ...
+
+    def get(self, client_order_id: str) -> Order | None: ...
+
+    def reserve(self, order: Order) -> bool: ...
+
+    def update_status(self, order: Order) -> None: ...
+
+
+class InMemoryOrderStore:
+    """Non-durable store for unit tests only."""
+
+    def __init__(self) -> None:
+        self._orders: dict[str, Order] = {}
+
+    def load_all(self) -> list[Order]:
+        return copy.deepcopy(list(self._orders.values()))
+
+    def get(self, client_order_id: str) -> Order | None:
+        order = self._orders.get(client_order_id)
+        return copy.deepcopy(order) if order else None
+
+    def reserve(self, order: Order) -> bool:
+        if order.client_order_id in self._orders:
+            return False
+        self._orders[order.client_order_id] = copy.deepcopy(order)
+        return True
+
+    def update_status(self, order: Order) -> None:
+        if order.client_order_id not in self._orders:
+            raise KeyError(f"Unknown order: {order.client_order_id}")
+        self._orders[order.client_order_id] = copy.deepcopy(order)
+
+
+class SqliteOrderStore:
+    """SQLite-backed order intent store with a durable unique id constraint."""
+
+    def __init__(self, path: str | Path) -> None:
+        self._path = Path(path)
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        with self._connect() as conn:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS order_intents (
+                    client_order_id TEXT PRIMARY KEY,
+                    symbol TEXT NOT NULL,
+                    side TEXT NOT NULL,
+                    quantity REAL NOT NULL,
+                    order_type TEXT NOT NULL,
+                    price REAL,
+                    stop_price REAL,
+                    status TEXT NOT NULL,
+                    filled_qty REAL NOT NULL,
+                    avg_price REAL NOT NULL,
+                    created_at TEXT NOT NULL,
+                    timeout_seconds INTEGER NOT NULL,
+                    market TEXT,
+                    reduce_only INTEGER NOT NULL
+                )
+                """
+            )
+
+    def _connect(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(self._path, timeout=5.0)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA synchronous=FULL")
+        return conn
+
+    @staticmethod
+    def _values(order: Order) -> tuple[object, ...]:
+        return (
+            order.client_order_id,
+            order.symbol,
+            order.side.value,
+            order.quantity,
+            order.order_type.value,
+            order.price,
+            order.stop_price,
+            order.status.value,
+            order.filled_qty,
+            order.avg_price,
+            order.created_at.isoformat(),
+            order.timeout_seconds,
+            order.market.value if order.market else None,
+            int(order.reduce_only),
+        )
+
+    @staticmethod
+    def _from_row(row: sqlite3.Row) -> Order:
+        return Order(
+            client_order_id=row["client_order_id"],
+            symbol=row["symbol"],
+            side=OrderSide(row["side"]),
+            quantity=row["quantity"],
+            order_type=OrderType(row["order_type"]),
+            price=row["price"],
+            stop_price=row["stop_price"],
+            status=OrderStatus(row["status"]),
+            filled_qty=row["filled_qty"],
+            avg_price=row["avg_price"],
+            created_at=datetime.fromisoformat(row["created_at"]),
+            timeout_seconds=row["timeout_seconds"],
+            market=Market(row["market"]) if row["market"] else None,
+            reduce_only=bool(row["reduce_only"]),
+        )
+
+    def load_all(self) -> list[Order]:
+        with self._connect() as conn:
+            conn.row_factory = sqlite3.Row
+            rows = conn.execute(
+                "SELECT * FROM order_intents ORDER BY created_at, client_order_id"
+            ).fetchall()
+        return [self._from_row(row) for row in rows]
+
+    def get(self, client_order_id: str) -> Order | None:
+        with self._connect() as conn:
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                "SELECT * FROM order_intents WHERE client_order_id = ?",
+                (client_order_id,),
+            ).fetchone()
+        return self._from_row(row) if row else None
+
+    def reserve(self, order: Order) -> bool:
+        with self._connect() as conn:
+            cursor = conn.execute(
+                """
+                INSERT OR IGNORE INTO order_intents VALUES
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                self._values(order),
+            )
+        return cursor.rowcount == 1
+
+    def update_status(self, order: Order) -> None:
+        with self._connect() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE order_intents
+                SET status = ?, filled_qty = ?, avg_price = ?
+                WHERE client_order_id = ?
+                """,
+                (
+                    order.status.value,
+                    order.filled_qty,
+                    order.avg_price,
+                    order.client_order_id,
+                ),
+            )
+        if cursor.rowcount != 1:
+            raise KeyError(f"Unknown order: {order.client_order_id}")
 
 
 @dataclass(frozen=True)
@@ -111,12 +270,56 @@ class OrderManager:
         system_fsm: SystemStateMachine | None = None,
         decision_clock: Callable[[], datetime] | None = None,
         reduce_only_validator: Callable[[Order], bool] | None = None,
+        order_store: OrderStore | None = None,
     ) -> None:
-        self._orders: dict[str, Order] = {}
+        if order_store is None:
+            raise ValueError("order_store is required for durable idempotency")
+        self._order_store = order_store
+        self._orders = {order.client_order_id: order for order in order_store.load_all()}
         self._audit = audit_bus or AuditBus()
         self._system_fsm = system_fsm or SystemStateMachine()
         self._decision_clock = decision_clock or (lambda: datetime.now(UTC))
         self._reduce_only_validator = reduce_only_validator
+
+    @staticmethod
+    def _intent_fingerprint(order: Order) -> tuple[object, ...]:
+        return (
+            order.symbol,
+            order.side,
+            order.quantity,
+            order.order_type,
+            order.price,
+            order.stop_price,
+            order.timeout_seconds,
+            order.market,
+            order.reduce_only,
+        )
+
+    def _handle_existing(self, requested: Order, existing: Order) -> str:
+        if self._intent_fingerprint(requested) != self._intent_fingerprint(existing):
+            self._audit.record(
+                "order_idempotency_conflict",
+                "order_manager",
+                {
+                    "client_order_id": requested.client_order_id,
+                    "requested_symbol": requested.symbol,
+                    "persisted_symbol": existing.symbol,
+                },
+            )
+            raise RuntimeError(
+                f"Order submission blocked: idempotency conflict for {requested.client_order_id}"
+            )
+        self._orders[existing.client_order_id] = existing
+        self._audit.record(
+            "order_idempotent_replay",
+            "order_manager",
+            {
+                "client_order_id": requested.client_order_id,
+                "symbol": existing.symbol,
+                "status": existing.status.value,
+            },
+        )
+        return existing.client_order_id
 
     def submit(self, order: Order) -> str:
         """Submit a new order or replay an existing idempotent request safely."""
@@ -134,19 +337,9 @@ class OrderManager:
                 f"Order submission blocked: system state is {self._system_fsm.state.value}"
             )
 
-        if order.client_order_id in self._orders:
-            # Idempotency: same client_order_id returns existing order status.
-            existing = self._orders[order.client_order_id]
-            self._audit.record(
-                "order_idempotent_replay",
-                "order_manager",
-                {
-                    "client_order_id": order.client_order_id,
-                    "symbol": existing.symbol,
-                    "status": existing.status.value,
-                },
-            )
-            return existing.client_order_id
+        existing = self._order_store.get(order.client_order_id)
+        if existing is not None:
+            return self._handle_existing(order, existing)
 
         if order.market is None:
             self._reject_market_schedule(order, "order market is required for schedule enforcement")
@@ -176,8 +369,20 @@ class OrderManager:
             self._reject_market_schedule(order, reason)
 
         self._validate_market_rules(order)
-        self._orders[order.client_order_id] = order
+        order.status = OrderStatus.PENDING
+        if not self._order_store.reserve(order):
+            existing = self._order_store.get(order.client_order_id)
+            if existing is None:
+                raise RuntimeError("Order store uniqueness conflict without persisted order")
+            return self._handle_existing(order, existing)
+
         order.status = OrderStatus.SUBMITTED
+        try:
+            self._order_store.update_status(order)
+        except Exception:
+            order.status = OrderStatus.PENDING
+            raise
+        self._orders[order.client_order_id] = order
         self._audit.record(
             "order_submitted",
             "order_manager",
@@ -294,7 +499,14 @@ class OrderManager:
 
     def cancel(self, order_id: str) -> bool:
         if order_id in self._orders:
-            self._orders[order_id].status = OrderStatus.CANCELLED
+            order = self._orders[order_id]
+            previous_status = order.status
+            order.status = OrderStatus.CANCELLED
+            try:
+                self._order_store.update_status(order)
+            except Exception:
+                order.status = previous_status
+                raise
             self._audit.record(
                 "order_cancelled",
                 "order_manager",

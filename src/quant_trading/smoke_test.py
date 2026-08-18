@@ -22,7 +22,12 @@ from quant_trading.backtest.report import ReportGenerator
 from quant_trading.config.market_router import MarketRouter
 from quant_trading.config.settings import Market, SystemSettings
 from quant_trading.core.state_machine import SystemState, SystemStateMachine
-from quant_trading.execution.order_manager import Order, OrderManager, OrderSide
+from quant_trading.execution.order_manager import (
+    InMemoryOrderStore,
+    Order,
+    OrderManager,
+    OrderSide,
+)
 from quant_trading.monitor.monitor import SystemMonitor
 from quant_trading.risk.advanced import KillSwitch
 
@@ -133,6 +138,7 @@ def run_full_smoke_test(seed: int = 42) -> SmokeTestResult:
     # Smoke uses an isolated validated-model fixture, never a live publication path.
     MarketRouter._configure_for_testing(SystemSettings())
     om = OrderManager(
+        order_store=InMemoryOrderStore(),
         system_fsm=fsm,
         decision_clock=lambda: datetime(2026, 5, 18, 2, 0, tzinfo=timezone.utc),
     )

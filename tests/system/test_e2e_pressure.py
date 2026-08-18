@@ -2,7 +2,12 @@
 
 import pytest
 from quant_trading.core.state_machine import SystemState, SystemStateMachine
-from quant_trading.execution.order_manager import Order, OrderManager, OrderSide
+from quant_trading.execution.order_manager import (
+    InMemoryOrderStore,
+    Order,
+    OrderManager,
+    OrderSide,
+)
 from quant_trading.execution.reconciler import PositionReconciler
 from quant_trading.operations import BackupManager
 from quant_trading.operations_mr import FailoverManager, Region
@@ -44,6 +49,6 @@ def test_reconcile_violation_blocks_new_orders():
     assert pr.reconcile(100.0, 130.0) is False
     assert fsm.state == SystemState.SAFE_MODE
 
-    om = OrderManager(system_fsm=fsm)
+    om = OrderManager(order_store=InMemoryOrderStore(), system_fsm=fsm)
     with pytest.raises(RuntimeError, match="system state"):
         om.submit(Order("safe-block-1", "AAPL", OrderSide.BUY, 1))
