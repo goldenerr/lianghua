@@ -1,0 +1,122 @@
+{
+  "ts": "2026-08-18T16:12:17+08:00",
+  "version": "strategy-wf-production-gate-20260818-v1",
+  "production_ready": false,
+  "decision": "REJECT",
+  "decision_reason": "The refreshed V29 fold-internal run is a useful 1200-symbol research diagnostic, but it is not a production-qualifying Purged Walk-Forward result. Required universe, PIT, purge/embargo, clean holdout, random-baseline, distribution, robustness, and strategy-bound paper evidence gates are not all satisfied.",
+  "live_controls": {
+    "auto_trade_enabled": false,
+    "live_order_submission_allowed": false,
+    "max_live_capital_fraction": 0.0
+  },
+  "candidate_identity": {
+    "passes": false,
+    "status": "ambiguous_and_not_strategy_bound",
+    "findings": [
+      "The consolidated V44 gate is bound to the failed V40 paper-shadow candidate.",
+      "V29 is the latest repaired research line, but it is not an approved or preregistered production artifact.",
+      "The V49/V45 daily runner is a fixed 90%-gross equal-weight basket of 518880, 511010, and 511260; it does not execute V40 or V29 stock signals."
+    ]
+  },
+  "refreshed_research_diagnostic": {
+    "valid_for_production": false,
+    "report": "data/backtest_results/quant_v29_true_wf_gate_20260818.json",
+    "report_sha256": "405a7d5ee2dbd0384906fdbcc6839e9bd4be9dd65af0271679e5deb6c4a78487",
+    "universe": "data/stock_list.json",
+    "universe_sha256": "f971cab553386a16ca4b990d81b6661c84a3dcecb76101d5e34a4a888a6481cb",
+    "symbols_loaded": 1200,
+    "walk_forward_selection_mode": "train_only_candidate_selection",
+    "folds": 5,
+    "train_days": 756,
+    "test_days": 252,
+    "avg_is_sharpe": 2.1114,
+    "avg_oos_sharpe": 1.8723,
+    "sharpe_decay": 0.1133,
+    "best_full_sample_candidate": "v29_price_meta_ultradefensive",
+    "best_full_sample_sharpe": 2.1783,
+    "best_full_sample_max_drawdown": -0.0378,
+    "limitations": [
+      "Candidate-level reports are fixed-candidate chronological diagnostics and explicitly valid=false.",
+      "The top-level candidate selection is train-only per fold, but has no purge or embargo gap between train and test.",
+      "The candidate family was developed using the same historical period and has no preregistered clean future holdout.",
+      "The script's built-in research OOS threshold is 0.84; this report applies the stricter production threshold separately.",
+      "This run uses only 1200 symbols and free-source V31 trading-status approximations."
+    ]
+  },
+  "gate_matrix": {
+    "full_1565_universe": {
+      "passes": false,
+      "observed": 1200,
+      "required": 1565,
+      "note": "Only 1200 parquet files exist. The available 2000-symbol lists are non-large-cap exclusion universes and cannot replace the required unfiltered universe."
+    },
+    "production_pit_data": {
+      "passes": false,
+      "note": "V31 explicitly reports production_data_ready=false; ST, delisting, suspension, price-limit and corporate-action evidence remain approximate or unreconciled."
+    },
+    "five_fold_train_only_selection": {
+      "passes": true,
+      "scope": "research_diagnostic_only"
+    },
+    "purge_and_embargo": {
+      "passes": false,
+      "note": "The implementation uses contiguous 756-day train and 252-day test windows with no explicit purge/embargo."
+    },
+    "avg_oos_sharpe_ge_1_2": {
+      "passes": true,
+      "observed": 1.8723,
+      "scope": "1200-symbol research diagnostic only"
+    },
+    "is_to_oos_decay_le_30pct": {
+      "passes": true,
+      "observed": 0.1133,
+      "scope": "1200-symbol research diagnostic only"
+    },
+    "clean_preregistered_holdout": {
+      "passes": false,
+      "note": "The candidate set was developed post-hoc on the historical interval used by this rerun."
+    },
+    "actual_candidate_random_baseline": {
+      "passes": false,
+      "note": "No random-baseline evidence is bound to the refreshed top-level V29 candidate-selection return stream. Existing bucket-timing random tests address a different hypothesis."
+    },
+    "lookahead_and_label_horizon": {
+      "passes": false,
+      "partial": true,
+      "note": "The five-day rolling-IC label leak was fixed and regression-tested, and selection is train-only, but missing purge/embargo and clean future holdout prevent a production pass."
+    },
+    "monthly_annual_and_regime_distribution": {
+      "passes": false,
+      "note": "The refreshed top-level selection report does not contain a production-bound monthly, annual, bull/bear, or tail-period distribution gate."
+    },
+    "parameter_and_cost_sensitivity": {
+      "passes": false,
+      "note": "Existing V29 robustness reports use fixed-candidate diagnostics that are now explicitly invalid for W/D gating; the refreshed fold-internal selection has not been rerun under the full sensitivity and double-cost matrix."
+    },
+    "recent_90_day_stability": {
+      "passes": false,
+      "note": "The latest comparable V29 robustness evidence reported recent-90 Sharpe near -2.51 and failed robustness."
+    },
+    "strategy_bound_90_60_paper_evidence": {
+      "passes": false,
+      "note": "The V49/V45 ledger is generated by a fixed three-ETF paper basket, not by the V40 or V29 strategy; its accumulated days cannot qualify either candidate."
+    }
+  },
+  "source_evidence": [
+    "data/backtest_results/quant_v29_true_wf_gate_20260818.json",
+    "data/backtest_results/quant_v31_free_data_quality_gate.json",
+    "data/backtest_results/quant_v29_robustness_20y_v31_lianghua_fetch1200_longhorizon.json",
+    "data/backtest_results/quant_v40_paper_shadow_package.json",
+    "data/runtime/v49_v45/quant_v44_production_readiness_gate.json",
+    "data/runtime/v49_v45/quant_v42_paper_shadow_evidence_gate.json",
+    "scripts/research_v29_portfolio_layer.py",
+    "scripts/research_v28_factor_direction.py",
+    "scripts/run_v49_v45_daily_paper_report.py"
+  ],
+  "required_next_work": [
+    "Restore or acquire lianghua-owned unfiltered 1565-symbol historical data and build a hash-bound production-grade PIT/trading-status/corporate-action manifest.",
+    "Freeze and preregister one candidate family before observing a new holdout period.",
+    "Implement explicit purge/embargo and bind random-baseline, monthly/annual/regime, parameter, and cost-stress gates to the same fold-internal OOS return stream.",
+    "Replace the fixed three-ETF V49/V45 runner with a paper runner that executes the frozen candidate's actual signals; restart the 90-calendar-day/60-report-day clock from that freeze."
+  ]
+}

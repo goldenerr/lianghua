@@ -1,0 +1,2665 @@
+{
+  "ts": "2026-08-18T08:06:26.194617+00:00",
+  "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+  "research_only": true,
+  "production_ready": false,
+  "universe": "data/stock_list.json",
+  "universe_sha256": "f971cab553386a16ca4b990d81b6661c84a3dcecb76101d5e34a4a888a6481cb",
+  "coverage": {
+    "symbols_loaded": 1198,
+    "dates": 4972,
+    "industry_overlap": 1138
+  },
+  "alt_feature_summary": {
+    "path": "/home/hermes/.hermes/projects/lianghua/data/alt_features/v28_v27_archive_20260615_stock_alt_features.parquet",
+    "exists": false
+  },
+  "trading_constraint_summary": {
+    "enabled": true,
+    "path": "data/security_master/free_pit_approx/trading_status_v31.parquet",
+    "exists": true,
+    "mode": "V31-free-trading-status-next-bar-execution",
+    "rows_loaded": 3823163,
+    "unique_dates": 4972,
+    "unique_symbols": 1198,
+    "missing_columns": [],
+    "limitations": [
+      "V31 status is free-source research approximation, not production trading-status evidence.",
+      "Orders are constrained using next bar status to stress-test tradability in daily research.",
+      "ST status remains unknown in V31 and is not used as a hard constraint here."
+    ]
+  },
+  "factor_diagnostics": {
+    "reversal_1d": {
+      "mean_ic": 0.018136,
+      "recent_mean_ic": 0.006584,
+      "ic_ir": 0.129181,
+      "positive_ic_ratio": 0.555511,
+      "observations": 4966
+    },
+    "reversal_5d": {
+      "mean_ic": 0.053554,
+      "recent_mean_ic": 0.026516,
+      "ic_ir": 0.354786,
+      "positive_ic_ratio": 0.641995,
+      "observations": 4962
+    },
+    "momentum_20d": {
+      "mean_ic": -0.049853,
+      "recent_mean_ic": -0.039181,
+      "ic_ir": -0.303862,
+      "positive_ic_ratio": 0.38576,
+      "observations": 4947
+    },
+    "momentum_60d": {
+      "mean_ic": -0.044131,
+      "recent_mean_ic": -0.038728,
+      "ic_ir": -0.25142,
+      "positive_ic_ratio": 0.398431,
+      "observations": 4907
+    },
+    "low_vol_20d": {
+      "mean_ic": 0.042035,
+      "recent_mean_ic": 0.042626,
+      "ic_ir": 0.23204,
+      "positive_ic_ratio": 0.595334,
+      "observations": 4952
+    },
+    "low_vol_60d": {
+      "mean_ic": 0.038153,
+      "recent_mean_ic": 0.034267,
+      "ic_ir": 0.187443,
+      "positive_ic_ratio": 0.569992,
+      "observations": 4927
+    },
+    "liquidity_20d": {
+      "mean_ic": -0.044991,
+      "recent_mean_ic": -0.013752,
+      "ic_ir": -0.342603,
+      "positive_ic_ratio": 0.35177,
+      "observations": 4957
+    },
+    "volume_stability_20d": {
+      "mean_ic": 0.02817,
+      "recent_mean_ic": 0.023876,
+      "ic_ir": 0.367981,
+      "positive_ic_ratio": 0.647426,
+      "observations": 4958
+    }
+  },
+  "sleeve_diagnostics": {
+    "price_ic_alpha": {
+      "name": "price_ic_alpha",
+      "config": {
+        "mode": "ic_adaptive",
+        "factor_set": "price_only",
+        "rebalance_freq": 10,
+        "top_n": 60,
+        "max_per_industry": 6,
+        "cost_bps": 10
+      },
+      "metrics": {
+        "sharpe_ratio": 0.6886,
+        "annual_return": 0.206,
+        "annual_volatility": 0.2629,
+        "max_drawdown": -0.6669,
+        "win_rate": 0.5628,
+        "total_return": 23.6387,
+        "n_days": 4719
+      },
+      "avg_turnover": 0.1142,
+      "avg_active_stocks": 60.33,
+      "max_active_stocks": 89,
+      "execution_constraints_enabled": true,
+      "constrained_rebalances": 340,
+      "blocked_buy_orders": 874,
+      "blocked_sell_orders": 944,
+      "blocked_buy_weight": 13.192549,
+      "blocked_sell_weight": 15.423849,
+      "avg_gross_after_constraints": 0.9884,
+      "avg_cash_after_constraints": 0.0116
+    },
+    "price_ic_diversified": {
+      "name": "price_ic_diversified",
+      "config": {
+        "mode": "ic_adaptive",
+        "factor_set": "price_only",
+        "rebalance_freq": 20,
+        "top_n": 90,
+        "max_per_industry": 9,
+        "cost_bps": 8
+      },
+      "metrics": {
+        "sharpe_ratio": 0.755,
+        "annual_return": 0.2256,
+        "annual_volatility": 0.2657,
+        "max_drawdown": -0.6482,
+        "win_rate": 0.566,
+        "total_return": 34.0404,
+        "n_days": 4719
+      },
+      "avg_turnover": 0.0622,
+      "avg_active_stocks": 91.19,
+      "max_active_stocks": 104,
+      "execution_constraints_enabled": true,
+      "constrained_rebalances": 181,
+      "blocked_buy_orders": 590,
+      "blocked_sell_orders": 790,
+      "blocked_buy_weight": 5.706637,
+      "blocked_sell_weight": 8.537769,
+      "avg_gross_after_constraints": 0.9922,
+      "avg_cash_after_constraints": 0.0078
+    },
+    "price_lowvol_reversal": {
+      "name": "price_lowvol_reversal",
+      "config": {
+        "mode": "static",
+        "factor_weights": {
+          "reversal_5d": 0.2,
+          "momentum_20d": -0.2,
+          "momentum_60d": -0.2,
+          "low_vol_20d": 0.25,
+          "low_vol_60d": 0.2,
+          "liquidity_20d": -0.1,
+          "volume_stability_20d": 0.15
+        },
+        "rebalance_freq": 10,
+        "top_n": 70,
+        "max_per_industry": 7,
+        "cost_bps": 10
+      },
+      "metrics": {
+        "sharpe_ratio": 0.6466,
+        "annual_return": 0.195,
+        "annual_volatility": 0.2629,
+        "max_drawdown": -0.6639,
+        "win_rate": 0.566,
+        "total_return": 19.0505,
+        "n_days": 4719
+      },
+      "avg_turnover": 0.1094,
+      "avg_active_stocks": 70.25,
+      "max_active_stocks": 106,
+      "execution_constraints_enabled": true,
+      "constrained_rebalances": 342,
+      "blocked_buy_orders": 906,
+      "blocked_sell_orders": 909,
+      "blocked_buy_weight": 11.38709,
+      "blocked_sell_weight": 12.772997,
+      "avg_gross_after_constraints": 0.9896,
+      "avg_cash_after_constraints": 0.0104
+    },
+    "price_defensive_breadth": {
+      "name": "price_defensive_breadth",
+      "config": {
+        "mode": "static",
+        "factor_weights": {
+          "low_vol_20d": 0.35,
+          "low_vol_60d": 0.25,
+          "reversal_5d": 0.15,
+          "volume_stability_20d": 0.15,
+          "liquidity_20d": -0.1
+        },
+        "rebalance_freq": 20,
+        "top_n": 120,
+        "max_per_industry": 12,
+        "cost_bps": 8
+      },
+      "metrics": {
+        "sharpe_ratio": 0.6909,
+        "annual_return": 0.1991,
+        "annual_volatility": 0.252,
+        "max_drawdown": -0.6418,
+        "win_rate": 0.5645,
+        "total_return": 21.8354,
+        "n_days": 4719
+      },
+      "avg_turnover": 0.0465,
+      "avg_active_stocks": 121.42,
+      "max_active_stocks": 143,
+      "execution_constraints_enabled": true,
+      "constrained_rebalances": 174,
+      "blocked_buy_orders": 585,
+      "blocked_sell_orders": 775,
+      "blocked_buy_weight": 3.739519,
+      "blocked_sell_weight": 6.264757,
+      "avg_gross_after_constraints": 0.9942,
+      "avg_cash_after_constraints": 0.0058
+    },
+    "alt_ic_research": {
+      "name": "alt_ic_research",
+      "config": {
+        "mode": "ic_adaptive",
+        "factor_set": "all",
+        "rebalance_freq": 10,
+        "top_n": 70,
+        "max_per_industry": 7,
+        "cost_bps": 12,
+        "production_comparable": false,
+        "production_blocker": "uses archived/snapshot alt panels without production PIT entitlement evidence"
+      },
+      "metrics": {
+        "sharpe_ratio": 0.6695,
+        "annual_return": 0.202,
+        "annual_volatility": 0.2644,
+        "max_drawdown": -0.6759,
+        "win_rate": 0.5611,
+        "total_return": 21.6794,
+        "n_days": 4719
+      },
+      "avg_turnover": 0.1105,
+      "avg_active_stocks": 70.73,
+      "max_active_stocks": 108,
+      "execution_constraints_enabled": true,
+      "constrained_rebalances": 343,
+      "blocked_buy_orders": 939,
+      "blocked_sell_orders": 1167,
+      "blocked_buy_weight": 11.820863,
+      "blocked_sell_weight": 16.351344,
+      "avg_gross_after_constraints": 0.9912,
+      "avg_cash_after_constraints": 0.0088
+    }
+  },
+  "residual_sleeves": {
+    "crisis": {
+      "sharpe_ratio": -1.0825,
+      "annual_return": 0.0207,
+      "annual_volatility": 0.004,
+      "max_drawdown": -0.0059,
+      "win_rate": 0.5101,
+      "total_return": 0.5037,
+      "n_days": 4972
+    },
+    "carry": {
+      "sharpe_ratio": 0.0,
+      "annual_return": 0.0,
+      "annual_volatility": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "total_return": 0.0,
+      "n_days": 4972
+    },
+    "carry_source": "/home/hermes/.hermes/projects/lianghua/data/hedge_assets/etf_511260.parquet"
+  },
+  "walk_forward_selection": {
+    "valid": true,
+    "selection_mode": "train_only_candidate_selection",
+    "training_operation": "select one fixed causal candidate by train Sharpe",
+    "oos_data_used_for_selection": false,
+    "production_candidates": [
+      "v29_price_meta_aggressive_guarded",
+      "v29_price_meta_balanced_blended_floor",
+      "v29_price_meta_balanced_carry_floor",
+      "v29_price_meta_balanced_crisis",
+      "v29_price_meta_longhorizon_guard",
+      "v29_price_meta_lowvol_blended_floor",
+      "v29_price_meta_lowvol_carry_floor",
+      "v29_price_meta_lowvol_crisis",
+      "v29_price_meta_lowvol_micro_carry_floor",
+      "v29_price_meta_lowvol_recent_guard",
+      "v29_price_meta_lowvol_small_carry_floor",
+      "v29_price_meta_ultradefensive"
+    ],
+    "n_folds": 5,
+    "train_days": 756,
+    "test_days": 252,
+    "folds": [
+      {
+        "fold": 0,
+        "train_start": "2018-03-05",
+        "train_end": "2021-04-12",
+        "test_start": "2021-04-13",
+        "test_end": "2022-04-26",
+        "selected_candidate": "v29_price_meta_ultradefensive",
+        "selection_frozen_for_oos": true,
+        "train_candidate_metrics": {
+          "v29_price_meta_aggressive_guarded": {
+            "sharpe_ratio": 1.4271,
+            "annual_return": 0.153,
+            "annual_volatility": 0.0897,
+            "max_drawdown": -0.0721,
+            "win_rate": 0.5437,
+            "total_return": 0.5634,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_blended_floor": {
+            "sharpe_ratio": 1.5718,
+            "annual_return": 0.141,
+            "annual_volatility": 0.0738,
+            "max_drawdown": -0.0544,
+            "win_rate": 0.5503,
+            "total_return": 0.5141,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_carry_floor": {
+            "sharpe_ratio": 1.4614,
+            "annual_return": 0.1212,
+            "annual_volatility": 0.0658,
+            "max_drawdown": -0.0498,
+            "win_rate": 0.5437,
+            "total_return": 0.4289,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_crisis": {
+            "sharpe_ratio": 1.6249,
+            "annual_return": 0.1449,
+            "annual_volatility": 0.0738,
+            "max_drawdown": -0.0539,
+            "win_rate": 0.5542,
+            "total_return": 0.5316,
+            "n_days": 756
+          },
+          "v29_price_meta_longhorizon_guard": {
+            "sharpe_ratio": 1.6502,
+            "annual_return": 0.1183,
+            "annual_volatility": 0.0566,
+            "max_drawdown": -0.0414,
+            "win_rate": 0.5622,
+            "total_return": 0.4193,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_blended_floor": {
+            "sharpe_ratio": 1.6284,
+            "annual_return": 0.1191,
+            "annual_volatility": 0.0578,
+            "max_drawdown": -0.0427,
+            "win_rate": 0.5608,
+            "total_return": 0.422,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_carry_floor": {
+            "sharpe_ratio": 1.4309,
+            "annual_return": 0.1035,
+            "annual_volatility": 0.0549,
+            "max_drawdown": -0.0417,
+            "win_rate": 0.541,
+            "total_return": 0.3579,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_crisis": {
+            "sharpe_ratio": 1.6973,
+            "annual_return": 0.1229,
+            "annual_volatility": 0.0577,
+            "max_drawdown": -0.0422,
+            "win_rate": 0.5661,
+            "total_return": 0.4387,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_micro_carry_floor": {
+            "sharpe_ratio": 1.6743,
+            "annual_return": 0.1216,
+            "annual_volatility": 0.0577,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5648,
+            "total_return": 0.4331,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_recent_guard": {
+            "sharpe_ratio": 1.7273,
+            "annual_return": 0.1128,
+            "annual_volatility": 0.0508,
+            "max_drawdown": -0.0362,
+            "win_rate": 0.5661,
+            "total_return": 0.3972,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_small_carry_floor": {
+            "sharpe_ratio": 1.6667,
+            "annual_return": 0.1212,
+            "annual_volatility": 0.0577,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5648,
+            "total_return": 0.4313,
+            "n_days": 756
+          },
+          "v29_price_meta_ultradefensive": {
+            "sharpe_ratio": 1.9197,
+            "annual_return": 0.0986,
+            "annual_volatility": 0.0383,
+            "max_drawdown": -0.0247,
+            "win_rate": 0.5728,
+            "total_return": 0.341,
+            "n_days": 756
+          }
+        },
+        "is": 1.9197,
+        "oos": 3.2043,
+        "mdd": -0.0213,
+        "test_n_days": 252
+      },
+      {
+        "fold": 1,
+        "train_start": "2019-03-18",
+        "train_end": "2022-04-26",
+        "test_start": "2022-04-27",
+        "test_end": "2023-05-11",
+        "selected_candidate": "v29_price_meta_ultradefensive",
+        "selection_frozen_for_oos": true,
+        "train_candidate_metrics": {
+          "v29_price_meta_aggressive_guarded": {
+            "sharpe_ratio": 2.0492,
+            "annual_return": 0.2196,
+            "annual_volatility": 0.095,
+            "max_drawdown": -0.0779,
+            "win_rate": 0.5595,
+            "total_return": 0.9061,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_blended_floor": {
+            "sharpe_ratio": 2.1823,
+            "annual_return": 0.1941,
+            "annual_volatility": 0.0775,
+            "max_drawdown": -0.0564,
+            "win_rate": 0.5661,
+            "total_return": 0.7739,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_carry_floor": {
+            "sharpe_ratio": 2.109,
+            "annual_return": 0.1717,
+            "annual_volatility": 0.0696,
+            "max_drawdown": -0.0498,
+            "win_rate": 0.5635,
+            "total_return": 0.6617,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_crisis": {
+            "sharpe_ratio": 2.2177,
+            "annual_return": 0.1967,
+            "annual_volatility": 0.0774,
+            "max_drawdown": -0.0555,
+            "win_rate": 0.5675,
+            "total_return": 0.7879,
+            "n_days": 756
+          },
+          "v29_price_meta_longhorizon_guard": {
+            "sharpe_ratio": 2.2388,
+            "annual_return": 0.1603,
+            "annual_volatility": 0.0604,
+            "max_drawdown": -0.0414,
+            "win_rate": 0.5728,
+            "total_return": 0.6086,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_blended_floor": {
+            "sharpe_ratio": 2.2192,
+            "annual_return": 0.1618,
+            "annual_volatility": 0.0617,
+            "max_drawdown": -0.0427,
+            "win_rate": 0.5714,
+            "total_return": 0.6156,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_carry_floor": {
+            "sharpe_ratio": 2.0818,
+            "annual_return": 0.147,
+            "annual_volatility": 0.0586,
+            "max_drawdown": -0.0417,
+            "win_rate": 0.5608,
+            "total_return": 0.5459,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_crisis": {
+            "sharpe_ratio": 2.2662,
+            "annual_return": 0.1646,
+            "annual_volatility": 0.0616,
+            "max_drawdown": -0.0422,
+            "win_rate": 0.5741,
+            "total_return": 0.6291,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_micro_carry_floor": {
+            "sharpe_ratio": 2.2505,
+            "annual_return": 0.1637,
+            "annual_volatility": 0.0616,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5728,
+            "total_return": 0.6246,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_recent_guard": {
+            "sharpe_ratio": 2.2956,
+            "annual_return": 0.1501,
+            "annual_volatility": 0.0545,
+            "max_drawdown": -0.0362,
+            "win_rate": 0.5767,
+            "total_return": 0.5618,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_small_carry_floor": {
+            "sharpe_ratio": 2.2453,
+            "annual_return": 0.1634,
+            "annual_volatility": 0.0616,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5728,
+            "total_return": 0.6231,
+            "n_days": 756
+          },
+          "v29_price_meta_ultradefensive": {
+            "sharpe_ratio": 2.4146,
+            "annual_return": 0.1247,
+            "annual_volatility": 0.0413,
+            "max_drawdown": -0.0247,
+            "win_rate": 0.5767,
+            "total_return": 0.4497,
+            "n_days": 756
+          }
+        },
+        "is": 2.4146,
+        "oos": 2.7124,
+        "mdd": -0.0239,
+        "test_n_days": 252
+      },
+      {
+        "fold": 2,
+        "train_start": "2020-03-30",
+        "train_end": "2023-05-11",
+        "test_start": "2023-05-12",
+        "test_end": "2024-05-27",
+        "selected_candidate": "v29_price_meta_ultradefensive",
+        "selection_frozen_for_oos": true,
+        "train_candidate_metrics": {
+          "v29_price_meta_aggressive_guarded": {
+            "sharpe_ratio": 2.4811,
+            "annual_return": 0.2645,
+            "annual_volatility": 0.0965,
+            "max_drawdown": -0.0779,
+            "win_rate": 0.5701,
+            "total_return": 1.1799,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_blended_floor": {
+            "sharpe_ratio": 2.5592,
+            "annual_return": 0.2285,
+            "annual_volatility": 0.0795,
+            "max_drawdown": -0.0564,
+            "win_rate": 0.578,
+            "total_return": 0.9655,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_carry_floor": {
+            "sharpe_ratio": 2.4721,
+            "annual_return": 0.2026,
+            "annual_volatility": 0.0719,
+            "max_drawdown": -0.0498,
+            "win_rate": 0.5754,
+            "total_return": 0.8221,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_crisis": {
+            "sharpe_ratio": 2.5865,
+            "annual_return": 0.2306,
+            "annual_volatility": 0.0795,
+            "max_drawdown": -0.0555,
+            "win_rate": 0.578,
+            "total_return": 0.9778,
+            "n_days": 756
+          },
+          "v29_price_meta_longhorizon_guard": {
+            "sharpe_ratio": 2.5658,
+            "annual_return": 0.1862,
+            "annual_volatility": 0.0628,
+            "max_drawdown": -0.0414,
+            "win_rate": 0.5833,
+            "total_return": 0.7373,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_blended_floor": {
+            "sharpe_ratio": 2.5631,
+            "annual_return": 0.1888,
+            "annual_volatility": 0.0639,
+            "max_drawdown": -0.0427,
+            "win_rate": 0.5833,
+            "total_return": 0.7509,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_carry_floor": {
+            "sharpe_ratio": 2.4417,
+            "annual_return": 0.1735,
+            "annual_volatility": 0.0608,
+            "max_drawdown": -0.0417,
+            "win_rate": 0.5741,
+            "total_return": 0.6733,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_crisis": {
+            "sharpe_ratio": 2.5997,
+            "annual_return": 0.1911,
+            "annual_volatility": 0.0639,
+            "max_drawdown": -0.0422,
+            "win_rate": 0.5847,
+            "total_return": 0.7628,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_micro_carry_floor": {
+            "sharpe_ratio": 2.5875,
+            "annual_return": 0.1903,
+            "annual_volatility": 0.0639,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5847,
+            "total_return": 0.7588,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_recent_guard": {
+            "sharpe_ratio": 2.6059,
+            "annual_return": 0.1727,
+            "annual_volatility": 0.0567,
+            "max_drawdown": -0.0362,
+            "win_rate": 0.5873,
+            "total_return": 0.6707,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_small_carry_floor": {
+            "sharpe_ratio": 2.5834,
+            "annual_return": 0.1901,
+            "annual_volatility": 0.0639,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5847,
+            "total_return": 0.7575,
+            "n_days": 756
+          },
+          "v29_price_meta_ultradefensive": {
+            "sharpe_ratio": 2.6767,
+            "annual_return": 0.1402,
+            "annual_volatility": 0.043,
+            "max_drawdown": -0.0247,
+            "win_rate": 0.5899,
+            "total_return": 0.5184,
+            "n_days": 756
+          }
+        },
+        "is": 2.6767,
+        "oos": -0.1546,
+        "mdd": -0.0212,
+        "test_n_days": 252
+      },
+      {
+        "fold": 3,
+        "train_start": "2021-04-13",
+        "train_end": "2024-05-27",
+        "test_start": "2024-05-28",
+        "test_end": "2025-06-11",
+        "selected_candidate": "v29_price_meta_ultradefensive",
+        "selection_frozen_for_oos": true,
+        "train_candidate_metrics": {
+          "v29_price_meta_aggressive_guarded": {
+            "sharpe_ratio": 1.7651,
+            "annual_return": 0.1884,
+            "annual_volatility": 0.0926,
+            "max_drawdown": -0.0787,
+            "win_rate": 0.5542,
+            "total_return": 0.7368,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_blended_floor": {
+            "sharpe_ratio": 1.8778,
+            "annual_return": 0.1665,
+            "annual_volatility": 0.0754,
+            "max_drawdown": -0.0564,
+            "win_rate": 0.5542,
+            "total_return": 0.6339,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_carry_floor": {
+            "sharpe_ratio": 1.8081,
+            "annual_return": 0.1483,
+            "annual_volatility": 0.0682,
+            "max_drawdown": -0.0484,
+            "win_rate": 0.5503,
+            "total_return": 0.5495,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_crisis": {
+            "sharpe_ratio": 1.9042,
+            "annual_return": 0.1685,
+            "annual_volatility": 0.0754,
+            "max_drawdown": -0.0556,
+            "win_rate": 0.5529,
+            "total_return": 0.6434,
+            "n_days": 756
+          },
+          "v29_price_meta_longhorizon_guard": {
+            "sharpe_ratio": 1.9034,
+            "annual_return": 0.1388,
+            "annual_volatility": 0.0598,
+            "max_drawdown": -0.039,
+            "win_rate": 0.5542,
+            "total_return": 0.5084,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_blended_floor": {
+            "sharpe_ratio": 1.8863,
+            "annual_return": 0.1399,
+            "annual_volatility": 0.0609,
+            "max_drawdown": -0.0427,
+            "win_rate": 0.5556,
+            "total_return": 0.513,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_carry_floor": {
+            "sharpe_ratio": 1.7785,
+            "annual_return": 0.128,
+            "annual_volatility": 0.0579,
+            "max_drawdown": -0.0401,
+            "win_rate": 0.5529,
+            "total_return": 0.4608,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_crisis": {
+            "sharpe_ratio": 1.9214,
+            "annual_return": 0.142,
+            "annual_volatility": 0.0609,
+            "max_drawdown": -0.0422,
+            "win_rate": 0.5556,
+            "total_return": 0.5225,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_micro_carry_floor": {
+            "sharpe_ratio": 1.9097,
+            "annual_return": 0.1413,
+            "annual_volatility": 0.0609,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5556,
+            "total_return": 0.5194,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_recent_guard": {
+            "sharpe_ratio": 1.941,
+            "annual_return": 0.1297,
+            "annual_volatility": 0.0539,
+            "max_drawdown": -0.0343,
+            "win_rate": 0.5582,
+            "total_return": 0.4691,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_small_carry_floor": {
+            "sharpe_ratio": 1.9058,
+            "annual_return": 0.1411,
+            "annual_volatility": 0.0609,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5556,
+            "total_return": 0.5183,
+            "n_days": 756
+          },
+          "v29_price_meta_ultradefensive": {
+            "sharpe_ratio": 2.0365,
+            "annual_return": 0.107,
+            "annual_volatility": 0.0403,
+            "max_drawdown": -0.0239,
+            "win_rate": 0.5648,
+            "total_return": 0.375,
+            "n_days": 756
+          }
+        },
+        "is": 2.0365,
+        "oos": 1.7442,
+        "mdd": -0.0099,
+        "test_n_days": 252
+      },
+      {
+        "fold": 4,
+        "train_start": "2022-04-27",
+        "train_end": "2025-06-11",
+        "test_start": "2025-06-12",
+        "test_end": "2026-06-25",
+        "selected_candidate": "v29_price_meta_lowvol_recent_guard",
+        "selection_frozen_for_oos": true,
+        "train_candidate_metrics": {
+          "v29_price_meta_aggressive_guarded": {
+            "sharpe_ratio": 1.4553,
+            "annual_return": 0.1545,
+            "annual_volatility": 0.089,
+            "max_drawdown": -0.0863,
+            "win_rate": 0.545,
+            "total_return": 0.5709,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_blended_floor": {
+            "sharpe_ratio": 1.4715,
+            "annual_return": 0.1302,
+            "annual_volatility": 0.0715,
+            "max_drawdown": -0.0581,
+            "win_rate": 0.5423,
+            "total_return": 0.4664,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_carry_floor": {
+            "sharpe_ratio": 1.3996,
+            "annual_return": 0.1148,
+            "annual_volatility": 0.0641,
+            "max_drawdown": -0.051,
+            "win_rate": 0.5397,
+            "total_return": 0.4022,
+            "n_days": 756
+          },
+          "v29_price_meta_balanced_crisis": {
+            "sharpe_ratio": 1.4991,
+            "annual_return": 0.1321,
+            "annual_volatility": 0.0715,
+            "max_drawdown": -0.0563,
+            "win_rate": 0.5423,
+            "total_return": 0.475,
+            "n_days": 756
+          },
+          "v29_price_meta_longhorizon_guard": {
+            "sharpe_ratio": 1.4894,
+            "annual_return": 0.108,
+            "annual_volatility": 0.0557,
+            "max_drawdown": -0.039,
+            "win_rate": 0.5503,
+            "total_return": 0.3762,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_blended_floor": {
+            "sharpe_ratio": 1.4668,
+            "annual_return": 0.1085,
+            "annual_volatility": 0.0569,
+            "max_drawdown": -0.0427,
+            "win_rate": 0.5503,
+            "total_return": 0.378,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_carry_floor": {
+            "sharpe_ratio": 1.3626,
+            "annual_return": 0.0986,
+            "annual_volatility": 0.054,
+            "max_drawdown": -0.0405,
+            "win_rate": 0.5437,
+            "total_return": 0.3384,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_crisis": {
+            "sharpe_ratio": 1.5026,
+            "annual_return": 0.1105,
+            "annual_volatility": 0.0569,
+            "max_drawdown": -0.0422,
+            "win_rate": 0.5516,
+            "total_return": 0.3863,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_micro_carry_floor": {
+            "sharpe_ratio": 1.4907,
+            "annual_return": 0.1099,
+            "annual_volatility": 0.0569,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5516,
+            "total_return": 0.3836,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_recent_guard": {
+            "sharpe_ratio": 1.5096,
+            "annual_return": 0.1006,
+            "annual_volatility": 0.0501,
+            "max_drawdown": -0.0343,
+            "win_rate": 0.5516,
+            "total_return": 0.3473,
+            "n_days": 756
+          },
+          "v29_price_meta_lowvol_small_carry_floor": {
+            "sharpe_ratio": 1.4867,
+            "annual_return": 0.1096,
+            "annual_volatility": 0.0569,
+            "max_drawdown": -0.0424,
+            "win_rate": 0.5516,
+            "total_return": 0.3826,
+            "n_days": 756
+          },
+          "v29_price_meta_ultradefensive": {
+            "sharpe_ratio": 1.5085,
+            "annual_return": 0.0808,
+            "annual_volatility": 0.037,
+            "max_drawdown": -0.0239,
+            "win_rate": 0.5595,
+            "total_return": 0.2716,
+            "n_days": 756
+          }
+        },
+        "is": 1.5096,
+        "oos": 1.8551,
+        "mdd": -0.0514,
+        "test_n_days": 252
+      }
+    ],
+    "avg_is_sharpe": 2.1114,
+    "avg_oos_sharpe": 1.8723,
+    "sharpe_decay": 0.1133
+  },
+  "walk_forward_gates": {
+    "W": true,
+    "D": true
+  },
+  "results": [
+    {
+      "name": "v29_price_meta_ultradefensive",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_ultradefensive",
+        "sleeves": [
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 252,
+        "rebalance_freq": 20,
+        "base_gross": 0.45,
+        "bull_gross": 0.7,
+        "neutral_gross": 0.45,
+        "risk_off_gross": 0.12,
+        "vol_target": 0.1,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.7,
+        "dd_reduce_threshold": 0.06,
+        "dd_reduce_scale": 0.35,
+        "dd_stop_threshold": 0.1,
+        "dd_stop_scale": 0.05,
+        "meta_cost_bps": 1,
+        "use_crisis_sleeve": true
+      },
+      "full": {
+        "sharpe_ratio": 2.1783,
+        "annual_return": 0.1087,
+        "annual_volatility": 0.0384,
+        "max_drawdown": -0.0378,
+        "win_rate": 0.5865,
+        "total_return": 5.7798,
+        "n_days": 4467,
+        "avg_stock_exposure": 0.1991,
+        "avg_crisis_weight": 0.8009,
+        "avg_carry_weight": 0.0,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1838
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.9423,
+            "oos": 3.1716,
+            "mdd": -0.0204
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.4261,
+            "oos": 2.672,
+            "mdd": -0.0239
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.673,
+            "oos": -0.1964,
+            "mdd": -0.0212
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 2.0002,
+            "oos": 1.74,
+            "mdd": -0.0099
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4794,
+            "oos": 1.9311,
+            "mdd": -0.0374
+          }
+        ],
+        "avg_is_sharpe": 2.1042,
+        "avg_oos_sharpe": 1.8637,
+        "sharpe_decay": 0.1143
+      },
+      "allocation_tail": [
+        {
+          "price_ic_diversified": 0.085994,
+          "price_lowvol_reversal": 0.074839,
+          "price_defensive_breadth": 0.062925
+        },
+        {
+          "price_ic_diversified": 0.087011,
+          "price_lowvol_reversal": 0.075724,
+          "price_defensive_breadth": 0.063669
+        },
+        {
+          "price_ic_diversified": 0.023153,
+          "price_lowvol_reversal": 0.02015,
+          "price_defensive_breadth": 0.016942
+        },
+        {
+          "price_ic_diversified": 0.02321,
+          "price_lowvol_reversal": 0.020199,
+          "price_defensive_breadth": 0.016983
+        },
+        {
+          "price_ic_diversified": 0.024038,
+          "price_lowvol_reversal": 0.02092,
+          "price_defensive_breadth": 0.017589
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_lowvol_recent_guard",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_lowvol_recent_guard",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.56,
+        "bull_gross": 0.82,
+        "neutral_gross": 0.56,
+        "risk_off_gross": 0.15,
+        "vol_target": 0.11,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.65,
+        "dd_reduce_threshold": 0.05,
+        "dd_reduce_scale": 0.35,
+        "dd_stop_threshold": 0.09,
+        "dd_stop_scale": 0.04,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.9,
+        "carry_fraction": 0.1
+      },
+      "full": {
+        "sharpe_ratio": 2.079,
+        "annual_return": 0.1303,
+        "annual_volatility": 0.0506,
+        "max_drawdown": -0.0531,
+        "win_rate": 0.5794,
+        "total_return": 9.4889,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.2605,
+        "avg_crisis_weight": 0.6656,
+        "avg_carry_weight": 0.074,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.7505,
+            "oos": 3.0773,
+            "mdd": -0.0303
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.308,
+            "oos": 2.628,
+            "mdd": -0.0311
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.6024,
+            "oos": -0.2637,
+            "mdd": -0.0343
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.9035,
+            "oos": 1.9371,
+            "mdd": -0.0129
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4762,
+            "oos": 1.9206,
+            "mdd": -0.0508
+          }
+        ],
+        "avg_is_sharpe": 2.0081,
+        "avg_oos_sharpe": 1.8599,
+        "sharpe_decay": 0.0738
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.065406,
+          "price_ic_diversified": 0.081052,
+          "price_lowvol_reversal": 0.083419,
+          "price_defensive_breadth": 0.076422
+        },
+        {
+          "price_ic_alpha": 0.023163,
+          "price_ic_diversified": 0.028704,
+          "price_lowvol_reversal": 0.029542,
+          "price_defensive_breadth": 0.027064
+        },
+        {
+          "price_ic_alpha": 0.030775,
+          "price_ic_diversified": 0.020098,
+          "price_lowvol_reversal": 0.019056,
+          "price_defensive_breadth": 0.012908
+        },
+        {
+          "price_ic_alpha": 0.010798,
+          "price_ic_diversified": 0.007051,
+          "price_lowvol_reversal": 0.006686,
+          "price_defensive_breadth": 0.004529
+        },
+        {
+          "price_ic_alpha": 0.011183,
+          "price_ic_diversified": 0.007303,
+          "price_lowvol_reversal": 0.006925,
+          "price_defensive_breadth": 0.00469
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_lowvol_crisis",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_lowvol_crisis",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.58,
+        "bull_gross": 0.86,
+        "neutral_gross": 0.58,
+        "risk_off_gross": 0.18,
+        "vol_target": 0.12,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.65,
+        "dd_reduce_threshold": 0.07,
+        "dd_reduce_scale": 0.45,
+        "dd_stop_threshold": 0.13,
+        "dd_stop_scale": 0.08,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true
+      },
+      "full": {
+        "sharpe_ratio": 2.0705,
+        "annual_return": 0.1445,
+        "annual_volatility": 0.0577,
+        "max_drawdown": -0.0706,
+        "win_rate": 0.5781,
+        "total_return": 12.4882,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.2983,
+        "avg_crisis_weight": 0.7017,
+        "avg_carry_weight": 0.0,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.7202,
+            "oos": 3.0398,
+            "mdd": -0.0372
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.2807,
+            "oos": 2.6455,
+            "mdd": -0.0342
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.5958,
+            "oos": -0.2849,
+            "mdd": -0.0422
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.8836,
+            "oos": 1.9164,
+            "mdd": -0.0173
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4678,
+            "oos": 1.9072,
+            "mdd": -0.059
+          }
+        ],
+        "avg_is_sharpe": 1.9896,
+        "avg_oos_sharpe": 1.8448,
+        "sharpe_decay": 0.0728
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.0739,
+          "price_ic_diversified": 0.091578,
+          "price_lowvol_reversal": 0.094253,
+          "price_defensive_breadth": 0.086347
+        },
+        {
+          "price_ic_alpha": 0.074774,
+          "price_ic_diversified": 0.092662,
+          "price_lowvol_reversal": 0.095368,
+          "price_defensive_breadth": 0.087368
+        },
+        {
+          "price_ic_alpha": 0.040287,
+          "price_ic_diversified": 0.026309,
+          "price_lowvol_reversal": 0.024947,
+          "price_defensive_breadth": 0.016897
+        },
+        {
+          "price_ic_alpha": 0.040386,
+          "price_ic_diversified": 0.026374,
+          "price_lowvol_reversal": 0.025008,
+          "price_defensive_breadth": 0.016939
+        },
+        {
+          "price_ic_alpha": 0.041826,
+          "price_ic_diversified": 0.027315,
+          "price_lowvol_reversal": 0.0259,
+          "price_defensive_breadth": 0.017543
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_lowvol_micro_carry_floor",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_lowvol_micro_carry_floor",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.58,
+        "bull_gross": 0.86,
+        "neutral_gross": 0.58,
+        "risk_off_gross": 0.18,
+        "vol_target": 0.12,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.65,
+        "dd_reduce_threshold": 0.07,
+        "dd_reduce_scale": 0.45,
+        "dd_stop_threshold": 0.13,
+        "dd_stop_scale": 0.08,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.94,
+        "carry_fraction": 0.06
+      },
+      "full": {
+        "sharpe_ratio": 2.0551,
+        "annual_return": 0.1436,
+        "annual_volatility": 0.0577,
+        "max_drawdown": -0.0706,
+        "win_rate": 0.5772,
+        "total_return": 12.2713,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.2983,
+        "avg_crisis_weight": 0.6596,
+        "avg_carry_weight": 0.0421,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.6972,
+            "oos": 3.0279,
+            "mdd": -0.0375
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.265,
+            "oos": 2.6352,
+            "mdd": -0.0342
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.5836,
+            "oos": -0.2983,
+            "mdd": -0.0424
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.8719,
+            "oos": 1.9035,
+            "mdd": -0.0175
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4558,
+            "oos": 1.9025,
+            "mdd": -0.0591
+          }
+        ],
+        "avg_is_sharpe": 1.9747,
+        "avg_oos_sharpe": 1.8342,
+        "sharpe_decay": 0.0712
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.0739,
+          "price_ic_diversified": 0.091578,
+          "price_lowvol_reversal": 0.094253,
+          "price_defensive_breadth": 0.086347
+        },
+        {
+          "price_ic_alpha": 0.074774,
+          "price_ic_diversified": 0.092662,
+          "price_lowvol_reversal": 0.095368,
+          "price_defensive_breadth": 0.087368
+        },
+        {
+          "price_ic_alpha": 0.040287,
+          "price_ic_diversified": 0.026309,
+          "price_lowvol_reversal": 0.024947,
+          "price_defensive_breadth": 0.016897
+        },
+        {
+          "price_ic_alpha": 0.040386,
+          "price_ic_diversified": 0.026374,
+          "price_lowvol_reversal": 0.025008,
+          "price_defensive_breadth": 0.016939
+        },
+        {
+          "price_ic_alpha": 0.041826,
+          "price_ic_diversified": 0.027315,
+          "price_lowvol_reversal": 0.0259,
+          "price_defensive_breadth": 0.017543
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_balanced_crisis",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_balanced_crisis",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 189,
+        "rebalance_freq": 10,
+        "base_gross": 0.64,
+        "bull_gross": 0.95,
+        "neutral_gross": 0.64,
+        "risk_off_gross": 0.22,
+        "vol_target": 0.14,
+        "max_sleeve_weight": 0.5,
+        "temperature": 0.75,
+        "dd_reduce_threshold": 0.08,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.14,
+        "dd_stop_scale": 0.1,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true
+      },
+      "full": {
+        "sharpe_ratio": 2.0536,
+        "annual_return": 0.1756,
+        "annual_volatility": 0.0733,
+        "max_drawdown": -0.0881,
+        "win_rate": 0.5713,
+        "total_return": 21.3649,
+        "n_days": 4530,
+        "avg_stock_exposure": 0.3803,
+        "avg_crisis_weight": 0.6197,
+        "avg_carry_weight": 0.0,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1875
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.6458,
+            "oos": 3.0224,
+            "mdd": -0.0529
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.2344,
+            "oos": 2.6435,
+            "mdd": -0.0415
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.5822,
+            "oos": -0.2883,
+            "mdd": -0.0556
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.8679,
+            "oos": 1.9019,
+            "mdd": -0.0257
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4653,
+            "oos": 1.8781,
+            "mdd": -0.0766
+          }
+        ],
+        "avg_is_sharpe": 1.9591,
+        "avg_oos_sharpe": 1.8315,
+        "sharpe_decay": 0.0651
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.11379,
+          "price_ic_diversified": 0.112365,
+          "price_lowvol_reversal": 0.122617,
+          "price_defensive_breadth": 0.096754
+        },
+        {
+          "price_ic_alpha": 0.115136,
+          "price_ic_diversified": 0.113694,
+          "price_lowvol_reversal": 0.124067,
+          "price_defensive_breadth": 0.097898
+        },
+        {
+          "price_ic_alpha": 0.039493,
+          "price_ic_diversified": 0.038998,
+          "price_lowvol_reversal": 0.042557,
+          "price_defensive_breadth": 0.03358
+        },
+        {
+          "price_ic_alpha": 0.03959,
+          "price_ic_diversified": 0.039094,
+          "price_lowvol_reversal": 0.04266,
+          "price_defensive_breadth": 0.033662
+        },
+        {
+          "price_ic_alpha": 0.041002,
+          "price_ic_diversified": 0.040488,
+          "price_lowvol_reversal": 0.044182,
+          "price_defensive_breadth": 0.034863
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_lowvol_small_carry_floor",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_lowvol_small_carry_floor",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.58,
+        "bull_gross": 0.86,
+        "neutral_gross": 0.58,
+        "risk_off_gross": 0.18,
+        "vol_target": 0.12,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.65,
+        "dd_reduce_threshold": 0.07,
+        "dd_reduce_scale": 0.45,
+        "dd_stop_threshold": 0.13,
+        "dd_stop_scale": 0.08,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.92,
+        "carry_fraction": 0.08
+      },
+      "full": {
+        "sharpe_ratio": 2.0499,
+        "annual_return": 0.1433,
+        "annual_volatility": 0.0577,
+        "max_drawdown": -0.0706,
+        "win_rate": 0.5772,
+        "total_return": 12.1997,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.2983,
+        "avg_crisis_weight": 0.6456,
+        "avg_carry_weight": 0.0561,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.6895,
+            "oos": 3.0239,
+            "mdd": -0.0376
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.2598,
+            "oos": 2.6317,
+            "mdd": -0.0342
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.5796,
+            "oos": -0.3028,
+            "mdd": -0.0424
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.868,
+            "oos": 1.8992,
+            "mdd": -0.0176
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4518,
+            "oos": 1.901,
+            "mdd": -0.0592
+          }
+        ],
+        "avg_is_sharpe": 1.9697,
+        "avg_oos_sharpe": 1.8306,
+        "sharpe_decay": 0.0706
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.0739,
+          "price_ic_diversified": 0.091578,
+          "price_lowvol_reversal": 0.094253,
+          "price_defensive_breadth": 0.086347
+        },
+        {
+          "price_ic_alpha": 0.074774,
+          "price_ic_diversified": 0.092662,
+          "price_lowvol_reversal": 0.095368,
+          "price_defensive_breadth": 0.087368
+        },
+        {
+          "price_ic_alpha": 0.040287,
+          "price_ic_diversified": 0.026309,
+          "price_lowvol_reversal": 0.024947,
+          "price_defensive_breadth": 0.016897
+        },
+        {
+          "price_ic_alpha": 0.040386,
+          "price_ic_diversified": 0.026374,
+          "price_lowvol_reversal": 0.025008,
+          "price_defensive_breadth": 0.016939
+        },
+        {
+          "price_ic_alpha": 0.041826,
+          "price_ic_diversified": 0.027315,
+          "price_lowvol_reversal": 0.0259,
+          "price_defensive_breadth": 0.017543
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_longhorizon_guard",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_longhorizon_guard",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.6,
+        "bull_gross": 0.87,
+        "neutral_gross": 0.6,
+        "risk_off_gross": 0.16,
+        "vol_target": 0.115,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.65,
+        "dd_reduce_threshold": 0.05,
+        "dd_reduce_scale": 0.35,
+        "dd_stop_threshold": 0.09,
+        "dd_stop_scale": 0.04,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.75,
+        "carry_fraction": 0.25
+      },
+      "full": {
+        "sharpe_ratio": 2.0436,
+        "annual_return": 0.1397,
+        "annual_volatility": 0.0561,
+        "max_drawdown": -0.0554,
+        "win_rate": 0.5763,
+        "total_return": 11.399,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.2888,
+        "avg_crisis_weight": 0.5334,
+        "avg_carry_weight": 0.1778,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.673,
+            "oos": 3.0273,
+            "mdd": -0.0352
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.2513,
+            "oos": 2.605,
+            "mdd": -0.0342
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.5624,
+            "oos": -0.2886,
+            "mdd": -0.039
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.8655,
+            "oos": 1.9327,
+            "mdd": -0.0153
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4557,
+            "oos": 1.9552,
+            "mdd": -0.0554
+          }
+        ],
+        "avg_is_sharpe": 1.9616,
+        "avg_oos_sharpe": 1.8463,
+        "sharpe_decay": 0.0588
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.025642,
+          "price_ic_diversified": 0.031776,
+          "price_lowvol_reversal": 0.032704,
+          "price_defensive_breadth": 0.029961
+        },
+        {
+          "price_ic_alpha": 0.025945,
+          "price_ic_diversified": 0.032152,
+          "price_lowvol_reversal": 0.033091,
+          "price_defensive_breadth": 0.030315
+        },
+        {
+          "price_ic_alpha": 0.012012,
+          "price_ic_diversified": 0.007844,
+          "price_lowvol_reversal": 0.007438,
+          "price_defensive_breadth": 0.005038
+        },
+        {
+          "price_ic_alpha": 0.012041,
+          "price_ic_diversified": 0.007863,
+          "price_lowvol_reversal": 0.007456,
+          "price_defensive_breadth": 0.00505
+        },
+        {
+          "price_ic_alpha": 0.01247,
+          "price_ic_diversified": 0.008144,
+          "price_lowvol_reversal": 0.007722,
+          "price_defensive_breadth": 0.00523
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_lowvol_blended_floor",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_lowvol_blended_floor",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.58,
+        "bull_gross": 0.86,
+        "neutral_gross": 0.58,
+        "risk_off_gross": 0.18,
+        "vol_target": 0.12,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.65,
+        "dd_reduce_threshold": 0.07,
+        "dd_reduce_scale": 0.45,
+        "dd_stop_threshold": 0.13,
+        "dd_stop_scale": 0.08,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.82,
+        "carry_fraction": 0.18
+      },
+      "full": {
+        "sharpe_ratio": 2.0242,
+        "annual_return": 0.1418,
+        "annual_volatility": 0.0577,
+        "max_drawdown": -0.0706,
+        "win_rate": 0.5763,
+        "total_return": 11.8478,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.2983,
+        "avg_crisis_weight": 0.5754,
+        "avg_carry_weight": 0.1263,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.651,
+            "oos": 3.004,
+            "mdd": -0.0381
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.2337,
+            "oos": 2.6144,
+            "mdd": -0.0342
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.5593,
+            "oos": -0.3251,
+            "mdd": -0.0427
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.8484,
+            "oos": 1.8777,
+            "mdd": -0.0179
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4319,
+            "oos": 1.8931,
+            "mdd": -0.0594
+          }
+        ],
+        "avg_is_sharpe": 1.9449,
+        "avg_oos_sharpe": 1.8128,
+        "sharpe_decay": 0.0679
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.0739,
+          "price_ic_diversified": 0.091578,
+          "price_lowvol_reversal": 0.094253,
+          "price_defensive_breadth": 0.086347
+        },
+        {
+          "price_ic_alpha": 0.074774,
+          "price_ic_diversified": 0.092662,
+          "price_lowvol_reversal": 0.095368,
+          "price_defensive_breadth": 0.087368
+        },
+        {
+          "price_ic_alpha": 0.040287,
+          "price_ic_diversified": 0.026309,
+          "price_lowvol_reversal": 0.024947,
+          "price_defensive_breadth": 0.016897
+        },
+        {
+          "price_ic_alpha": 0.040386,
+          "price_ic_diversified": 0.026374,
+          "price_lowvol_reversal": 0.025008,
+          "price_defensive_breadth": 0.016939
+        },
+        {
+          "price_ic_alpha": 0.041826,
+          "price_ic_diversified": 0.027315,
+          "price_lowvol_reversal": 0.0259,
+          "price_defensive_breadth": 0.017543
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_balanced_blended_floor",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_balanced_blended_floor",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 189,
+        "rebalance_freq": 10,
+        "base_gross": 0.64,
+        "bull_gross": 0.95,
+        "neutral_gross": 0.64,
+        "risk_off_gross": 0.22,
+        "vol_target": 0.14,
+        "max_sleeve_weight": 0.5,
+        "temperature": 0.75,
+        "dd_reduce_threshold": 0.08,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.14,
+        "dd_stop_scale": 0.1,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.8,
+        "carry_fraction": 0.2
+      },
+      "full": {
+        "sharpe_ratio": 2.0179,
+        "annual_return": 0.173,
+        "annual_volatility": 0.0734,
+        "max_drawdown": -0.0881,
+        "win_rate": 0.5691,
+        "total_return": 20.3454,
+        "n_days": 4530,
+        "avg_stock_exposure": 0.3803,
+        "avg_crisis_weight": 0.4957,
+        "avg_carry_weight": 0.1239,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1875
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.5924,
+            "oos": 2.9961,
+            "mdd": -0.0538
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.199,
+            "oos": 2.6201,
+            "mdd": -0.0415
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.555,
+            "oos": -0.3194,
+            "mdd": -0.0561
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.8414,
+            "oos": 1.8717,
+            "mdd": -0.0264
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4377,
+            "oos": 1.8687,
+            "mdd": -0.0769
+          }
+        ],
+        "avg_is_sharpe": 1.9251,
+        "avg_oos_sharpe": 1.8074,
+        "sharpe_decay": 0.0611
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.11379,
+          "price_ic_diversified": 0.112365,
+          "price_lowvol_reversal": 0.122617,
+          "price_defensive_breadth": 0.096754
+        },
+        {
+          "price_ic_alpha": 0.115136,
+          "price_ic_diversified": 0.113694,
+          "price_lowvol_reversal": 0.124067,
+          "price_defensive_breadth": 0.097898
+        },
+        {
+          "price_ic_alpha": 0.039493,
+          "price_ic_diversified": 0.038998,
+          "price_lowvol_reversal": 0.042557,
+          "price_defensive_breadth": 0.03358
+        },
+        {
+          "price_ic_alpha": 0.03959,
+          "price_ic_diversified": 0.039094,
+          "price_lowvol_reversal": 0.04266,
+          "price_defensive_breadth": 0.033662
+        },
+        {
+          "price_ic_alpha": 0.041002,
+          "price_ic_diversified": 0.040488,
+          "price_lowvol_reversal": 0.044182,
+          "price_defensive_breadth": 0.034863
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_balanced_carry_floor",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_balanced_carry_floor",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 189,
+        "rebalance_freq": 10,
+        "base_gross": 0.62,
+        "bull_gross": 0.9,
+        "neutral_gross": 0.62,
+        "risk_off_gross": 0.18,
+        "vol_target": 0.13,
+        "max_sleeve_weight": 0.48,
+        "temperature": 0.72,
+        "dd_reduce_threshold": 0.07,
+        "dd_reduce_scale": 0.45,
+        "dd_stop_threshold": 0.11,
+        "dd_stop_scale": 0.07,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.3,
+        "carry_fraction": 0.7
+      },
+      "full": {
+        "sharpe_ratio": 1.945,
+        "annual_return": 0.1519,
+        "annual_volatility": 0.0652,
+        "max_drawdown": -0.0743,
+        "win_rate": 0.5638,
+        "total_return": 13.7534,
+        "n_days": 4530,
+        "avg_stock_exposure": 0.3378,
+        "avg_crisis_weight": 0.1987,
+        "avg_carry_weight": 0.4636,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1875
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.4825,
+            "oos": 2.9498,
+            "mdd": -0.0464
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.1231,
+            "oos": 2.5197,
+            "mdd": -0.0389
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.4687,
+            "oos": -0.3978,
+            "mdd": -0.0481
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.7712,
+            "oos": 1.8474,
+            "mdd": -0.0213
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.366,
+            "oos": 1.8609,
+            "mdd": -0.0678
+          }
+        ],
+        "avg_is_sharpe": 1.8423,
+        "avg_oos_sharpe": 1.756,
+        "sharpe_decay": 0.0468
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.102436,
+          "price_ic_diversified": 0.1011,
+          "price_lowvol_reversal": 0.110726,
+          "price_defensive_breadth": 0.086513
+        },
+        {
+          "price_ic_alpha": 0.103647,
+          "price_ic_diversified": 0.102296,
+          "price_lowvol_reversal": 0.112036,
+          "price_defensive_breadth": 0.087536
+        },
+        {
+          "price_ic_alpha": 0.030027,
+          "price_ic_diversified": 0.029635,
+          "price_lowvol_reversal": 0.032457,
+          "price_defensive_breadth": 0.025359
+        },
+        {
+          "price_ic_alpha": 0.0301,
+          "price_ic_diversified": 0.029707,
+          "price_lowvol_reversal": 0.032536,
+          "price_defensive_breadth": 0.025421
+        },
+        {
+          "price_ic_alpha": 0.031174,
+          "price_ic_diversified": 0.030767,
+          "price_lowvol_reversal": 0.033697,
+          "price_defensive_breadth": 0.026328
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_aggressive_guarded",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_aggressive_guarded",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.72,
+        "bull_gross": 1.0,
+        "neutral_gross": 0.72,
+        "risk_off_gross": 0.28,
+        "vol_target": 0.16,
+        "max_sleeve_weight": 0.58,
+        "temperature": 0.8,
+        "dd_reduce_threshold": 0.08,
+        "dd_reduce_scale": 0.5,
+        "dd_stop_threshold": 0.14,
+        "dd_stop_scale": 0.12,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true
+      },
+      "full": {
+        "sharpe_ratio": 1.9013,
+        "annual_return": 0.1954,
+        "annual_volatility": 0.0896,
+        "max_drawdown": -0.1065,
+        "win_rate": 0.5678,
+        "total_return": 31.6982,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.4547,
+        "avg_crisis_weight": 0.5453,
+        "avg_carry_weight": 0.0,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.4477,
+            "oos": 2.7439,
+            "mdd": -0.0741
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.0695,
+            "oos": 2.6315,
+            "mdd": -0.0479
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.4757,
+            "oos": -0.2511,
+            "mdd": -0.0787
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.7332,
+            "oos": 1.8398,
+            "mdd": -0.0385
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.4188,
+            "oos": 1.7038,
+            "mdd": -0.0924
+          }
+        ],
+        "avg_is_sharpe": 1.829,
+        "avg_oos_sharpe": 1.7336,
+        "sharpe_decay": 0.0522
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.083962,
+          "price_ic_diversified": 0.100041,
+          "price_lowvol_reversal": 0.102406
+        },
+        {
+          "price_ic_alpha": 0.084955,
+          "price_ic_diversified": 0.101225,
+          "price_lowvol_reversal": 0.103618
+        },
+        {
+          "price_ic_alpha": 0.04711,
+          "price_ic_diversified": 0.033377,
+          "price_lowvol_reversal": 0.031969
+        },
+        {
+          "price_ic_alpha": 0.047225,
+          "price_ic_diversified": 0.033459,
+          "price_lowvol_reversal": 0.032047
+        },
+        {
+          "price_ic_alpha": 0.04891,
+          "price_ic_diversified": 0.034653,
+          "price_lowvol_reversal": 0.033191
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_price_meta_lowvol_carry_floor",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": true,
+      "production_blockers": [],
+      "config": {
+        "name": "v29_price_meta_lowvol_carry_floor",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_ic_diversified",
+          "price_lowvol_reversal",
+          "price_defensive_breadth"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.58,
+        "bull_gross": 0.84,
+        "neutral_gross": 0.58,
+        "risk_off_gross": 0.16,
+        "vol_target": 0.115,
+        "max_sleeve_weight": 0.45,
+        "temperature": 0.65,
+        "dd_reduce_threshold": 0.06,
+        "dd_reduce_scale": 0.4,
+        "dd_stop_threshold": 0.1,
+        "dd_stop_scale": 0.05,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "crisis_fraction": 0.25,
+        "carry_fraction": 0.75
+      },
+      "full": {
+        "sharpe_ratio": 1.8838,
+        "annual_return": 0.1276,
+        "annual_volatility": 0.0544,
+        "max_drawdown": -0.0618,
+        "win_rate": 0.5654,
+        "total_return": 8.9465,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.2807,
+        "avg_crisis_weight": 0.1798,
+        "avg_carry_weight": 0.5395,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.4526,
+            "oos": 2.8948,
+            "mdd": -0.037
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.095,
+            "oos": 2.5007,
+            "mdd": -0.0331
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.4385,
+            "oos": -0.4291,
+            "mdd": -0.0401
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.7404,
+            "oos": 1.7867,
+            "mdd": -0.0171
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.3283,
+            "oos": 1.8668,
+            "mdd": -0.0565
+          }
+        ],
+        "avg_is_sharpe": 1.811,
+        "avg_oos_sharpe": 1.724,
+        "sharpe_decay": 0.048
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.070821,
+          "price_ic_diversified": 0.087763,
+          "price_lowvol_reversal": 0.090326,
+          "price_defensive_breadth": 0.082749
+        },
+        {
+          "price_ic_alpha": 0.071659,
+          "price_ic_diversified": 0.088801,
+          "price_lowvol_reversal": 0.091394,
+          "price_defensive_breadth": 0.083728
+        },
+        {
+          "price_ic_alpha": 0.034319,
+          "price_ic_diversified": 0.022412,
+          "price_lowvol_reversal": 0.021251,
+          "price_defensive_breadth": 0.014394
+        },
+        {
+          "price_ic_alpha": 0.034403,
+          "price_ic_diversified": 0.022467,
+          "price_lowvol_reversal": 0.021303,
+          "price_defensive_breadth": 0.014429
+        },
+        {
+          "price_ic_alpha": 0.03563,
+          "price_ic_diversified": 0.023268,
+          "price_lowvol_reversal": 0.022063,
+          "price_defensive_breadth": 0.014944
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    },
+    {
+      "name": "v29_alt_meta_research_only",
+      "version": "V29-dynamic-sleeve-portfolio-layer-v31-execution-constrained",
+      "production_comparable": false,
+      "production_blockers": [
+        "includes archived/snapshot alt sleeve without production PIT entitlement evidence"
+      ],
+      "config": {
+        "name": "v29_alt_meta_research_only",
+        "sleeves": [
+          "price_ic_alpha",
+          "price_lowvol_reversal",
+          "price_defensive_breadth",
+          "alt_ic_research"
+        ],
+        "lookback": 126,
+        "rebalance_freq": 10,
+        "base_gross": 0.62,
+        "bull_gross": 0.9,
+        "neutral_gross": 0.62,
+        "risk_off_gross": 0.2,
+        "vol_target": 0.13,
+        "max_sleeve_weight": 0.5,
+        "temperature": 0.7,
+        "dd_reduce_threshold": 0.07,
+        "dd_reduce_scale": 0.45,
+        "dd_stop_threshold": 0.13,
+        "dd_stop_scale": 0.08,
+        "meta_cost_bps": 2,
+        "use_crisis_sleeve": true,
+        "production_comparable": false,
+        "production_blocker": "includes archived/snapshot alt sleeve without production PIT entitlement evidence"
+      },
+      "full": {
+        "sharpe_ratio": 2.0163,
+        "annual_return": 0.1566,
+        "annual_volatility": 0.0652,
+        "max_drawdown": -0.0766,
+        "win_rate": 0.5722,
+        "total_return": 15.6717,
+        "n_days": 4593,
+        "avg_stock_exposure": 0.3393,
+        "avg_crisis_weight": 0.6607,
+        "avg_carry_weight": 0.0,
+        "avg_active_stocks": null,
+        "risk_off_rebalances": 1904
+      },
+      "wf": {
+        "valid": false,
+        "validation_type": "fixed_candidate_chronological_diagnostics",
+        "invalid_reason": "no fold-internal candidate selection; use top-level walk_forward_selection",
+        "folds": [
+          {
+            "fold": 0,
+            "test_start": "2021-04-12",
+            "test_end": "2022-04-26",
+            "is": 1.5907,
+            "oos": 3.0532,
+            "mdd": -0.0442
+          },
+          {
+            "fold": 1,
+            "test_start": "2022-04-26",
+            "test_end": "2023-05-11",
+            "is": 2.2089,
+            "oos": 2.5153,
+            "mdd": -0.0376
+          },
+          {
+            "fold": 2,
+            "test_start": "2023-05-11",
+            "test_end": "2024-05-27",
+            "is": 2.5338,
+            "oos": -0.4244,
+            "mdd": -0.0484
+          },
+          {
+            "fold": 3,
+            "test_start": "2024-05-27",
+            "test_end": "2025-06-11",
+            "is": 1.7835,
+            "oos": 1.976,
+            "mdd": -0.0223
+          },
+          {
+            "fold": 4,
+            "test_start": "2025-06-11",
+            "test_end": "2026-06-25",
+            "is": 1.3858,
+            "oos": 1.8693,
+            "mdd": -0.0654
+          }
+        ],
+        "avg_is_sharpe": 1.9005,
+        "avg_oos_sharpe": 1.7979,
+        "sharpe_decay": 0.054
+      },
+      "allocation_tail": [
+        {
+          "price_ic_alpha": 0.089305,
+          "price_lowvol_reversal": 0.112016,
+          "price_defensive_breadth": 0.10343,
+          "alt_ic_research": 0.096023
+        },
+        {
+          "price_ic_alpha": 0.090362,
+          "price_lowvol_reversal": 0.113341,
+          "price_defensive_breadth": 0.104654,
+          "alt_ic_research": 0.097158
+        },
+        {
+          "price_ic_alpha": 0.043766,
+          "price_lowvol_reversal": 0.028097,
+          "price_defensive_breadth": 0.019604,
+          "alt_ic_research": 0.039064
+        },
+        {
+          "price_ic_alpha": 0.043873,
+          "price_lowvol_reversal": 0.028166,
+          "price_defensive_breadth": 0.019651,
+          "alt_ic_research": 0.039159
+        },
+        {
+          "price_ic_alpha": 0.045439,
+          "price_lowvol_reversal": 0.02917,
+          "price_defensive_breadth": 0.020353,
+          "alt_ic_research": 0.040556
+        }
+      ],
+      "gates": {
+        "S": true,
+        "M": true,
+        "W": false,
+        "D": false
+      }
+    }
+  ],
+  "production_blockers": [
+    "research script only; not an approved strategy artifact",
+    "external WORM/provider entitlement/secret/approval/broker evidence remains required",
+    "alt-data variants require production PIT entitlement evidence before comparison",
+    "candidate-level chronological diagnostics are not valid walk-forward gates",
+    "must run approved paper-trading service and capital-impact approval before promotion"
+  ],
+  "elapsed_seconds": 158.6
+}
