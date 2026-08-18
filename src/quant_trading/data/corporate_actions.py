@@ -18,6 +18,8 @@ from typing import Any, cast
 
 import pandas as pd
 
+from quant_trading.data.provider import DataProviderError
+
 UTC = timezone.utc
 
 
@@ -339,10 +341,12 @@ class EventCalendar:
 
             return events
 
-        except ImportError:
-            return []
-        except Exception:
-            return []
+        except ImportError as exc:
+            raise DataProviderError(
+                "akshare dependency is unavailable", provider="akshare", symbol=symbol
+            ) from exc
+        except Exception as exc:
+            raise DataProviderError(str(exc), provider="akshare", symbol=symbol) from exc
 
     async def fetch_splits(
         self, symbol: str, start_date: date | None = None
@@ -361,8 +365,8 @@ class EventCalendar:
             )
             # AKShare doesn't directly expose splits — detect from price discontinuities
             return []
-        except Exception:
-            return []
+        except Exception as exc:
+            raise DataProviderError(str(exc), provider="akshare", symbol=symbol) from exc
 
     async def fetch_all(
         self, symbol: str, start_date: date | None = None

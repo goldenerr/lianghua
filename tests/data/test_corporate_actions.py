@@ -1,6 +1,7 @@
 """Tests for corporate actions engine."""
 
 from datetime import date
+from types import SimpleNamespace
 
 import pandas as pd
 import pytest
@@ -9,10 +10,12 @@ from quant_trading.data.corporate_actions import (
     AdjustmentMode,
     CorporateActionEvent,
     DeliveryHandler,
+    EventCalendar,
     EventType,
     ImpactReport,
     adjust_prices,
 )
+from quant_trading.data.provider import DataProviderError
 
 # ── AdjustmentEngine ──────────────────────────────────────────────────────
 
@@ -234,6 +237,58 @@ class TestCorporateActionEvent:
         )
         assert ev.confirmed is True
         assert ev.source == ""
+
+
+# ── EventCalendar ─────────────────────────────────────────────────────────
+
+
+class TestEventCalendar:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("method_name", "akshare_function"),
+        [
+            ("fetch_dividends", "stock_dividents_cninfo"),
+            ("fetch_splits", "stock_zh_a_hist"),
+        ],
+    )
+    async def test_provider_failure_is_not_silently_treated_as_no_events(
+        self, monkeypatch, method_name, akshare_function
+    ):
+        def fail(**_kwargs):
+            raise RuntimeError("upstream unavailable")
+
+        monkeypatch.setitem(
+            __import__("sys").modules,
+            "akshare",
+            SimpleNamespace(**{akshare_function: fail}),
+        )
+        calendar = EventCalendar()
+
+        with pytest.raises(DataProviderError, match="upstream unavailable"):
+            await getattr(calendar, method_name)("600519.SH")
+
+    @pytest.mark.asyncio
+    async def test_fetch_all_does_not_cache_provider_failure(self, monkeypatch):
+        calls = 0
+
+        def fail(**_kwargs):
+            nonlocal calls
+            calls += 1
+            raise RuntimeError("temporary outage")
+
+        monkeypatch.setitem(
+            __import__("sys").modules,
+            "akshare",
+            SimpleNamespace(stock_dividents_cninfo=fail),
+        )
+        calendar = EventCalendar()
+
+        for _ in range(2):
+            with pytest.raises(DataProviderError, match="temporary outage"):
+                await calendar.fetch_all("600519.SH")
+
+        assert calls == 2
+        assert calendar._cache == {}
 
 
 # ── DeliveryHandler ───────────────────────────────────────────────────────
