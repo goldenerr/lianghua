@@ -81,7 +81,7 @@ class ReportGenerator:
         return json.dumps(report, indent=indent, ensure_ascii=False, default=str)
 
     @staticmethod
-    def summary(report: dict) -> str:
+    def summary(report: dict[str, Any]) -> str:
         """Generate a human-readable summary string."""
         ps = report["performance_summary"]
         lines = [
