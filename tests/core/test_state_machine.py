@@ -73,6 +73,53 @@ class TestSystemStateMachine:
         fsm.transition(SystemState.RUNNING)
         assert fsm.can_trade is True
 
+    def test_safe_mode_cannot_transition_directly_to_running(self):
+        fsm = SystemStateMachine()
+        fsm.transition(SystemState.RUNNING)
+        fsm.enter_safe_mode("position mismatch")
+
+        assert fsm.transition(SystemState.RUNNING) is False
+        assert fsm.state == SystemState.SAFE_MODE
+        assert fsm.can_trade is False
+
+    def test_safe_mode_recovery_fails_closed_without_authorizer(self):
+        fsm = SystemStateMachine()
+        fsm.enter_safe_mode("position mismatch")
+
+        assert fsm.recover_from_safe_mode("approval-123", reconciliation_passed=True) is False
+        assert fsm.state == SystemState.SAFE_MODE
+
+    def test_safe_mode_recovery_requires_reconciliation(self):
+        fsm = SystemStateMachine(
+            recovery_authorizer=lambda approval_ref: approval_ref == "approval-123"
+        )
+        fsm.enter_safe_mode("position mismatch")
+
+        assert fsm.recover_from_safe_mode("approval-123", reconciliation_passed=False) is False
+        assert fsm.state == SystemState.SAFE_MODE
+
+    def test_approved_safe_mode_recovery_enters_warmup_before_running(self):
+        fsm = SystemStateMachine(
+            recovery_authorizer=lambda approval_ref: approval_ref == "approval-123"
+        )
+        fsm.enter_safe_mode("position mismatch")
+
+        assert fsm.recover_from_safe_mode("approval-123", reconciliation_passed=True) is True
+        assert fsm.state == SystemState.WARMUP
+        assert fsm.can_trade is False
+        assert fsm.history[-1]["metadata"]["approval_ref"] == "approval-123"
+        assert fsm.transition(SystemState.RUNNING) is True
+        assert fsm.can_trade is True
+
+    def test_emergency_cannot_be_recovered_or_transition_directly_to_running(self):
+        fsm = SystemStateMachine(recovery_authorizer=lambda _approval_ref: True)
+        fsm.enter_emergency("kill switch")
+
+        assert fsm.recover_from_safe_mode("approval-123", reconciliation_passed=True) is False
+        assert fsm.transition(SystemState.RUNNING) is False
+        assert fsm.state == SystemState.EMERGENCY
+        assert fsm.can_trade is False
+
 
 class TestInvariantEnforcer:
     def test_position_invariant_passes(self):

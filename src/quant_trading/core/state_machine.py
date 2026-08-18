@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
@@ -71,6 +72,30 @@ _POSITION_TRANSITIONS: dict[PositionState, set[PositionState]] = {
     PositionState.FLAT: {PositionState.LONG, PositionState.SHORT},
     PositionState.LONG: {PositionState.FLAT, PositionState.SHORT},
     PositionState.SHORT: {PositionState.FLAT, PositionState.LONG},
+}
+
+_SYSTEM_TRANSITIONS: dict[SystemState, set[SystemState]] = {
+    SystemState.INIT: {
+        SystemState.WARMUP,
+        SystemState.RUNNING,
+        SystemState.SHUTTING_DOWN,
+        SystemState.SAFE_MODE,
+        SystemState.EMERGENCY,
+    },
+    SystemState.WARMUP: {
+        SystemState.RUNNING,
+        SystemState.SHUTTING_DOWN,
+        SystemState.SAFE_MODE,
+        SystemState.EMERGENCY,
+    },
+    SystemState.RUNNING: {
+        SystemState.SHUTTING_DOWN,
+        SystemState.SAFE_MODE,
+        SystemState.EMERGENCY,
+    },
+    SystemState.SAFE_MODE: {SystemState.SHUTTING_DOWN, SystemState.EMERGENCY},
+    SystemState.EMERGENCY: {SystemState.SHUTTING_DOWN},
+    SystemState.SHUTTING_DOWN: set(),
 }
 
 
@@ -138,11 +163,21 @@ class PositionStateMachine(StateMachine[PositionState]):
 class SystemStateMachine(StateMachine[SystemState]):
     """Global system state FSM."""
 
-    def __init__(self) -> None:
+    def __init__(self, recovery_authorizer: Callable[[str], bool] | None = None) -> None:
         self.state = SystemState.INIT
         self.history: list[dict[str, Any]] = []
+        self._recovery_authorizer = recovery_authorizer
 
     def transition(self, new_state: SystemState, metadata: dict[str, Any] | None = None) -> bool:
+        if new_state not in _SYSTEM_TRANSITIONS[self.state]:
+            logger.error("Invalid system transition: %s → %s", self.state, new_state)
+            return False
+        self._apply_transition(new_state, metadata)
+        return True
+
+    def _apply_transition(
+        self, new_state: SystemState, metadata: dict[str, Any] | None = None
+    ) -> None:
         old = self.state
         self.state = new_state
         self.history.append(
@@ -154,6 +189,35 @@ class SystemStateMachine(StateMachine[SystemState]):
             }
         )
         logger.info("System state: %s → %s", old.value, new_state.value)
+
+    def recover_from_safe_mode(self, approval_ref: str, *, reconciliation_passed: bool) -> bool:
+        """Recover to warm-up only after approved, successful reconciliation."""
+        if self.state != SystemState.SAFE_MODE:
+            logger.error("Safe-mode recovery rejected from state %s", self.state.value)
+            return False
+        if (
+            not approval_ref.strip()
+            or not reconciliation_passed
+            or self._recovery_authorizer is None
+        ):
+            logger.error("Safe-mode recovery rejected: approval or reconciliation missing")
+            return False
+        try:
+            authorized = self._recovery_authorizer(approval_ref)
+        except Exception:
+            logger.exception("Safe-mode recovery authorizer failed")
+            return False
+        if not authorized:
+            logger.error("Safe-mode recovery approval rejected")
+            return False
+        self._apply_transition(
+            SystemState.WARMUP,
+            {
+                "approval_ref": approval_ref,
+                "reconciliation_passed": True,
+                "recovery": "approved_safe_mode_recovery",
+            },
+        )
         return True
 
     def enter_safe_mode(self, reason: str) -> None:

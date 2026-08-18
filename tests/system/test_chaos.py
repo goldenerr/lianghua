@@ -22,7 +22,7 @@ def test_with_latency_injection():
 
 
 def test_network_partition_recovery():
-    fsm = SystemStateMachine()
+    fsm = SystemStateMachine(recovery_authorizer=lambda ref: ref == "approved-recovery")
     fsm.transition(SystemState.RUNNING)
     injector = FaultInjector(target="exchange_gateway", fault_type="network_partition")
 
@@ -32,7 +32,10 @@ def test_network_partition_recovery():
 
     recovered = injector.recover()
     assert recovered["recovered"] is True
-    fsm.transition(SystemState.RUNNING)
+    assert fsm.transition(SystemState.RUNNING) is False
+    assert fsm.recover_from_safe_mode("approved-recovery", reconciliation_passed=True) is True
+    assert fsm.state == SystemState.WARMUP
+    assert fsm.transition(SystemState.RUNNING) is True
     assert fsm.can_trade is True
 
 
